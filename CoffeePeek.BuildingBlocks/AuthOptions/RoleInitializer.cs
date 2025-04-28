@@ -1,6 +1,3 @@
-using CoffeePeek.Contract.Constants;
-using CoffeePeek.Data.Models.Users;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -11,9 +8,7 @@ public class RoleInitializer(IServiceProvider serviceProvider) : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRoleEntity>>();
-
-        
+        //var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRoleEntity>>();
     }   
 
 

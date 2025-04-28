@@ -1,7 +1,7 @@
 using CoffeePeek.Contract.Dtos.Address;
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Schedule;
-using CoffeePeek.Data.Enums.Shop;
+using CoffeePeek.Domain.Enums.Shop;
 using Newtonsoft.Json;
 
 namespace CoffeePeek.Contract.Dtos.CoffeeShop;
@@ -21,5 +21,4 @@ public class ReviewShopDto
 
     public ICollection<string> ShopPhotos { get; set; }
     public ICollection<ScheduleDto> Schedules { get; set; }
-    public ICollection<ScheduleExceptionDto> ScheduleExceptions { get; set; }
 }

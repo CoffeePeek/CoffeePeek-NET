@@ -1,4 +1,4 @@
-using CoffeePeek.Data.Repositories.InReview;
+using CoffeePeek.Domain.Repositories;
 using CoffeePeek.Shared.Models.PhotoUpload;
 using MassTransit;
 

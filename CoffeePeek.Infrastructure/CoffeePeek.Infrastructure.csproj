@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CoffeePeek.BuildingBlocks\CoffeePeek.BuildingBlocks.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shared.Models\CoffeePeek.Shared.Models.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Domain\CoffeePeek.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,13 +1,11 @@
-using CoffeePeek.BuildingBlocks.AuthOptions;
 using CoffeePeek.BusinessLogic.Abstractions;
-using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.Auth;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Auth;
 using CoffeePeek.Data;
-using CoffeePeek.Data.Entities.Users;
-using CoffeePeek.Data.Models.Users;
+using CoffeePeek.Domain.Entities.Users;
+using CoffeePeek.Domain.UnitOfWork;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
 using MapsterMapper;
 using MediatR;

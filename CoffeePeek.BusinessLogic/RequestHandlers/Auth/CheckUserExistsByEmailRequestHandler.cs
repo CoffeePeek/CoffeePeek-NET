@@ -1,7 +1,6 @@
 using CoffeePeek.Contract.Requests.Auth;
 using CoffeePeek.Contract.Response;
-using CoffeePeek.Data.Entities.Users;
-using CoffeePeek.Data.Models.Users;
+using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

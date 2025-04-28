@@ -7,12 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CoffeePeek.BuildingBlocks\CoffeePeek.BuildingBlocks.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
+      <Folder Include="Aggregates\" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Services\" />
+      <PackageReference Include="EntityFrameworkCore.Data.AutoHistory" Version="8.0.3" />
+      <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
     </ItemGroup>
 
 </Project>
