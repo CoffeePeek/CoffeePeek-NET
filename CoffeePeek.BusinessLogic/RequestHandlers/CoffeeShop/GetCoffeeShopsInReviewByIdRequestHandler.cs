@@ -2,7 +2,6 @@ using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
-using CoffeePeek.Data;
 using CoffeePeek.Domain.Entities.Shop;
 using CoffeePeek.Domain.UnitOfWork;
 using MapsterMapper;

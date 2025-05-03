@@ -1,7 +1,6 @@
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
-using CoffeePeek.Data;
 using CoffeePeek.Domain.Entities.Shop;
 using CoffeePeek.Domain.Enums.Shop;
 using CoffeePeek.Domain.UnitOfWork;

@@ -2,7 +2,7 @@ using MediatR;
 
 namespace CoffeePeek.Domain.Entities;
 
-public abstract class BaseEntity
+public abstract class BaseEntity : ICreatedAt
 {
     private List<INotification> _domainEvents;
     private List<INotification> _postDomainEvents;

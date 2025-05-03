@@ -6,7 +6,6 @@ using CoffeePeek.BuildingBlocks.RedisOptions;
 using CoffeePeek.BuildingBlocks.Sentry;
 using CoffeePeek.BusinessLogic.Configuration;
 using CoffeePeek.Infrastructure.Configuration;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +23,7 @@ builder.Services
     .AddBearerAuthentication()
     .AddValidators()
     .RegisterInfrastructure()
-    //.AddUserIdentity()
+    .PostgresConfigure()
     .ConfigureBusinessLogic()
     .AddControllers();
 

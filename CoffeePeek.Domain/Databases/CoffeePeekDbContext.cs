@@ -14,7 +14,6 @@ public class CoffeePeekDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Role> Roles { get; set; }
     public virtual DbSet<UserRole> UserRoles { get; set; }
-    public virtual DbSet<UserToken> UserTokens { get; set; }
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
     
     public virtual DbSet<Shop> Shops { get; set; }
@@ -41,11 +40,9 @@ public class CoffeePeekDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
         modelBuilder.Entity<User>();
         modelBuilder.Entity<Role>();
         modelBuilder.Entity<UserRole>();
-        modelBuilder.Entity<UserToken>();
 
         modelBuilder.AddressConfigure();
         modelBuilder.ReviewConfigure();

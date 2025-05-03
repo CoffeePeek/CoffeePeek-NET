@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace CoffeePeek.Infrastructure.Services;
+namespace CoffeePeek.Infrastructure.Services.User;
 
 public class HashingService : IHashingService
 {

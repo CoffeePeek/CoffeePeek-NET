@@ -1,4 +1,5 @@
 using System.Text;
+using CoffeePeek.Infrastructure.Auth;
 using CoffeePeek.Shared.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +13,7 @@ public static class AuthBuilderExtensions
 {
     public static IServiceCollection AddBearerAuthentication(this IServiceCollection services)
     {
+        var jwtOptions = services.AddValidateOptions<JWTOptions>();
         var authOptions = services.AddValidateOptions<AuthenticationOptions>();
         
         services.AddAuthentication(options =>
@@ -28,9 +30,9 @@ public static class AuthBuilderExtensions
                 x.UseSecurityTokenValidators = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authOptions.JwtSecretKey)),
-                    ValidIssuer = authOptions.ValidIssuer,
-                    ValidAudience = authOptions.ValidAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtOptions.SecretKey)),
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,

@@ -1,7 +1,6 @@
 using CoffeePeek.BusinessLogic.Models;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response;
-using CoffeePeek.Data;
 using CoffeePeek.Domain.Entities.Shop;
 using CoffeePeek.Domain.UnitOfWork;
 using MediatR;

@@ -1,11 +1,10 @@
-using CoffeePeek.BuildingBlocks.AuthOptions;
 using CoffeePeek.Contract.Requests.Auth;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Auth;
-using CoffeePeek.Data;
 using CoffeePeek.Domain.Databases;
 using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.UnitOfWork;
+using CoffeePeek.Infrastructure.Auth;
 using CoffeePeek.Infrastructure.Services;
 using CoffeePeek.Infrastructure.Services.Auth.Interfaces;
 using MediatR;
@@ -17,10 +16,10 @@ namespace CoffeePeek.BusinessLogic.RequestHandlers;
 public class GetRefreshTokenRequestHandler(
     IAuthService authService,
     IUnitOfWork<CoffeePeekDbContext> unitOfWork,
-    IHashingService hashingService, IOptions<AuthenticationOptions> authenticationOptions)
+    IHashingService hashingService, IOptions<JWTOptions> jwtOptions)
     : IRequestHandler<GetRefreshTokenRequest, Response<GetRefreshTokenResponse>>
 {
-    private readonly AuthenticationOptions _authOptions = authenticationOptions.Value;
+    private readonly JWTOptions _authOptions = jwtOptions.Value;
     public async Task<Response<GetRefreshTokenResponse>> Handle(GetRefreshTokenRequest request, CancellationToken cancellationToken)
     {
         var decryptedRefreshTokenUserId = authService.DecryptRefreshToken(request.RefreshToken);
@@ -68,7 +67,7 @@ public class GetRefreshTokenRequestHandler(
         foreach (var refreshTokenRecord in refreshTokenRecords)
         {
             refreshTokenRecord.Token = hashingService.HashString(newRefreshToken);
-            refreshTokenRecord.ExpiryDate = DateTime.UtcNow.AddDays(_authOptions.ExpireRefreshIntervalDays);
+            refreshTokenRecord.ExpiryDate = DateTime.UtcNow.AddDays(_authOptions.RefreshTokenLifetimeDays);
         }
 
         await unitOfWork.SaveChangesAsync(CancellationToken.None);

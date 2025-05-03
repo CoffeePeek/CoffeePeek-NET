@@ -1,9 +1,9 @@
 ﻿using System.Linq.Expressions;
-using CoffeePeek.Domain.UnitOfWork;
+using CoffeePeek.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace CoffeePeek.Data;
+namespace CoffeePeek.Domain.UnitOfWork;
 
 public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 {
@@ -18,11 +18,13 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 
     public void SaveChanges()
     {
+        SetCreatedAtTimestamps();
         _context.SaveChanges();
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        SetCreatedAtTimestamps();
         await _context.SaveChangesAsync(cancellationToken);
     }
 
@@ -47,7 +49,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         return await _dbSet.FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
-    public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
+    public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
     {
         return await _dbSet.FirstOrDefaultAsync(predicate);
     }
@@ -121,7 +123,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         _dbSet.RemoveRange(entities);
     }
-
+    
     public void Update(TEntity entity)
     {
         _dbSet.Update(entity);
@@ -135,5 +137,16 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     public IQueryable<IGrouping<K, TEntity>> GroupBy<K>(Expression<Func<TEntity, K>> predicate)
     {
         return _dbSet.GroupBy(predicate);
+    }
+
+    private void SetCreatedAtTimestamps()
+    {
+        var entries = _context.ChangeTracker.Entries()
+            .Where(e => e is { State: EntityState.Added, Entity: ICreatedAt });
+        
+        foreach (var entry in entries)
+        {
+            ((ICreatedAt)entry.Entity).CreatedAt = DateTime.UtcNow;
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace CoffeePeek.Domain.Entities.Users;
+﻿using CoffeePeek.Domain.Entities.Auth;
+
+namespace CoffeePeek.Domain.Entities.Users;
 
 public class User : BaseEntity
 {
@@ -10,4 +12,7 @@ public class User : BaseEntity
     public bool PhoneNumberConfirmed { get; set; }
     public bool TwoFactorEnabled { get; set; }
     public bool IsSoftDeleted { get; set; }
+    
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
+    public virtual ICollection<UserRole> UserRoles { get; set; }
 }

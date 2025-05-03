@@ -1,7 +1,6 @@
-using CoffeePeek.Data;
-using CoffeePeek.Data.Repositories.InReview;
 using CoffeePeek.Domain.Databases;
 using CoffeePeek.Domain.Entities.Address;
+using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.Entities.Shop;
 using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Domain.Repositories;
@@ -27,6 +26,7 @@ public static class UnitOfWorkExtensions
         where TRepository : class, IRepository<TEntity>
     {
         services.AddScoped<IRepository<TEntity>, TRepository>();
+        services.AddScoped<TRepository>();
 
         return services;
     }
@@ -36,10 +36,12 @@ public static class UnitOfWorkExtensions
         services.AddUnitOfWork<CoffeePeekDbContext>();
 
         services.AddCustomRepository<User, UserRepository>();
+        
         services.AddCustomRepository<City, CityRepository>();
         
         services.AddCustomRepository<ReviewShop, ReviewShopsRepository>();
-        services.AddScoped<IReviewShopsRepository, ReviewShopsRepository>();
+
+        services.AddCustomRepository<RefreshToken, RefreshTokenRepository>();
         
         return services;
     }

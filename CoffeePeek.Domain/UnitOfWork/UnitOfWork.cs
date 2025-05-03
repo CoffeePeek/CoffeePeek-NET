@@ -1,6 +1,4 @@
 ﻿using System.Transactions;
-using CoffeePeek.Data;
-using EntityFrameworkCore.AutoHistory.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -29,7 +27,7 @@ public sealed class UnitOfWork<TContext> : IRepositoryFactory, IUnitOfWork<TCont
         _repositories = new Dictionary<Type, object>();
     }
 
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken, bool ensureAutoHistory = false,
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken,
         params IUnitOfWork[] unitOfWorks)
     {
         using var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
@@ -37,10 +35,10 @@ public sealed class UnitOfWork<TContext> : IRepositoryFactory, IUnitOfWork<TCont
 
         foreach (var unitOfWork in unitOfWorks)
         {
-            count += await unitOfWork.SaveChangesAsync(cancellationToken, ensureAutoHistory).ConfigureAwait(false);
+            count += await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        count += await SaveChangesAsync(cancellationToken, ensureAutoHistory);
+        count += await SaveChangesAsync(cancellationToken);
 
         ts.Complete();
 
@@ -74,13 +72,8 @@ public sealed class UnitOfWork<TContext> : IRepositoryFactory, IUnitOfWork<TCont
         return (IRepository<TEntity>)_repositories[type];
     }
 
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken, bool ensureAutoHistory = false)
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {
-        if (ensureAutoHistory)
-        {
-            DbContext.EnsureAutoHistory();
-        }
-
         return await DbContext.SaveChangesAsync(cancellationToken);
     }
 
@@ -113,7 +106,7 @@ public sealed class UnitOfWork<TContext> : IRepositoryFactory, IUnitOfWork<TCont
     /// Saves all changes made in this context to the database.
     /// </summary>
     /// <returns>The number of state entries written to the database.</returns>
-    public int SaveChanges(bool ensureAutoHistory = false)
+    public int SaveChanges()
     {
         return DbContext.SaveChanges();
     }
@@ -122,7 +115,7 @@ public sealed class UnitOfWork<TContext> : IRepositoryFactory, IUnitOfWork<TCont
     /// Asynchronously saves all changes made in this unit of work to the database.
     /// </summary>
     /// <returns>A <see cref="Task{TResult}"/> that represents the asynchronous save operation. The task result contains the number of state entities written to database.</returns>
-    public async Task<int> SaveChangesAsync(bool ensureAutoHistory = false)
+    public async Task<int> SaveChangesAsync()
     {
         return await DbContext.SaveChangesAsync();
     }

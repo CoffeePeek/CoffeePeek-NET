@@ -1,7 +1,6 @@
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response;
-using CoffeePeek.Data;
 using CoffeePeek.Domain.Databases;
 using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Domain.UnitOfWork;

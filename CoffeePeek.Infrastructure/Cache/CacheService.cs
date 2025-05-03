@@ -1,5 +1,4 @@
 using CoffeePeek.Contract.Dtos.Internal;
-using CoffeePeek.Data;
 using CoffeePeek.Domain.Entities.Address;
 using CoffeePeek.Domain.UnitOfWork;
 using CoffeePeek.Infrastructure.Cache.Interfaces;

@@ -2,7 +2,6 @@ using CoffeePeek.BusinessLogic.Exceptions;
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response;
-using CoffeePeek.Data;
 using CoffeePeek.Domain.Databases;
 using CoffeePeek.Domain.UnitOfWork;
 using MapsterMapper;

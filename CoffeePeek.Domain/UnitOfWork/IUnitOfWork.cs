@@ -14,11 +14,10 @@ public interface IUnitOfWork<out TContext> : IUnitOfWork where TContext : DbCont
     /// <summary>
     /// Saves all changes made in this context to the database with distributed transaction.
     /// </summary>
-    /// <param name="ensureAutoHistory"><c>True</c> if save changes ensure auto record the change history.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
     /// <param name="unitOfWorks">An optional <see cref="IUnitOfWork"/> array.</param>
     /// <returns>A <see cref="Task{TResult}"/> that represents the asynchronous save operation. The task result contains the number of state entities written to database.</returns>
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default, bool ensureAutoHistory = false,
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default,
         params IUnitOfWork[] unitOfWorks);
 }
 
@@ -38,17 +37,15 @@ public interface IUnitOfWork : IDisposable
     /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>
-    /// <param name="ensureAutoHistory"><c>True</c> if save changes ensure auto record the change history.</param>
     /// <returns>The number of state entries written to the database.</returns>
-    int SaveChanges(bool ensureAutoHistory = false);
+    int SaveChanges();
 
     /// <summary>
     /// Asynchronously saves all changes made in this unit of work to the database.
     /// </summary>
-    /// <param name="ensureAutoHistory"><c>True</c> if save changes ensure auto record the change history.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
     /// <returns>A <see cref="Task{TResult}"/> that represents the asynchronous save operation. The task result contains the number of state entities written to database.</returns>
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default, bool ensureAutoHistory = false);
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Executes the specified raw SQL command.

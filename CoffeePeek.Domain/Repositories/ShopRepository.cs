@@ -1,6 +1,6 @@
-using CoffeePeek.Data;
 using CoffeePeek.Domain.Databases;
 using CoffeePeek.Domain.Entities.Shop;
+using CoffeePeek.Domain.UnitOfWork;
 
 namespace CoffeePeek.Domain.Repositories;
 
