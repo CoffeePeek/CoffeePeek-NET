@@ -4,6 +4,12 @@ namespace CoffeePeek.Domain.Entities.Users;
 
 public class User : BaseEntity
 {
+    public User()
+    {
+        RefreshTokens = new HashSet<RefreshToken>();
+        UserRoles = new HashSet<UserRole>();
+    }
+    
     public string? UserName { get; set; }
     public string Email { get; set; }
     public bool EmailConfirmed { get; set; }

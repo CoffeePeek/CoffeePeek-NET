@@ -36,6 +36,7 @@ public class JWTTokenService(IOptions<JWTOptions> options, UserRepository userRe
 
         var refreshToken = new RefreshToken
         {
+            UserId = user.Id,
             Token = Guid.NewGuid().ToString(),
             ExpiryDate = DateTime.UtcNow.AddDays(_options.RefreshTokenLifetimeDays)
         };
