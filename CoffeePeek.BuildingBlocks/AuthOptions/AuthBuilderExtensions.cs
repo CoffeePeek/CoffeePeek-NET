@@ -1,11 +1,8 @@
 using System.Text;
-using CoffeePeek.Data.Databases;
-using CoffeePeek.Data.Entities.Users;
-using CoffeePeek.Data.Models.Users;
+using CoffeePeek.Infrastructure.Auth;
 using CoffeePeek.Shared.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +13,7 @@ public static class AuthBuilderExtensions
 {
     public static IServiceCollection AddBearerAuthentication(this IServiceCollection services)
     {
+        var jwtOptions = services.AddValidateOptions<JWTOptions>();
         var authOptions = services.AddValidateOptions<AuthenticationOptions>();
         
         services.AddAuthentication(options =>
@@ -32,9 +30,9 @@ public static class AuthBuilderExtensions
                 x.UseSecurityTokenValidators = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authOptions.JwtSecretKey)),
-                    ValidIssuer = authOptions.ValidIssuer,
-                    ValidAudience = authOptions.ValidAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtOptions.SecretKey)),
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
@@ -97,19 +95,19 @@ public static class AuthBuilderExtensions
         return services;
     }
 
-    public static IServiceCollection AddUserIdentity(this IServiceCollection services)
-    {
-        services.AddDefaultIdentity<User>(options =>
-            {
-                options.SignIn.RequireConfirmedAccount = false;
-                options.Password.RequiredLength = 6;
-                options.Password.RequireNonAlphanumeric = false;
-                options.User.AllowedUserNameCharacters = null;
-            })
-            .AddEntityFrameworkStores<CoffeePeekDbContext>()
-            .AddUserManager<UserManager<User>>()
-            .AddUserStore<UserStore<User, IdentityRoleEntity, CoffeePeekDbContext, int>>();
-        
-        return services;
-    }
+    //public static IServiceCollection AddUserIdentity(this IServiceCollection services)
+    //{
+    //    services.AddDefaultIdentity<User>(options =>
+    //        {
+    //            options.SignIn.RequireConfirmedAccount = false;
+    //            options.Password.RequiredLength = 6;
+    //            options.Password.RequireNonAlphanumeric = false;
+    //            options.User.AllowedUserNameCharacters = null;
+    //        })
+    //        .AddEntityFrameworkStores<CoffeePeekDbContext>()
+    //        .AddUserManager<UserManager<User>>()
+    //        .AddUserStore<UserStore<User, IdentityRoleEntity, CoffeePeekDbContext, int>>();
+    //    
+    //    return services;
+    //}
 }

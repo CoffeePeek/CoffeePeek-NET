@@ -1,10 +1,9 @@
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response;
-using CoffeePeek.Data;
-using CoffeePeek.Data.Databases;
-using CoffeePeek.Data.Entities.Users;
-using CoffeePeek.Data.Models.Users;
+using CoffeePeek.Domain.Databases;
+using CoffeePeek.Domain.Entities.Users;
+using CoffeePeek.Domain.UnitOfWork;
 using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

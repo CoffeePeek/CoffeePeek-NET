@@ -4,7 +4,6 @@ using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace CoffeePeek.Contract.Requests.CoffeeShop.Review;
 
@@ -13,9 +12,7 @@ public class UpdateReviewCoffeeShopRequest : IRequest<Response<UpdateReviewCoffe
     [JsonIgnore] public int UserId { get; set; }
     public int ReviewShopId { get; set; }
     public string? Description { get; set; }
-    public List<IFormFile>? Photos { get; set; }
     public AddressDto? Address { get; set; }
-    public List<IFormFile>? ShopPhotos { get; set; }
+    public List<byte[]>? ShopPhotos { get; set; }
     public List<ScheduleDto>? Schedules { get; set; }
-    public List<ScheduleExceptionDto>? ScheduleExceptions { get; set; }
 }

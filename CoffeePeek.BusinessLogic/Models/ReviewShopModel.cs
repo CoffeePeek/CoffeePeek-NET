@@ -1,6 +1,5 @@
-using CoffeePeek.Data.Entities.Shop;
-using CoffeePeek.Data.Enums.Shop;
-using CoffeePeek.Data.Models.Shop;
+using CoffeePeek.Domain.Entities.Shop;
+using CoffeePeek.Domain.Enums.Shop;
 
 namespace CoffeePeek.BusinessLogic.Models;
 

@@ -1,23 +1,22 @@
 using CoffeePeek.Contract.Requests.Auth;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Login;
-using CoffeePeek.Data;
-using CoffeePeek.Data.Entities.Users;
-using CoffeePeek.Data.Models.Users;
+using CoffeePeek.Domain.Entities.Auth;
+using CoffeePeek.Domain.Entities.Users;
+using CoffeePeek.Domain.UnitOfWork;
+using CoffeePeek.Infrastructure.Auth;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
 using CoffeePeek.Infrastructure.Services;
-using CoffeePeek.Infrastructure.Services.Auth;
-using CoffeePeek.Infrastructure.Services.Auth.Interfaces;
+using CoffeePeek.Infrastructure.Services.User.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace CoffeePeek.BusinessLogic.RequestHandlers.Login;
 
 public class LoginRequestHandler(
     IHashingService hashingService,
     IRepository<RefreshToken> refreshTokenRepository,
-    IAuthService authService,
-    UserManager<User> userManager, 
+    IJWTTokenService jwtTokenService,
+    IUserManager userManager,
     IRedisService redisService)
     : IRequestHandler<LoginRequest, Response<LoginResponse>>
 {
@@ -35,31 +34,25 @@ public class LoginRequestHandler(
             }
         }
         
-        var isPasswordValid = await userManager.CheckPasswordAsync(user, request.Password);
+        var isPasswordValid = userManager.CheckPasswordAsync(user, request.Password);
         if (!isPasswordValid)
         {
             return Response.ErrorResponse<Response<LoginResponse>>("Password is incorrect.");
         }
         
-        var accessToken = await authService.GenerateToken(user);
-        var refreshToken = GenerateRefreshToken(user.Id);
+        var authResult = await jwtTokenService.GenerateTokensAsync(user);
 
-        await SaveRefreshTokenAsync(user.Id, refreshToken);
+        await SaveRefreshTokenAsync(user.Id, authResult.RefreshToken);
 
         var result = new LoginResponse
         {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken
+            AccessToken = authResult.AccessToken,
+            RefreshToken = authResult.RefreshToken,
         };
 
         return Response.SuccessResponse<Response<LoginResponse>>(result);
     }
 
-    private string GenerateRefreshToken(int userId)
-    {
-        var refreshToken = authService.GenerateRefreshToken(userId);
-        return refreshToken;
-    }
 
     private async Task SaveRefreshTokenAsync(int userId, string refreshToken)
     {

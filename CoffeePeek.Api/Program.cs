@@ -5,10 +5,7 @@ using CoffeePeek.BuildingBlocks.Extensions;
 using CoffeePeek.BuildingBlocks.RedisOptions;
 using CoffeePeek.BuildingBlocks.Sentry;
 using CoffeePeek.BusinessLogic.Configuration;
-using CoffeePeek.Data.Databases;
 using CoffeePeek.Infrastructure.Configuration;
-using CoffeePeek.Shared.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,14 +15,6 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
-
-var dbOptions = builder.Services.AddValidateOptions<PostgresCpOptions>();
-builder.Services
-    .AddDbContext<CoffeePeekDbContext>(opt =>
-    {
-        opt.UseNpgsql(dbOptions.ConnectionString, b => b.MigrationsAssembly("CoffeePeek.Data"));
-    })
-    .ConfigureDbRepositories();
 builder.Services.RedisConfigurationOptions();
 
 builder.Services
@@ -34,7 +23,7 @@ builder.Services
     .AddBearerAuthentication()
     .AddValidators()
     .RegisterInfrastructure()
-    .AddUserIdentity()
+    .PostgresConfigure()
     .ConfigureBusinessLogic()
     .AddControllers();
 

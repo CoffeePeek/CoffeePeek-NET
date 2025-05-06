@@ -2,10 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using CoffeePeek.Data.Entities.Users;
-using CoffeePeek.Data.Models.Users;
 using CoffeePeek.Infrastructure.Services.Auth.Interfaces;
-using Microsoft.AspNetCore.Identity;
+using CoffeePeek.Infrastructure.Services.User.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -13,14 +11,15 @@ using AuthenticationOptions = CoffeePeek.BuildingBlocks.AuthOptions.Authenticati
 
 namespace CoffeePeek.Infrastructure.Services.Auth;
 
+[Obsolete]
 public class AuthService(
-    IOptions<AuthenticationOptions> authenticationOptions,
-    UserManager<User> userManager) 
+    IOptions<AuthenticationOptions> authenticationOptions, 
+    IUserManager userManager) 
     : IAuthService
 {
     public AuthenticationOptions AuthOptions { get; } = authenticationOptions.Value;
 
-    public async Task<string> GenerateToken(User user)
+    public async Task<string> GenerateToken(Domain.Entities.Users.User user)
     {
         var handler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(AuthOptions.JwtSecretKey);
@@ -38,7 +37,7 @@ public class AuthService(
             new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString())
         };
     
-        claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+        claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role.Name)));
 
         
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -126,7 +125,7 @@ public class AuthService(
         }
     }
 
-    private ClaimsIdentity GenerateClaims(User user, IEnumerable<string> userRoles)
+    private ClaimsIdentity GenerateClaims(Domain.Entities.Users.User user, IEnumerable<string> userRoles)
     {
         var claims = new ClaimsIdentity("Bearer");
         claims.AddClaim(new Claim(ClaimTypes.Name, user.Email!));
