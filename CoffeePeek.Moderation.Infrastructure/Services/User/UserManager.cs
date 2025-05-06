@@ -1,12 +1,10 @@
-﻿using CoffeePeek.Domain.Entities.Auth;
-using CoffeePeek.Domain.Repositories;
-using CoffeePeek.Infrastructure.Services.User.Interfaces;
+﻿using CoffeePeek.Domain.UnitOfWork;
+using CoffeePeek.Moderation.Infrastructure.Services.User.Interfaces;
 using CoffeePeek.Shared.Extensions.Hashing;
 
-namespace CoffeePeek.Infrastructure.Services.User;
+namespace CoffeePeek.Moderation.Infrastructure.Services.User;
 
-public class UserManager(UserRepository userRepository, 
-    IHashingService hashingService) : IUserManager
+public class UserManager(IHashingService hashingService, IRepository<Domain.Entities.Users.User> userRepository) : IUserManager
 {
     public bool CheckPasswordAsync(Domain.Entities.Users.User user, string requestPassword)
     {
@@ -24,10 +22,5 @@ public class UserManager(UserRepository userRepository,
         userRepository.Add(user);
 
         await userRepository.SaveChangesAsync();
-    }
-
-    public async Task<ICollection<Role>> GetRolesAsync(Domain.Entities.Users.User user)
-    {
-        return await userRepository.GetUserRoles(user);
     }
 }

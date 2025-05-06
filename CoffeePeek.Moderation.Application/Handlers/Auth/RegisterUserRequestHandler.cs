@@ -1,21 +1,19 @@
-using CoffeePeek.BusinessLogic.Abstractions;
-using CoffeePeek.Contract.Dtos.User;
-using CoffeePeek.Contract.Requests.Auth;
-using CoffeePeek.Contract.Response;
-using CoffeePeek.Contract.Response.Auth;
-using CoffeePeek.Domain.Entities.Users;
-using CoffeePeek.Infrastructure.Cache.Interfaces;
-using CoffeePeek.Infrastructure.Services.User.Interfaces;
+﻿using CoffeePeek.Domain.Entities.Users;
+using CoffeePeek.Moderation.Application.Requests;
+using CoffeePeek.Moderation.Application.Responses;
+using CoffeePeek.Moderation.Application.Services;
+using CoffeePeek.Moderation.Contract.Abstract;
+using CoffeePeek.Moderation.Contract.DTOs;
+using CoffeePeek.Moderation.Infrastructure.Services.User.Interfaces;
 using MapsterMapper;
 using MediatR;
 
-namespace CoffeePeek.BusinessLogic.RequestHandlers;
+namespace CoffeePeek.Moderation.Application.Handlers.Auth;
 
-public class RegisterUserRequestHandler(
-    IMapper mapper,
-    IValidationStrategy<UserDto> validationStrategy,
+internal class RegisterUserRequestHandler(
     IUserManager userManager,
-    IRedisService redisService)
+    IMapper mapper,
+    ValidationStrategy validationStrategy)
     : IRequestHandler<RegisterUserRequest, Response<RegisterUserResponse>>
 {
     public async Task<Response<RegisterUserResponse>> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
@@ -26,11 +24,11 @@ public class RegisterUserRequestHandler(
         }
 
         var userDto = mapper.Map<UserDto>(request);
-        var validationResult = validationStrategy.Validate(userDto);
+        var validationResult = validationStrategy.ValidateUserRegister(userDto.Email, userDto.Password);
 
-        if (!validationResult.IsValid)
+        if (!validationResult)
         {
-            return Response.ErrorResponse<Response<RegisterUserResponse>>($"Invalid request: {validationResult.ErrorMessage}");
+            return Response.ErrorResponse<Response<RegisterUserResponse>>($"Invalid request: ");
         }
 
         var user = mapper.Map<User>(userDto);
@@ -41,9 +39,14 @@ public class RegisterUserRequestHandler(
         }
 
         var createdUser = await userManager.FindByEmailAsync(request.Email);
-        await redisService.SetAsync($"{nameof(User)}{createdUser!.Id}", createdUser);
 
+        if (createdUser is null)
+        {
+            return Response.ErrorResponse<Response<RegisterUserResponse>>("Cannot create user");
+        }
+        
         var response = mapper.Map<RegisterUserResponse>(createdUser);
+        
         return Response.SuccessResponse<Response<RegisterUserResponse>>(response);
     }
 

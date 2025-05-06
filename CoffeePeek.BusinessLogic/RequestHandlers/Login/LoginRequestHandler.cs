@@ -8,6 +8,7 @@ using CoffeePeek.Infrastructure.Auth;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
 using CoffeePeek.Infrastructure.Services;
 using CoffeePeek.Infrastructure.Services.User.Interfaces;
+using CoffeePeek.Shared.Extensions.Hashing;
 using MediatR;
 
 namespace CoffeePeek.BusinessLogic.RequestHandlers.Login;

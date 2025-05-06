@@ -3,12 +3,12 @@ using CoffeePeek.Infrastructure.Auth;
 using CoffeePeek.Infrastructure.Cache;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
 using CoffeePeek.Infrastructure.Consumers;
-using CoffeePeek.Infrastructure.Services;
 using CoffeePeek.Infrastructure.Services.Auth;
 using CoffeePeek.Infrastructure.Services.Auth.Interfaces;
 using CoffeePeek.Infrastructure.Services.User;
 using CoffeePeek.Infrastructure.Services.User.Interfaces;
 using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Extensions.Hashing;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 

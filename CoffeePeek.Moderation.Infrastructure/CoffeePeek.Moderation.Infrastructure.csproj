@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Domain\CoffeePeek.Domain.csproj" />
       <ProjectReference Include="..\CoffeePeek.Moderation.Contract\CoffeePeek.Moderation.Contract.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
     </ItemGroup>
 
 </Project>

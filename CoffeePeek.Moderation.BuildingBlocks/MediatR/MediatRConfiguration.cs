@@ -5,7 +5,7 @@ namespace CoffeePeek.Moderation.BuildingBlocks.MediatR;
 
 public static class MediatRConfiguration
 {
-    public static IServiceCollection AddMediatR(this IServiceCollection services)
+    public static IServiceCollection ConfigureMediatR(this IServiceCollection services)
     {
         services.AddMediatR(cfg =>
         {

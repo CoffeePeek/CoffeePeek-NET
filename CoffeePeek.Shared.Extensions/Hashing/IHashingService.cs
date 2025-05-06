@@ -1,4 +1,4 @@
-namespace CoffeePeek.Infrastructure.Services;
+namespace CoffeePeek.Shared.Extensions.Hashing;
 
 public interface IHashingService
 {
