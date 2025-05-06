@@ -9,7 +9,7 @@ COPY ["CoffeePeek.Api/CoffeePeek.Api.csproj", "CoffeePeek.Api/"]
 COPY ["CoffeePeek.Contract/CoffeePeek.Contract.csproj", "CoffeePeek.Contract/"]
 COPY ["CoffeePeek.BuildingBlocks/CoffeePeek.BuildingBlocks.csproj", "CoffeePeek.BuildingBlocks/"]
 COPY ["CoffeePeek.BusinessLogic/CoffeePeek.BusinessLogic.csproj", "CoffeePeek.BusinessLogic/"]
-COPY ["CoffeePeek.Data/CoffeePeek.Data.csproj", "CoffeePeek.Data/"]
+COPY ["CoffeePeek.Domain/CoffeePeek.Domain.csproj", "CoffeePeek.Domain/"]
 COPY ["CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj", "CoffeePeek.Shared.Extensions/"]
 RUN dotnet restore "CoffeePeek.Api/CoffeePeek.Api.csproj"
 COPY . .
