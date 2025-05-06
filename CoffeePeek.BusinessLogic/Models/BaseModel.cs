@@ -1,4 +1,4 @@
-using CoffeePeek.Data.Entities;
+using CoffeePeek.Domain.Entities;
 using MediatR;
 
 namespace CoffeePeek.BusinessLogic.Models;

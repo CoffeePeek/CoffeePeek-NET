@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Handlers\" />
+      <Folder Include="Requests\Auth\" />
+      <Folder Include="Requests\User\" />
+      <Folder Include="Responses\User\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CoffeePeek.Moderation.Infrastructure\CoffeePeek.Moderation.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

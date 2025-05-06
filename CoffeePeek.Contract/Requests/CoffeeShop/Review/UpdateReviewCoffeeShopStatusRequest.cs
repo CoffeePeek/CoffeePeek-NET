@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using CoffeePeek.Data.Enums.Shop;
+using CoffeePeek.Domain.Enums.Shop;
 using MediatR;
 
 namespace CoffeePeek.Contract.Requests.CoffeeShop.Review;

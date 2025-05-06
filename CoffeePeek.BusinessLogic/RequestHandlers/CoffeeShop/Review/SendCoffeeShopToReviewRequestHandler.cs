@@ -1,9 +1,9 @@
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
-using CoffeePeek.Data;
-using CoffeePeek.Data.Entities.Shop;
-using CoffeePeek.Data.Enums.Shop;
+using CoffeePeek.Domain.Entities.Shop;
+using CoffeePeek.Domain.Enums.Shop;
+using CoffeePeek.Domain.UnitOfWork;
 using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

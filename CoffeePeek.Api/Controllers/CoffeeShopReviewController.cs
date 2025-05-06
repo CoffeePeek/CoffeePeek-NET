@@ -4,7 +4,7 @@ using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
-using CoffeePeek.Data.Enums.Shop;
+using CoffeePeek.Domain.Enums.Shop;
 using CoffeePeek.Infrastructure.Services.Auth.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

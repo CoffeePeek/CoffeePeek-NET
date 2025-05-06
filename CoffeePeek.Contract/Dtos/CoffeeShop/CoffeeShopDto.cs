@@ -14,5 +14,4 @@ public class CoffeeShopDto
     public ShopContactDto ShopContact { get; set; }
     public List<ShopPhotoDtos> ShopPhotos { get; set; }
     public List<ScheduleDto> Schedules { get; set; }
-    public List<ScheduleExceptionDto> ScheduleExceptions { get; set; }
 }
