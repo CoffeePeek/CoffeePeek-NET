@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Json;
-using CoffeePeek.Web.Contract.Http;
 using CoffeePeek.Web.Contract.Http.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -139,7 +138,7 @@ public class RegisterModel : PageModel
                     
                     // Небольшая задержка перед редиректом
                     await Task.Delay(1500);
-                    return RedirectToPage("/Auth/Login");
+                    return RedirectToPage("/Login");
                 }
                 else
                 {

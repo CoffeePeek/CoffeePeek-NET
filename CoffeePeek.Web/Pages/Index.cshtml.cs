@@ -42,6 +42,8 @@ public class IndexModel : PageModel
     public async Task OnGetAsync()
     {
         LoadUserData();
+        ViewData["IsAuthenticated"] = IsAuthenticated;
+        ViewData["UserEmail"] = UserEmail;
         await OnGetCoffeeShopsAsync();
     }
 
@@ -254,7 +256,7 @@ public class IndexModel : PageModel
     {
         HttpContext.Session.Clear();
         Response.Cookies.Delete("AccessToken");
-        return RedirectToPage("/Auth/Login");
+        return RedirectToPage("/Login");
     }
 
     private async Task<string> FormatResponse(HttpResponseMessage response)

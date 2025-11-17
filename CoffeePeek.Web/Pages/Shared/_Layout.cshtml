@@ -1,51 +1,87 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - CoffeePeek.Web</title>
+    <title>@ViewData["Title"] - CoffeePeek</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/CoffeePeek.Web.styles.css" asp-append-version="true"/>
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container">
-            <a class="navbar-brand" asp-area="" asp-page="/Index">CoffeePeek.Web</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+    <header>
+        <nav class="top-navbar">
+            <div class="navbar-container">
+                <!-- Logo and Brand -->
+                <a class="navbar-brand" href="/">
+                    <div class="navbar-logo">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <span>CoffeePeek</span>
+                </a>
+
+                <!-- Navigation Links -->
+                <ul class="navbar-nav">
+                    <li>
+                        <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString() == "/Index" ? "active" : "")" 
+                           asp-page="/Index">
+                            Главная
+                        </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                    </li>
+                    @{
+                        var isAuthenticated = ViewData["IsAuthenticated"] as bool? ?? 
+                                             (Model as dynamic)?.IsAuthenticated ?? false;
+                    }
+                    @if (isAuthenticated)
+                    {
+                        <li>
+                            <a class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString() == "/Moderation" ? "active" : "")" 
+                               asp-page="/Moderation">
+                                Модерация
+                            </a>
+                        </li>
+                    }
                 </ul>
+
+                <!-- Actions -->
+                <div class="navbar-actions">
+                    @if (isAuthenticated)
+                    {
+                        <div class="notification-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="user-avatar" title="@(ViewData["UserEmail"] as string ?? (Model as dynamic)?.UserEmail as string ?? "User")">
+                            @{
+                                var userEmail = ViewData["UserEmail"] as string ?? 
+                                               (Model as dynamic)?.UserEmail as string ?? "U";
+                            }
+                            @userEmail[0].ToString().ToUpper()
+                        </div>
+                        <form method="post" asp-page="/Index" asp-page-handler="Logout" class="d-inline" id="logoutForm">
+                            <button type="submit" class="btn btn-sm" style="background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border);">
+                                <i class="fas fa-sign-out-alt"></i> Выход
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a href="/Login" class="btn-create">
+                            Вход
+                        </a>
+                    }
+                </div>
             </div>
-        </div>
-    </nav>
-</header>
-<div class="container">
-    <main role="main" class="pb-3">
+        </nav>
+    </header>
+
+    <main class="main-content">
         @RenderBody()
     </main>
-</div>
 
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2025 - CoffeePeek.Web - <a asp-area="" asp-page="/Privacy">Privacy</a>
-    </div>
-</footer>
-
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-
-@await RenderSectionAsync("Scripts", required: false)
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

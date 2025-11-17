@@ -14,6 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Domain\CoffeePeek.Domain.csproj" />
       <ProjectReference Include="..\CoffeePeek.Web.Contract\CoffeePeek.Web.Contract.csproj" />
     </ItemGroup>
 

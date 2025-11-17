@@ -31,6 +31,15 @@ public class CoffeeShopReviewController(IMediator mediator, IUserContextService 
          
          return await mediator.Send(request);
      }
+
+     [HttpGet("all")]
+     [Description("Get all coffee shop reviews for moderation")]
+     public async Task<Response<GetCoffeeShopsInReviewByIdResponse>> GetAllReviewShops()
+     {
+         // TODO: Add role-based authorization (Admin only)
+         var request = new GetAllReviewShopsRequest();
+         return await mediator.Send(request);
+     }
     
     [HttpPost]
     [Description("Adds a new coffee shop to review")]

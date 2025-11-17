@@ -29,6 +29,9 @@ app.UseRouting();
 
 app.UseSession();
 
+// Добавляем middleware для проверки токенов
+app.UseMiddleware<CoffeePeek.Web.Middleware.AuthTokenMiddleware>();
+
 app.UseAuthorization();
 
 app.MapRazorPages();
