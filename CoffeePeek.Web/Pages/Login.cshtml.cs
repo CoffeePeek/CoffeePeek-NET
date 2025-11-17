@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -86,6 +87,9 @@ public class LoginModel : PageModel
                     HttpContext.Session.SetString("AccessToken", loginResponse.Data.AccessToken);
                     HttpContext.Session.SetString("RefreshToken", loginResponse.Data.RefreshToken);
                     HttpContext.Session.SetString("UserEmail", Email);
+                    
+                    // Принудительно сохраняем сессию
+                    await HttpContext.Session.CommitAsync();
 
                     // Если "Remember Me" включен, сохраняем в cookies
                     if (RememberMe)
@@ -100,7 +104,8 @@ public class LoginModel : PageModel
                     }
 
                     SuccessMessage = "Login successful! Redirecting...";
-                    return RedirectToPage("/Index");
+                    // Используем Redirect вместо RedirectToPage для более надежного редиректа
+                    return Redirect("/Index");
                 }
                 else
                 {
@@ -129,6 +134,7 @@ public class LoginModel : PageModel
 // Response models
 public class LoginApiResponse
 {
+    [JsonPropertyName(("Success"))]
     public bool IsSuccess { get; set; }
     public string? Message { get; set; }
     public LoginData? Data { get; set; }

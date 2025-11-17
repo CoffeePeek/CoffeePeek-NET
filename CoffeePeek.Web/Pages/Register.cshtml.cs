@@ -112,12 +112,9 @@ public class RegisterModel : PageModel
             // Регистрируем нового пользователя
             var registerRequest = new
             {
-                firstName = FirstName,
-                lastName = LastName,
-                username = Username,
+                userName = Username,
                 email = Email,
-                password = Password,
-                gender = Gender
+                password = Password
             };
 
             var content = new StringContent(
