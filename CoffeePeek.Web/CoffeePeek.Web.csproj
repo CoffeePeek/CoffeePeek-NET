@@ -19,4 +19,15 @@
       <ProjectReference Include="..\CoffeePeek.Web.Contract\CoffeePeek.Web.Contract.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\img\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="wwwroot\img\shop-placeholder.jpg" />
+      <Resource Include="wwwroot\img\shop-placeholder.jpg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+    </ItemGroup>
+
 </Project>

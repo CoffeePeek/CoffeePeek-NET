@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -39,6 +40,8 @@ public class IndexModel : PageModel
     [TempData]
     public string? CustomApiResult { get; set; }
 
+    public CoffeeShopDto[] CoffeeShops { get; set; }
+
     public async Task OnGetAsync()
     {
         LoadUserData();
@@ -71,13 +74,15 @@ public class IndexModel : PageModel
 
             var json = await response.Content.ReadAsStringAsync();
             
-            ResponseData = JsonSerializer.Deserialize<ApiResponse<GetCoffeeShopsResponse>>(
+            var result = JsonSerializer.Deserialize<ApiResponse<GetCoffeeShopsResponse>>(
                 json,
                 new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 })?.Data;
-            
+
+            CoffeeShops = result.CoffeeShopDtos;
+
         }
         catch (Exception ex)
         {

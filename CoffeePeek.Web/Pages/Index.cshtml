@@ -24,6 +24,50 @@ else
         <i class="fas fa-info-circle"></i> Вы не авторизованы. Некоторые API вызовы могут не работать. <a href="/Login">Войти</a>
     </div>
 }
+@if (Model.CoffeeShops != null)
+{
+    <div class="card">
+        @foreach (var shop in Model.CoffeeShops)
+        {
+            <div class="card">
+                <div class="shop-image">
+                    @if (shop.ShopPhotos != null && shop.ShopPhotos.Any())
+                    {
+                        <img src="@shop.ShopPhotos?.FirstOrDefault()?.Url" alt="@shop.Name" class="shop-image" />
+                    }
+                    else
+                    {
+                        <i class="fas fa-coffee"></i>
+                    }
+                </div>
+                <div class="card-body">
+                    <h4>@shop.Name</h4>
+                    <p>@shop.Address.CityName, @shop.Address.StreetName @shop.Address.BuildingNumber</p>
+                    <p>@shop.Description</p>
+                    @if (!string.IsNullOrEmpty(shop.ShopContact?.PhoneNumber))
+                    {
+                        <p>📞 @shop.ShopContact.PhoneNumber</p>
+                    }
+                    @if (!string.IsNullOrEmpty(shop.ShopContact?.InstagramLink))
+                    {
+                        <p>📷 <a href="@shop.ShopContact.InstagramLink" target="_blank">Instagram</a></p>
+                    }
+                    @if (shop.Schedules != null)
+                    {
+                        <p>
+                            @foreach (var schedule in shop.Schedules)
+                            {
+                                <span>@schedule.DayOfWeek: 
+                                    @(schedule.IsOpen24Hours ? "24h" : $"{schedule.OpeningTime:hh\\:mm} - {schedule.ClosingTime:hh\\:mm}")<br />
+                                </span>
+                            }
+                        </p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
 
 <div class="row mt-4">
     <!-- Redis Cache Testing -->
