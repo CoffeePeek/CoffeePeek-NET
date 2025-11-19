@@ -1,4 +1,4 @@
-﻿namespace CoffeePeek.Infrastructure.Auth;
+﻿namespace CoffeePeek.BuildingBlocks.AuthOptions;
 
 public class JWTOptions
 {

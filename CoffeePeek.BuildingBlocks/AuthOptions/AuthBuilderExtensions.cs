@@ -1,5 +1,4 @@
 using System.Text;
-using CoffeePeek.Infrastructure.Auth;
 using CoffeePeek.Shared.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

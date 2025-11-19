@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using CoffeePeek.BuildingBlocks.AuthOptions;
 using CoffeePeek.Contract.Dtos.Auth;
 using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.Entities.Users;
