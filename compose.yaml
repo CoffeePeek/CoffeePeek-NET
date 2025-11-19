@@ -4,8 +4,25 @@
     build:
       context: .
       dockerfile: CoffeePeek.Api/Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+    ports:
+      - "8080:8080"
   coffeepeek.photo.api:
     image: coffeepeek.photo.api
     build:
         context: .
         dockerfile: CoffeePeek.Photo.Api/Dockerfile
+
+  coffeepeek.web:
+    image: coffeepeek.web
+    build:
+      context: .
+      dockerfile: CoffeePeek.Web/Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ApiSettings__BaseUrl=http://coffeepeek.api:8080
+    ports:
+      - "8081:8080"
+    depends_on:
+      - coffeepeek.api
