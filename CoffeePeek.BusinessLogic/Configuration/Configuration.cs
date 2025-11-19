@@ -4,7 +4,6 @@ using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CoffeePeek.BusinessLogic.Configuration;
@@ -28,6 +27,5 @@ public static class Configuration
 
         service.AddTransient<IPipelineBehavior<UpdateReviewCoffeeShopRequest, Response<UpdateReviewCoffeeShopResponse>>,
             UpdateReviewCoffeeShopBehavior>();
-
     }
 }

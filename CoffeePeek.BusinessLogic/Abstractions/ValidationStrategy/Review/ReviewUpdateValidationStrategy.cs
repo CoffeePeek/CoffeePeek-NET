@@ -2,13 +2,13 @@ using CoffeePeek.Contract.Requests.CoffeeShop;
 
 namespace CoffeePeek.BusinessLogic.Abstractions.Review;
 
-public class ReviewCreateValidationStrategy : BaseReviewValidationStrategy, IValidationStrategy<AddCoffeeShopReviewRequest>
+public class ReviewUpdateValidationStrategy : BaseReviewValidationStrategy, IValidationStrategy<UpdateCoffeeShopReviewRequest>
 {
-    public ValidationResult Validate(AddCoffeeShopReviewRequest entity)
+    public ValidationResult Validate(UpdateCoffeeShopReviewRequest entity)
     {
-        if (entity.ShopId <= 0)
+        if (entity.ReviewId <= 0)
         {
-            return ValidationResult.Invalid("ShopId must be greater than 0");
+            return ValidationResult.Invalid("ReviewId must be greater than 0");
         }
 
         var userIdValidation = ValidateUserId(entity.UserId);
@@ -31,17 +31,18 @@ public class ReviewCreateValidationStrategy : BaseReviewValidationStrategy, IVal
 
         if (!IsValidRating(entity.RatingCoffee))
         {
-            return ValidationResult.Invalid($"RatingCoffee must be between {MinRating} and {MaxRating}");
+            return ValidationResult.Invalid($"RatingCoffee must be a valid number between {MinRating} and {MaxRating}");
         }
 
         if (!IsValidRating(entity.RatingService))
         {
-            return ValidationResult.Invalid($"RatingService must be between {MinRating} and {MaxRating}");
+            return ValidationResult.Invalid($"RatingService must be a valid number between {MinRating} and {MaxRating}");
         }
 
+        // ReSharper disable once ConvertIfStatementToReturnStatement
         if (!IsValidRating(entity.RatingPlace))
         {
-            return ValidationResult.Invalid($"RatingPlace must be between {MinRating} and {MaxRating}");
+            return ValidationResult.Invalid($"RatingPlace must be a valid number between {MinRating} and {MaxRating}");
         }
 
         return ValidationResult.Valid;
