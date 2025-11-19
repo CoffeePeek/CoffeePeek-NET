@@ -17,7 +17,7 @@ namespace CoffeePeek.Domain.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -211,25 +211,6 @@ namespace CoffeePeek.Domain.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Domain.Entities.Review.RatingCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RatingCategories");
-                });
-
             modelBuilder.Entity("CoffeePeek.Domain.Entities.Review.Review", b =>
                 {
                     b.Property<int>("Id")
@@ -249,6 +230,15 @@ namespace CoffeePeek.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<decimal>("RatingCoffee")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("RatingPlace")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("RatingService")
+                        .HasColumnType("numeric");
+
                     b.Property<DateTime>("ReviewDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -265,32 +255,6 @@ namespace CoffeePeek.Domain.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Domain.Entities.Review.ReviewRatingCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("RatingCategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ReviewId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Value")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RatingCategoryId");
-
-                    b.HasIndex("ReviewId");
-
-                    b.ToTable("ReviewRatingCategories");
                 });
 
             modelBuilder.Entity("CoffeePeek.Domain.Entities.Schedules.Schedule", b =>
@@ -656,25 +620,6 @@ namespace CoffeePeek.Domain.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Domain.Entities.Review.ReviewRatingCategory", b =>
-                {
-                    b.HasOne("CoffeePeek.Domain.Entities.Review.RatingCategory", "RatingCategory")
-                        .WithMany()
-                        .HasForeignKey("RatingCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoffeePeek.Domain.Entities.Review.Review", "Review")
-                        .WithMany("ReviewRatingCategories")
-                        .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RatingCategory");
-
-                    b.Navigation("Review");
-                });
-
             modelBuilder.Entity("CoffeePeek.Domain.Entities.Schedules.Schedule", b =>
                 {
                     b.HasOne("CoffeePeek.Domain.Entities.Shop.ReviewShop", null)
@@ -782,11 +727,6 @@ namespace CoffeePeek.Domain.Migrations
             modelBuilder.Entity("CoffeePeek.Domain.Entities.Auth.Role", b =>
                 {
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Domain.Entities.Review.Review", b =>
-                {
-                    b.Navigation("ReviewRatingCategories");
                 });
 
             modelBuilder.Entity("CoffeePeek.Domain.Entities.Shop.ReviewShop", b =>

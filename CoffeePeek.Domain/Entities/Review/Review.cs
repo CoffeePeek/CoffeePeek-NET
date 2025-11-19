@@ -10,7 +10,9 @@ public class Review : BaseEntity
     public int ShopId { get; set; }
     public DateTime ReviewDate { get; set; }
     
-    public ICollection<ReviewRatingCategory> ReviewRatingCategories { get; set; }
+    public decimal RatingCoffee { get; set; }
+    public decimal RatingPlace { get; set; }
+    public decimal RatingService { get; set; }
 
     public virtual User User { get; set; }
     public virtual Entities.Shop.Shop Shop { get; set; }

@@ -8,6 +8,7 @@ namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 
 public class ReviewShopDto
 {
+    public int Id { get; set; }
     public string Name { get; set; }
     public string NotValidatedAddress { get; set; }
     [JsonIgnore] public int? AddressId { get; set; }

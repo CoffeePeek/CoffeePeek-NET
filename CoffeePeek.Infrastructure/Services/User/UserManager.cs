@@ -7,7 +7,7 @@ namespace CoffeePeek.Infrastructure.Services.User;
 public class UserManager(UserRepository userRepository, 
     IHashingService hashingService) : IUserManager
 {
-    public bool CheckPasswordAsync(Domain.Entities.Users.User user, string requestPassword)
+    public bool CheckPassword(Domain.Entities.Users.User user, string requestPassword)
     {
         return hashingService.VerifyHashedStrings(requestPassword, user.PasswordHash);
     }

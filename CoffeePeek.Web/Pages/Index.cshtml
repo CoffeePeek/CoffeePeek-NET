@@ -1,0 +1,227 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Главная";
+    Layout = "_Layout";
+}
+
+<div class="page-header">
+    <h1 class="page-title">API Testing Dashboard</h1>
+    <p class="subtitle">Тестирование API CoffeePeek</p>
+</div>
+
+@if (Model.IsAuthenticated)
+{
+    <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <strong>Авторизован</strong>
+        <div class="small mt-1">Email: @Model.UserEmail</div>
+        <div class="small">Token: @(Model.AccessToken != null && Model.AccessToken.Length > 50 ? Model.AccessToken.Substring(0, 50) : Model.AccessToken)...</div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Вы не авторизованы. Некоторые API вызовы могут не работать. <a href="/Login">Войти</a>
+    </div>
+}
+@if (Model.CoffeeShops != null)
+{
+    <div class="card">
+        @foreach (var shop in Model.CoffeeShops)
+        {
+            <div class="card">
+                <div class="shop-image">
+                    @if (shop.ShopPhotos != null && shop.ShopPhotos.Any())
+                    {
+                        <img src="@shop.ShopPhotos?.FirstOrDefault()?.Url" alt="@shop.Name" class="shop-image" />
+                    }
+                    else
+                    {
+                        <i class="fas fa-coffee"></i>
+                    }
+                </div>
+                <div class="card-body">
+                    <h4>@shop.Name</h4>
+                    <p>@shop.Address.CityName, @shop.Address.StreetName @shop.Address.BuildingNumber</p>
+                    <p>@shop.Description</p>
+                    @if (!string.IsNullOrEmpty(shop.ShopContact?.PhoneNumber))
+                    {
+                        <p>📞 @shop.ShopContact.PhoneNumber</p>
+                    }
+                    @if (!string.IsNullOrEmpty(shop.ShopContact?.InstagramLink))
+                    {
+                        <p>📷 <a href="@shop.ShopContact.InstagramLink" target="_blank">Instagram</a></p>
+                    }
+                    @if (shop.Schedules != null)
+                    {
+                        <p>
+                            @foreach (var schedule in shop.Schedules)
+                            {
+                                <span>@schedule.DayOfWeek: 
+                                    @(schedule.IsOpen24Hours ? "24h" : $"{schedule.OpeningTime:hh\\:mm} - {schedule.ClosingTime:hh\\:mm}")<br />
+                                </span>
+                            }
+                        </p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="row mt-4">
+    <!-- Redis Cache Testing -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-database"></i> Redis Cache
+            </div>
+            <div class="card-body">
+                <form method="post" asp-page-handler="RedisTest">
+                    <div class="mb-3">
+                        <label class="form-label">Действие</label>
+                        <select class="form-select" name="redisAction" required>
+                            <option value="">Выберите действие...</option>
+                            <option value="set">Set Value</option>
+                            <option value="get">Get Value</option>
+                            <option value="delete">Delete Key</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Key</label>
+                        <input type="text" class="form-control" name="redisKey" placeholder="mykey" required/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Value (для Set)</label>
+                        <textarea class="form-control" name="redisValue" rows="3" placeholder='{"name": "John", "age": 30}'></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-play"></i> Выполнить
+                    </button>
+                </form>
+
+                @if (!string.IsNullOrEmpty(Model.RedisResult))
+                {
+                    <div class="mt-3 p-3" style="background: var(--bg-secondary); border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                        <strong>Результат:</strong>
+                        <pre style="margin: 0.5rem 0 0 0; white-space: pre-wrap; word-wrap: break-word;">@Model.RedisResult</pre>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth API Testing -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user-shield"></i> Auth API
+            </div>
+            <div class="card-body">
+                <form method="post" asp-page-handler="CheckEmail">
+                    <div class="mb-3">
+                        <label class="form-label">Проверить существование Email</label>
+                        <div class="input-group">
+                            <input type="email" class="form-control" name="emailToCheck" placeholder="test@example.com" required/>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Проверить
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                @if (!string.IsNullOrEmpty(Model.EmailCheckResult))
+                {
+                    <div class="mt-3 p-3" style="background: var(--bg-secondary); border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                        <strong>Результат:</strong>
+                        <pre style="margin: 0.5rem 0 0 0; white-space: pre-wrap; word-wrap: break-word;">@Model.EmailCheckResult</pre>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="fas fa-sync-alt"></i> Refresh Token
+            </div>
+            <div class="card-body">
+                <form method="post" asp-page-handler="RefreshToken">
+                    <div class="mb-3">
+                        <label class="form-label">Refresh Token</label>
+                        <input type="text" class="form-control" name="refreshToken" placeholder="Введите refresh token" value="@Model.RefreshToken"/>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-redo"></i> Обновить Token
+                    </button>
+                </form>
+
+                @if (!string.IsNullOrEmpty(Model.RefreshTokenResult))
+                {
+                    <div class="mt-3 p-3" style="background: var(--bg-secondary); border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                        <strong>Результат:</strong>
+                        <pre style="margin: 0.5rem 0 0 0; white-space: pre-wrap; word-wrap: break-word;">@Model.RefreshTokenResult</pre>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom API Endpoint Testing -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-code"></i> Custom API Endpoint
+            </div>
+            <div class="card-body">
+                <form method="post" asp-page-handler="CustomApi">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Method</label>
+                            <select class="form-select" name="httpMethod" required>
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-9 mb-3">
+                            <label class="form-label">Endpoint URL</label>
+                            <input type="text" class="form-control" name="apiEndpoint" placeholder="/api/Auth/check-exists?email=test@test.com" required/>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Request Body (JSON) - Опционально</label>
+                        <textarea class="form-control" name="apiBody" rows="4" placeholder='{"key": "value"}'></textarea>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="includeAuth" id="includeAuth" checked/>
+                        <label class="form-check-label" for="includeAuth">
+                            Включить Authorization Token
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Отправить запрос
+                    </button>
+                </form>
+
+                @if (!string.IsNullOrEmpty(Model.CustomApiResult))
+                {
+                    <div class="mt-3 p-3" style="background: var(--bg-secondary); border-radius: var(--radius); border-left: 4px solid var(--primary);">
+                        <strong>Ответ:</strong>
+                        <pre style="margin: 0.5rem 0 0 0; white-space: pre-wrap; word-wrap: break-word;">@Model.CustomApiResult</pre>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

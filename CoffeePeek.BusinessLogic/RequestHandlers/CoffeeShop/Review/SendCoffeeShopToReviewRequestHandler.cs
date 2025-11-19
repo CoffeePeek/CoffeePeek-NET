@@ -18,13 +18,18 @@ internal class SendCoffeeShopToReviewRequestHandler(
     public async Task<Response<SendCoffeeShopToReviewResponse>> Handle(SendCoffeeShopToReviewRequest request,
         CancellationToken cancellationToken)
     {
+        // Проверяем, существует ли уже ReviewShop с таким же именем и адресом от этого пользователя
+        // со статусом Pending (чтобы не блокировать уже обработанные заявки)
         var shopInReviewExists = await reviewShopRepository
-            .FindBy(x => x.Name == request.Name && x.Shop.Name == request.Name)
+            .FindBy(x => x.Name == request.Name && 
+                         x.NotValidatedAddress == request.NotValidatedAddress &&
+                         x.UserId == request.UserId &&
+                         x.ReviewStatus == ReviewStatus.Pending)
             .AnyAsync(cancellationToken);
 
         if (shopInReviewExists)
         {
-            return Response.ErrorResponse<Response<SendCoffeeShopToReviewResponse>>("Is already exists.");
+            return Response.ErrorResponse<Response<SendCoffeeShopToReviewResponse>>("A review submission with this name and address already exists.");
         }
 
         var reviewShop = mapper.Map<ReviewShop>(request);
