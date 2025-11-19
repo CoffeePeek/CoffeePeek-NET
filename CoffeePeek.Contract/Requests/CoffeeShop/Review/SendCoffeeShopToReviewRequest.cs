@@ -6,7 +6,7 @@ using MediatR;
 
 namespace CoffeePeek.Contract.Requests.CoffeeShop.Review;
 
-public class SendCoffeeShopToReviewRequest : IRequest<Response<SendCoffeeShopToReviewResponse>>
+public class SendCoffeeShopToModerationRequest : IRequest<Response<SendCoffeeShopToModerationResponse>>
 {
     [Required]
     public string Name { get; set; }
