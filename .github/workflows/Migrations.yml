@@ -28,4 +28,4 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Apply migrations
-        run: dotnet ef database update --project CoffeePeek.Data --startup-project CoffeePeek.Api
+        run: dotnet ef database update --project CoffeePeek.Domain --startup-project CoffeePeek.Api
