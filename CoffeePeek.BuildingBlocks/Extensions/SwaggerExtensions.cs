@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace CoffeePeek.BuildingBlocks.Extensions;
 
@@ -10,9 +10,10 @@ public static class SwaggerExtensions
         services.AddSwaggerGen(option =>
         {
             option.OperationFilter<AuthorizeCheckOperationFilter>();
+
             option.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "CoffeePeek API", 
+                Title = "CoffeePeek API",
                 Version = "v1"
             });
             option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

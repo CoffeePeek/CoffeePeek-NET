@@ -10,22 +10,22 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
 
     public async Task<T> GetAsync<T>(string key)
     {
-        var value = await _db.StringGetAsync(key);
-        return value.IsNullOrEmpty ? default : JsonSerializer.Deserialize<T>(value);
+        string? value = await _db.StringGetAsync(key);
+        return (string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value)!)!;
     }
     
     public async Task<(bool success, T value)> TryGetAsync<T>(string key)
     {
         try
         {
-            var redisValue = await _db.StringGetAsync(key);
+            string? redisValue = await _db.StringGetAsync(key);
 
-            if (redisValue.IsNullOrEmpty)
+            if (string.IsNullOrEmpty(redisValue))
             {
                 return (false, default)!;
             }
 
-            var value = JsonSerializer.Deserialize<T>(redisValue!);
+            var value = JsonSerializer.Deserialize<T>(redisValue);
             return (value != null, value)!;
         }
         catch (JsonException)
@@ -46,9 +46,9 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
     {
         var key = $"{nameof(T)}-{id}";
         
-        var value = await _db.StringGetAsync(key);
+        string value = await _db.StringGetAsync(key);
         
-        return value.IsNullOrEmpty ? default : JsonSerializer.Deserialize<T>(value);
+        return (string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value))!;
     }
 
     public async Task SetAsync<T>(string key, T value, TimeSpan? expiry = null)

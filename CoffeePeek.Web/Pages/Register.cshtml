@@ -1,0 +1,66 @@
+﻿
+@page
+@model RegisterModel
+@{
+ViewData["Title"] = "Register - CoffeePeek";
+ViewData["Subtitle"] = "Create your account and start exploring!";
+Layout = "~/Pages/Shared/_AuthLayout.cshtml";
+}
+
+<form method="post">
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text"
+               class="form-control"
+               id="username"
+               name="Username"
+               placeholder="Your username"
+               required
+               asp-for="Username"/>
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email"
+               class="form-control"
+               id="email"
+               name="Email"
+               placeholder="your@email.com"
+               required
+               asp-for="Email"/>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password"
+               class="form-control"
+               id="password"
+               name="Password"
+               placeholder="••••••••"
+               required
+               asp-for="Password"/>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <input type="password"
+               class="form-control"
+               id="confirmPassword"
+               name="ConfirmPassword"
+               placeholder="••••••••"
+               required
+               asp-for="ConfirmPassword"/>
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-auth">
+        Register
+    </button>
+</form>
+
+<div class="auth-link">
+    Already have an account? <a href="/Login">Login here</a>
+</div>

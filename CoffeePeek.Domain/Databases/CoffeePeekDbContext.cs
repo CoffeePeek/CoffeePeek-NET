@@ -20,8 +20,6 @@ public class CoffeePeekDbContext : DbContext
     public virtual DbSet<ShopContacts> ShopContacts { get; set; }
     
     public virtual DbSet<Review> Reviews { get; set; }
-    public virtual DbSet<RatingCategory> RatingCategories { get; set; }
-    public virtual DbSet<ReviewRatingCategory> ReviewRatingCategories { get; set; }
     
     public virtual DbSet<Schedule> Schedules { get; set; }
     public virtual DbSet<ScheduleException> ScheduleExceptions { get; set; }

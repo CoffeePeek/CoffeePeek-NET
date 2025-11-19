@@ -65,7 +65,7 @@ public class Response<TData> : Response
             Data = data
         };
     }
-
+    
     public static TResponse ErrorResponse<TResponse>(string message, TData data = default)
         where TResponse : Response<TData>, new()
     {

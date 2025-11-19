@@ -34,7 +34,7 @@ public class LoginRequestHandler(
             }
         }
         
-        var isPasswordValid = userManager.CheckPasswordAsync(user, request.Password);
+        var isPasswordValid = userManager.CheckPassword(user, request.Password);
         if (!isPasswordValid)
         {
             return Response.ErrorResponse<Response<LoginResponse>>("Password is incorrect.");
