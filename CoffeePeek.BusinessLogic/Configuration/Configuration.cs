@@ -25,7 +25,7 @@ public static class Configuration
         });
 
 
-        service.AddTransient<IPipelineBehavior<UpdateReviewCoffeeShopRequest, Response<UpdateReviewCoffeeShopResponse>>,
+        service.AddTransient<IPipelineBehavior<UpdateModerationCoffeeShopRequest, Response<UpdateModerationCoffeeShopResponse>>,
             UpdateReviewCoffeeShopBehavior>();
     }
 }
