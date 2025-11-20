@@ -614,7 +614,7 @@ namespace CoffeePeek.Domain.Migrations
                         .IsRequired();
 
                     b.HasOne("CoffeePeek.Domain.Entities.Users.User", "User")
-                        .WithMany()
+                        .WithMany("Reviews")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -759,6 +759,8 @@ namespace CoffeePeek.Domain.Migrations
             modelBuilder.Entity("CoffeePeek.Domain.Entities.Users.User", b =>
                 {
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("Reviews");
 
                     b.Navigation("UserRoles");
                 });

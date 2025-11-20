@@ -10,11 +10,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.BusinessLogic.RequestHandlers;
 
-public class GetUserRequestHandler(IMapper mapper, 
+public class GetProfileRequestHandler(IMapper mapper, 
     IUnitOfWork<CoffeePeekDbContext> unitOfWork)
-    : IRequestHandler<GetUserRequest, Response<UserDto>>
+    : IRequestHandler<GetProfileRequest, Response<UserDto>>
 {
-    public async Task<Response<UserDto>> Handle(GetUserRequest request, CancellationToken cancellationToken)
+    public async Task<Response<UserDto>> Handle(GetProfileRequest request, CancellationToken cancellationToken)
     {
         var user = await unitOfWork.DbContext.Users
             .AsNoTracking()
