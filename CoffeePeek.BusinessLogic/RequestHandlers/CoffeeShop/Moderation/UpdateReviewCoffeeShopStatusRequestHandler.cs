@@ -5,12 +5,12 @@ using CoffeePeek.Domain.Entities.Shop;
 using CoffeePeek.Domain.UnitOfWork;
 using MediatR;
 
-namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Review;
+namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Moderation;
 
-internal class UpdateReviewCoffeeShopStatusRequestHandler(IRepository<ReviewShop> reviewRepository)
-    : IRequestHandler<UpdateReviewCoffeeShopStatusRequest, Response>
+internal class UpdateReviewCoffeeShopStatusRequestHandler(IRepository<ModerationShop> reviewRepository)
+    : IRequestHandler<UpdateModerationCoffeeShopStatusRequest, Response>
 {
-    public async Task<Response> Handle(UpdateReviewCoffeeShopStatusRequest request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(UpdateModerationCoffeeShopStatusRequest request, CancellationToken cancellationToken)
     {
         var reviewShop = await reviewRepository.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
@@ -21,7 +21,7 @@ internal class UpdateReviewCoffeeShopStatusRequestHandler(IRepository<ReviewShop
         
         var model = new ReviewShopModel(reviewShop);
         
-        model.UpdateStatus(request.ReviewStatus);
+        model.UpdateStatus(request.ModerationStatus);
 
         await reviewRepository.SaveChangesAsync(cancellationToken);
         

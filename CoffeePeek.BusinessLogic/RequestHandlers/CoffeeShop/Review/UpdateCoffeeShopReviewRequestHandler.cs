@@ -6,7 +6,7 @@ using CoffeePeek.Domain.Databases;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop;
+namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Review;
 
 public class UpdateCoffeeShopReviewRequestHandler(
     CoffeePeekDbContext dbContext,

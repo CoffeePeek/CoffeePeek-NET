@@ -7,10 +7,10 @@ using MediatR;
 namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Review.Behavior;
 
 internal class UpdateReviewCoffeeShopBehavior(IPublishEndpoint publishEndpoint)
-    : IPipelineBehavior<UpdateReviewCoffeeShopRequest, Contract.Response.Response<UpdateReviewCoffeeShopResponse>>
+    : IPipelineBehavior<UpdateModerationCoffeeShopRequest, Contract.Response.Response<UpdateModerationCoffeeShopResponse>>
 {
-    public async Task<Contract.Response.Response<UpdateReviewCoffeeShopResponse>> Handle(UpdateReviewCoffeeShopRequest request,
-        RequestHandlerDelegate<Contract.Response.Response<UpdateReviewCoffeeShopResponse>> next, CancellationToken cancellationToken)
+    public async Task<Contract.Response.Response<UpdateModerationCoffeeShopResponse>> Handle(UpdateModerationCoffeeShopRequest request,
+        RequestHandlerDelegate<Contract.Response.Response<UpdateModerationCoffeeShopResponse>> next, CancellationToken cancellationToken)
     {
         var response = await next();
 

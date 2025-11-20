@@ -3,24 +3,24 @@ using CoffeePeek.Domain.Enums.Shop;
 
 namespace CoffeePeek.BusinessLogic.Models;
 
-internal class ReviewShopModel : BaseModel<ReviewShop>
+internal class ReviewShopModel : BaseModel<ModerationShop>
 {
-    public ReviewShopModel(ReviewShop entity) : base(entity)
+    public ReviewShopModel(ModerationShop entity) : base(entity)
     {
     }
 
-    public void Update(ReviewShop entity)
+    public void Update(ModerationShop entity)
     {
         
     }
 
-    public void UpdateStatus(ReviewStatus requestReviewStatus)
+    public void UpdateStatus(ModerationStatus requestModerationStatus)
     {
-        if (Entity.ReviewStatus == requestReviewStatus)
+        if (Entity.ModerationStatus == requestModerationStatus)
         {
             return;
         }
         
-        Entity.ReviewStatus = requestReviewStatus;
+        Entity.ModerationStatus = requestModerationStatus;
     }
 }

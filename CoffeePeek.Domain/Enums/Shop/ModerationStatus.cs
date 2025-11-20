@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace CoffeePeek.Domain.Enums.Shop;
 
-public enum ReviewStatus
+public enum ModerationStatus
 {
     [JsonPropertyName("Pending")]
     Pending,

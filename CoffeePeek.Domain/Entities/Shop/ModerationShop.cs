@@ -4,9 +4,9 @@ using CoffeePeek.Domain.Enums.Shop;
 
 namespace CoffeePeek.Domain.Entities.Shop;
 
-public class ReviewShop : BaseEntity
+public class ModerationShop : BaseEntity
 {
-    public ReviewShop()
+    public ModerationShop()
     {
         ShopPhotos = new HashSet<ShopPhoto>();
         Schedules = new HashSet<Schedule>();
@@ -20,7 +20,7 @@ public class ReviewShop : BaseEntity
     public int? ShopContactId { get; set; }
     public int? ShopId { get; set; }
 
-    public ReviewStatus ReviewStatus { get; set; }
+    public ModerationStatus ModerationStatus { get; set; }
     public Address.Address? Address { get; set; }
     public ShopStatus Status { get; set; }
     public virtual ShopContacts? ShopContacts { get; set; }

@@ -1,6 +1,6 @@
 namespace CoffeePeek.Contract.Response.CoffeeShop.Review;
 
-public class UpdateReviewCoffeeShopResponse
+public class UpdateModerationCoffeeShopResponse
 {
     
 }

@@ -5,7 +5,7 @@ using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Domain.Databases;
 using MediatR;
 
-namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop;
+namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Review;
 
 public class AddCoffeeShopReviewRequestHandler(CoffeePeekDbContext dbContext, 
     IValidationStrategy<AddCoffeeShopReviewRequest> validationStrategy) 

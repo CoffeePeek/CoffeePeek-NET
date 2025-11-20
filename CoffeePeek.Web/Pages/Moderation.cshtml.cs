@@ -24,7 +24,7 @@ public class ModerationModel : PageModel
         _logger = logger;
     }
 
-    public List<ReviewShopDto> ReviewShops { get; set; } = new();
+    public List<ModerationShopDto> ReviewShops { get; set; } = new();
     public bool IsAuthenticated { get; set; }
     public string? AccessToken { get; set; }
 
@@ -81,14 +81,14 @@ public class ModerationModel : PageModel
 
                 if (apiResponse?.IsSuccess == true && apiResponse.Data != null)
                 {
-                    var allShops = apiResponse.Data.ReviewShops?.ToList() ?? new List<ReviewShopDto>();
+                    var allShops = apiResponse.Data.ReviewShops?.ToList() ?? new List<ModerationShopDto>();
                     
                     // Фильтрация по статусу
                     if (!string.IsNullOrEmpty(filter))
                     {
-                        if (Enum.TryParse<ReviewStatus>(filter, out var statusFilter))
+                        if (Enum.TryParse<ModerationStatus>(filter, out var statusFilter))
                         {
-                            ReviewShops = allShops.Where(s => s.ReviewStatus == statusFilter).ToList();
+                            ReviewShops = allShops.Where(s => s.ModerationStatus == statusFilter).ToList();
                         }
                         else
                         {
@@ -98,7 +98,7 @@ public class ModerationModel : PageModel
                     else
                     {
                         // По умолчанию показываем только Pending
-                        ReviewShops = allShops.Where(s => s.ReviewStatus == ReviewStatus.Pending).ToList();
+                        ReviewShops = allShops.Where(s => s.ModerationStatus == ModerationStatus.Pending).ToList();
                     }
                 }
             }
@@ -133,7 +133,7 @@ public class ModerationModel : PageModel
         }
 
         // Парсим строку в enum
-        if (!Enum.TryParse<ReviewStatus>(status, out var reviewStatus))
+        if (!Enum.TryParse<ModerationStatus>(status, out var reviewStatus))
         {
             ErrorMessage = "Неверный статус.";
             return RedirectToPage();
@@ -186,6 +186,6 @@ public class ApiResponse<T>
 
 public class GetReviewShopsResponse
 {
-    public ReviewShopDto[]? ReviewShops { get; set; }
+    public ModerationShopDto[]? ReviewShops { get; set; }
 }
 

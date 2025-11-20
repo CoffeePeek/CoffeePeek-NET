@@ -15,40 +15,40 @@ namespace CoffeePeek.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/[controller]")]
-public class CoffeeShopReviewController(IMediator mediator, IUserContextService userContextService) : Controller
+public class CoffeeShopModerationController(IMediator mediator, IUserContextService userContextService) : Controller
 {
      [HttpGet]
-     [Description("Get all user coffee shop reviews")]
-     public async Task<Response<GetCoffeeShopsInReviewByIdResponse>> GetCoffeeShopsInReviewByUserId()
+     [Description("Get all user coffee shop moderations")]
+     public async Task<Response<GetCoffeeShopsInModerationByIdResponse>> GetCoffeeShopsInModerationByUserId()
      {
          if (!userContextService.TryGetUserId(out var userId))
          {
-             return Contract.Response.Response.ErrorResponse<Response<GetCoffeeShopsInReviewByIdResponse>>(
+             return Contract.Response.Response.ErrorResponse<Response<GetCoffeeShopsInModerationByIdResponse>>(
                  "User ID not found or invalid.");
          }
     
-         var request = new GetCoffeeShopsInReviewByIdRequest(userId);
+         var request = new GetCoffeeShopsInModerationByIdRequest(userId);
          
          return await mediator.Send(request);
      }
 
      [HttpGet("all")]
      [Description("Get all coffee shop reviews for moderation")]
-     public async Task<Response<GetCoffeeShopsInReviewByIdResponse>> GetAllReviewShops()
+     public async Task<Response<GetCoffeeShopsInModerationByIdResponse>> GetAllModerationShops()
      {
          // TODO: Add role-based authorization (Admin only)
-         var request = new GetAllReviewShopsRequest();
+         var request = new GetAllModerationShopsRequest();
          return await mediator.Send(request);
      }
     
     [HttpPost]
-    [Description("Adds a new coffee shop to review")]
-    public async Task<Response<SendCoffeeShopToReviewResponse>> SendCoffeeShopToReview(
-        [FromBody] SendCoffeeShopToReviewRequest request)
+    [Description("Adds a new coffee shop to moderation")]
+    public async Task<Response<SendCoffeeShopToModerationResponse>> SendCoffeeShopToModeration(
+        [FromBody] SendCoffeeShopToModerationRequest request)
     {
         if (!userContextService.TryGetUserId(out var userId))
         {
-            return Contract.Response.Response.ErrorResponse<Response<SendCoffeeShopToReviewResponse>>(
+            return Contract.Response.Response.ErrorResponse<Response<SendCoffeeShopToModerationResponse>>(
                 "User ID not found or invalid.");
         }
 
@@ -58,13 +58,13 @@ public class CoffeeShopReviewController(IMediator mediator, IUserContextService 
     }
 
     [HttpPut]
-    [Description("Updates a coffee shop to review")]
-    public async Task<Response<UpdateReviewCoffeeShopResponse>> UpdateReviewCoffeeShop(
-        [FromForm] UpdateReviewCoffeeShopRequest request)
+    [Description("Updates a coffee shop to moderation")]
+    public async Task<Response<UpdateModerationCoffeeShopResponse>> UpdateModerationCoffeeShop(
+        [FromForm] UpdateModerationCoffeeShopRequest request)
     {
         if (!userContextService.TryGetUserId(out var userId))
         {
-            return Contract.Response.Response.ErrorResponse<Response<UpdateReviewCoffeeShopResponse>>(
+            return Contract.Response.Response.ErrorResponse<Response<UpdateModerationCoffeeShopResponse>>(
                 "User ID not found or invalid.");
         }
 
@@ -75,16 +75,16 @@ public class CoffeeShopReviewController(IMediator mediator, IUserContextService 
 
     [HttpPut("status")]
     [Description("Updates a review coffee shop status(TODO add role auth)")]
-    public async Task<Response> UpdateReviewCoffeeShopStatus([FromQuery] int id, 
-        [FromQuery] ReviewStatus status)
+    public async Task<Response> UpdateModerationCoffeeShopStatus([FromQuery] int id, 
+        [FromQuery] ModerationStatus status)
     {
         if (!userContextService.TryGetUserId(out var userId))
         {
-            return Contract.Response.Response.ErrorResponse<Response<UpdateReviewCoffeeShopResponse>>(
+            return Contract.Response.Response.ErrorResponse<Response<UpdateModerationCoffeeShopResponse>>(
                 "User ID not found or invalid.");
         }
         
-        var request = new UpdateReviewCoffeeShopStatusRequest(id, status, userId);
+        var request = new UpdateModerationCoffeeShopStatusRequest(id, status, userId);
         
         return await mediator.Send(request);
     }

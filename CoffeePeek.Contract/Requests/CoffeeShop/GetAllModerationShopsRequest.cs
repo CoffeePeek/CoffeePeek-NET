@@ -4,7 +4,5 @@ using MediatR;
 
 namespace CoffeePeek.Contract.Requests.CoffeeShop;
 
-public class GetAllReviewShopsRequest : IRequest<Response<GetCoffeeShopsInReviewByIdResponse>>
-{
-}
+public class GetAllModerationShopsRequest : IRequest<Response<GetCoffeeShopsInModerationByIdResponse>>;
 
