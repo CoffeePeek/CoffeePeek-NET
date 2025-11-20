@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Domain.Repositories;
 
-public class ReviewShopsRepository(CoffeePeekDbContext context) : Repository<ModerationShop>(context)
+public class ModerationShopsRepository(CoffeePeekDbContext context) : Repository<ModerationShop>(context)
 {
     public async Task<bool> UpdatePhotos(int shopId, int userId, ICollection<string> urls)
     {
-        var shop = await context.ReviewShops.FirstOrDefaultAsync(x => x.Id == shopId);
+        var shop = await context.ModerationShops.FirstOrDefaultAsync(x => x.Id == shopId);
         
         if (shop == null)
         {

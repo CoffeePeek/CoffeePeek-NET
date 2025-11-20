@@ -38,12 +38,4 @@ public class CoffeeShopController(IMediator mediator) : Controller
             Response.Headers.TryAdd("X-Page-Size", data.PageSize.ToString());
         }
     }
-
-
-    //[HttpPost("send-to-review")]
-    //[Authorize]
-    //public Task<Response<UpdateCoffeeShopResponse>> UpdateCoffeeShop([FromForm] UpdateCoffeeShopRequest request)
-    //{
-    //    return mediator.Send(request);
-    //}
 }

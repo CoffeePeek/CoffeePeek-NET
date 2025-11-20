@@ -31,8 +31,8 @@ public class UserController(IMediator mediator, IHub hub) : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<Response<UpdateProfileResponse>> UpdateProfile([FromBody]UpdateProfileRequest request, CancellationToken cancellationToken)
     {
-        request.UserId = HttpContext.GetUserIdOrThrow();
-        return mediator.Send(request, cancellationToken);
+        var authenticatedRequest = request with { UserId = HttpContext.GetUserIdOrThrow() };
+        return mediator.Send(authenticatedRequest, cancellationToken);
     }
     
     [HttpGet("Users")]

@@ -19,6 +19,6 @@ public class MapsterConfig : IRegister
             .Map(dest => dest.ShopName, src => src.Shop != null ? src.Shop.Name : string.Empty);
 
         config.NewConfig<User, UserDto>()
-            .Map(dest => dest.ReviewCount, src => src.Reviews.Count);
+            .Map(dest => dest.ReviewCount, src => src.Reviews != null ? src.Reviews.Count : 0);
     }
 }

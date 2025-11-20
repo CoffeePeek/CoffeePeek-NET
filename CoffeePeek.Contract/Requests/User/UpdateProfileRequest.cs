@@ -1,10 +1,11 @@
 ﻿using System.Text.Json.Serialization;
+using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.User;
 using MediatR;
 
 namespace CoffeePeek.Contract.Requests.User;
 
-public class UpdateProfileRequest : IRequest<Response.Response<UpdateProfileResponse>>
+public record UpdateProfileRequest : IRequest<Response<UpdateProfileResponse>>
 {
     [JsonIgnore] public int UserId { get; set; }
 

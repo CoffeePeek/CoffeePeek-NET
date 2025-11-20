@@ -21,7 +21,7 @@ public class ReviewCoffeeController(IMediator mediator) : Controller
 
     [HttpGet("{id:int}")]
     [Authorize]
-    public Task<Response<GetReviewByIdResponse>> GetAllReviews(int id)
+    public Task<Response<GetReviewByIdResponse>> GetReviewById(int id)
     {
         return mediator.Send(new GetReviewByIdRequest(id));
     }

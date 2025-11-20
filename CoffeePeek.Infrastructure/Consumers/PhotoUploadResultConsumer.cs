@@ -4,7 +4,7 @@ using MassTransit;
 
 namespace CoffeePeek.Infrastructure.Consumers;
 
-public class PhotoUploadResultConsumer(ReviewShopsRepository repository) : IConsumer<IPhotoUploadResult>
+public class PhotoUploadResultConsumer(ModerationShopsRepository repository) : IConsumer<IPhotoUploadResult>
 {
     public async Task Consume(ConsumeContext<IPhotoUploadResult> context)
     {

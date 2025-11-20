@@ -12,31 +12,32 @@ namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Moderation;
 
 internal class SendCoffeeShopToModerationRequestHandler(
     IMapper mapper, 
-    IRepository<ModerationShop> reviewShopRepository)
+    IRepository<ModerationShop> moderationShopRepository)
     : IRequestHandler<SendCoffeeShopToModerationRequest, Response<SendCoffeeShopToModerationResponse>>
 {
     public async Task<Response<SendCoffeeShopToModerationResponse>> Handle(SendCoffeeShopToModerationRequest request,
         CancellationToken cancellationToken)
     {
-        var shopInReviewExists = await reviewShopRepository
+        var shopInModerationExists = await moderationShopRepository
             .FindBy(x => x.Name == request.Name && 
                          x.NotValidatedAddress == request.NotValidatedAddress &&
                          x.UserId == request.UserId &&
                          x.ModerationStatus == ModerationStatus.Pending)
             .AnyAsync(cancellationToken);
 
-        if (shopInReviewExists)
+        if (shopInModerationExists)
         {
-            return Response.ErrorResponse<Response<SendCoffeeShopToModerationResponse>>("A review submission with this name and address already exists.");
+            return Response.ErrorResponse<Response<SendCoffeeShopToModerationResponse>>("A moderation submission with this name and address already exists.");
         }
 
-        var reviewShop = mapper.Map<ModerationShop>(request);
+        var moderationShop = mapper.Map<ModerationShop>(request);
 
-        reviewShop.ModerationStatus = ModerationStatus.Pending;
+        moderationShop.ModerationStatus = ModerationStatus.Pending;
         
-        reviewShopRepository.Add(reviewShop);
+        moderationShopRepository.Add(moderationShop);
         
-        await reviewShopRepository.SaveChangesAsync(cancellationToken);
+        
+        await moderationShopRepository.SaveChangesAsync(cancellationToken);
         
         return Response.SuccessResponse<Response<SendCoffeeShopToModerationResponse>>(null, "CoffeeShop added to moderation.");
     }
