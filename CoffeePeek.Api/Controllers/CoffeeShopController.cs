@@ -1,10 +1,8 @@
-using CoffeePeek.Api.Extensions;
 using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeePeek.Api.Controllers;
@@ -31,7 +29,7 @@ public class CoffeeShopController(IMediator mediator) : Controller
         AddPaginationHeaders(response.Data);
 
         return response;
-        
+
         void AddPaginationHeaders(GetCoffeeShopsResponse data)
         {
             Response.Headers.TryAdd("X-Total-Count", data.TotalItems.ToString());
@@ -41,23 +39,7 @@ public class CoffeeShopController(IMediator mediator) : Controller
         }
     }
 
-    [HttpPost("review")]
-    [Authorize]
-    public Task<Response<AddCoffeeShopReviewResponse>> AddCoffeeShopReview([FromBody]AddCoffeeShopReviewRequest request)
-    {
-        request.UserId = HttpContext.GetUserIdOrThrow();
-        return mediator.Send(request);
-    }
-    
-    [HttpPut("review")]
-    [Authorize]
-    public Task<Response<UpdateCoffeeShopReviewResponse>> UpdateCoffeeShopReview([FromBody]UpdateCoffeeShopReviewRequest request)
-    {
-        request.UserId = HttpContext.GetUserIdOrThrow();
-        return mediator.Send(request);
-    }
-    
-    
+
     //[HttpPost("send-to-review")]
     //[Authorize]
     //public Task<Response<UpdateCoffeeShopResponse>> UpdateCoffeeShop([FromForm] UpdateCoffeeShopRequest request)
