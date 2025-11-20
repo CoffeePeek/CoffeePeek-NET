@@ -7,13 +7,13 @@ using CoffeePeek.Domain.UnitOfWork;
 using MapsterMapper;
 using MediatR;
 
-namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Review;
+namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Moderation;
 
-internal class UpdateReviewCoffeeShopRequestHandler(IRepository<ReviewShop> reviewShopRepository,
+internal class UpdateReviewCoffeeShopRequestHandler(IRepository<ModerationShop> reviewShopRepository,
     IMapper mapper) 
-    : IRequestHandler<UpdateReviewCoffeeShopRequest, Response<UpdateReviewCoffeeShopResponse>>
+    : IRequestHandler<UpdateModerationCoffeeShopRequest, Response<UpdateModerationCoffeeShopResponse>>
 {
-    public async Task<Response<UpdateReviewCoffeeShopResponse>> Handle(UpdateReviewCoffeeShopRequest request,
+    public async Task<Response<UpdateModerationCoffeeShopResponse>> Handle(UpdateModerationCoffeeShopRequest request,
         CancellationToken cancellationToken)
     {
         var shop = await reviewShopRepository
@@ -21,12 +21,12 @@ internal class UpdateReviewCoffeeShopRequestHandler(IRepository<ReviewShop> revi
 
         if (shop == null)
         {
-            return Response.ErrorResponse<Response<UpdateReviewCoffeeShopResponse>>(null, "Review CoffeeShop not found");
+            return Response.ErrorResponse<Response<UpdateModerationCoffeeShopResponse>>(null, "Moderation CoffeeShop not found");
         }
 
         var model = new ReviewShopModel(shop);
         
-        var requestEntity = mapper.Map<ReviewShop>(request);
+        var requestEntity = mapper.Map<ModerationShop>(request);
         
         model.Update(requestEntity);
         
@@ -34,6 +34,6 @@ internal class UpdateReviewCoffeeShopRequestHandler(IRepository<ReviewShop> revi
 
         
 
-        return Response.SuccessResponse<Response<UpdateReviewCoffeeShopResponse>>();
+        return Response.SuccessResponse<Response<UpdateModerationCoffeeShopResponse>>();
     }
 }

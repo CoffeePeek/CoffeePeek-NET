@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 
-public class ReviewShopDto
+public class ModerationShopDto
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -15,7 +15,7 @@ public class ReviewShopDto
     [JsonIgnore] public int? ShopContactId { get; set; }
     [JsonIgnore] public int UserId { get; set; }
 
-    public ReviewStatus ReviewStatus { get; set; }
+    public ModerationStatus ModerationStatus { get; set; }
     public AddressDto Address { get; set; }
     public ShopStatus Status { get; set; }
     public ShopContactDto ShopContact { get; set; }

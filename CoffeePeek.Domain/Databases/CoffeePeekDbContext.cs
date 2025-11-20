@@ -29,7 +29,7 @@ public class CoffeePeekDbContext : DbContext
     public virtual DbSet<Country> Countries { get; set; }
     public virtual DbSet<Street> Streets { get; set; }
     
-    public virtual DbSet<ReviewShop> ReviewShops { get; set; }
+    public virtual DbSet<ModerationShop> ReviewShops { get; set; }
     
     public CoffeePeekDbContext(DbContextOptions<CoffeePeekDbContext> options) : base(options)
     {

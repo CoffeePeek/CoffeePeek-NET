@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Domain.Repositories;
 
-public class ReviewShopsRepository(CoffeePeekDbContext context) : Repository<ReviewShop>(context)
+public class ReviewShopsRepository(CoffeePeekDbContext context) : Repository<ModerationShop>(context)
 {
     public async Task<bool> UpdatePhotos(int shopId, int userId, ICollection<string> urls)
     {

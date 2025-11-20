@@ -7,7 +7,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop;
+namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Review;
 
 public class GetReviewByIdRequestHandler(CoffeePeekDbContext dbContext, IMapper mapper) 
     : IRequestHandler<GetReviewByIdRequest, Response<GetReviewByIdResponse>>
