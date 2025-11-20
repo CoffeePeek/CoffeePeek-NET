@@ -39,7 +39,6 @@ public class LoginModel : PageModel
 
     public void OnGet()
     {
-        // Проверяем, есть ли уже токен
         var token = HttpContext.Session.GetString("AccessToken");
         if (!string.IsNullOrEmpty(token))
         {

@@ -15,21 +15,22 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseSession();
 
-// Добавляем middleware для проверки токенов
 app.UseMiddleware<CoffeePeek.Web.Middleware.AuthTokenMiddleware>();
 
 app.UseAuthorization();
