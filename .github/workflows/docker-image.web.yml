@@ -1,0 +1,26 @@
+name: Docker CoffeePeek.Web
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "feature" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Login to Docker Hub
+      run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+      
+    - name: Build coffeePeek.Web the Docker image
+      run: docker build -t winststreloc/coffeepeek.web:latest -f CoffeePeek.Web/Dockerfile .
+
+    - name: Push coffeePeek.Web Docker Image
+      run: docker push winststreloc/coffeepeek.web:latest
