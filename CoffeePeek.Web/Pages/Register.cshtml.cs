@@ -19,16 +19,6 @@ public class RegisterModel : PageModel
     }
 
     [BindProperty]
-    [Required(ErrorMessage = "First name is required")]
-    [StringLength(50, ErrorMessage = "First name cannot exceed 50 characters")]
-    public string FirstName { get; set; } = string.Empty;
-
-    [BindProperty]
-    [Required(ErrorMessage = "Last name is required")]
-    [StringLength(50, ErrorMessage = "Last name cannot exceed 50 characters")]
-    public string LastName { get; set; } = string.Empty;
-
-    [BindProperty]
     [Required(ErrorMessage = "Username is required")]
     [StringLength(30, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 30 characters")]
     public string Username { get; set; } = string.Empty;
@@ -50,15 +40,6 @@ public class RegisterModel : PageModel
     [DataType(DataType.Password)]
     public string ConfirmPassword { get; set; } = string.Empty;
 
-    [BindProperty]
-    [Required(ErrorMessage = "Gender is required")]
-    [Range(0, 2, ErrorMessage = "Please select a valid gender")]
-    public int Gender { get; set; }
-
-    [BindProperty]
-    [Range(typeof(bool), "true", "true", ErrorMessage = "You must agree to the terms and conditions")]
-    public bool AgreeTerms { get; set; }
-
     [TempData]
     public string? ErrorMessage { get; set; }
 
@@ -67,7 +48,6 @@ public class RegisterModel : PageModel
 
     public void OnGet()
     {
-        // Проверяем, есть ли уже токен
         var token = HttpContext.Session.GetString("AccessToken");
         if (!string.IsNullOrEmpty(token))
         {
@@ -87,7 +67,6 @@ public class RegisterModel : PageModel
             var client = _httpClientFactory.CreateClient();
             var apiBaseUrl = _configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001";
 
-            // Сначала проверяем, существует ли пользователь с таким email
             var checkResponse = await client.PostAsync(
                 $"{apiBaseUrl}/api/Auth/check-exists?email={Uri.EscapeDataString(Email)}", 
                 null
@@ -107,8 +86,7 @@ public class RegisterModel : PageModel
                     return Page();
                 }
             }
-
-            // Регистрируем нового пользователя
+            
             var registerRequest = new
             {
                 userName = Username,
@@ -136,7 +114,6 @@ public class RegisterModel : PageModel
                 {
                     SuccessMessage = "Registration successful! Redirecting to login...";
                     
-                    // Небольшая задержка перед редиректом
                     await Task.Delay(1500);
                     return RedirectToPage("/Login");
                 }
@@ -149,7 +126,6 @@ public class RegisterModel : PageModel
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 
-                // Пытаемся извлечь сообщение об ошибке из ответа
                 try
                 {
                     var errorResponse = JsonSerializer.Deserialize<ApiResponse<RegisterResponse>>(errorContent, new JsonSerializerOptions
