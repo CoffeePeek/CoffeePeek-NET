@@ -29,13 +29,6 @@ public class AuthController(IMediator mediator): Controller
     {
         return mediator.Send(request);
     }
-
-    [ApiExplorerSettings(IgnoreApi = true)]
-    [HttpPost("register-google")]
-    public Task<string> Register([FromBody] RegisterUserFromGoogleRequest request)
-    {
-        throw new NotImplementedException();
-    }
     
     [HttpGet("refresh")]
     public Task<Response<GetRefreshTokenResponse>> RefreshToken([FromQuery]string refreshToken)
