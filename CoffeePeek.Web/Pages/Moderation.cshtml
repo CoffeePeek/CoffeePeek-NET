@@ -91,7 +91,7 @@ else
                             <p class="shop-date">@DateTime.Now.AddDays(-new Random(shop.Id).Next(0, 30)).ToString("d/M/yy")</p>
                         </td>
                         <td>
-                            @if (shop.ReviewStatus == ReviewStatus.Pending)
+                            @if (shop.ModerationStatus == ModerationStatus.Pending)
                             {
                                 <div class="action-buttons">
                                     <form method="post" asp-page-handler="UpdateStatus" class="d-inline">
@@ -115,7 +115,7 @@ else
                             else
                             {
                                 <span class="text-muted" style="font-size: 0.875rem;">
-                                    @if (shop.ReviewStatus == ReviewStatus.Approved)
+                                    @if (shop.ModerationStatus == ModerationStatus.Approved)
                                     {
                                         <i class="fas fa-check-circle" style="color: var(--success);"></i>
                                     }

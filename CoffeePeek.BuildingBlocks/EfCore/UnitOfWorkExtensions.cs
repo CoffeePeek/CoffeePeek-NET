@@ -39,7 +39,7 @@ public static class UnitOfWorkExtensions
         
         services.AddCustomRepository<City, CityRepository>();
         
-        services.AddCustomRepository<ReviewShop, ReviewShopsRepository>();
+        services.AddCustomRepository<ModerationShop, ModerationShopsRepository>();
 
         services.AddCustomRepository<RefreshToken, RefreshTokenRepository>();
         
