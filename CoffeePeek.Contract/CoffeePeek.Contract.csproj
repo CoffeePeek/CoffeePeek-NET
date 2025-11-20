@@ -13,10 +13,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Enums\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Domain\CoffeePeek.Domain.csproj" />
     </ItemGroup>
 

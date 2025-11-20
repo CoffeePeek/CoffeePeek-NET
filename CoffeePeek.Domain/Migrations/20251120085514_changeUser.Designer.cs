@@ -3,6 +3,7 @@ using System;
 using CoffeePeek.Domain.Databases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoffeePeek.Domain.Migrations
 {
     [DbContext(typeof(CoffeePeekDbContext))]
-    partial class CoffeePeekDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251120085514_changeUser")]
+    partial class changeUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -614,7 +617,7 @@ namespace CoffeePeek.Domain.Migrations
                         .IsRequired();
 
                     b.HasOne("CoffeePeek.Domain.Entities.Users.User", "User")
-                        .WithMany()
+                        .WithMany("Reviews")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -759,6 +762,8 @@ namespace CoffeePeek.Domain.Migrations
             modelBuilder.Entity("CoffeePeek.Domain.Entities.Users.User", b =>
                 {
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("Reviews");
 
                     b.Navigation("UserRoles");
                 });

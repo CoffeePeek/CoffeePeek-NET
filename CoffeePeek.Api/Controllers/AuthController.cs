@@ -29,13 +29,13 @@ public class AuthController(IMediator mediator): Controller
     {
         return mediator.Send(request);
     }
-    
-    //[HttpPost("register-google")]
-    //public Task<string> Register([FromBody] RegisterUserFromGoogleRequest request)
-    //{
-    //    return Task.FromResult("not working");
-    //    //return mediator.Send(request);
-    //}
+
+    [Obsolete, HttpPost("register-google")]
+    public Task<string> Register([FromBody] RegisterUserFromGoogleRequest request)
+    {
+        return Task.FromResult("not working");
+        //return mediator.Send(request);
+    }
     
     [HttpGet("refresh")]
     public Task<Response<GetRefreshTokenResponse>> RefreshToken([FromQuery]string refreshToken)

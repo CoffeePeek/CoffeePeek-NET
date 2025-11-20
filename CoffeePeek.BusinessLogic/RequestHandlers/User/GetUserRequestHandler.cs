@@ -17,6 +17,8 @@ public class GetUserRequestHandler(IMapper mapper,
     public async Task<Response<UserDto>> Handle(GetUserRequest request, CancellationToken cancellationToken)
     {
         var user = await unitOfWork.DbContext.Users
+            .AsNoTracking()
+            .Include(x => x.Reviews)
             .FirstOrDefaultAsync(x => x.Id == request.UserId, cancellationToken);
 
         if (user == null)

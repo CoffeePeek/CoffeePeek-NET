@@ -12,7 +12,7 @@ public static class MapperExtensions
         var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
         typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
         
-        var mapperConfig = new Mapper(typeAdapterConfig);
+        var mapperConfig = new MapsterMapper.Mapper(typeAdapterConfig);
         
         services.AddSingleton<IMapper>(mapperConfig);
         

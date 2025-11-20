@@ -1,3 +1,4 @@
+using CoffeePeek.Api.Extensions;
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response;
@@ -11,15 +12,18 @@ namespace CoffeePeek.Api.Controllers;
 [Route("api/[controller]")]
 public class UserController(IMediator mediator, IHub hub) : Controller
 {
+
+    [HttpGet]
     [Authorize]
-    [HttpGet("test")] 
-
-    public IActionResult Test()
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public Task<Response<UserDto>> GetProfile(CancellationToken cancellationToken)
     {
-        var claims = User.Claims.Select(c => new { c.Type, c.Value });
-        return Ok(claims);
+        var request = new GetUserRequest(HttpContext.GetUserIdOrThrow());
+        return mediator.Send(request, cancellationToken);
     }
-
+    
     [HttpGet("Users")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -33,23 +37,9 @@ public class UserController(IMediator mediator, IHub hub) : Controller
         
         return result;
     }
-    
-    [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<Response<UserDto>> GetUser(int id, CancellationToken cancellationToken)
-    {
-        var request = new GetUserRequest(id);
-        var result = await mediator.Send(request, cancellationToken);
 
-        return result;
-    }
-
-    [HttpDelete("{id:int}")]
-    [Authorize]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Obsolete, HttpDelete("{id:int}"), Authorize, ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK),
+     ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<Response<bool>> DeleteUser(int id, CancellationToken cancellationToken)
     {
         var request = new DeleteUserRequest(id);

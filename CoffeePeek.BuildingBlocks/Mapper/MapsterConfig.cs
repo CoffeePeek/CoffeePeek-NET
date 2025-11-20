@@ -1,10 +1,12 @@
-using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Domain.Entities.Shop;
+using CoffeePeek.Contract.Dtos.User;
+using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Domain.Entities.Review;
+using CoffeePeek.Domain.Entities.Shop;
+using CoffeePeek.Domain.Entities.Users;
 using Mapster;
 
-namespace CoffeePeek.Contract.Mapper;
+namespace CoffeePeek.BuildingBlocks.Mapper;
 
 public class MapsterConfig : IRegister
 {
@@ -15,5 +17,8 @@ public class MapsterConfig : IRegister
 
         config.NewConfig<Review, CoffeeShopReviewDto>()
             .Map(dest => dest.ShopName, src => src.Shop != null ? src.Shop.Name : string.Empty);
+
+        config.NewConfig<User, UserDto>()
+            .Map(dest => dest.ReviewCount, src => src.Reviews.Count);
     }
 }
