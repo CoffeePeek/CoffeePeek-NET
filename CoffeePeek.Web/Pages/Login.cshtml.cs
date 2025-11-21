@@ -37,17 +37,36 @@ public class LoginModel : PageModel
     [TempData]
     public string? SuccessMessage { get; set; }
 
+    public bool IsAuthenticated { get; set; }
+    public string? UserEmail { get; set; }
+
     public void OnGet()
     {
-        var token = HttpContext.Session.GetString("AccessToken");
-        if (!string.IsNullOrEmpty(token))
+        LoadUserData();
+        ViewData["IsAuthenticated"] = IsAuthenticated;
+        ViewData["UserEmail"] = UserEmail;
+        
+        // Проверяем, есть ли уже токен
+        if (IsAuthenticated)
         {
             Response.Redirect("/Index");
         }
     }
 
+    private void LoadUserData()
+    {
+        var accessToken = HttpContext.Session.GetString("AccessToken") ?? 
+                         HttpContext.Request.Cookies["AccessToken"];
+        UserEmail = HttpContext.Session.GetString("UserEmail");
+        IsAuthenticated = !string.IsNullOrEmpty(accessToken);
+    }
+
     public async Task<IActionResult> OnPostAsync()
     {
+        LoadUserData();
+        ViewData["IsAuthenticated"] = IsAuthenticated;
+        ViewData["UserEmail"] = UserEmail;
+
         if (!ModelState.IsValid)
         {
             return Page();
@@ -102,28 +121,28 @@ public class LoginModel : PageModel
                         });
                     }
 
-                    SuccessMessage = "Login successful! Redirecting...";
+                    SuccessMessage = "Вход выполнен успешно! Перенаправление...";
                     // Используем Redirect вместо RedirectToPage для более надежного редиректа
                     return Redirect("/Index");
                 }
                 else
                 {
-                    ErrorMessage = loginResponse?.Message ?? "Login failed. Please try again.";
+                    ErrorMessage = loginResponse?.Message ?? "Ошибка входа. Пожалуйста, попробуйте снова.";
                 }
             }
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                ErrorMessage = $"Login failed: {response.StatusCode}. Please check your credentials.";
+                ErrorMessage = $"Ошибка входа: {response.StatusCode}. Пожалуйста, проверьте ваши учетные данные.";
             }
         }
         catch (HttpRequestException ex)
         {
-            ErrorMessage = $"Connection error: Unable to reach the API server. {ex.Message}";
+            ErrorMessage = $"Ошибка подключения: Не удалось подключиться к серверу API. {ex.Message}";
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"An error occurred: {ex.Message}";
+            ErrorMessage = $"Произошла ошибка: {ex.Message}";
         }
 
         return Page();

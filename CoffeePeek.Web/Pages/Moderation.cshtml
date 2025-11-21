@@ -91,9 +91,12 @@ else
                             <p class="shop-date">@DateTime.Now.AddDays(-new Random(shop.Id).Next(0, 30)).ToString("d/M/yy")</p>
                         </td>
                         <td>
-                            @if (shop.ModerationStatus == ModerationStatus.Pending)
-                            {
-                                <div class="action-buttons">
+                            <div class="action-buttons">
+                                <a href="/Moderation/Edit/@shop.Id" class="btn-action btn-view">
+                                    <i class="fas fa-edit"></i> Редактировать
+                                </a>
+                                @if (shop.ModerationStatus == ModerationStatus.Pending)
+                                {
                                     <form method="post" asp-page-handler="UpdateStatus" class="d-inline">
                                         <input type="hidden" name="id" value="@shop.Id" />
                                         <input type="hidden" name="status" value="Approved" />
@@ -110,22 +113,22 @@ else
                                             <i class="fas fa-times"></i> Отклонить
                                         </button>
                                     </form>
-                                </div>
-                            }
-                            else
-                            {
-                                <span class="text-muted" style="font-size: 0.875rem;">
-                                    @if (shop.ModerationStatus == ModerationStatus.Approved)
-                                    {
-                                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
-                                    }
-                                    else
-                                    {
-                                        <i class="fas fa-times-circle" style="color: var(--danger);"></i>
-                                    }
-                                    Обработано
-                                </span>
-                            }
+                                }
+                                else
+                                {
+                                    <span class="text-muted" style="font-size: 0.875rem;">
+                                        @if (shop.ModerationStatus == ModerationStatus.Approved)
+                                        {
+                                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-times-circle" style="color: var(--danger);"></i>
+                                        }
+                                        Обработано
+                                    </span>
+                                }
+                            </div>
                         </td>
                     </tr>
                 }

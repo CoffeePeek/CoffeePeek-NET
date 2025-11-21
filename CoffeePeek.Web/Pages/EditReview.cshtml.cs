@@ -2,30 +2,29 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Domain.Enums.Shop;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CoffeePeek.Web.Pages;
 
-public class ModerationModel : PageModel
+public class EditReviewModel : PageModel
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IConfiguration _configuration;
-    private readonly ILogger<ModerationModel> _logger;
+    private readonly ILogger<EditReviewModel> _logger;
 
-    public ModerationModel(
+    public EditReviewModel(
         IHttpClientFactory httpClientFactory, 
         IConfiguration configuration,
-        ILogger<ModerationModel> logger)
+        ILogger<EditReviewModel> logger)
     {
         _httpClientFactory = httpClientFactory;
         _configuration = configuration;
         _logger = logger;
     }
 
-    public List<ModerationShopDto> ReviewShops { get; set; } = new();
+    public ModerationShopDto? ModerationShop { get; set; }
     public bool IsAuthenticated { get; set; }
     public string? AccessToken { get; set; }
 
@@ -35,7 +34,7 @@ public class ModerationModel : PageModel
     [TempData]
     public string? ErrorMessage { get; set; }
 
-    public async Task OnGetAsync(string? filter = null)
+    public async Task OnGetAsync(int id)
     {
         LoadUserData();
         
@@ -48,7 +47,7 @@ public class ModerationModel : PageModel
             return;
         }
 
-        await LoadReviewShopsAsync(filter);
+        await LoadReviewShopAsync(id);
     }
 
     private void LoadUserData()
@@ -58,7 +57,7 @@ public class ModerationModel : PageModel
         IsAuthenticated = !string.IsNullOrEmpty(AccessToken);
     }
 
-    private async Task LoadReviewShopsAsync(string? filter = null)
+    private async Task LoadReviewShopAsync(int id)
     {
         try
         {
@@ -75,28 +74,19 @@ public class ModerationModel : PageModel
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var apiResponse = JsonSerializer.Deserialize<Response<GetReviewShopsResponse>>(content);
+                var apiResponse = JsonSerializer.Deserialize<ApiResponse<GetReviewShopsResponse>>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
-                if (apiResponse?.Success == true && apiResponse.Data != null)
+                if (apiResponse?.IsSuccess == true && apiResponse.Data != null)
                 {
                     var allShops = apiResponse.Data.ReviewShops?.ToList() ?? new List<ModerationShopDto>();
+                    ModerationShop = allShops.FirstOrDefault(s => s.Id == id);
                     
-                    // Фильтрация по статусу
-                    if (!string.IsNullOrEmpty(filter))
+                    if (ModerationShop == null)
                     {
-                        if (Enum.TryParse<ModerationStatus>(filter, out var statusFilter))
-                        {
-                            ReviewShops = allShops.Where(s => s.ModerationStatus == statusFilter).ToList();
-                        }
-                        else
-                        {
-                            ReviewShops = allShops;
-                        }
-                    }
-                    else
-                    {
-                        // По умолчанию показываем только Pending
-                        ReviewShops = allShops.Where(s => s.ModerationStatus == ModerationStatus.Pending).ToList();
+                        ErrorMessage = "Заявка не найдена.";
                     }
                 }
             }
@@ -109,13 +99,13 @@ public class ModerationModel : PageModel
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                _logger.LogError("Error loading review shops: {StatusCode} - {Content}", response.StatusCode, errorContent);
-                ErrorMessage = "Ошибка при загрузке данных для модерации.";
+                _logger.LogError("Error loading review shop: {StatusCode} - {Content}", response.StatusCode, errorContent);
+                ErrorMessage = "Ошибка при загрузке данных заявки.";
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception loading review shops");
+            _logger.LogError(ex, "Exception loading review shop");
             ErrorMessage = $"Ошибка: {ex.Message}";
         }
     }
@@ -127,14 +117,14 @@ public class ModerationModel : PageModel
         if (!IsAuthenticated)
         {
             ErrorMessage = "Вы не авторизованы.";
-            return RedirectToPage();
+            return RedirectToPage(new { id });
         }
 
         // Парсим строку в enum
         if (!Enum.TryParse<ModerationStatus>(status, out var reviewStatus))
         {
             ErrorMessage = "Неверный статус.";
-            return RedirectToPage();
+            return RedirectToPage(new { id });
         }
 
         try
@@ -169,21 +159,7 @@ public class ModerationModel : PageModel
             ErrorMessage = $"Ошибка: {ex.Message}";
         }
 
-        return RedirectToPage();
+        return RedirectToPage(new { id });
     }
-}
-
-// Response models
-public class ApiResponse<T>
-{
-    [JsonPropertyName(("Success"))]
-    public bool IsSuccess { get; set; }
-    public string? Message { get; set; }
-    public T? Data { get; set; }
-}
-
-public class GetReviewShopsResponse
-{
-    public ModerationShopDto[]? ReviewShops { get; set; }
 }
 
