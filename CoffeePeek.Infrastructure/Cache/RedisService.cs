@@ -44,7 +44,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
     
     public async Task<T> GetAsyncById<T>(string id)
     {
-        var key = $"{nameof(T)}-{id}";
+        var key = $"{typeof(T).Name}-{id}";
         
         string value = await _db.StringGetAsync(key);
         

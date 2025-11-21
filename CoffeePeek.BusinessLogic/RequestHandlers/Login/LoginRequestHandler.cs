@@ -51,11 +51,7 @@ public class LoginRequestHandler(
 
         await SaveRefreshTokenAsync(user.Id, authResult.RefreshToken);
 
-        var result = new LoginResponse
-        {
-            AccessToken = authResult.AccessToken,
-            RefreshToken = authResult.RefreshToken,
-        };
+        var result = new LoginResponse(authResult.AccessToken, authResult.RefreshToken);
 
         return Response.SuccessResponse<Response<LoginResponse>>(result);
     }
