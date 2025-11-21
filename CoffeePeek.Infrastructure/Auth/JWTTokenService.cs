@@ -5,13 +5,13 @@ using CoffeePeek.BuildingBlocks.AuthOptions;
 using CoffeePeek.Contract.Dtos.Auth;
 using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.Entities.Users;
-using CoffeePeek.Domain.Repositories;
+using CoffeePeek.Domain.Repositories.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CoffeePeek.Infrastructure.Auth;
 
-public class JWTTokenService(IOptions<JWTOptions> options, UserRepository userRepository) : IJWTTokenService
+public class JWTTokenService(IOptions<JWTOptions> options, IUserRepository userRepository) : IJWTTokenService
 {
     private readonly JWTOptions _options = options.Value;
 

@@ -1,7 +1,7 @@
 namespace CoffeePeek.Contract.Response.Login;
 
-public class LoginResponse
+public class LoginResponse(string accessToken, string refreshToken)
 {
-    public string AccessToken { get; set; }
-    public string RefreshToken { get; set; }
+    public string AccessToken { get; init; } = accessToken;
+    public string RefreshToken { get; init; } = refreshToken;
 }

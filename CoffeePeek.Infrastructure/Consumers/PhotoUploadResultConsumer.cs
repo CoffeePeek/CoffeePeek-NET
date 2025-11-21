@@ -1,10 +1,10 @@
-using CoffeePeek.Domain.Repositories;
+using CoffeePeek.Domain.Repositories.Interfaces;
 using CoffeePeek.Shared.Models.PhotoUpload;
 using MassTransit;
 
 namespace CoffeePeek.Infrastructure.Consumers;
 
-public class PhotoUploadResultConsumer(ModerationShopsRepository repository) : IConsumer<IPhotoUploadResult>
+public class PhotoUploadResultConsumer(IModerationShopsRepository repository) : IConsumer<IPhotoUploadResult>
 {
     public async Task Consume(ConsumeContext<IPhotoUploadResult> context)
     {

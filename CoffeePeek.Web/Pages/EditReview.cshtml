@@ -1,0 +1,217 @@
+@page "/Moderation/Edit/{id}"
+@using CoffeePeek.Domain.Enums.Shop
+@model EditReviewModel
+@{
+    ViewData["Title"] = "Редактирование заявки";
+    Layout = "_Layout";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Редактирование заявки</h1>
+    <p class="subtitle">@Model.ModerationShop?.Name</p>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> @Model.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle"></i> @Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (Model.ModerationShop != null)
+{
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-edit"></i> Информация о заявке
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h5><i class="fas fa-info-circle"></i> Основная информация</h5>
+                    <div class="shop-detail-info">
+                        <p><strong>ID заявки:</strong> @Model.ModerationShop.Id</p>
+                        <p><strong>Название:</strong> @Model.ModerationShop.Name</p>
+                        <p><strong>Статус:</strong> 
+                            <span class="shop-status-badge @(Model.ModerationShop.ModerationStatus == ModerationStatus.Pending ? "status-pending" : Model.ModerationShop.ModerationStatus == ModerationStatus.Approved ? "status-approved" : "status-rejected")">
+                                @(Model.ModerationShop.ModerationStatus == ModerationStatus.Pending ? "Ожидает" : Model.ModerationShop.ModerationStatus == ModerationStatus.Approved ? "Одобрено" : "Отклонено")
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <h5><i class="fas fa-map-marker-alt"></i> Адрес</h5>
+                    <div class="shop-detail-info">
+                        <p><strong>Невалидированный адрес:</strong> @Model.ModerationShop.NotValidatedAddress</p>
+                        @if (Model.ModerationShop.Address != null)
+                        {
+                            <p><strong>Город:</strong> @(Model.ModerationShop.Address.CityName ?? "Не указан")</p>
+                            <p><strong>Улица:</strong> @(Model.ModerationShop.Address.StreetName ?? "Не указана") @(Model.ModerationShop.Address.BuildingNumber ?? "")</p>
+                            @if (!string.IsNullOrEmpty(Model.ModerationShop.Address.PostalCode))
+                            {
+                                <p><strong>Почтовый индекс:</strong> @Model.ModerationShop.Address.PostalCode</p>
+                            }
+                            @if (Model.ModerationShop.Address.Latitude.HasValue && Model.ModerationShop.Address.Longitude.HasValue)
+                            {
+                                <p><strong>Координаты:</strong> @Model.ModerationShop.Address.Latitude, @Model.ModerationShop.Address.Longitude</p>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">Адрес не указан</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.ModerationShop.ShopPhotos != null && Model.ModerationShop.ShopPhotos.Any())
+            {
+                <div class="mb-4">
+                    <h5><i class="fas fa-images"></i> Фотографии</h5>
+                    <div class="shop-photos-grid">
+                        @foreach (var photo in Model.ModerationShop.ShopPhotos)
+                        {
+                            <div class="shop-photo-item">
+                                <img src="@photo" alt="Фото кофейни" />
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model.ModerationShop.ShopContact != null)
+            {
+                <div class="mb-4">
+                    <h5><i class="fas fa-phone"></i> Контакты</h5>
+                    <div class="shop-detail-info">
+                        @if (!string.IsNullOrEmpty(Model.ModerationShop.ShopContact.PhoneNumber))
+                        {
+                            <p><i class="fas fa-phone"></i> <strong>Телефон:</strong> 
+                                <a href="tel:@Model.ModerationShop.ShopContact.PhoneNumber">@Model.ModerationShop.ShopContact.PhoneNumber</a>
+                            </p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.ModerationShop.ShopContact.InstagramLink))
+                        {
+                            <p><i class="fab fa-instagram"></i> <strong>Instagram:</strong> 
+                                <a href="@Model.ModerationShop.ShopContact.InstagramLink" target="_blank">@Model.ModerationShop.ShopContact.InstagramLink</a>
+                            </p>
+                        }
+                        @if (string.IsNullOrEmpty(Model.ModerationShop.ShopContact.PhoneNumber) && string.IsNullOrEmpty(Model.ModerationShop.ShopContact.InstagramLink))
+                        {
+                            <p class="text-muted">Контакты не указаны</p>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model.ModerationShop.Schedules != null && Model.ModerationShop.Schedules.Any())
+            {
+                <div class="mb-4">
+                    <h5><i class="fas fa-clock"></i> Расписание работы</h5>
+                    <div class="shop-schedule-list">
+                        @foreach (var schedule in Model.ModerationShop.Schedules)
+                        {
+                            <div class="schedule-row">
+                                <span class="schedule-day-name">@GetDayName(schedule.DayOfWeek):</span>
+                                <span class="schedule-time">
+                                    @if (schedule.IsOpen24Hours)
+                                    {
+                                        <text>24 часа</text>
+                                    }
+                                    else if (schedule.OpeningTime.HasValue && schedule.ClosingTime.HasValue)
+                                    {
+                                        <text>@schedule.OpeningTime.Value.ToString(@"hh\:mm") - @schedule.ClosingTime.Value.ToString(@"hh\:mm")</text>
+                                    }
+                                    else
+                                    {
+                                        <text>Не указано</text>
+                                    }
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="mt-4">
+                @if (Model.ModerationShop.ModerationStatus == ModerationStatus.Pending)
+                {
+                    <div class="d-flex gap-2">
+                        <form method="post" asp-page-handler="UpdateStatus" class="d-inline">
+                            <input type="hidden" name="id" value="@Model.ModerationShop.Id" />
+                            <input type="hidden" name="status" value="Approved" />
+                            <button type="submit" class="btn btn-approve" 
+                                    onclick="return confirm('Одобрить заявку на кофейню «@Model.ModerationShop.Name»?');">
+                                <i class="fas fa-check"></i> Одобрить
+                            </button>
+                        </form>
+                        <form method="post" asp-page-handler="UpdateStatus" class="d-inline">
+                            <input type="hidden" name="id" value="@Model.ModerationShop.Id" />
+                            <input type="hidden" name="status" value="Rejected" />
+                            <button type="submit" class="btn btn-reject" 
+                                    onclick="return confirm('Отклонить заявку на кофейню «@Model.ModerationShop.Name»?');">
+                                <i class="fas fa-times"></i> Отклонить
+                            </button>
+                        </form>
+                        <a href="/Moderation" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад к списку
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <a href="/Moderation" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Назад к списку
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle"></i> Заявка не найдена
+    </div>
+    <a href="/Moderation" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Назад к списку
+    </a>
+}
+
+@functions {
+    private string GetDayName(DayOfWeek? dayOfWeek)
+    {
+        if (!dayOfWeek.HasValue) return "Неизвестно";
+        
+        return dayOfWeek.Value switch
+        {
+            DayOfWeek.Monday => "Понедельник",
+            DayOfWeek.Tuesday => "Вторник",
+            DayOfWeek.Wednesday => "Среда",
+            DayOfWeek.Thursday => "Четверг",
+            DayOfWeek.Friday => "Пятница",
+            DayOfWeek.Saturday => "Суббота",
+            DayOfWeek.Sunday => "Воскресенье",
+            _ => "Неизвестно"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        // Автоматически скрывать сообщения через 5 секунд
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    </script>
+}
+

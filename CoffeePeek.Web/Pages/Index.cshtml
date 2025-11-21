@@ -24,48 +24,80 @@ else
         <i class="fas fa-info-circle"></i> Вы не авторизованы. Некоторые API вызовы могут не работать. <a href="/Login">Войти</a>
     </div>
 }
-@if (Model.CoffeeShops != null)
+@if (Model.CoffeeShops != null && Model.CoffeeShops.Any())
 {
-    <div class="card">
+    <div class="coffee-shops-grid">
         @foreach (var shop in Model.CoffeeShops)
         {
-            <div class="card">
-                <div class="shop-image">
-                    @if (shop.ShopPhotos != null && shop.ShopPhotos.Any())
+            <div class="coffee-shop-card">
+                <div class="coffee-shop-image">
+                    @if (shop.ShopPhotos != null && shop.ShopPhotos.Any() && !string.IsNullOrEmpty(shop.ShopPhotos.FirstOrDefault()?.Url))
                     {
-                        <img src="@shop.ShopPhotos?.FirstOrDefault()?.Url" alt="@shop.Name" class="shop-image" />
+                        <img src="@shop.ShopPhotos.FirstOrDefault()?.Url" alt="@shop.Name" />
                     }
                     else
                     {
-                        <i class="fas fa-coffee"></i>
+                        <div class="coffee-shop-image-placeholder">
+                            <i class="fas fa-coffee"></i>
+                        </div>
                     }
                 </div>
-                <div class="card-body">
-                    <h4>@shop.Name</h4>
-                    <p>@shop.Address.CityName, @shop.Address.StreetName @shop.Address.BuildingNumber</p>
-                    <p>@shop.Description</p>
-                    @if (!string.IsNullOrEmpty(shop.ShopContact?.PhoneNumber))
+                <div class="coffee-shop-content">
+                    <h3 class="coffee-shop-name">@shop.Name</h3>
+                    <p class="coffee-shop-address">
+                        <i class="fas fa-map-marker-alt"></i>
+                        @shop.Address?.CityName, @shop.Address?.StreetName @shop.Address?.BuildingNumber
+                    </p>
+                    @if (!string.IsNullOrEmpty(shop.Description))
                     {
-                        <p>📞 @shop.ShopContact.PhoneNumber</p>
+                        <p class="coffee-shop-description">@shop.Description</p>
                     }
-                    @if (!string.IsNullOrEmpty(shop.ShopContact?.InstagramLink))
+                    <div class="coffee-shop-details">
+                        @if (!string.IsNullOrEmpty(shop.ShopContact?.PhoneNumber))
+                        {
+                            <div class="coffee-shop-contact">
+                                <i class="fas fa-phone"></i>
+                                <span>@shop.ShopContact.PhoneNumber</span>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(shop.ShopContact?.InstagramLink))
+                        {
+                            <div class="coffee-shop-contact">
+                                <i class="fab fa-instagram"></i>
+                                <a href="@shop.ShopContact.InstagramLink" target="_blank">Instagram</a>
+                            </div>
+                        }
+                    </div>
+                    @if (shop.Schedules != null && shop.Schedules.Any())
                     {
-                        <p>📷 <a href="@shop.ShopContact.InstagramLink" target="_blank">Instagram</a></p>
-                    }
-                    @if (shop.Schedules != null)
-                    {
-                        <p>
-                            @foreach (var schedule in shop.Schedules)
-                            {
-                                <span>@schedule.DayOfWeek: 
-                                    @(schedule.IsOpen24Hours ? "24h" : $"{schedule.OpeningTime:hh\\:mm} - {schedule.ClosingTime:hh\\:mm}")<br />
-                                </span>
-                            }
-                        </p>
+                        <div class="coffee-shop-schedule">
+                            <i class="fas fa-clock"></i>
+                            <div class="schedule-list">
+                                @foreach (var schedule in shop.Schedules)
+                                {
+                                    <div class="schedule-item">
+                                        <span class="schedule-day">@schedule.DayOfWeek:</span>
+                                        <span class="schedule-time">
+                                            @(schedule.IsOpen24Hours ? "24h" : $"{schedule.OpeningTime:hh\\:mm} - {schedule.ClosingTime:hh\\:mm}")
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
                     }
                 </div>
             </div>
         }
+    </div>
+}
+else if (Model.CoffeeShops != null && !Model.CoffeeShops.Any())
+{
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="fas fa-coffee"></i>
+        </div>
+        <h3>Нет кофеен</h3>
+        <p>Кофейни не найдены</p>
     </div>
 }
 

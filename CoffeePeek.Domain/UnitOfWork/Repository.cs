@@ -16,13 +16,13 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         _dbSet = _context.Set<TEntity>();
     }
 
-    public void SaveChanges()
+    public virtual void SaveChanges()
     {
         SetCreatedAtTimestamps();
         _context.SaveChanges();
     }
 
-    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         SetCreatedAtTimestamps();
         await _context.SaveChangesAsync(cancellationToken);
@@ -124,7 +124,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         _dbSet.RemoveRange(entities);
     }
     
-    public void Update(TEntity entity)
+    public virtual void Update(TEntity entity)
     {
         _dbSet.Update(entity);
     }

@@ -5,10 +5,11 @@ using MediatR;
 
 namespace CoffeePeek.Contract.Requests.Auth;
 
-public class RegisterUserRequest : IRequest<Response<RegisterUserResponse>>
+public class RegisterUserRequest(string userName, string email, string password, bool isAdmin = false)
+    : IRequest<Response<RegisterUserResponse>>
 {
-    [Required] public string UserName { get; set; }
-    [Required] public string Email { get; set; }
-    [Required] public string Password { get; set; }
-    public bool IsAdmin { get; set; } = false;
+    [Required] public string UserName { get; set; } = userName;
+    [Required] public string Email { get; } = email;
+    [Required] public string Password { get; } = password;
+    public bool IsAdmin { get; set; } = isAdmin;
 }

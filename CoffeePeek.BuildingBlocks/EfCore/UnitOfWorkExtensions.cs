@@ -4,6 +4,7 @@ using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.Entities.Shop;
 using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Domain.Repositories;
+using CoffeePeek.Domain.Repositories.Interfaces;
 using CoffeePeek.Domain.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,11 +22,18 @@ public static class UnitOfWorkExtensions
         return services;
     }
 
-    public static IServiceCollection AddCustomRepository<TEntity, TRepository>(this IServiceCollection services)
+    public static IServiceCollection AddSpecificRepository<TEntity, TInterface, TRepository>(
+        this IServiceCollection services)
         where TEntity : class
-        where TRepository : class, IRepository<TEntity>
+        where TInterface : class, IRepository<TEntity>
+        where TRepository : class, TInterface
     {
-        services.AddScoped<IRepository<TEntity>, TRepository>();
+        services.AddScoped<TInterface, TRepository>();
+
+        services.AddScoped<IRepository<TEntity>, TRepository>(sp =>
+            sp.GetRequiredService<TInterface>() as TRepository ??
+            throw new InvalidOperationException("Repository resolution failed."));
+
         services.AddScoped<TRepository>();
 
         return services;
@@ -35,13 +43,13 @@ public static class UnitOfWorkExtensions
     {
         services.AddUnitOfWork<CoffeePeekDbContext>();
 
-        services.AddCustomRepository<User, UserRepository>();
+        services.AddSpecificRepository<User, IUserRepository, UserRepository>();
         
-        services.AddCustomRepository<City, CityRepository>();
+        services.AddSpecificRepository<City, ICityRepository, CityRepository>();
         
-        services.AddCustomRepository<ModerationShop, ModerationShopsRepository>();
+        services.AddSpecificRepository<ModerationShop, IModerationShopsRepository, ModerationShopsRepository>();
 
-        services.AddCustomRepository<RefreshToken, RefreshTokenRepository>();
+        services.AddSpecificRepository<RefreshToken, IRefreshTokenRepository, RefreshTokenRepository>();
         
         return services;
     }

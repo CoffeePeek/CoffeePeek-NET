@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Response;
 using CoffeePeek.Domain.Enums.Shop;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -74,12 +75,9 @@ public class ModerationModel : PageModel
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var apiResponse = JsonSerializer.Deserialize<ApiResponse<GetReviewShopsResponse>>(content, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+                var apiResponse = JsonSerializer.Deserialize<Response<GetReviewShopsResponse>>(content);
 
-                if (apiResponse?.IsSuccess == true && apiResponse.Data != null)
+                if (apiResponse?.Success == true && apiResponse.Data != null)
                 {
                     var allShops = apiResponse.Data.ReviewShops?.ToList() ?? new List<ModerationShopDto>();
                     
