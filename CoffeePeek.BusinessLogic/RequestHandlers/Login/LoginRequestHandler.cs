@@ -26,11 +26,18 @@ public class LoginRequestHandler(
 
         if (user == null)
         {
-            user = await userManager.FindByEmailAsync(request.Email);
-            
-            if (user == null)
+            try
             {
-                return Response.ErrorResponse<Response<LoginResponse>>("Account does not exist.");
+                user = await userManager.FindByEmailAsync(request.Email);
+                if (user == null)
+                {
+                    return Response.ErrorResponse<Response<LoginResponse>>("Account does not exist.");
+                }
+                
+            }
+            catch (Exception e)
+            {
+                return Response.ErrorResponse<Response<LoginResponse>>(e.Message);
             }
         }
         

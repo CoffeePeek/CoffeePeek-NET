@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoffeePeek.Domain.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialv100 : Migration
+    public partial class InitialCommit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,20 +24,6 @@ namespace CoffeePeek.Domain.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Countries", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RatingCategories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RatingCategories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -62,6 +48,7 @@ namespace CoffeePeek.Domain.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserName = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "text", nullable: false),
+                    About = table.Column<string>(type: "text", nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
                     PhoneNumber = table.Column<string>(type: "text", nullable: true),
@@ -233,6 +220,9 @@ namespace CoffeePeek.Domain.Migrations
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     ShopId = table.Column<int>(type: "integer", nullable: false),
                     ReviewDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RatingCoffee = table.Column<decimal>(type: "numeric", nullable: false),
+                    RatingPlace = table.Column<decimal>(type: "numeric", nullable: false),
+                    RatingService = table.Column<decimal>(type: "numeric", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -275,34 +265,7 @@ namespace CoffeePeek.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReviewRatingCategories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ReviewId = table.Column<int>(type: "integer", nullable: false),
-                    RatingCategoryId = table.Column<int>(type: "integer", nullable: false),
-                    Value = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ReviewRatingCategories", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ReviewRatingCategories_RatingCategories_RatingCategoryId",
-                        column: x => x.RatingCategoryId,
-                        principalTable: "RatingCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ReviewRatingCategories_Reviews_ReviewId",
-                        column: x => x.ReviewId,
-                        principalTable: "Reviews",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ReviewShops",
+                name: "ModerationShops",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -313,31 +276,31 @@ namespace CoffeePeek.Domain.Migrations
                     AddressId = table.Column<int>(type: "integer", nullable: true),
                     ShopContactId = table.Column<int>(type: "integer", nullable: true),
                     ShopId = table.Column<int>(type: "integer", nullable: true),
-                    ReviewStatus = table.Column<int>(type: "integer", nullable: false),
+                    ModerationStatus = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     ShopContactsId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReviewShops", x => x.Id);
+                    table.PrimaryKey("PK_ModerationShops", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ReviewShops_Addresses_AddressId",
+                        name: "FK_ModerationShops_Addresses_AddressId",
                         column: x => x.AddressId,
                         principalTable: "Addresses",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ReviewShops_ShopContacts_ShopContactsId",
+                        name: "FK_ModerationShops_ShopContacts_ShopContactsId",
                         column: x => x.ShopContactsId,
                         principalTable: "ShopContacts",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ReviewShops_Shops_ShopId",
+                        name: "FK_ModerationShops_Shops_ShopId",
                         column: x => x.ShopId,
                         principalTable: "Shops",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ReviewShops_Users_UserId",
+                        name: "FK_ModerationShops_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -357,16 +320,16 @@ namespace CoffeePeek.Domain.Migrations
                     SpecialClosingTime = table.Column<TimeSpan>(type: "interval", nullable: true),
                     IsSpecialOpen24Hours = table.Column<bool>(type: "boolean", nullable: false),
                     ExceptionReason = table.Column<string>(type: "text", nullable: true),
-                    ReviewShopId = table.Column<int>(type: "integer", nullable: true),
+                    ModerationShopId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ScheduleExceptions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ScheduleExceptions_ReviewShops_ReviewShopId",
-                        column: x => x.ReviewShopId,
-                        principalTable: "ReviewShops",
+                        name: "FK_ScheduleExceptions_ModerationShops_ModerationShopId",
+                        column: x => x.ModerationShopId,
+                        principalTable: "ModerationShops",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ScheduleExceptions_Shops_ShopId",
@@ -386,17 +349,16 @@ namespace CoffeePeek.Domain.Migrations
                     DayOfWeek = table.Column<int>(type: "integer", nullable: false),
                     OpeningTime = table.Column<TimeSpan>(type: "interval", nullable: true),
                     ClosingTime = table.Column<TimeSpan>(type: "interval", nullable: true),
-                    IsOpen24Hours = table.Column<bool>(type: "boolean", nullable: false),
-                    ReviewShopId = table.Column<int>(type: "integer", nullable: true),
+                    ModerationShopId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Schedules", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Schedules_ReviewShops_ReviewShopId",
-                        column: x => x.ReviewShopId,
-                        principalTable: "ReviewShops",
+                        name: "FK_Schedules_ModerationShops_ModerationShopId",
+                        column: x => x.ModerationShopId,
+                        principalTable: "ModerationShops",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Schedules_Shops_ShopId",
@@ -415,16 +377,16 @@ namespace CoffeePeek.Domain.Migrations
                     Url = table.Column<string>(type: "text", nullable: false),
                     ShopId = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false),
-                    ReviewShopId = table.Column<int>(type: "integer", nullable: true),
+                    ModerationShopId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ShopPhoto", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ShopPhoto_ReviewShops_ReviewShopId",
-                        column: x => x.ReviewShopId,
-                        principalTable: "ReviewShops",
+                        name: "FK_ShopPhoto_ModerationShops_ModerationShopId",
+                        column: x => x.ModerationShopId,
+                        principalTable: "ModerationShops",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ShopPhoto_Shops_ShopId",
@@ -456,19 +418,29 @@ namespace CoffeePeek.Domain.Migrations
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefreshTokens_UserId",
-                table: "RefreshTokens",
+                name: "IX_ModerationShops_AddressId",
+                table: "ModerationShops",
+                column: "AddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModerationShops_ShopContactsId",
+                table: "ModerationShops",
+                column: "ShopContactsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModerationShops_ShopId",
+                table: "ModerationShops",
+                column: "ShopId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModerationShops_UserId",
+                table: "ModerationShops",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReviewRatingCategories_RatingCategoryId",
-                table: "ReviewRatingCategories",
-                column: "RatingCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReviewRatingCategories_ReviewId",
-                table: "ReviewRatingCategories",
-                column: "ReviewId");
+                name: "IX_RefreshTokens_UserId",
+                table: "RefreshTokens",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ShopId",
@@ -481,29 +453,9 @@ namespace CoffeePeek.Domain.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReviewShops_AddressId",
-                table: "ReviewShops",
-                column: "AddressId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReviewShops_ShopContactsId",
-                table: "ReviewShops",
-                column: "ShopContactsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReviewShops_ShopId",
-                table: "ReviewShops",
-                column: "ShopId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReviewShops_UserId",
-                table: "ReviewShops",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ScheduleExceptions_ReviewShopId",
+                name: "IX_ScheduleExceptions_ModerationShopId",
                 table: "ScheduleExceptions",
-                column: "ReviewShopId");
+                column: "ModerationShopId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ScheduleExceptions_ShopId",
@@ -511,9 +463,9 @@ namespace CoffeePeek.Domain.Migrations
                 column: "ShopId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Schedules_ReviewShopId",
+                name: "IX_Schedules_ModerationShopId",
                 table: "Schedules",
-                column: "ReviewShopId");
+                column: "ModerationShopId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Schedules_ShopId",
@@ -527,9 +479,9 @@ namespace CoffeePeek.Domain.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShopPhoto_ReviewShopId",
+                name: "IX_ShopPhoto_ModerationShopId",
                 table: "ShopPhoto",
-                column: "ReviewShopId");
+                column: "ModerationShopId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShopPhoto_ShopId",
@@ -569,7 +521,7 @@ namespace CoffeePeek.Domain.Migrations
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
-                name: "ReviewRatingCategories");
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "ScheduleExceptions");
@@ -584,13 +536,7 @@ namespace CoffeePeek.Domain.Migrations
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "RatingCategories");
-
-            migrationBuilder.DropTable(
-                name: "Reviews");
-
-            migrationBuilder.DropTable(
-                name: "ReviewShops");
+                name: "ModerationShops");
 
             migrationBuilder.DropTable(
                 name: "Roles");

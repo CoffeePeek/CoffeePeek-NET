@@ -12,7 +12,7 @@ public class UserManager(UserRepository userRepository,
         return hashingService.VerifyHashedStrings(requestPassword, user.PasswordHash);
     }
 
-    public Task<Domain.Entities.Users.User?> FindByEmailAsync(string requestEmail)
+    public Task<Domain.Entities.Users.User> FindByEmailAsync(string requestEmail)
     {
         return userRepository.FirstOrDefaultAsync(x => x.Email == requestEmail);
     }

@@ -49,7 +49,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         return await _dbSet.FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
-    public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
+    public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
     {
         return await _dbSet.FirstOrDefaultAsync(predicate);
     }

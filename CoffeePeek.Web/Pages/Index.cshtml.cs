@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using CoffeePeek.Web.Contract.Http;
 using CoffeePeek.Web.Contract.Http.Shops;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

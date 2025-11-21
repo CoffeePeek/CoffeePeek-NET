@@ -274,9 +274,6 @@ namespace CoffeePeek.Domain.Migrations
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsOpen24Hours")
-                        .HasColumnType("boolean");
-
                     b.Property<int?>("ModerationShopId")
                         .HasColumnType("integer");
 
@@ -389,7 +386,7 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ReviewShops");
+                    b.ToTable("ModerationShops");
                 });
 
             modelBuilder.Entity("CoffeePeek.Domain.Entities.Shop.Shop", b =>
@@ -497,7 +494,6 @@ namespace CoffeePeek.Domain.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("About")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
