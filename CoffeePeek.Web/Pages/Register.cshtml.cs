@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using CoffeePeek.Contract.Response;
 using CoffeePeek.Web.Contract.Http.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -46,17 +48,39 @@ public class RegisterModel : PageModel
     [TempData]
     public string? SuccessMessage { get; set; }
 
+    public bool IsAuthenticated { get; set; }
+    public string? UserEmail { get; set; }
+
     public void OnGet()
     {
-        var token = HttpContext.Session.GetString("AccessToken");
-        if (!string.IsNullOrEmpty(token))
+        LoadUserData();
+        ViewData["IsAuthenticated"] = IsAuthenticated;
+        ViewData["UserEmail"] = UserEmail;
+        
+        if (!IsAuthenticated)
         {
-            Response.Redirect("/Index");
+            var token = HttpContext.Session.GetString("AccessToken");
+            if (!string.IsNullOrEmpty(token))
+            {
+                Response.Redirect("/Index");
+            }
         }
+    }
+
+    private void LoadUserData()
+    {
+        var accessToken = HttpContext.Session.GetString("AccessToken") ?? 
+                         HttpContext.Request.Cookies["AccessToken"];
+        UserEmail = HttpContext.Session.GetString("UserEmail");
+        IsAuthenticated = !string.IsNullOrEmpty(accessToken);
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
+        LoadUserData();
+        ViewData["IsAuthenticated"] = IsAuthenticated;
+        ViewData["UserEmail"] = UserEmail;
+
         if (!ModelState.IsValid)
         {
             return Page();
@@ -67,6 +91,7 @@ public class RegisterModel : PageModel
             var client = _httpClientFactory.CreateClient();
             var apiBaseUrl = _configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001";
 
+            // Сначала проверяем, существует ли пользователь с таким email
             var checkResponse = await client.PostAsync(
                 $"{apiBaseUrl}/api/Auth/check-exists?email={Uri.EscapeDataString(Email)}", 
                 null
@@ -82,11 +107,12 @@ public class RegisterModel : PageModel
 
                 if (checkResult?.IsSuccess == true)
                 {
-                    ErrorMessage = "A user with this email already exists. Please use a different email or login.";
+                    ErrorMessage = "Пользователь с таким email уже существует. Пожалуйста, используйте другой email или войдите.";
                     return Page();
                 }
             }
-            
+
+            // Регистрируем нового пользователя
             var registerRequest = new
             {
                 userName = Username,
@@ -112,41 +138,43 @@ public class RegisterModel : PageModel
 
                 if (registerResponse?.IsSuccess == true)
                 {
-                    SuccessMessage = "Registration successful! Redirecting to login...";
+                    SuccessMessage = "Регистрация выполнена успешно! Перенаправление на страницу входа...";
                     
+                    // Небольшая задержка перед редиректом
                     await Task.Delay(1500);
                     return RedirectToPage("/Login");
                 }
                 else
                 {
-                    ErrorMessage = registerResponse?.Message ?? "Registration failed. Please try again.";
+                    ErrorMessage = registerResponse?.Message ?? "Ошибка регистрации. Пожалуйста, попробуйте снова.";
                 }
             }
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 
+                // Пытаемся извлечь сообщение об ошибке из ответа
                 try
                 {
-                    var errorResponse = JsonSerializer.Deserialize<ApiResponse<RegisterResponse>>(errorContent, new JsonSerializerOptions
+                    var errorResponse = JsonSerializer.Deserialize<Response<RegisterResponse>>(errorContent, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
-                    ErrorMessage = errorResponse?.Message ?? $"Registration failed: {response.StatusCode}";
+                    ErrorMessage = errorResponse?.Message ?? $"Ошибка регистрации: {response.StatusCode}";
                 }
                 catch
                 {
-                    ErrorMessage = $"Registration failed: {response.StatusCode}. Please try again.";
+                    ErrorMessage = $"Ошибка регистрации: {response.StatusCode}. Пожалуйста, попробуйте снова.";
                 }
             }
         }
         catch (HttpRequestException ex)
         {
-            ErrorMessage = $"Connection error: Unable to reach the API server. {ex.Message}";
+            ErrorMessage = $"Ошибка подключения: Не удалось подключиться к серверу API. {ex.Message}";
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"An error occurred: {ex.Message}";
+            ErrorMessage = $"Произошла ошибка: {ex.Message}";
         }
 
         return Page();

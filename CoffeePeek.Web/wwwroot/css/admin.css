@@ -192,6 +192,12 @@ body {
     font-size: 2rem;
     font-weight: 700;
     color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
     margin: 0 0 1.5rem 0;
 }
 
@@ -369,6 +375,20 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
+.btn-view {
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-view:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+    color: white;
+    text-decoration: none;
+}
+
 /* Cards */
 .card {
     background: var(--bg-primary);
@@ -480,6 +500,157 @@ body {
     outline: none;
 }
 
+/* Coffee Shops Grid */
+.coffee-shops-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.coffee-shop-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.coffee-shop-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.coffee-shop-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: var(--bg-tertiary);
+    position: relative;
+}
+
+.coffee-shop-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.coffee-shop-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 3rem;
+}
+
+.coffee-shop-content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.coffee-shop-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.coffee-shop-address {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.coffee-shop-address i {
+    color: var(--primary);
+}
+
+.coffee-shop-description {
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    margin: 0 0 1rem 0;
+    flex: 1;
+}
+
+.coffee-shop-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.coffee-shop-contact {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.coffee-shop-contact i {
+    color: var(--primary);
+    width: 16px;
+}
+
+.coffee-shop-contact a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.coffee-shop-contact a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.coffee-shop-schedule {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.coffee-shop-schedule i {
+    color: var(--primary);
+    margin-top: 0.25rem;
+}
+
+.schedule-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.schedule-item {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.schedule-day {
+    font-weight: 500;
+    min-width: 80px;
+}
+
+.schedule-time {
+    color: var(--text-primary);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .navbar-nav {
@@ -497,6 +668,11 @@ body {
     .table td,
     .table th {
         padding: 0.75rem 1rem;
+    }
+
+    .coffee-shops-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
     }
 }
 
@@ -518,5 +694,218 @@ body {
     .table-responsive {
         overflow-x: auto;
     }
+
+    .coffee-shops-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .coffee-shop-content {
+        padding: 1rem;
+    }
+
+    .coffee-shop-image {
+        height: 180px;
+    }
+}
+
+/* Shop Detail Modal */
+.shop-detail-view {
+    padding: 0.5rem 0;
+}
+
+.shop-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.shop-detail-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+}
+
+.shop-status-badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.shop-status-badge.status-pending {
+    background: #FFF3CD;
+    color: #856404;
+}
+
+.shop-status-badge.status-approved {
+    background: #D5F4E6;
+    color: #0E4B2A;
+}
+
+.shop-status-badge.status-rejected {
+    background: #FADBD8;
+    color: #922B21;
+}
+
+.shop-detail-section {
+    margin-bottom: 2rem;
+}
+
+.shop-detail-section h5 {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.shop-detail-section h5 i {
+    color: var(--primary);
+}
+
+.shop-detail-info {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.shop-detail-info p {
+    margin: 0.5rem 0;
+    color: var(--text-secondary);
+}
+
+.shop-detail-info a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.shop-detail-info a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.shop-detail-photos {
+    margin-bottom: 2rem;
+}
+
+.shop-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.shop-photo-item {
+    width: 100%;
+    height: 150px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-tertiary);
+}
+
+.shop-photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.shop-schedule-list {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.schedule-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.schedule-row:last-child {
+    border-bottom: none;
+}
+
+.schedule-day-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    min-width: 120px;
+}
+
+.schedule-time {
+    color: var(--text-secondary);
+}
+
+.modal-content {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+}
+
+.modal-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.modal-title {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.btn-approve,
+.btn-reject {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-approve {
+    background: var(--success);
+    color: white;
+}
+
+.btn-approve:hover {
+    background: #229954;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+    color: white;
+}
+
+.btn-reject {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-reject:hover {
+    background: #C0392B;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+    color: white;
 }
 

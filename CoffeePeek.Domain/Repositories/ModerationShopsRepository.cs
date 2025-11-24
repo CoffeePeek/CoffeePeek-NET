@@ -1,11 +1,12 @@
 using CoffeePeek.Domain.Databases;
 using CoffeePeek.Domain.Entities.Shop;
+using CoffeePeek.Domain.Repositories.Interfaces;
 using CoffeePeek.Domain.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Domain.Repositories;
 
-public class ModerationShopsRepository(CoffeePeekDbContext context) : Repository<ModerationShop>(context)
+public class ModerationShopsRepository(CoffeePeekDbContext context) : Repository<ModerationShop>(context), IModerationShopsRepository
 {
     public async Task<bool> UpdatePhotos(int shopId, int userId, ICollection<string> urls)
     {
