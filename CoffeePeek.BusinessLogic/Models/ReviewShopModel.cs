@@ -3,12 +3,8 @@ using CoffeePeek.Domain.Enums.Shop;
 
 namespace CoffeePeek.BusinessLogic.Models;
 
-internal class ReviewShopModel : BaseModel<ModerationShop>
+public class ReviewShopModel(ModerationShop entity) : BaseModel<ModerationShop>(entity)
 {
-    public ReviewShopModel(ModerationShop entity) : base(entity)
-    {
-    }
-
     public void Update(ModerationShop entity)
     {
         

@@ -1,5 +1,5 @@
 using System.Reflection;
-using CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Review.Behavior;
+using CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Moderation.Behavior;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
