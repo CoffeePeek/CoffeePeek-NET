@@ -45,7 +45,7 @@ public class InternalControllerTests
             m => m.Send(It.IsAny<GetCitiesRequest>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
-
+    
     [Fact]
     public async Task GetCities_ShouldReturnEmptyList_WhenNoCitiesExist()
     {

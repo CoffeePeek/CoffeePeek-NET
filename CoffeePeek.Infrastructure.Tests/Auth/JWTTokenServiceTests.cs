@@ -83,7 +83,6 @@ public class JWTTokenServiceTests
             }
         };
 
-        // Настройка мока: при запросе по старому токену возвращаем пользователя
         _userRepositoryMock
             .Setup(r => r.GetUserByRefreshToken(existingRefreshTokenString))
             .ReturnsAsync(user);
@@ -92,21 +91,17 @@ public class JWTTokenServiceTests
         var result = await _service.RefreshTokensAsync(existingRefreshTokenString);
 
         // Assert
-        // 1. Проверка, что Refresh Token был отозван
         var oldToken = user.RefreshTokens.FirstOrDefault(t => t.Token == existingRefreshTokenString);
         Assert.NotNull(oldToken);
         Assert.True(oldToken.IsRevoked);
 
-        // 2. Проверка, что создан новый Refresh Token
         var newToken = user.RefreshTokens.Last();
         Assert.NotEqual(existingRefreshTokenString, newToken.Token);
         Assert.Equal(result.RefreshToken, newToken.Token);
 
-        // 3. Проверка, что репозиторий был вызван для сохранения (дважды: Update и SaveChangesAsync внутри GenerateTokensAsync)
         _userRepositoryMock.Verify(r => r.Update(user), Times.Once);
         _userRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         
-        // 4. Проверка, что Access Token новый
         Assert.NotNull(result.AccessToken);
     }
     

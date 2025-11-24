@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
-        <RootNamespace>CoffeePeek.Api.Test</RootNamespace>
+        <RootNamespace>CoffeePeek.Api.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
