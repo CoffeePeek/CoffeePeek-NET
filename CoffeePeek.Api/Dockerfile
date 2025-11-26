@@ -7,10 +7,13 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["CoffeePeek.Api/CoffeePeek.Api.csproj", "CoffeePeek.Api/"]
 COPY ["CoffeePeek.Contract/CoffeePeek.Contract.csproj", "CoffeePeek.Contract/"]
+COPY ["CoffeePeek.Infrastructure/CoffeePeek.Infrastructure.csproj", "CoffeePeek.Infrastructure/"]
 COPY ["CoffeePeek.BuildingBlocks/CoffeePeek.BuildingBlocks.csproj", "CoffeePeek.BuildingBlocks/"]
 COPY ["CoffeePeek.BusinessLogic/CoffeePeek.BusinessLogic.csproj", "CoffeePeek.BusinessLogic/"]
 COPY ["CoffeePeek.Domain/CoffeePeek.Domain.csproj", "CoffeePeek.Domain/"]
 COPY ["CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj", "CoffeePeek.Shared.Extensions/"]
+COPY ["CoffeePeek.Shared.Models/CoffeePeek.Shared.Models.csproj", "CoffeePeek.Shared.Models/"]
+
 RUN dotnet restore "CoffeePeek.Api/CoffeePeek.Api.csproj"
 COPY . .
 WORKDIR "/src/CoffeePeek.Api"
