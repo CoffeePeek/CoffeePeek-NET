@@ -4,9 +4,9 @@ using CoffeePeek.Shared.Models.PhotoUpload;
 using MassTransit;
 using MediatR;
 
-namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Review.Behavior;
+namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop.Moderation.Behavior;
 
-internal class UpdateReviewCoffeeShopBehavior(IPublishEndpoint publishEndpoint)
+public class UpdateReviewCoffeeShopBehavior(IPublishEndpoint publishEndpoint)
     : IPipelineBehavior<UpdateModerationCoffeeShopRequest, Contract.Response.Response<UpdateModerationCoffeeShopResponse>>
 {
     public async Task<Contract.Response.Response<UpdateModerationCoffeeShopResponse>> Handle(UpdateModerationCoffeeShopRequest request,

@@ -1,9 +1,7 @@
 namespace CoffeePeek.Contract.Response.Auth;
 
-public class RegisterUserResponse 
+public class RegisterUserResponse(string email, string fullName)
 {
-    public int Id { get; set; }
-    public string Email { get; set; }
-    public string[] Roles { get; set; }
-    public string FullName { get; set; }
+    public string Email { get; set; } = email;
+    public string FullName { get; set; } = fullName;
 }
