@@ -1,3 +1,4 @@
+using CoffeePeek.Api.Extensions;
 using CoffeePeek.Contract.Requests.Auth;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Auth;
@@ -33,7 +34,11 @@ public class AuthController(IMediator mediator): Controller
     [HttpGet("refresh")]
     public Task<Response<GetRefreshTokenResponse>> RefreshToken([FromQuery]string refreshToken)
     {
-        var request =  new GetRefreshTokenRequest(refreshToken);
+        var request = new GetRefreshTokenRequest(refreshToken)
+        {
+            UserId = User.GetUserIdOrThrow()
+        };
+        
         return mediator.Send(request);
     }
 }

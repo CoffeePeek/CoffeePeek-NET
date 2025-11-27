@@ -6,8 +6,7 @@ using MediatR;
 
 namespace CoffeePeek.BusinessLogic.RequestHandlers;
 
-public class GetRefreshTokenRequestHandler(
-    IJWTTokenService jwtTokenService)
+public class GetRefreshTokenRequestHandler(IJWTTokenService jwtTokenService)
     : IRequestHandler<GetRefreshTokenRequest, Response<GetRefreshTokenResponse>>
 {
     public async Task<Response<GetRefreshTokenResponse>> Handle(GetRefreshTokenRequest request, CancellationToken cancellationToken)
@@ -15,7 +14,7 @@ public class GetRefreshTokenRequestHandler(
         GetRefreshTokenResponse response;
         try
         {
-            var authResult = await jwtTokenService.RefreshTokensAsync(request.RefreshToken);
+            var authResult = await jwtTokenService.RefreshTokensAsync(request.RefreshToken, request.UserId);
 
             response = new GetRefreshTokenResponse(authResult.AccessToken, authResult.RefreshToken);
         }

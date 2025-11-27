@@ -2,12 +2,7 @@ using CoffeePeek.Contract.Dtos.CoffeeShop;
 
 namespace CoffeePeek.Contract.Response.CoffeeShop;
 
-public class GetCoffeeShopsInModerationByIdResponse
+public class GetCoffeeShopsInModerationByIdResponse(ModerationShopDto[] moderationShop)
 {
-    public GetCoffeeShopsInModerationByIdResponse(ModerationShopDto[] reviewShops)
-    {
-        ReviewShops = reviewShops;
-    }
-
-    public ModerationShopDto[] ReviewShops { get; }
+    public ModerationShopDto[] ModerationShop { get; } = moderationShop;
 }

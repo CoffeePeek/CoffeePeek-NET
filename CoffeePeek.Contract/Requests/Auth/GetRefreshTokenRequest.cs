@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using CoffeePeek.Contract.Response.Auth;
 using MediatR;
 
@@ -8,4 +9,6 @@ public class GetRefreshTokenRequest(string refreshToken) : IRequest<Response.Res
 {
     [Required]
     public string RefreshToken { get; } = refreshToken;
+    [JsonIgnore]
+    public int UserId { get; set; }
 }

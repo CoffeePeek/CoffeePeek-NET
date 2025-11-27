@@ -39,18 +39,12 @@ public static class UnitOfWorkExtensions
         return services;
     }
     
-    public static IServiceCollection ConfigureDbRepositories(this IServiceCollection services)
+    public static void ConfigureDbRepositories(this IServiceCollection services)
     {
         services.AddUnitOfWork<CoffeePeekDbContext>();
-
-        services.AddSpecificRepository<User, IUserRepository, UserRepository>();
         
         services.AddSpecificRepository<City, ICityRepository, CityRepository>();
         
         services.AddSpecificRepository<ModerationShop, IModerationShopsRepository, ModerationShopsRepository>();
-
-        services.AddSpecificRepository<RefreshToken, IRefreshTokenRepository, RefreshTokenRepository>();
-        
-        return services;
     }
 }

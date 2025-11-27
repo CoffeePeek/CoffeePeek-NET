@@ -6,5 +6,5 @@ namespace CoffeePeek.Infrastructure.Auth;
 public interface IJWTTokenService
 {
     Task<AuthResult> GenerateTokensAsync(User user);
-    Task<AuthResult> RefreshTokensAsync(string refreshToken);
+    Task<AuthResult> RefreshTokensAsync(string refreshToken, int userId);
 }

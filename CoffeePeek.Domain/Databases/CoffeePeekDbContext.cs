@@ -5,17 +5,14 @@ using CoffeePeek.Domain.Entities.Review;
 using CoffeePeek.Domain.Entities.Schedules;
 using CoffeePeek.Domain.Entities.Shop;
 using CoffeePeek.Domain.Entities.Users;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Domain.Databases;
 
-public class CoffeePeekDbContext : DbContext
+public class CoffeePeekDbContext(DbContextOptions<CoffeePeekDbContext> options)
+    : IdentityDbContext<User, Role, int>(options)
 {
-    public virtual DbSet<User> Users { get; set; }
-    public virtual DbSet<Role> Roles { get; set; }
-    public virtual DbSet<UserRole> UserRoles { get; set; }
-    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
-    
     public virtual DbSet<Shop> Shops { get; set; }
     public virtual DbSet<ShopContacts> ShopContacts { get; set; }
     
@@ -30,12 +27,7 @@ public class CoffeePeekDbContext : DbContext
     public virtual DbSet<Street> Streets { get; set; }
     
     public virtual DbSet<ModerationShop> ModerationShops { get; set; }
-    
-    public CoffeePeekDbContext(DbContextOptions<CoffeePeekDbContext> options) : base(options)
-    {
-        
-    }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>();

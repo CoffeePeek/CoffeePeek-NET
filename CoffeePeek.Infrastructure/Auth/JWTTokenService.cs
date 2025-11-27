@@ -3,72 +3,88 @@ using System.Security.Claims;
 using System.Text;
 using CoffeePeek.BuildingBlocks.AuthOptions;
 using CoffeePeek.Contract.Dtos.Auth;
-using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.Entities.Users;
-using CoffeePeek.Domain.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CoffeePeek.Infrastructure.Auth;
 
-public class JWTTokenService(IOptions<JWTOptions> options, IUserRepository userRepository) : IJWTTokenService
+public class JWTTokenService(UserManager<User> userManager, IOptions<JWTOptions> options) : IJWTTokenService
 {
     private readonly JWTOptions _options = options.Value;
 
     public async Task<AuthResult> GenerateTokensAsync(User user)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(_options.SecretKey);
+        var accessToken = await GenerateJwtAsync(user);
 
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity([
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email)
-            ]),
-            Expires = DateTime.UtcNow.AddMinutes(_options.AccessTokenLifetimeMinutes),
-            Issuer = _options.Issuer,
-            Audience = _options.Audience,
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-        };
+        var refreshToken = await userManager.GenerateUserTokenAsync(
+            user,
+            TokenOptions.DefaultProvider,
+            "RefreshToken"
+        );
 
-        var accessToken = tokenHandler.CreateToken(tokenDescriptor);
-        var accessTokenString = tokenHandler.WriteToken(accessToken);
-
-        var refreshToken = new RefreshToken
-        {
-            UserId = user.Id,
-            Token = Guid.NewGuid().ToString(),
-            ExpiryDate = DateTime.UtcNow.AddDays(_options.RefreshTokenLifetimeDays)
-        };
-
-        user.RefreshTokens.Add(refreshToken);
-        userRepository.Update(user);
-        await userRepository.SaveChangesAsync(CancellationToken.None);
+        await userManager.SetAuthenticationTokenAsync(
+            user,
+            TokenOptions.DefaultProvider,
+            "RefreshToken",
+            refreshToken
+        );
 
         return new AuthResult
         {
-            AccessToken = accessTokenString,
-            RefreshToken = refreshToken.Token,
-            ExpiredAt = tokenDescriptor.Expires!.Value
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
         };
     }
 
-    public async Task<AuthResult> RefreshTokensAsync(string refreshToken)
+    public async Task<AuthResult> RefreshTokensAsync(string refreshToken, int userId)
     {
-        var user = await userRepository.GetUserByRefreshToken(refreshToken);
+        var user = await userManager.FindByIdAsync(userId.ToString());
         if (user == null)
-        {
+            throw new UnauthorizedAccessException("Invalid user.");
+
+        var storedToken = await userManager.GetAuthenticationTokenAsync(
+            user,
+            TokenOptions.DefaultProvider,
+            "RefreshToken"
+        );
+
+        if (storedToken != refreshToken)
             throw new UnauthorizedAccessException("Invalid refresh token.");
-        }
 
-        var token = user.RefreshTokens.FirstOrDefault(rt => rt.Token == refreshToken && rt.IsActive);
-        if (token == null)
-        {
-            throw new UnauthorizedAccessException("Refresh token is expired or revoked.");
-        }
+        await userManager.RemoveAuthenticationTokenAsync(
+            user,
+            TokenOptions.DefaultProvider,
+            "RefreshToken"
+        );
 
-        token.IsRevoked = true;
         return await GenerateTokensAsync(user);
+    }
+
+    private async Task<string> GenerateJwtAsync(User user)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.Nickname, user.UserName)
+        };
+        
+        var roles = await userManager.GetRolesAsync(user);
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+        var token = new JwtSecurityToken(
+            issuer: _options.Issuer,
+            audience: _options.Audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(_options.AccessTokenLifetimeMinutes),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

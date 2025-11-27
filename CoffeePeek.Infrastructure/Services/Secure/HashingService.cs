@@ -38,26 +38,34 @@ public class HashingService : IHashingService
         if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(hashedPassword))
             return false;
 
-        var hashBytes = Convert.FromBase64String(hashedPassword);
+        try
+        {
+            var hashBytes = Convert.FromBase64String(hashedPassword);
 
-        if (hashBytes.Length != SaltSize + KeySize)
+            if (hashBytes.Length != SaltSize + KeySize)
+                return false;
+
+            var salt = new byte[SaltSize];
+            Array.Copy(hashBytes, 0, salt, 0, SaltSize);
+
+            var expectedHash = new byte[KeySize];
+            Array.Copy(hashBytes, SaltSize, expectedHash, 0, KeySize);
+
+            var actualHash = Rfc2898DeriveBytes.Pbkdf2(
+                password,
+                salt,
+                Iterations,
+                HashAlgorithmName.SHA256,
+                KeySize
+            );
+
+            return CryptographicOperations.FixedTimeEquals(expectedHash, actualHash);
+        }
+        catch (FormatException)
+        {
+            // Invalid Base64 format
             return false;
-
-        var salt = new byte[SaltSize];
-        Array.Copy(hashBytes, 0, salt, 0, SaltSize);
-
-        var expectedHash = new byte[KeySize];
-        Array.Copy(hashBytes, SaltSize, expectedHash, 0, KeySize);
-
-        var actualHash = Rfc2898DeriveBytes.Pbkdf2(
-            password,
-            salt,
-            Iterations,
-            HashAlgorithmName.SHA256,
-            KeySize
-        );
-
-        return CryptographicOperations.FixedTimeEquals(expectedHash, actualHash);
+        }
     }
 
     public string GenerateRandomPassword(int length = 12)

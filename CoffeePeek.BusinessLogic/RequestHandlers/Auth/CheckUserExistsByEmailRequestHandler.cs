@@ -2,12 +2,12 @@ using CoffeePeek.Contract.Requests.Auth;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
-using CoffeePeek.Infrastructure.Services.User.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace CoffeePeek.BusinessLogic.RequestHandlers;
 
-public class CheckUserExistsByEmailRequestHandler(IUserManager userManager,
+public class CheckUserExistsByEmailRequestHandler(UserManager<User> userManager,
     IRedisService redisService) 
     : IRequestHandler<CheckUserExistsByEmailRequest, Response>
 {

@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace CoffeePeek.Domain.Entities.Auth;
 
-public class Role : BaseEntity
+public sealed class Role : IdentityRole<int>
 {
-    [MaxLength(15)]
-    public string Name { get; set; }
-    
-    public virtual ICollection<UserRole> UserRoles { get; set; }
+    public ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
 }

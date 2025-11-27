@@ -5,7 +5,9 @@ using CoffeePeek.BuildingBlocks.Extensions;
 using CoffeePeek.BuildingBlocks.RedisOptions;
 using CoffeePeek.BuildingBlocks.Sentry;
 using CoffeePeek.BusinessLogic.Configuration;
+using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Infrastructure.Configuration;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,17 +31,17 @@ builder.Services
 
 var app = builder.Build();
 
-/*using (var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRoleEntity>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
     
-    if (!await roleManager.RoleExistsAsync("Admin"))
+    if (!await roleManager.RoleExistsAsync(RoleConsts.Admin))
     {
-        await roleManager.CreateAsync(new IdentityRoleEntity("Admin"));
-        await roleManager.CreateAsync(new IdentityRoleEntity("Merchant"));
-        await roleManager.CreateAsync(new IdentityRoleEntity("User"));
+        await roleManager.CreateAsync(new Role {Name = RoleConsts.Admin});
+        await roleManager.CreateAsync(new Role {Name = RoleConsts.Merchant});
+        await roleManager.CreateAsync(new Role {Name = RoleConsts.User});
     }
-}*/
+}
 
 
 app.UseAuthentication();
