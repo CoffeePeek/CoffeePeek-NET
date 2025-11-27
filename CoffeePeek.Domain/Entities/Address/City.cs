@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CoffeePeek.Domain.Entities.Address;
 
 public class City : BaseEntity
 {
+    [MaxLength(20)]
     public string Name { get; set; }
     public int CountryId { get; set; }
     public decimal? Latitude { get; set; }

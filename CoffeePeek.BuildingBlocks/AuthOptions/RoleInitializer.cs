@@ -5,13 +5,12 @@ namespace CoffeePeek.BuildingBlocks.AuthOptions;
 
 public class RoleInitializer(IServiceProvider serviceProvider) : IHostedService
 {
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
         using var scope = serviceProvider.CreateScope();
+        return Task.CompletedTask;
         //var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRoleEntity>>();
     }   
-
-
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Domain.Entities.Schedules;
 using CoffeePeek.Domain.Enums.Shop;
 
@@ -13,6 +14,7 @@ public class Shop : BaseEntity
         Reviews = new HashSet<Review.Review>();
     }
     
+    [MaxLength(50)]
     public string Name { get; set; }
     public int AddressId { get; set; }
     public int? ShopContactId { get; set; }

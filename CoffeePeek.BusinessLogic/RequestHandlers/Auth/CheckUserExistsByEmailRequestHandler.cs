@@ -4,7 +4,6 @@ using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
 using CoffeePeek.Infrastructure.Services.User.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace CoffeePeek.BusinessLogic.RequestHandlers;
 

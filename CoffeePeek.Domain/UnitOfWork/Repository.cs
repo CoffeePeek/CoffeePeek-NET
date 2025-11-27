@@ -1,7 +1,6 @@
 ﻿using System.Linq.Expressions;
 using CoffeePeek.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace CoffeePeek.Domain.UnitOfWork;
 
@@ -44,7 +43,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     }
 
     public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         return await _dbSet.FirstOrDefaultAsync(predicate, cancellationToken);
     }

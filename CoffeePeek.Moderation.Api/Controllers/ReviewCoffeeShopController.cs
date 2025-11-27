@@ -1,6 +1,6 @@
 ﻿using CoffeePeek.Moderation.Application.Dtos;
 using CoffeePeek.Moderation.Application.Requests;
-using CoffeePeek.Moderation.Application.Responses.ReviewCoffeeShop;
+using CoffeePeek.Moderation.Application.Responses;
 using CoffeePeek.Moderation.Contract.Abstract;
 using MediatR;
 using Microsoft.AspNetCore.JsonPatch;

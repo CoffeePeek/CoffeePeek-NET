@@ -24,15 +24,16 @@ else
         <i class="fas fa-info-circle"></i> Вы не авторизованы. Некоторые API вызовы могут не работать. <a href="/Login">Войти</a>
     </div>
 }
-@if (Model.CoffeeShops != null && Model.CoffeeShops.Any())
+@if (Model.CoffeeShops.Any())
 {
     <div class="coffee-shops-grid">
         @foreach (var shop in Model.CoffeeShops)
         {
             <div class="coffee-shop-card">
                 <div class="coffee-shop-image">
-                    @if (shop.ShopPhotos != null && shop.ShopPhotos.Any() && !string.IsNullOrEmpty(shop.ShopPhotos.FirstOrDefault()?.Url))
+                    @if (shop.ShopPhotos.Any() && !string.IsNullOrEmpty(shop.ShopPhotos.FirstOrDefault()?.Url))
                     {
+                        <img src="@shop.ShopPhotos.FirstOrDefault()?.Url" alt="@shop.Name" class="shop-image" />
                         <img src="@shop.ShopPhotos.FirstOrDefault()?.Url" alt="@shop.Name" />
                     }
                     else

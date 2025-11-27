@@ -17,7 +17,7 @@ public class Response
         Data = data;
     }
     
-    public static T SuccessResponse<T>(object data = null, string message = "Operation successful")
+    public static T SuccessResponse<T>(object data, string message = "Operation successful")
         where T : Response, new()
     {
         return new T
@@ -28,7 +28,7 @@ public class Response
         };
     }
 
-    public static T ErrorResponse<T>(string message, object data = default)
+    public static T ErrorResponse<T>(string message, object data)
         where T : Response, new()
     {
         return new T

@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Moderation.Application.Responses.ReviewCoffeeShop;
+﻿using CoffeePeek.Moderation.Application.Responses;
 using CoffeePeek.Moderation.Contract.Abstract;
 using MediatR;
 

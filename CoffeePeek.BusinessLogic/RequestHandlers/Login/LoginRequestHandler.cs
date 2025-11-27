@@ -6,7 +6,7 @@ using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Domain.UnitOfWork;
 using CoffeePeek.Infrastructure.Auth;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
-using CoffeePeek.Infrastructure.Services;
+using CoffeePeek.Infrastructure.Services.Secure.Interfaces;
 using CoffeePeek.Infrastructure.Services.User.Interfaces;
 using MediatR;
 

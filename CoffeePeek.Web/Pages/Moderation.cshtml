@@ -42,7 +42,7 @@
     </a>
 </div>
 
-@if (Model.ReviewShops == null || !Model.ReviewShops.Any())
+@if (!Model.ReviewShops.Any())
 {
     <div class="empty-state">
         <div class="empty-state-icon">

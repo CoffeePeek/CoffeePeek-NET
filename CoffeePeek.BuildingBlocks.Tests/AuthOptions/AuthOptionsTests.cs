@@ -99,14 +99,15 @@ public class AuthenticationOptionsTests
     public void AuthenticationOptions_Properties_ShouldBeSettable()
     {
         // Arrange
-        var options = new AuthenticationOptions();
-
-        // Act
-        options.JwtSecretKey = "my-super-secret-key";
-        options.ValidIssuer = "my-issuer";
-        options.ValidAudience = "my-audience";
-        options.ExpireIntervalMinutes = 30;
-        options.ExpireRefreshIntervalDays = 14;
+        var options = new AuthenticationOptions
+        {
+            // Act
+            JwtSecretKey = "my-super-secret-key",
+            ValidIssuer = "my-issuer",
+            ValidAudience = "my-audience",
+            ExpireIntervalMinutes = 30,
+            ExpireRefreshIntervalDays = 14,
+        };
 
         // Assert
         options.JwtSecretKey.Should().Be("my-super-secret-key");

@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.Repositories;
+using CoffeePeek.Infrastructure.Services.Secure.Interfaces;
 using CoffeePeek.Infrastructure.Services.User.Interfaces;
 
 namespace CoffeePeek.Infrastructure.Services.User;

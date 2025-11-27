@@ -1,15 +1,8 @@
 using CoffeePeek.Contract.Requests.Auth;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Auth;
-using CoffeePeek.Domain.Databases;
-using CoffeePeek.Domain.Entities.Auth;
-using CoffeePeek.Domain.UnitOfWork;
 using CoffeePeek.Infrastructure.Auth;
-using CoffeePeek.Infrastructure.Services;
-using CoffeePeek.Infrastructure.Services.Auth.Interfaces;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.BusinessLogic.RequestHandlers;
 

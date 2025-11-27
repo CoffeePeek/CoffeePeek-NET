@@ -10,5 +10,5 @@ public class ScheduleException : BaseEntity
     public TimeSpan? SpecialOpeningTime { get; set; }
     public TimeSpan? SpecialClosingTime { get; set; }
     public bool IsSpecialOpen24Hours { get; set; }
-    public string? ExceptionReason { get; set; }
+    
 }

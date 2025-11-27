@@ -8,13 +8,13 @@ namespace CoffeePeek.Domain.Repositories;
 
 public class ModerationShopsRepository(CoffeePeekDbContext context) : Repository<ModerationShop>(context), IModerationShopsRepository
 {
-    public async Task<bool> UpdatePhotos(int shopId, int userId, ICollection<string> urls)
+    public async Task UpdatePhotos(int shopId, int userId, ICollection<string> urls)
     {
         var shop = await context.ModerationShops.FirstOrDefaultAsync(x => x.Id == shopId);
         
         if (shop == null)
         {
-            return false;
+            return;
         }
 
         var photos = urls.Select(x => new ShopPhoto
@@ -31,7 +31,5 @@ public class ModerationShopsRepository(CoffeePeekDbContext context) : Repository
         }
         
         await context.SaveChangesAsync();
-        
-        return true;
     }
 }

@@ -1,10 +1,13 @@
-﻿using CoffeePeek.Domain.Entities.Users;
+﻿using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Domain.Entities.Users;
 
 namespace CoffeePeek.Domain.Entities.Review;
 
 public class Review : BaseEntity
 {
+    [MaxLength(70)]
     public string Header { get; set; }
+    [MaxLength(2000)]
     public string Comment { get; set; }
     public int UserId { get; set; }
     public int ShopId { get; set; }

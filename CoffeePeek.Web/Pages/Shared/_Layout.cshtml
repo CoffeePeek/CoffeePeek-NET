@@ -31,7 +31,7 @@
                     </li>
                     @{
                         var isAuthenticated = ViewData["IsAuthenticated"] as bool? ?? 
-                                             (Model as dynamic)?.IsAuthenticated ?? false;
+                                             Model.IsAuthenticated ?? false;
                     }
                     @if (isAuthenticated)
                     {
@@ -51,10 +51,10 @@
                         <div class="notification-icon">
                             <i class="fas fa-bell"></i>
                         </div>
-                        <div class="user-avatar" title="@(ViewData["UserEmail"] as string ?? (Model as dynamic)?.UserEmail as string ?? "User")">
+                        <div class="user-avatar" title="@(ViewData["UserEmail"] as string ?? Model.UserEmail as string ?? "User")">
                             @{
                                 var userEmail = ViewData["UserEmail"] as string ?? 
-                                               (Model as dynamic)?.UserEmail as string ?? "U";
+                                               Model.UserEmail as string ?? "U";
                             }
                             @userEmail[0].ToString().ToUpper()
                         </div>

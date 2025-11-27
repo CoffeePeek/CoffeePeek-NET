@@ -1,4 +1,4 @@
-﻿namespace CoffeePeek.Moderation.Application.Responses.ReviewCoffeeShop;
+﻿namespace CoffeePeek.Moderation.Application.Responses;
 
 public class CreateReviewCoffeeShopResponse
 {

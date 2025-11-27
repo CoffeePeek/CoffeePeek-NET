@@ -5,5 +5,5 @@ namespace CoffeePeek.Domain.Repositories.Interfaces;
 
 public interface IModerationShopsRepository : IRepository<ModerationShop>
 {
-    Task<bool> UpdatePhotos(int shopId, int userId, ICollection<string> urls);
+    Task UpdatePhotos(int shopId, int userId, ICollection<string> urls);
 };

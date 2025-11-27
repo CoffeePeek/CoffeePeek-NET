@@ -12,13 +12,13 @@ public class UpdateReviewCoffeeShopBehavior(IPublishEndpoint publishEndpoint)
     public async Task<Contract.Response.Response<UpdateModerationCoffeeShopResponse>> Handle(UpdateModerationCoffeeShopRequest request,
         RequestHandlerDelegate<Contract.Response.Response<UpdateModerationCoffeeShopResponse>> next, CancellationToken cancellationToken)
     {
-        var response = await next();
+        var response = await next(cancellationToken);
 
         if (request.ShopPhotos is { Count: > 0 } && response.Success)
         {
             await publishEndpoint.Publish<IPhotoUploadRequested>(new
             {
-                UserId = request.UserId,
+                request.UserId,
                 ShopId = request.ReviewShopId,
                 Photos = request.ShopPhotos
             }, cancellationToken);

@@ -11,8 +11,6 @@ public class CacheService(IRedisService redisService,
     IRepository<City> cityRepository) 
     : ICacheService
 {
-    private static readonly TimeSpan ShortTimeout = TimeSpan.FromMinutes(10);
-    private static readonly TimeSpan MiddleTimeout = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan LongTimeout = TimeSpan.FromDays(5);
 
     public async Task<ICollection<CityDto>> GetCities()

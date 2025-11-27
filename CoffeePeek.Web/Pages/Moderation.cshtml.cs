@@ -104,7 +104,6 @@ public class ModerationModel : PageModel
             {
                 ErrorMessage = "Вы не авторизованы. Пожалуйста, войдите в систему.";
                 Response.Redirect("/Login");
-                return;
             }
             else
             {

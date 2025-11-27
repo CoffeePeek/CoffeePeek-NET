@@ -31,7 +31,7 @@ public class AuthService(
         
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name, user.Email!),
+            new(ClaimTypes.Name, user.Email),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString())
@@ -117,27 +117,11 @@ public class AuthService(
             var decryptedJson = reader.ReadToEnd();
             var refreshTokenData = JsonConvert.DeserializeObject<dynamic>(decryptedJson);
 
-            return refreshTokenData.UserId;
+            return refreshTokenData?.UserId;
         }
         catch
         {
             return null;
         }
-    }
-
-    private ClaimsIdentity GenerateClaims(Domain.Entities.Users.User user, IEnumerable<string> userRoles)
-    {
-        var claims = new ClaimsIdentity("Bearer");
-        claims.AddClaim(new Claim(ClaimTypes.Name, user.Email!));
-        claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-        claims.AddClaim(new Claim(JwtRegisteredClaimNames.Aud, AuthOptions.ValidAudience));
-        claims.AddClaim(new Claim(JwtRegisteredClaimNames.Iss, AuthOptions.ValidIssuer));
-
-        foreach (var role in userRoles)
-        {
-            claims.AddClaim(new Claim(ClaimTypes.Role, role));
-        }
-
-        return claims;
     }
 }

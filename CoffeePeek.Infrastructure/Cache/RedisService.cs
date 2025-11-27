@@ -46,7 +46,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
     {
         var key = $"{typeof(T).Name}-{id}";
         
-        string value = await _db.StringGetAsync(key);
+        string? value = await _db.StringGetAsync(key);
         
         return (string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value))!;
     }

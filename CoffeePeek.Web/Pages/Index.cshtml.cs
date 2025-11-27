@@ -79,7 +79,7 @@ public class IndexModel : PageModel
                     PropertyNameCaseInsensitive = true
                 })?.Data;
 
-            CoffeeShops = result.CoffeeShopDtos;
+            CoffeeShops = result?.CoffeeShopDtos;
 
         }
         catch (Exception ex)
@@ -169,7 +169,6 @@ public class IndexModel : PageModel
 
             if (response.IsSuccessStatusCode)
             {
-                // Пытаемся обновить токен в сессии
                 try
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
@@ -182,10 +181,13 @@ public class IndexModel : PageModel
                     {
                         HttpContext.Session.SetString("AccessToken", refreshResponse.Data.AccessToken);
                         HttpContext.Session.SetString("RefreshToken", refreshResponse.Data.RefreshToken);
-                        result += "\n\n✅ Tokens updated in session!";
+                        result += "\n✅ Tokens updated in session!";
                     }
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
 
             RefreshTokenResult = result;

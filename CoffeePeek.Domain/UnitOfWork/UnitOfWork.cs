@@ -11,8 +11,8 @@ namespace CoffeePeek.Domain.UnitOfWork;
 /// <typeparam name="TContext">The type of the db context.</typeparam>
 public sealed class UnitOfWork<TContext> : IRepositoryFactory, IUnitOfWork<TContext> where TContext : DbContext
 {
-    private bool _disposed = false;
-    private Dictionary<Type, object> _repositories;
+    private bool _disposed;
+    private readonly Dictionary<Type, object> _repositories;
 
     public TContext DbContext { get; }
 
@@ -27,6 +27,11 @@ public sealed class UnitOfWork<TContext> : IRepositoryFactory, IUnitOfWork<TCont
         _repositories = new Dictionary<Type, object>();
     }
 
+    ~UnitOfWork()
+    {
+        Dispose(false);
+    }
+    
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken,
         params IUnitOfWork[] unitOfWorks)
     {
@@ -53,23 +58,21 @@ public sealed class UnitOfWork<TContext> : IRepositoryFactory, IUnitOfWork<TCont
     /// <returns>An instance of type inherited from <see cref="Repository{TEntity}"/> interface.</returns>
     public IRepository<TEntity> GetRepository<TEntity>(bool hasCustomRepository = false) where TEntity : class
     {
-        // what's the best way to support custom reposity?
+        // what's the best way to support custom repository?
         if (hasCustomRepository)
         {
             var customRepo = DbContext.GetService<IRepository<TEntity>>();
-            if (customRepo != null)
-            {
-                return customRepo;
-            }
+            return customRepo ?? throw new InvalidOperationException($"No custom repository for {typeof(TEntity).Name}");
         }
 
         var type = typeof(TEntity);
-        if (!_repositories.ContainsKey(type))
+        if (!_repositories.TryGetValue(type, out var value))
         {
-            _repositories[type] = new Repository<TEntity>(DbContext);
+            value = new Repository<TEntity>(DbContext);
+            _repositories[type] = value;
         }
 
-        return (IRepository<TEntity>)_repositories[type];
+        return (IRepository<TEntity>)value;
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
@@ -125,8 +128,6 @@ public sealed class UnitOfWork<TContext> : IRepositoryFactory, IUnitOfWork<TCont
     /// </summary>
     public void Dispose()
     {
-        Dispose(true);
-
         GC.SuppressFinalize(this);
     }
 
