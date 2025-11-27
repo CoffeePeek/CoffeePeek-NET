@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoffeePeek.Domain.Migrations
 {
     [DbContext(typeof(CoffeePeekDbContext))]
-    [Migration("20251121060528_InitialCommit")]
-    partial class InitialCommit
+    [Migration("20251127081430_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,7 +35,8 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("BuildingNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(70)
+                        .HasColumnType("character varying(70)");
 
                     b.Property<int>("CityId")
                         .HasColumnType("integer");
@@ -50,7 +51,8 @@ namespace CoffeePeek.Domain.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<string>("PostalCode")
-                        .HasColumnType("text");
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
 
                     b.Property<int>("StreetId")
                         .HasColumnType("integer");
@@ -86,7 +88,8 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 
@@ -108,7 +111,8 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
 
                     b.HasKey("Id");
 
@@ -131,7 +135,8 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(70)
+                        .HasColumnType("character varying(70)");
 
                     b.HasKey("Id");
 
@@ -159,7 +164,8 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(70)
+                        .HasColumnType("character varying(70)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -184,7 +190,8 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
 
                     b.HasKey("Id");
 
@@ -224,14 +231,16 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("Comment")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Header")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(70)
+                        .HasColumnType("character varying(70)");
 
                     b.Property<decimal>("RatingCoffee")
                         .HasColumnType("numeric");
@@ -309,9 +318,6 @@ namespace CoffeePeek.Domain.Migrations
                     b.Property<DateTime>("ExceptionEndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ExceptionReason")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("ExceptionStartDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -358,11 +364,13 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("NotValidatedAddress")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<int?>("ShopContactId")
                         .HasColumnType("integer");
@@ -408,7 +416,8 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int?>("ShopContactId")
                         .HasColumnType("integer");
@@ -436,11 +445,13 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("InstagramLink")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(18)
+                        .HasColumnType("character varying(18)");
 
                     b.Property<int>("ShopId")
                         .HasColumnType("integer");
@@ -472,7 +483,8 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(70)
+                        .HasColumnType("character varying(70)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -497,14 +509,16 @@ namespace CoffeePeek.Domain.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("About")
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
@@ -514,10 +528,12 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
+                        .HasMaxLength(18)
+                        .HasColumnType("character varying(18)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
