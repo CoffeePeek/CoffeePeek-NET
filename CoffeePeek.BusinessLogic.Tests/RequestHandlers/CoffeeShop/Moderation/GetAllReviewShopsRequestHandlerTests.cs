@@ -43,8 +43,6 @@ public class GetAllReviewShopsRequestHandlerTests
             new() { Id = 2, Name = "Shop 2" }
         };
         
-        var response = new GetCoffeeShopsInModerationByIdResponse(moderationShopDtos);
-
         var queryable = moderationShops.AsQueryable();
 
         var asyncEnumerable = new TestAsyncEnumerable<ModerationShop>(queryable);

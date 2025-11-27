@@ -1,10 +1,9 @@
 ﻿using CoffeePeek.BusinessLogic.RequestHandlers.Internal;
-using CoffeePeek.Contract.Dtos.Address;
 using CoffeePeek.Contract.Dtos.Internal;
 using CoffeePeek.Contract.Requests.Internal;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Domain.Databases;
 using CoffeePeek.Domain.Entities.Address;
+using CoffeePeek.Domain.UnitOfWork;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
 using MapsterMapper;
 using FluentAssertions;
@@ -15,21 +14,24 @@ namespace CoffeePeek.BusinessLogic.Tests.RequestHandlers.Internal;
 
 public class GetCitiesRequestHandlerTests
 {
-    private readonly Mock<CoffeePeekDbContext> _dbContextMock;
     private readonly Mock<DbSet<City>> _citiesDbSetMock;
+    private readonly Mock<IRepository<City>> _citiesRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly GetCitiesRequestHandler _handler;
 
     public GetCitiesRequestHandlerTests()
     {
-        // Setup mocks
-        _dbContextMock = new Mock<CoffeePeekDbContext>();
+        var dbContextMock =
+            // Setup mocks
+            new Mock<CoffeePeekDbContext>();
+        _citiesRepositoryMock = new Mock<IRepository<City>>();
+        
         _citiesDbSetMock = new Mock<DbSet<City>>();
         _mapperMock = new Mock<IMapper>();
         var mockCacheService = new Mock<ICacheService>();
 
         // Setup DbContext mock
-        _dbContextMock.Setup(db => db.Cities).Returns(_citiesDbSetMock.Object);
+        dbContextMock.Setup(db => db.Cities).Returns(_citiesDbSetMock.Object);
 
         // Create handler instance
         _handler = new GetCitiesRequestHandler(mockCacheService.Object);
@@ -52,14 +54,14 @@ public class GetCitiesRequestHandlerTests
             new() { Id = 2, Name = "City 2" }
         };
 
-        _citiesDbSetMock
-            .Setup(c => c.AsNoTracking())
-            .Returns(_citiesDbSetMock.Object);
+        var queryable = cities.AsQueryable();
 
-        _citiesDbSetMock
-            .Setup(c => c.ToArrayAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(cities.ToArray());
-            
+        var asyncEnumerable = new TestAsyncEnumerable<City>(queryable);
+        
+        _citiesRepositoryMock
+            .Setup(r => r.GetAll())
+            .Returns(asyncEnumerable);
+        
         _mapperMock
             .Setup(m => m.Map<CityDto[]>(It.IsAny<IEnumerable<City>>()))
             .Returns(cityDtos);
