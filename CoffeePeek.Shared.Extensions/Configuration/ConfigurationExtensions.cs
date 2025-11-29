@@ -16,15 +16,7 @@ public static class ConfigurationExtensions
         
         return options; 
     }
-
-    public static TModel GetOptions<TModel>(this IServiceCollection service, string section) where TModel : new()
-    {
-        var model = new TModel();
-        var configuration = service.BuildServiceProvider().GetService<IConfiguration>();
-        configuration?.GetSection(section).Bind(model);
-        
-        return model;
-    }
+    
     public static TModel GetOptions<TModel>(this IServiceCollection service) where TModel : new()
     {
         var options = service.BuildServiceProvider().GetService<TModel>();

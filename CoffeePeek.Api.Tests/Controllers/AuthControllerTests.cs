@@ -5,6 +5,9 @@ using CoffeePeek.Contract.Response.Auth;
 using CoffeePeek.Contract.Response.Login;
 using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Moq;
 
 namespace CoffeePeek.Api.Test.Controllers;
@@ -84,7 +87,11 @@ public class AuthControllerTests
         var expectedResponse = new Response<RegisterUserResponse>
         {
             Success = true,
-            Data = new RegisterUserResponse("test@example.com", "Test User")
+            Data = new RegisterUserResponse
+            {
+                Email = "test@example.com",
+                UserName = "Test User"
+            }
         };
 
         _mediatorMock
@@ -99,42 +106,10 @@ public class AuthControllerTests
         result.Success.Should().BeTrue();
         result.Data.Should().NotBeNull();
         result.Data!.Email.Should().Be("test@example.com");
-        result.Data.FullName.Should().Be("Test User");
+        result.Data.UserName.Should().Be("Test User");
 
         _mediatorMock.Verify(
             m => m.Send(registerRequest, It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task RefreshToken_ShouldReturnNewTokens_WhenValidRefreshToken()
-    {
-        // Arrange
-        var refreshToken = "valid-refresh-token";
-        var expectedResponse = new Response<GetRefreshTokenResponse>
-        {
-            Success = true,
-            Data = new GetRefreshTokenResponse("new-access-token", "new-refresh-token")
-        };
-
-        _mediatorMock
-            .Setup(m => m.Send(It.IsAny<GetRefreshTokenRequest>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedResponse);
-
-        // Act
-        var result = await _controller.RefreshToken(refreshToken);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Success.Should().BeTrue();
-        result.Data.Should().NotBeNull();
-        result.Data!.AccessToken.Should().Be("new-access-token");
-        result.Data.RefreshToken.Should().Be("new-refresh-token");
-
-        _mediatorMock.Verify(
-            m => m.Send(
-                It.Is<GetRefreshTokenRequest>(r => r.RefreshToken == refreshToken),
-                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -161,5 +136,83 @@ public class AuthControllerTests
         result.Success.Should().BeFalse();
         result.Message.Should().Be("Invalid credentials");
         result.Data.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task RefreshToken_ShouldReturnNewTokens_WhenValidRefreshToken()
+    {
+        // Arrange
+        var refreshToken = "valid-refresh-token";
+        var userId = 1;
+        var expectedResponse = new Response<GetRefreshTokenResponse>
+        {
+            Success = true,
+            Data = new GetRefreshTokenResponse("new-access-token", "new-refresh-token")
+        };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetRefreshTokenRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
+        // Setup HttpContext with authenticated user
+        var httpContext = CreateHttpContextWithAuthenticatedUser(userId);
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        // Act
+        var result = await _controller.RefreshToken(refreshToken);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.AccessToken.Should().Be("new-access-token");
+        result.Data.RefreshToken.Should().Be("new-refresh-token");
+
+        _mediatorMock.Verify(
+            m => m.Send(
+                It.Is<GetRefreshTokenRequest>(r => r.RefreshToken == refreshToken && r.UserId == userId),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task RefreshToken_ShouldThrowUnauthorizedException_WhenUserNotAuthenticated()
+    {
+        // Arrange
+        var refreshToken = "valid-refresh-token";
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext()
+        };
+
+        // Act & Assert
+        await _controller.Invoking(c => c.RefreshToken(refreshToken))
+            .Should().ThrowAsync<UnauthorizedAccessException>()
+            .WithMessage("User ID claim is missing.");
+
+        _mediatorMock.Verify(
+            m => m.Send(It.IsAny<GetRefreshTokenRequest>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    private static HttpContext CreateHttpContextWithAuthenticatedUser(int userId)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Name, $"testuser{userId}")
+        };
+        var identity = new ClaimsIdentity(claims, "Bearer");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        var httpContext = new DefaultHttpContext
+        {
+            User = claimsPrincipal
+        };
+        return httpContext;
     }
 }

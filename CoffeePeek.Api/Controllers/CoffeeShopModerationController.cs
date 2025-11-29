@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using CoffeePeek.BuildingBlocks.AuthOptions;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response;
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoffeePeek.Api.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = RoleConsts.Admin)]
 [Route("api/[controller]")]
 public class CoffeeShopModerationController(IMediator mediator, IUserContextService userContextService) : Controller
 {

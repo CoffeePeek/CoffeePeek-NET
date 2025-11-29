@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.BusinessLogic.RequestHandlers.CoffeeShop;
 
-internal class GetCoffeeShopsRequestHandler(IUnitOfWork<CoffeePeekDbContext> unitOfWork, IMapper mapper)
+public class GetCoffeeShopsRequestHandler(IUnitOfWork<CoffeePeekDbContext> unitOfWork, IMapper mapper)
     : IRequestHandler<GetCoffeeShopsRequest, Response<GetCoffeeShopsResponse>>
 {
     private readonly CoffeePeekDbContext _unitOfWork = unitOfWork.DbContext;

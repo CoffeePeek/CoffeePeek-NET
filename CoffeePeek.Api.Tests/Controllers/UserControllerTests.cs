@@ -8,6 +8,7 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Moq;
 
 namespace CoffeePeek.Api.Test.Controllers;
@@ -48,7 +49,7 @@ public class UserControllerTests
             .Setup(m => m.Send(It.IsAny<GetProfileRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
-        var httpContext = CreateHttpContextWithUserId(userId);
+        var httpContext = CreateHttpContextWithAuthenticatedUser(userId);
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = httpContext
@@ -84,7 +85,7 @@ public class UserControllerTests
         // Act & Assert
         await _controller.Invoking(c => c.GetProfile(CancellationToken.None))
             .Should().ThrowAsync<UnauthorizedAccessException>()
-            .WithMessage("User is not authenticated or UserId is not available.");
+            .WithMessage("User ID claim is missing.");
 
         _mediatorMock.Verify(
             m => m.Send(It.IsAny<GetProfileRequest>(), It.IsAny<CancellationToken>()),
@@ -112,8 +113,8 @@ public class UserControllerTests
             .Setup(m => m.Send(It.IsAny<UpdateProfileRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
-        // Setup HttpContext with UserId BEFORE calling the controller method
-        var httpContext = CreateHttpContextWithUserId(userId);
+        // Setup HttpContext with authenticated user
+        var httpContext = CreateHttpContextWithAuthenticatedUser(userId);
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = httpContext
@@ -152,7 +153,7 @@ public class UserControllerTests
         // Act & Assert
         await _controller.Invoking(c => c.UpdateProfile(updateRequest, CancellationToken.None))
             .Should().ThrowAsync<UnauthorizedAccessException>()
-            .WithMessage("User is not authenticated or UserId is not available.");
+            .WithMessage("User ID claim is missing.");
 
         _mediatorMock.Verify(
             m => m.Send(It.IsAny<UpdateProfileRequest>(), It.IsAny<CancellationToken>()),
@@ -236,13 +237,15 @@ public class UserControllerTests
             .Setup(m => m.Send(It.IsAny<DeleteUserRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
+        // Setup HttpContext with authenticated user
+        var httpContext = CreateHttpContextWithAuthenticatedUser(userId);
         _controller.ControllerContext = new ControllerContext
         {
-            HttpContext = new DefaultHttpContext()
+            HttpContext = httpContext
         };
 
         // Act
-        var result = await _controller.DeleteUser(userId, CancellationToken.None);
+        var result = await _controller.DeleteUser(CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -272,13 +275,15 @@ public class UserControllerTests
             .Setup(m => m.Send(It.IsAny<DeleteUserRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
+        // Setup HttpContext with authenticated user
+        var httpContext = CreateHttpContextWithAuthenticatedUser(userId);
         _controller.ControllerContext = new ControllerContext
         {
-            HttpContext = new DefaultHttpContext()
+            HttpContext = httpContext
         };
 
         // Act
-        var result = await _controller.DeleteUser(userId, CancellationToken.None);
+        var result = await _controller.DeleteUser(CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -287,14 +292,38 @@ public class UserControllerTests
         result.Data.Should().BeFalse();
     }
 
-    private static HttpContext CreateHttpContextWithUserId(int userId)
+    [Fact]
+    public async Task DeleteUser_ShouldThrowUnauthorizedException_WhenUserNotAuthenticated()
     {
+        // Arrange
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext()
+        };
+
+        // Act & Assert
+        await _controller.Invoking(c => c.DeleteUser(CancellationToken.None))
+            .Should().ThrowAsync<UnauthorizedAccessException>()
+            .WithMessage("User ID claim is missing.");
+
+        _mediatorMock.Verify(
+            m => m.Send(It.IsAny<DeleteUserRequest>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    private static HttpContext CreateHttpContextWithAuthenticatedUser(int userId)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Name, $"testuser{userId}")
+        };
+        var identity = new ClaimsIdentity(claims, "Bearer");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
         var httpContext = new DefaultHttpContext
         {
-            Items =
-            {
-                [AuthConfig.JWTTokenUserPropertyName] = userId
-            }
+            User = claimsPrincipal
         };
         return httpContext;
     }

@@ -6,9 +6,7 @@ using MediatR;
 
 namespace CoffeePeek.BusinessLogic.RequestHandlers.Internal;
 
-public class GetCitiesRequestHandler(
-    ICacheService cacheService)
-    : IRequestHandler<GetCitiesRequest, Response<GetCitiesResponse>>
+public class GetCitiesRequestHandler(ICacheService cacheService) : IRequestHandler<GetCitiesRequest, Response<GetCitiesResponse>>
 {
     public async Task<Response<GetCitiesResponse>> Handle(GetCitiesRequest request, CancellationToken cancellationToken)
     {

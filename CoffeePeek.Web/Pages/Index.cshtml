@@ -15,7 +15,7 @@
     <div class="alert alert-success">
         <i class="fas fa-check-circle"></i> <strong>Авторизован</strong>
         <div class="small mt-1">Email: @Model.UserEmail</div>
-        <div class="small">Token: @(Model.AccessToken != null && Model.AccessToken.Length > 50 ? Model.AccessToken.Substring(0, 50) : Model.AccessToken)...</div>
+        <div class="small">Token: @(Model.AccessToken is { Length: > 50 } ? Model.AccessToken.Substring(0, 50) : Model.AccessToken)...</div>
     </div>
 }
 else
@@ -91,7 +91,7 @@ else
         }
     </div>
 }
-else if (Model.CoffeeShops != null && !Model.CoffeeShops.Any())
+else
 {
     <div class="empty-state">
         <div class="empty-state-icon">

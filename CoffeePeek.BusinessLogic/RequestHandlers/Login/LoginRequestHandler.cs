@@ -1,22 +1,18 @@
 using CoffeePeek.Contract.Requests.Auth;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Login;
-using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.Entities.Users;
-using CoffeePeek.Domain.UnitOfWork;
 using CoffeePeek.Infrastructure.Auth;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
-using CoffeePeek.Infrastructure.Services.Secure.Interfaces;
-using CoffeePeek.Infrastructure.Services.User.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace CoffeePeek.BusinessLogic.RequestHandlers.Login;
 
 public class LoginRequestHandler(
-    IHashingService hashingService,
-    IRepository<RefreshToken> refreshTokenRepository,
     IJWTTokenService jwtTokenService,
-    IUserManager userManager,
+    UserManager<User> userManager,
+    SignInManager<User> signInManager,
     IRedisService redisService)
     : IRequestHandler<LoginRequest, Response<LoginResponse>>
 {
@@ -41,35 +37,17 @@ public class LoginRequestHandler(
             }
         }
         
-        var isPasswordValid = userManager.CheckPassword(user, request.Password);
-        if (!isPasswordValid)
+        var signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+        if (!signInResult.Succeeded)
         {
             return Response.ErrorResponse<Response<LoginResponse>>("Password is incorrect.");
         }
         
         var authResult = await jwtTokenService.GenerateTokensAsync(user);
 
-        await SaveRefreshTokenAsync(user.Id, authResult.RefreshToken);
+        await redisService.SetAsync($"{nameof(User)}{user.Id}", user);
 
         var result = new LoginResponse(authResult.AccessToken, authResult.RefreshToken);
-
         return Response.SuccessResponse<Response<LoginResponse>>(result);
-    }
-
-
-    private async Task SaveRefreshTokenAsync(int userId, string refreshToken)
-    {
-        var refreshTokenHash = hashingService.HashString(refreshToken);
-
-        var refreshTokenEntity = new RefreshToken
-        {
-            UserId = userId,
-            Token = refreshTokenHash,
-            ExpiryDate = DateTime.UtcNow.AddDays(1),
-            CreatedAt = DateTime.UtcNow,
-        };
-
-        refreshTokenRepository.Add(refreshTokenEntity);
-        await refreshTokenRepository.SaveChangesAsync(CancellationToken.None);
     }
 }
