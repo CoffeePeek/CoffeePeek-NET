@@ -38,7 +38,7 @@ public class IndexModel : PageModel
     [TempData]
     public string? CustomApiResult { get; set; }
 
-    public CoffeeShopDto[] CoffeeShops { get; set; } = [];
+    public CoffeeShopDto[]? CoffeeShops { get; set; } = [];
 
     public async Task OnGetAsync()
     {
@@ -61,7 +61,7 @@ public class IndexModel : PageModel
         try
         {
             var client = _httpClientFactory.CreateClient();
-            var apiBaseUrl = _configuration["ApiSettings:BaseUrl"] ?? "http://localhost:8081";
+            var apiBaseUrl = _configuration["ApiSettings:BaseUrl"];
             
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
             client.DefaultRequestHeaders.Add("X-Page-Number", "1");

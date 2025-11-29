@@ -5,7 +5,6 @@ using CoffeePeek.BuildingBlocks.Extensions;
 using CoffeePeek.BuildingBlocks.RedisOptions;
 using CoffeePeek.BuildingBlocks.Sentry;
 using CoffeePeek.BusinessLogic.Configuration;
-using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Identity;
 
@@ -33,13 +32,16 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-    
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+
     if (!await roleManager.RoleExistsAsync(RoleConsts.Admin))
     {
-        await roleManager.CreateAsync(new Role {Name = RoleConsts.Admin});
-        await roleManager.CreateAsync(new Role {Name = RoleConsts.Merchant});
-        await roleManager.CreateAsync(new Role {Name = RoleConsts.User});
+        string[] roles = [RoleConsts.Admin, RoleConsts.Merchant, RoleConsts.User];
+        
+        foreach (var role in roles)
+        {
+            await roleManager.CreateAsync(new IdentityRole<int>(role));
+        }
     }
 }
 
@@ -49,6 +51,7 @@ app.UseAuthorization();
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<UserTokenMiddleware>();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 

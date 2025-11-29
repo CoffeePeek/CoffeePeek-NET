@@ -1,6 +1,5 @@
 using System.Text;
 using CoffeePeek.Domain.Databases;
-using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Shared.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,7 +18,7 @@ public static class AuthBuilderExtensions
         {
             var jwtOptions = services.AddValidateOptions<JWTOptions>();
             services.AddValidateOptions<AuthenticationOptions>();
-            services.AddScoped<RoleManager<Role>>();
+            services.AddScoped<RoleManager<IdentityRole<int>>>();
         
             services.AddAuthorization(options =>
             {
@@ -39,7 +38,12 @@ public static class AuthBuilderExtensions
                 })
                 .AddJwtBearer(x =>
                 {
+                    #if DEBUG
                     x.RequireHttpsMetadata = false;
+                    #elif RELEASE
+                    x.RequireHttpsMetadata = true;
+                    #endif
+                    x.RequireHttpsMetadata = true;
                     x.SaveToken = true;
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -103,7 +107,7 @@ public static class AuthBuilderExtensions
 
         private void AddUserIdentity()
         {
-            services.AddIdentity<User, Role>(options =>
+            services.AddIdentity<User, IdentityRole<int>>(options =>
                 {
                     options.User.RequireUniqueEmail = true;
 

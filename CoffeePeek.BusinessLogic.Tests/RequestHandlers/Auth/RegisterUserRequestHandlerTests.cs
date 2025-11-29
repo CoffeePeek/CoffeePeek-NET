@@ -3,10 +3,7 @@ using CoffeePeek.BusinessLogic.Abstractions;
 using CoffeePeek.BusinessLogic.RequestHandlers;
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.Auth;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Auth;
-using CoffeePeek.Domain.Entities.Auth;
-using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
 using FluentAssertions;
 using MapsterMapper;
@@ -20,7 +17,7 @@ public class RegisterUserRequestHandlerTests
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IValidationStrategy<UserDto>> _validationStrategyMock;
     private readonly Mock<UserManager<CoffeePeek.Domain.Entities.Users.User>> _userManagerMock;
-    private readonly Mock<RoleManager<Role>> _roleManagerMock;
+    private readonly Mock<RoleManager<IdentityRole<int>>> _roleManagerMock;
     private readonly Mock<IRedisService> _redisServiceMock;
     private readonly RegisterUserRequestHandler _handler;
 
@@ -39,8 +36,8 @@ public class RegisterUserRequestHandlerTests
             null!, null!, null!, null!, null!, null!, null!, null!);
             
         // Setup RoleManager mock
-        var roleStoreMock = new Mock<IRoleStore<Role>>();
-        _roleManagerMock = new Mock<RoleManager<Role>>(
+        var roleStoreMock = new Mock<IRoleStore<IdentityRole<int>>>();
+        _roleManagerMock = new Mock<RoleManager<IdentityRole<int>>>(
             roleStoreMock.Object,
             null!, null!, null!, null!);
             
@@ -172,10 +169,10 @@ public class RegisterUserRequestHandlerTests
     {
         // Arrange
         var request = new RegisterUserRequest("test@example.com", "Test User", "password123");
-        CoffeePeek.Domain.Entities.Users.User? existingUser = null;
+        Domain.Entities.Users.User? existingUser = null;
         var validationResult = ValidationResult.Valid;
         var userDto = new UserDto { Email = request.Email, UserName = request.UserName, Password = request.Password };
-        var user = new CoffeePeek.Domain.Entities.Users.User { Id = 1, Email = request.Email, UserName = request.UserName };
+        var user = new Domain.Entities.Users.User { Id = 1, Email = request.Email, UserName = request.UserName };
         var identityResult = IdentityResult.Success;
         var registerUserResponse = new RegisterUserResponse { Email = request.Email, UserName = request.UserName };
         
@@ -192,7 +189,7 @@ public class RegisterUserRequestHandlerTests
             .Returns(validationResult);
             
         _mapperMock
-            .Setup(m => m.Map<CoffeePeek.Domain.Entities.Users.User>(userDto))
+            .Setup(m => m.Map<Domain.Entities.Users.User>(userDto))
             .Returns(user);
             
         _userManagerMock
@@ -204,7 +201,7 @@ public class RegisterUserRequestHandlerTests
             .ReturnsAsync(false);
             
         _roleManagerMock
-            .Setup(r => r.CreateAsync(It.IsAny<Role>()))
+            .Setup(r => r.CreateAsync(It.IsAny<IdentityRole<int>>()))
             .ReturnsAsync(IdentityResult.Success);
             
         _userManagerMock
@@ -227,14 +224,12 @@ public class RegisterUserRequestHandlerTests
         _userManagerMock.Verify(u => u.FindByEmailAsync(request.Email), Times.Once);
         _mapperMock.Verify(m => m.Map<UserDto>(request), Times.Once);
         _validationStrategyMock.Verify(v => v.Validate(userDto), Times.Once);
-        _mapperMock.Verify(m => m.Map<CoffeePeek.Domain.Entities.Users.User>(userDto), Times.Once);
+        _mapperMock.Verify(m => m.Map<Domain.Entities.Users.User>(userDto), Times.Once);
         _userManagerMock.Verify(u => u.CreateAsync(user, request.Password), Times.Once);
         _roleManagerMock.Verify(r => r.RoleExistsAsync(RoleConsts.User), Times.Once);
-        _roleManagerMock.Verify(r => r.RoleExistsAsync(RoleConsts.Merchant), Times.Once);
-        _roleManagerMock.Verify(r => r.RoleExistsAsync(RoleConsts.Admin), Times.Once);
-        _roleManagerMock.Verify(r => r.CreateAsync(It.IsAny<Role>()), Times.Exactly(3));
+        _roleManagerMock.Verify(r => r.CreateAsync(It.IsAny<IdentityRole<int>>()), Times.Exactly(1));
         _userManagerMock.Verify(u => u.AddToRoleAsync(user, RoleConsts.User), Times.Once);
-        _redisServiceMock.Verify(r => r.SetAsync($"{nameof(CoffeePeek.Domain.Entities.Users.User)}{user.Id}", user), Times.Once);
+        _redisServiceMock.Verify(r => r.SetAsync($"{nameof(Domain.Entities.Users.User)}{user.Id}", user), Times.Once);
         _mapperMock.Verify(m => m.Map<RegisterUserResponse>(user), Times.Once);
     }
 }

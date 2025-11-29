@@ -1,9 +1,7 @@
 ﻿using CoffeePeek.BusinessLogic.RequestHandlers;
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Domain.Databases;
-using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Domain.UnitOfWork;
 using MapsterMapper;
 using FluentAssertions;
@@ -40,8 +38,8 @@ public class GetAllUserRequestHandlerTests
         var request = new GetAllUsersRequest();
         var users = new List<Domain.Entities.Users.User>
         {
-            new Domain.Entities.Users.User { Id = 1, UserName = "User 1", Email = "user1@example.com" },
-            new Domain.Entities.Users.User { Id = 2, UserName = "User 2", Email = "user2@example.com" }
+            new() { Id = 1, UserName = "User 1", Email = "user1@example.com" },
+            new() { Id = 2, UserName = "User 2", Email = "user2@example.com" }
         };
 
         var userDtos = new UserDto[]
@@ -50,16 +48,26 @@ public class GetAllUserRequestHandlerTests
             new() { Id = 2, UserName = "User 2", Email = "user2@example.com" }
         };
 
-        _repositoryMock
-            .Setup(r => r.GetAll())
-            .Returns(users.AsQueryable());
+        var options = new DbContextOptionsBuilder<CoffeePeekDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
 
-        _mapperMock
+        var dbContext = new CoffeePeekDbContext(options);
+        dbContext.Users.AddRange(users);
+        dbContext.SaveChanges();
+
+        var unitOfWorkMock = new Mock<IUnitOfWork<CoffeePeekDbContext>>();
+        unitOfWorkMock.Setup(u => u.DbContext).Returns(dbContext);
+
+        var mapperMock = new Mock<IMapper>();
+        mapperMock
             .Setup(m => m.Map<UserDto[]>(It.IsAny<IEnumerable<Domain.Entities.Users.User>>()))
             .Returns(userDtos);
 
-        // Act
-        var result = await _handler.Handle(request, CancellationToken.None);
+        var handler = new GetAllUserRequestHandler(unitOfWorkMock.Object, mapperMock.Object);
+
+// Act
+        var result = await handler.Handle(request, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();

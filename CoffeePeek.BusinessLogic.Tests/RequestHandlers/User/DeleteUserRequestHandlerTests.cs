@@ -12,37 +12,30 @@ namespace CoffeePeek.BusinessLogic.Tests.RequestHandlers.User;
 
 public class DeleteUserRequestHandlerTests
 {
-    private readonly Mock<IUnitOfWork<CoffeePeekDbContext>> _unitOfWorkMock;
-    private readonly Mock<DbSet<CoffeePeek.Domain.Entities.Users.User>> _usersDbSetMock;
     private readonly DeleteUserRequestHandler _handler;
+    private readonly CoffeePeekDbContext _dbContext;
 
     public DeleteUserRequestHandlerTests()
     {
-        // Setup mocks
-        _unitOfWorkMock = new Mock<IUnitOfWork<CoffeePeekDbContext>>();
-        _usersDbSetMock = new Mock<DbSet<CoffeePeek.Domain.Entities.Users.User>>();
+        var options = new DbContextOptionsBuilder<CoffeePeekDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
 
-        // Setup DbContext mock
-        var dbContextMock = new Mock<CoffeePeekDbContext>();
-        dbContextMock.Setup(db => db.Users).Returns(_usersDbSetMock.Object);
-        _unitOfWorkMock.Setup(uow => uow.DbContext).Returns(dbContextMock.Object);
+        _dbContext = new CoffeePeekDbContext(options);
 
-        // Create handler instance
-        _handler = new DeleteUserRequestHandler(_unitOfWorkMock.Object);
+        var unitOfWorkMock = new Mock<IUnitOfWork<CoffeePeekDbContext>>();
+        unitOfWorkMock.Setup(u => u.DbContext).Returns(_dbContext);
+
+        var unitOfWork = unitOfWorkMock.Object;
+
+        _handler = new DeleteUserRequestHandler(unitOfWork);
     }
 
     [Fact]
     public async Task Handle_ShouldReturnError_WhenUserNotFound()
     {
         // Arrange
-        var request = new DeleteUserRequest(999);
-        CoffeePeek.Domain.Entities.Users.User? user = null;
-
-        _usersDbSetMock
-            .Setup(u => u.FirstOrDefaultAsync(
-                It.IsAny<System.Linq.Expressions.Expression<Func<CoffeePeek.Domain.Entities.Users.User, bool>>>(), 
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
+        var request = new DeleteUserRequest(999); // несуществующий пользователь
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -51,26 +44,22 @@ public class DeleteUserRequestHandlerTests
         result.Should().NotBeNull();
         result.Success.Should().BeFalse();
         result.Message.Should().Be("User not found");
-
-        _usersDbSetMock.Verify(u => u.FirstOrDefaultAsync(
-            It.IsAny<System.Linq.Expressions.Expression<Func<CoffeePeek.Domain.Entities.Users.User, bool>>>(), 
-            It.IsAny<CancellationToken>()), Times.Once);
-        
-        _unitOfWorkMock.Verify(uow => uow.DbContext.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenUserIsSoftDeleted()
     {
         // Arrange
-        var request = new DeleteUserRequest(1);
-        var user = new CoffeePeek.Domain.Entities.Users.User { Id = 1, UserName = "Test User", IsSoftDeleted = false };
+        var user = new CoffeePeek.Domain.Entities.Users.User
+        {
+            Id = 1,
+            UserName = "Test User",
+            IsSoftDeleted = false
+        };
+        _dbContext.Users.Add(user);
+        await _dbContext.SaveChangesAsync();
 
-        _usersDbSetMock
-            .Setup(u => u.FirstOrDefaultAsync(
-                It.IsAny<System.Linq.Expressions.Expression<Func<CoffeePeek.Domain.Entities.Users.User, bool>>>(), 
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
+        var request = new DeleteUserRequest(1);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -80,12 +69,9 @@ public class DeleteUserRequestHandlerTests
         result.Success.Should().BeTrue();
         result.Data.Should().BeTrue();
 
-        _usersDbSetMock.Verify(u => u.FirstOrDefaultAsync(
-            It.IsAny<System.Linq.Expressions.Expression<Func<CoffeePeek.Domain.Entities.Users.User, bool>>>(), 
-            It.IsAny<CancellationToken>()), Times.Once);
-        
         user.IsSoftDeleted.Should().BeTrue();
-        
-        _unitOfWorkMock.Verify(uow => uow.DbContext.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
+        var userInDb = await _dbContext.Users.FindAsync(1);
+        userInDb!.IsSoftDeleted.Should().BeTrue();
     }
 }

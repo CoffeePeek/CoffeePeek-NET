@@ -1,10 +1,6 @@
 ﻿using CoffeePeek.BusinessLogic.RequestHandlers.Login;
 using CoffeePeek.Contract.Dtos.Auth;
 using CoffeePeek.Contract.Requests.Auth;
-using CoffeePeek.Contract.Response;
-using CoffeePeek.Contract.Response.Login;
-using CoffeePeek.Domain.Entities.Auth;
-using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Infrastructure.Auth;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
 using FluentAssertions;

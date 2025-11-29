@@ -1,8 +1,6 @@
 using CoffeePeek.Domain.Databases;
 using CoffeePeek.Domain.Entities.Address;
-using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.Entities.Shop;
-using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Domain.Repositories;
 using CoffeePeek.Domain.Repositories.Interfaces;
 using CoffeePeek.Domain.UnitOfWork;

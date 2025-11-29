@@ -4,7 +4,6 @@ using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.Auth;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Auth;
-using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
 using MapsterMapper;
@@ -17,7 +16,7 @@ public class RegisterUserRequestHandler(
     IMapper mapper,
     IValidationStrategy<UserDto> validationStrategy,
     UserManager<User> userManager,
-    RoleManager<Role> roleManager,
+    RoleManager<IdentityRole<int>> roleManager,
     IRedisService redisService)
     : IRequestHandler<RegisterUserRequest, Response<RegisterUserResponse>>
 {
@@ -50,7 +49,7 @@ public class RegisterUserRequestHandler(
         {
             if (!await roleManager.RoleExistsAsync(roleName))
             {
-                await roleManager.CreateAsync(new Role { Name = roleName });
+                await roleManager.CreateAsync(new IdentityRole<int> { Name = roleName });
             }
         }
 
