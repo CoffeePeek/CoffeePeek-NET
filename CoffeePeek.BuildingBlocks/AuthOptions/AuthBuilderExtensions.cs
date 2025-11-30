@@ -17,9 +17,11 @@ public static class AuthBuilderExtensions
         public IServiceCollection AddBearerAuthentication()
         {
             var jwtOptions = services.AddValidateOptions<JWTOptions>();
+            services.AddValidateOptions<OAuthGoogleOptions>();
+
             services.AddValidateOptions<AuthenticationOptions>();
             services.AddScoped<RoleManager<IdentityRole<int>>>();
-        
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin));
@@ -28,7 +30,7 @@ public static class AuthBuilderExtensions
             });
 
             services.AddUserIdentity();
-        
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -38,11 +40,11 @@ public static class AuthBuilderExtensions
                 })
                 .AddJwtBearer(x =>
                 {
-                    #if DEBUG
+#if DEBUG
                     x.RequireHttpsMetadata = false;
-                    #elif RELEASE
+#elif RELEASE
                     x.RequireHttpsMetadata = true;
-                    #endif
+#endif
                     x.RequireHttpsMetadata = true;
                     x.SaveToken = true;
                     x.TokenValidationParameters = new TokenValidationParameters
@@ -56,20 +58,22 @@ public static class AuthBuilderExtensions
                         ValidateIssuerSigningKey = true,
                         ClockSkew = TimeSpan.Zero
                     };
-                
+
                     x.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
                         {
-                            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<JwtBearerEvents>>();
+                            var logger = context.HttpContext.RequestServices
+                                .GetRequiredService<ILogger<JwtBearerEvents>>();
                             logger.LogDebug($"Token received: {context.Token}");
                             return Task.CompletedTask;
                         },
                         OnTokenValidated = context =>
                         {
-                            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<JwtBearerEvents>>();
+                            var logger = context.HttpContext.RequestServices
+                                .GetRequiredService<ILogger<JwtBearerEvents>>();
                             logger.LogInformation("Token validated successfully");
-            
+
                             var claims = context.Principal?.Claims;
                             if (claims != null)
                             {
@@ -83,25 +87,26 @@ public static class AuthBuilderExtensions
                         },
                         OnAuthenticationFailed = context =>
                         {
-                            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<JwtBearerEvents>>();
+                            var logger = context.HttpContext.RequestServices
+                                .GetRequiredService<ILogger<JwtBearerEvents>>();
                             logger.LogError($"Authentication failed: {context.Exception.Message}");
                             if (context.Exception is SecurityTokenExpiredException)
                             {
                                 logger.LogError("Token expired");
                             }
+
                             return Task.CompletedTask;
                         },
                         OnChallenge = context =>
                         {
-                            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<JwtBearerEvents>>();
+                            var logger = context.HttpContext.RequestServices
+                                .GetRequiredService<ILogger<JwtBearerEvents>>();
                             logger.LogWarning($"Challenge requested: {context.Error}, {context.ErrorDescription}");
                             return Task.CompletedTask;
                         }
-
                     };
-
                 });
-        
+
             return services;
         }
 
