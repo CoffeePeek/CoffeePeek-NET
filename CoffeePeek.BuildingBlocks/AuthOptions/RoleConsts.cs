@@ -2,7 +2,7 @@ namespace CoffeePeek.BuildingBlocks.AuthOptions;
 
 public class RoleConsts
 {
-    public const string Admin = "admin";
-    public const string Merchant = "merchant";
-    public const string User = "user";
+    public const string Admin = nameof(Admin);
+    public const string Merchant = nameof(Merchant);
+    public const string User = nameof(User);
 }

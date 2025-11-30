@@ -1,190 +1,228 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using CoffeePeek.BuildingBlocks.AuthOptions;
-using CoffeePeek.Domain.Entities.Auth;
+﻿using CoffeePeek.BuildingBlocks.AuthOptions;
+using CoffeePeek.Contract.Dtos.Auth;
 using CoffeePeek.Domain.Entities.Users;
-using CoffeePeek.Domain.Repositories.Interfaces;
 using CoffeePeek.Infrastructure.Auth;
-using JetBrains.Annotations;
+using FluentAssertions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Moq;
 
 namespace CoffeePeek.Infrastructure.Tests.Auth;
 
-[TestSubject(typeof(JWTTokenService))]
 public class JWTTokenServiceTests
 {
-    private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<UserManager<User>> _userManagerMock;
     private readonly Mock<IOptions<JWTOptions>> _optionsMock;
-    private readonly JWTTokenService _service;
-    private readonly JWTOptions _testOptions;
+    private readonly JWTTokenService _jwtTokenService;
+    private readonly JWTOptions _jwtOptions;
 
     public JWTTokenServiceTests()
     {
-        _userRepositoryMock = new Mock<IUserRepository>();
-        _optionsMock = new Mock<IOptions<JWTOptions>>();
+        // Setup UserManager mock
+        var userStoreMock = new Mock<IUserStore<User>>();
+        _userManagerMock = new Mock<UserManager<User>>(
+            userStoreMock.Object,
+            null!, null!, null!, null!, null!, null!, null!, null!);
 
-        _testOptions = new JWTOptions
+        // Setup JWTOptions
+        _jwtOptions = new JWTOptions
         {
-            SecretKey = "super_secret_key_that_is_at_least_32_chars_long_to_be_secure_12345",
-            AccessTokenLifetimeMinutes = 15,
-            RefreshTokenLifetimeDays = 7,
+            SecretKey = "ThisIsASecretKeyThatIsAtLeast32CharactersLong12345",
             Issuer = "TestIssuer",
-            Audience = "TestAudience"
+            Audience = "TestAudience",
+            AccessTokenLifetimeMinutes = 30
         };
-        _optionsMock.Setup(o => o.Value).Returns(_testOptions);
+        
+        _optionsMock = new Mock<IOptions<JWTOptions>>();
+        _optionsMock.Setup(o => o.Value).Returns(_jwtOptions);
 
-        _service = new JWTTokenService(_optionsMock.Object, _userRepositoryMock.Object);
+        _jwtTokenService = new JWTTokenService(_userManagerMock.Object, _optionsMock.Object);
     }
 
-[Fact]
-    public async Task GenerateTokensAsync_ShouldReturnValidAuthResultAndSaveRefreshToken()
+    [Fact]
+    public async Task GenerateTokensAsync_ShouldReturnAuthResult_WhenUserIsValid()
     {
         // Arrange
-        var userId = 1;
-        var user = new User { Id = userId, Email = "test@example.com" };
+        var user = new User
+        {
+            Id = 1,
+            UserName = "testuser",
+            Email = "test@example.com"
+        };
+        
+        var refreshToken = "generated-refresh-token";
+        var roles = new List<string> { "user" };
+
+        _userManagerMock
+            .Setup(um => um.GenerateUserTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken"))
+            .ReturnsAsync(refreshToken);
+
+        _userManagerMock
+            .Setup(um => um.SetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken", refreshToken))
+            .ReturnsAsync(IdentityResult.Success);
+
+        _userManagerMock
+            .Setup(um => um.GetRolesAsync(user))
+            .ReturnsAsync(roles);
 
         // Act
-        var result = await _service.GenerateTokensAsync(user);
+        var result = await _jwtTokenService.GenerateTokensAsync(user);
 
         // Assert
-        Assert.NotNull(result.AccessToken);
-        Assert.NotNull(result.RefreshToken);
-        
-        Assert.True(result.ExpiredAt > DateTime.UtcNow);
-        Assert.True(result.ExpiredAt < DateTime.UtcNow.AddMinutes(_testOptions.AccessTokenLifetimeMinutes + 1));
-        
-        var newRefreshToken = user.RefreshTokens.LastOrDefault();
-        Assert.NotNull(newRefreshToken);
-        Assert.Equal(result.RefreshToken, newRefreshToken.Token);
-        Assert.Equal(userId, newRefreshToken.UserId);
-        
-        _userRepositoryMock.Verify(r => r.Update(user), Times.Once);
-        _userRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        result.Should().NotBeNull();
+        result.AccessToken.Should().NotBeNullOrEmpty();
+        result.RefreshToken.Should().Be(refreshToken);
 
-        var handler = new JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadJwtToken(result.AccessToken);
-        Assert.Equal(userId.ToString(), jwtToken.Claims.First(c => c.Type == JwtRegisteredClaimNames.Sub).Value);
-        Assert.Equal(user.Email, jwtToken.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value);
+        _userManagerMock.Verify(
+            um => um.GenerateUserTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken"),
+            Times.Once);
+
+        _userManagerMock.Verify(
+            um => um.SetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken", refreshToken),
+            Times.Once);
+
+        _userManagerMock.Verify(
+            um => um.GetRolesAsync(user),
+            Times.Once);
     }
 
     [Fact]
-    public async Task RefreshTokensAsync_ShouldGenerateNewTokens_WhenValidTokenIsProvided()
+    public async Task RefreshTokensAsync_ShouldReturnNewTokens_WhenRefreshTokenIsValid()
     {
         // Arrange
         var userId = 1;
-        var existingRefreshTokenString = Guid.NewGuid().ToString();
+        var refreshToken = "valid-refresh-token";
+        
         var user = new User
         {
             Id = userId,
-            Email = "refresh@example.com",
-            RefreshTokens = new List<RefreshToken>
-            {
-                new RefreshToken { Token = existingRefreshTokenString, UserId = userId, ExpiryDate = DateTime.UtcNow.AddDays(7) }
-            }
+            UserName = "testuser",
+            Email = "test@example.com"
         };
+        
+        var newRefreshToken = "new-refresh-token";
+        var roles = new List<string> { "user" };
 
-        _userRepositoryMock
-            .Setup(r => r.GetUserByRefreshToken(existingRefreshTokenString))
+        _userManagerMock
+            .Setup(um => um.FindByIdAsync(userId.ToString()))
             .ReturnsAsync(user);
+
+        _userManagerMock
+            .Setup(um => um.GetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken"))
+            .ReturnsAsync(refreshToken);
+
+        _userManagerMock
+            .Setup(um => um.RemoveAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken"))
+            .ReturnsAsync(IdentityResult.Success);
+
+        _userManagerMock
+            .Setup(um => um.GenerateUserTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken"))
+            .ReturnsAsync(newRefreshToken);
+
+        _userManagerMock
+            .Setup(um => um.SetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken", newRefreshToken))
+            .ReturnsAsync(IdentityResult.Success);
+
+        _userManagerMock
+            .Setup(um => um.GetRolesAsync(user))
+            .ReturnsAsync(roles);
 
         // Act
-        var result = await _service.RefreshTokensAsync(existingRefreshTokenString);
+        var result = await _jwtTokenService.RefreshTokensAsync(refreshToken, userId);
 
         // Assert
-        var oldToken = user.RefreshTokens.FirstOrDefault(t => t.Token == existingRefreshTokenString);
-        Assert.NotNull(oldToken);
-        Assert.True(oldToken.IsRevoked);
+        result.Should().NotBeNull();
+        result.AccessToken.Should().NotBeNullOrEmpty();
+        result.RefreshToken.Should().Be(newRefreshToken);
 
-        var newToken = user.RefreshTokens.Last();
-        Assert.NotEqual(existingRefreshTokenString, newToken.Token);
-        Assert.Equal(result.RefreshToken, newToken.Token);
+        _userManagerMock.Verify(
+            um => um.FindByIdAsync(userId.ToString()),
+            Times.Once);
 
-        _userRepositoryMock.Verify(r => r.Update(user), Times.Once);
-        _userRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        
-        Assert.NotNull(result.AccessToken);
+        _userManagerMock.Verify(
+            um => um.GetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken"),
+            Times.Once);
+
+        _userManagerMock.Verify(
+            um => um.RemoveAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken"),
+            Times.Once);
+
+        _userManagerMock.Verify(
+            um => um.GenerateUserTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken"),
+            Times.Once);
+
+        _userManagerMock.Verify(
+            um => um.SetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken", newRefreshToken),
+            Times.Once);
     }
-    
+
     [Fact]
-    public async Task RefreshTokensAsync_ShouldThrowUnauthorizedException_WhenUserNotFound()
+    public async Task RefreshTokensAsync_ShouldThrowUnauthorizedAccessException_WhenUserNotFound()
     {
         // Arrange
-        var invalidToken = Guid.NewGuid().ToString();
-        
-        // Настройка мока: не находим пользователя
-        _userRepositoryMock
-            .Setup(r => r.GetUserByRefreshToken(invalidToken))
-            .ReturnsAsync((User)null!); 
+        var userId = 999;
+        var refreshToken = "any-refresh-token";
 
-        // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(
-            () => _service.RefreshTokensAsync(invalidToken)
-        );
+        _userManagerMock
+            .Setup(um => um.FindByIdAsync(userId.ToString()))
+            .ReturnsAsync((User?)null);
+
+        // Act
+        Func<Task> act = async () => await _jwtTokenService.RefreshTokensAsync(refreshToken, userId);
+
+        // Assert
+        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+            .WithMessage("Invalid user.");
+
+        _userManagerMock.Verify(
+            um => um.FindByIdAsync(userId.ToString()),
+            Times.Once);
+
+        _userManagerMock.Verify(
+            um => um.GetAuthenticationTokenAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never);
     }
 
     [Fact]
-    public async Task RefreshTokensAsync_ShouldThrowUnauthorizedException_WhenTokenIsExpired()
-    {
-        // Arrange
-        var userId = 1;
-        var expiredTokenString = Guid.NewGuid().ToString();
-        var user = new User
-        {
-            Id = userId,
-            Email = "expired@example.com",
-            RefreshTokens = new List<RefreshToken>
-            {
-                // Устанавливаем дату истечения в прошлом
-                new RefreshToken 
-                { 
-                    Token = expiredTokenString, 
-                    UserId = userId, 
-                    ExpiryDate = DateTime.UtcNow.AddDays(-1) 
-                }
-            }
-        };
-
-        _userRepositoryMock
-            .Setup(r => r.GetUserByRefreshToken(expiredTokenString))
-            .ReturnsAsync(user);
-
-        // Act & Assert
-        // Код проверяет token.IsActive, который будет false
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(
-            () => _service.RefreshTokensAsync(expiredTokenString)
-        );
-    }
-
-    [Fact]
-    public async Task RefreshTokensAsync_ShouldThrowUnauthorizedException_WhenTokenIsRevoked()
+    public async Task RefreshTokensAsync_ShouldThrowUnauthorizedAccessException_WhenRefreshTokenIsInvalid()
     {
         // Arrange
         var userId = 1;
-        var revokedTokenString = Guid.NewGuid().ToString();
+        var providedRefreshToken = "provided-refresh-token";
+        var storedRefreshToken = "different-stored-refresh-token";
+
         var user = new User
         {
             Id = userId,
-            Email = "revoked@example.com",
-            RefreshTokens = new List<RefreshToken>
-            {
-                new RefreshToken 
-                { 
-                    Token = revokedTokenString, 
-                    UserId = userId, 
-                    ExpiryDate = DateTime.UtcNow.AddDays(7),
-                    IsRevoked = true // Токен отозван
-                }
-            }
+            UserName = "testuser",
+            Email = "test@example.com"
         };
 
-        _userRepositoryMock
-            .Setup(r => r.GetUserByRefreshToken(revokedTokenString))
+        _userManagerMock
+            .Setup(um => um.FindByIdAsync(userId.ToString()))
             .ReturnsAsync(user);
 
-        // Act & Assert
-        // Код проверяет token.IsActive, который будет false
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(
-            () => _service.RefreshTokensAsync(revokedTokenString)
-        );
+        _userManagerMock
+            .Setup(um => um.GetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken"))
+            .ReturnsAsync(storedRefreshToken);
+
+        // Act
+        Func<Task> act = async () => await _jwtTokenService.RefreshTokensAsync(providedRefreshToken, userId);
+
+        // Assert
+        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+            .WithMessage("Invalid refresh token.");
+
+        _userManagerMock.Verify(
+            um => um.FindByIdAsync(userId.ToString()),
+            Times.Once);
+
+        _userManagerMock.Verify(
+            um => um.GetAuthenticationTokenAsync(user, TokenOptions.DefaultProvider, "RefreshToken"),
+            Times.Once);
+
+        _userManagerMock.Verify(
+            um => um.RemoveAuthenticationTokenAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never);
     }
 }

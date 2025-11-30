@@ -6,6 +6,7 @@ using CoffeePeek.BuildingBlocks.RedisOptions;
 using CoffeePeek.BuildingBlocks.Sentry;
 using CoffeePeek.BusinessLogic.Configuration;
 using CoffeePeek.Infrastructure.Configuration;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,33 +30,41 @@ builder.Services
 
 var app = builder.Build();
 
-/*using (var scope = app.Services.CreateScope())
-{
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRoleEntity>>();
-    
-    if (!await roleManager.RoleExistsAsync("Admin"))
-    {
-        await roleManager.CreateAsync(new IdentityRoleEntity("Admin"));
-        await roleManager.CreateAsync(new IdentityRoleEntity("Merchant"));
-        await roleManager.CreateAsync(new IdentityRoleEntity("User"));
-    }
-}*/
-
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<UserTokenMiddleware>();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
 if (app.Environment.IsDevelopment())
 {
+    await IdentitySeed(app);
     app.UseHttpsRedirection();
 }
 
 app.MapControllers();
 
 app.Run();
+
+return;
+
+//todo: TASK:CP-65 move to another place
+async Task IdentitySeed(WebApplication webApplication)
+{
+    using var scope = webApplication.Services.CreateScope();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+
+    if (!await roleManager.RoleExistsAsync(RoleConsts.Admin))
+    {
+        string[] roles = [RoleConsts.Admin, RoleConsts.Merchant, RoleConsts.User];
+        
+        foreach (var role in roles)
+        {
+            await roleManager.CreateAsync(new IdentityRole<int>(role));
+        }
+    }
+}
 

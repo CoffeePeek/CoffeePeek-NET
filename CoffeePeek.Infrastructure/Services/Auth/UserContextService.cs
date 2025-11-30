@@ -10,7 +10,8 @@ public class UserContextService(IHttpContextAccessor httpContextAccessor) : IUse
     {
         userId = 0;
         var context = httpContextAccessor.HttpContext;
-        return context?.Items.TryGetValue(AuthConfig.JWTTokenUserPropertyName, out var userIdObj) == true
+        return context?.Items != null 
+               && context.Items.TryGetValue(AuthConfig.JWTTokenUserPropertyName, out var userIdObj) == true
                && userIdObj is int id
                && (userId = id) > 0;
     }

@@ -1,8 +1,6 @@
 using CoffeePeek.Domain.Databases;
 using CoffeePeek.Domain.Entities.Address;
-using CoffeePeek.Domain.Entities.Auth;
 using CoffeePeek.Domain.Entities.Shop;
-using CoffeePeek.Domain.Entities.Users;
 using CoffeePeek.Domain.Repositories;
 using CoffeePeek.Domain.Repositories.Interfaces;
 using CoffeePeek.Domain.UnitOfWork;
@@ -39,18 +37,12 @@ public static class UnitOfWorkExtensions
         return services;
     }
     
-    public static IServiceCollection ConfigureDbRepositories(this IServiceCollection services)
+    public static void ConfigureDbRepositories(this IServiceCollection services)
     {
         services.AddUnitOfWork<CoffeePeekDbContext>();
-
-        services.AddSpecificRepository<User, IUserRepository, UserRepository>();
         
         services.AddSpecificRepository<City, ICityRepository, CityRepository>();
         
         services.AddSpecificRepository<ModerationShop, IModerationShopsRepository, ModerationShopsRepository>();
-
-        services.AddSpecificRepository<RefreshToken, IRefreshTokenRepository, RefreshTokenRepository>();
-        
-        return services;
     }
 }

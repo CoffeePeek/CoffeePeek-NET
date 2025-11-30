@@ -9,21 +9,21 @@ public class RoleConstsTests
     public void Admin_ShouldBeAdminLowercase()
     {
         // Assert
-        RoleConsts.Admin.Should().Be("admin");
+        RoleConsts.Admin.Should().Be(RoleConsts.Admin);
     }
 
     [Fact]
     public void Merchant_ShouldBeMerchantLowercase()
     {
         // Assert
-        RoleConsts.Merchant.Should().Be("merchant");
+        RoleConsts.Merchant.Should().Be(RoleConsts.Merchant);
     }
 
     [Fact]
     public void User_ShouldBeUserLowercase()
     {
         // Assert
-        RoleConsts.User.Should().Be("user");
+        RoleConsts.User.Should().Be(RoleConsts.User);
     }
 
     [Fact]

@@ -8,6 +8,7 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Moq;
 
 namespace CoffeePeek.Api.Test.Controllers;
@@ -38,7 +39,7 @@ public class ReviewCoffeeControllerTests
             .Setup(m => m.Send(It.IsAny<GetAllReviewsRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
-        var httpContext = CreateHttpContextWithUserId(userId);
+        var httpContext = CreateHttpContextWithAuthenticatedUser(userId);
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = httpContext
@@ -71,7 +72,7 @@ public class ReviewCoffeeControllerTests
         // Act & Assert
         await _controller.Invoking(c => c.GetAllReviews())
             .Should().ThrowAsync<UnauthorizedAccessException>()
-            .WithMessage("User is not authenticated or UserId is not available.");
+            .WithMessage("User ID claim is missing.");
 
         _mediatorMock.Verify(
             m => m.Send(It.IsAny<GetAllReviewsRequest>(), It.IsAny<CancellationToken>()),
@@ -94,7 +95,9 @@ public class ReviewCoffeeControllerTests
             .Setup(m => m.Send(It.IsAny<GetReviewByIdRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
-        var httpContext = CreateHttpContextWithUserId(userId);
+        // Note: GetReviewById doesn't require user authentication in the method itself,
+        // but the controller has [Authorize] which would handle this at the HTTP level
+        var httpContext = new DefaultHttpContext();
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = httpContext
@@ -120,7 +123,6 @@ public class ReviewCoffeeControllerTests
     {
         // Arrange
         var reviewId = 999;
-        var userId = 1;
         var expectedResponse = new Response<GetReviewByIdResponse>
         {
             Success = false,
@@ -131,7 +133,9 @@ public class ReviewCoffeeControllerTests
             .Setup(m => m.Send(It.IsAny<GetReviewByIdRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
-        var httpContext = CreateHttpContextWithUserId(userId);
+        // Note: GetReviewById doesn't require user authentication in the method itself,
+        // but the controller has [Authorize] which would handle this at the HTTP level
+        var httpContext = new DefaultHttpContext();
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = httpContext
@@ -144,6 +148,67 @@ public class ReviewCoffeeControllerTests
         result.Should().NotBeNull();
         result.Success.Should().BeFalse();
         result.Message.Should().Be("Review not found");
+    }
+
+    [Fact]
+    public async Task GetReviewById_ShouldReturnReview_WhenReviewExistsWithValidData()
+    {
+        // Arrange
+        var reviewId = 5;
+        var reviewDto = new CoffeeShopReviewDto
+        {
+            Id = reviewId,
+            ShopId = 10,
+            UserId = 1,
+            Header = "Great coffee!",
+            Comment = "This coffee shop has excellent coffee and great service.",
+            RatingCoffee = 5,
+            RatingService = 4,
+            RatingPlace = 4,
+            CreatedAt = DateTime.UtcNow,
+            ShopName = "Best Coffee Shop"
+        };
+        var expectedResponse = new Response<GetReviewByIdResponse>
+        {
+            Success = true,
+            Data = new GetReviewByIdResponse(reviewDto)
+        };
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetReviewByIdRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
+        // Note: GetReviewById doesn't require user authentication in the method itself,
+        // but the controller has [Authorize] which would handle this at the HTTP level
+        var httpContext = new DefaultHttpContext();
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        // Act
+        var result = await _controller.GetReviewById(reviewId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Success.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Data!.Review.Should().NotBeNull();
+        result.Data.Review.Id.Should().Be(reviewId);
+        result.Data.Review.ShopId.Should().Be(10);
+        result.Data.Review.UserId.Should().Be(1);
+        result.Data.Review.Header.Should().Be("Great coffee!");
+        result.Data.Review.Comment.Should().Be("This coffee shop has excellent coffee and great service.");
+        result.Data.Review.RatingCoffee.Should().Be(5);
+        result.Data.Review.RatingService.Should().Be(4);
+        result.Data.Review.RatingPlace.Should().Be(4);
+        result.Data.Review.ShopName.Should().Be("Best Coffee Shop");
+
+        _mediatorMock.Verify(
+            m => m.Send(
+                It.Is<GetReviewByIdRequest>(r => r.Id == reviewId),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
@@ -162,7 +227,7 @@ public class ReviewCoffeeControllerTests
             .Setup(m => m.Send(It.IsAny<AddCoffeeShopReviewRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
-        var httpContext = CreateHttpContextWithUserId(userId);
+        var httpContext = CreateHttpContextWithAuthenticatedUser(userId);
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = httpContext
@@ -196,7 +261,7 @@ public class ReviewCoffeeControllerTests
         // Act & Assert
         await _controller.Invoking(c => c.AddCoffeeShopReview(request))
             .Should().ThrowAsync<UnauthorizedAccessException>()
-            .WithMessage("User is not authenticated or UserId is not available.");
+            .WithMessage("User ID claim is missing.");
 
         _mediatorMock.Verify(
             m => m.Send(It.IsAny<AddCoffeeShopReviewRequest>(), It.IsAny<CancellationToken>()),
@@ -219,7 +284,7 @@ public class ReviewCoffeeControllerTests
             .Setup(m => m.Send(It.IsAny<UpdateCoffeeShopReviewRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
-        var httpContext = CreateHttpContextWithUserId(userId);
+        var httpContext = CreateHttpContextWithAuthenticatedUser(userId);
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = httpContext
@@ -253,7 +318,7 @@ public class ReviewCoffeeControllerTests
         // Act & Assert
         await _controller.Invoking(c => c.UpdateCoffeeShopReview(request))
             .Should().ThrowAsync<UnauthorizedAccessException>()
-            .WithMessage("User is not authenticated or UserId is not available.");
+            .WithMessage("User ID claim is missing.");
 
         _mediatorMock.Verify(
             m => m.Send(It.IsAny<UpdateCoffeeShopReviewRequest>(), It.IsAny<CancellationToken>()),
@@ -276,7 +341,7 @@ public class ReviewCoffeeControllerTests
             .Setup(m => m.Send(It.IsAny<AddCoffeeShopReviewRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
-        var httpContext = CreateHttpContextWithUserId(userId);
+        var httpContext = CreateHttpContextWithAuthenticatedUser(userId);
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = httpContext
@@ -311,7 +376,7 @@ public class ReviewCoffeeControllerTests
             .Setup(m => m.Send(It.IsAny<UpdateCoffeeShopReviewRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
-        var httpContext = CreateHttpContextWithUserId(userId);
+        var httpContext = CreateHttpContextWithAuthenticatedUser(userId);
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = httpContext
@@ -330,10 +395,20 @@ public class ReviewCoffeeControllerTests
             Times.Once);
     }
 
-    private static HttpContext CreateHttpContextWithUserId(int userId)
+    private static HttpContext CreateHttpContextWithAuthenticatedUser(int userId)
     {
-        var httpContext = new DefaultHttpContext();
-        httpContext.Items[AuthConfig.JWTTokenUserPropertyName] = userId;
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Name, $"testuser{userId}")
+        };
+        var identity = new ClaimsIdentity(claims, "Bearer");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        var httpContext = new DefaultHttpContext
+        {
+            User = claimsPrincipal
+        };
         return httpContext;
     }
 }

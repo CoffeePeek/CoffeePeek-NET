@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.Api.Extensions;
+using CoffeePeek.BuildingBlocks.AuthOptions;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
@@ -9,36 +10,33 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoffeePeek.Api.Controllers;
 
 [ApiController]
+[Authorize(Policy = RoleConsts.User)]
 [Route("api/[controller]")]
 public class ReviewCoffeeController(IMediator mediator) : Controller
 {
     [HttpGet]
-    [Authorize]
     public Task<Response<GetAllReviewsResponse>> GetAllReviews()
     {
-        return mediator.Send(new GetAllReviewsRequest(HttpContext.GetUserIdOrThrow()));
+        return mediator.Send(new GetAllReviewsRequest(User.GetUserIdOrThrow()));
     }
 
     [HttpGet("{id:int}")]
-    [Authorize]
     public Task<Response<GetReviewByIdResponse>> GetReviewById(int id)
     {
         return mediator.Send(new GetReviewByIdRequest(id));
     }
 
     [HttpPost]
-    [Authorize]
     public Task<Response<AddCoffeeShopReviewResponse>> AddCoffeeShopReview([FromBody] AddCoffeeShopReviewRequest request)
     {
-        request.UserId = HttpContext.GetUserIdOrThrow();
+        request.UserId = User.GetUserIdOrThrow();
         return mediator.Send(request);
     }
 
     [HttpPut]
-    [Authorize]
     public Task<Response<UpdateCoffeeShopReviewResponse>> UpdateCoffeeShopReview([FromBody] UpdateCoffeeShopReviewRequest request)
     {
-        request.UserId = HttpContext.GetUserIdOrThrow();
+        request.UserId = User.GetUserIdOrThrow();
         return mediator.Send(request);
     }
 }

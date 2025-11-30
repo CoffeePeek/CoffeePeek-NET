@@ -20,7 +20,8 @@ public class UserController(IMediator mediator, IHub hub) : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<Response<UserDto>> GetProfile(CancellationToken cancellationToken)
     {
-        var request = new GetProfileRequest(HttpContext.GetUserIdOrThrow());
+        var request = new GetProfileRequest(User.GetUserIdOrThrow());
+        
         return mediator.Send(request, cancellationToken);
     }
     
@@ -30,7 +31,7 @@ public class UserController(IMediator mediator, IHub hub) : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<Response<UpdateProfileResponse>> UpdateProfile([FromBody]UpdateProfileRequest request, CancellationToken cancellationToken)
     {
-        var authenticatedRequest = request with { UserId = HttpContext.GetUserIdOrThrow() };
+        var authenticatedRequest = request with { UserId = HttpContext.User.GetUserIdOrThrow() };
         return mediator.Send(authenticatedRequest, cancellationToken);
     }
     
@@ -51,9 +52,9 @@ public class UserController(IMediator mediator, IHub hub) : Controller
     [Authorize]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Task<Response<bool>> DeleteUser(int id, CancellationToken cancellationToken)
+    public Task<Response<bool>> DeleteUser(CancellationToken cancellationToken)
     {
-        var request = new DeleteUserRequest(id);
+        var request = new DeleteUserRequest(User.GetUserIdOrThrow());
         return mediator.Send(request, cancellationToken);
     }
 }
