@@ -2,22 +2,21 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CoffeePeek.Contract.Dtos.Auth;
+using CoffeePeek.Contract.Response;
+using CoffeePeek.Contract.Response.Auth;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CoffeePeek.Web.Pages;
 
-public class LoginModel : PageModel
+public class LoginModel(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+    : PageModel
 {
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IConfiguration _configuration;
-
-    public LoginModel(IHttpClientFactory httpClientFactory, IConfiguration configuration)
-    {
-        _httpClientFactory = httpClientFactory;
-        _configuration = configuration;
-    }
-
     [BindProperty]
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email format")]
@@ -74,8 +73,8 @@ public class LoginModel : PageModel
 
         try
         {
-            var client = _httpClientFactory.CreateClient();
-            var apiBaseUrl = _configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001";
+            var client = httpClientFactory.CreateClient();
+            var apiBaseUrl = configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001";
 
             var loginRequest = new
             {
@@ -99,14 +98,12 @@ public class LoginModel : PageModel
                     PropertyNameCaseInsensitive = true
                 });
 
-                if (loginResponse?.IsSuccess == true && loginResponse.Data != null)
+                if (loginResponse is { IsSuccess: true, Data: not null })
                 {
-                    // Сохраняем токены в сессии
                     HttpContext.Session.SetString("AccessToken", loginResponse.Data.AccessToken);
                     HttpContext.Session.SetString("RefreshToken", loginResponse.Data.RefreshToken);
                     HttpContext.Session.SetString("UserEmail", Email);
                     
-                    // Принудительно сохраняем сессию
                     await HttpContext.Session.CommitAsync();
 
                     // Если "Remember Me" включен, сохраняем в cookies
@@ -147,12 +144,63 @@ public class LoginModel : PageModel
 
         return Page();
     }
+    
+    public async Task OnPostGoogleLogin()
+    {
+        await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme,
+            new AuthenticationProperties
+            {
+                RedirectUri = Url.Page("/Login","GoogleResponse")
+            });
+    }
+    
+    public async Task<IActionResult> OnGetGoogleResponseAsync()
+    {
+        var claimRes = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        
+        var claims = claimRes.Principal.Identities.FirstOrDefault().Claims.Select(claim => new
+        {
+            claim.Issuer,
+            claim.OriginalIssuer,
+            claim.Type,
+            claim.Value
+        });
+        
+        var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+        if (!result.Succeeded)
+            return Redirect("/Login");
+
+        var idToken = claims.First().Value;
+
+        if (string.IsNullOrEmpty(idToken))
+            return Redirect("/Login?error=GoogleAuthFailed");
+
+        var client = httpClientFactory.CreateClient();
+        var apiBaseUrl = configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001";
+
+        var response = await client.PostAsJsonAsync($"{apiBaseUrl}/api/auth/google/login", new { IdToken = idToken });
+
+        if (!response.IsSuccessStatusCode)
+            return Redirect("/Login?error=GoogleAuthFailed");
+
+        var resultData = await response.Content.ReadFromJsonAsync<Response<GoogleLoginResponse>>();
+
+        Response.Cookies.Append("auth_token", resultData.Data.AccessToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddDays(7)
+        });
+
+        return Redirect("/");
+    }
 }
 
-// Response models
 public class LoginApiResponse
 {
-    [JsonPropertyName(("Success"))]
+    [JsonPropertyName("Success")]
     public bool IsSuccess { get; set; }
     public string? Message { get; set; }
     public LoginData? Data { get; set; }

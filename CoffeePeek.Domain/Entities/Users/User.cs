@@ -9,7 +9,11 @@ public class User : IdentityUser<int>
     {
         Reviews = new HashSet<Review.Review>();
     }
-    
+
+    [MaxLength(255)]
+    public string GoogleId { get; set; }
+    [MaxLength(255)]
+    public string AvatarUrl { get; set; }
     [MaxLength(255)]
     public string? About { get; set; }
     public bool IsSoftDeleted { get; set; }

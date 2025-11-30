@@ -30,8 +30,31 @@ builder.Services
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseMiddleware<UserTokenMiddleware>();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+if (app.Environment.IsDevelopment())
 {
+    await IdentitySeed(app);
+    app.UseHttpsRedirection();
+}
+
+app.MapControllers();
+
+app.Run();
+
+return;
+
+//todo: TASK:CP-65 move to another place
+async Task IdentitySeed(WebApplication webApplication)
+{
+    using var scope = webApplication.Services.CreateScope();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
 
     if (!await roleManager.RoleExistsAsync(RoleConsts.Admin))
@@ -44,23 +67,4 @@ using (var scope = app.Services.CreateScope())
         }
     }
 }
-
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseMiddleware<ErrorHandlerMiddleware>();
-app.UseMiddleware<UserTokenMiddleware>();
-
-app.UseSwagger();
-app.UseSwaggerUI();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
-
-app.MapControllers();
-
-app.Run();
 

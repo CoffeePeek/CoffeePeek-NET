@@ -3,6 +3,7 @@ using CoffeePeek.Infrastructure.Auth;
 using CoffeePeek.Infrastructure.Cache;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
 using CoffeePeek.Infrastructure.Consumers;
+using CoffeePeek.Infrastructure.Services;
 using CoffeePeek.Infrastructure.Services.Secure;
 using CoffeePeek.Infrastructure.Services.Secure.Interfaces;
 using CoffeePeek.Shared.Extensions.Configuration;
@@ -18,7 +19,9 @@ public static class InfrastructureModule
         #region Auth
         
         services.AddTransient<IJWTTokenService, JWTTokenService>();
+        services.AddTransient<IJWTTokenService, JWTTokenService>();
         services.AddScoped<IHashingService, HashingService>();
+        services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
         #endregion
         
@@ -26,6 +29,7 @@ public static class InfrastructureModule
 
         services.AddTransient<IRedisService, RedisService>();
         services.AddTransient<ICacheService, CacheService>();
+        services.AddScoped<IUserService, UserService>();
         
         #endregion
         
