@@ -11,9 +11,9 @@ public class User : IdentityUser<int>
     }
 
     [MaxLength(255)]
-    public string GoogleId { get; set; }
+    public string? GoogleId { get; set; }
     [MaxLength(255)]
-    public string AvatarUrl { get; set; }
+    public string? AvatarUrl { get; set; }
     [MaxLength(255)]
     public string? About { get; set; }
     public bool IsSoftDeleted { get; set; }
