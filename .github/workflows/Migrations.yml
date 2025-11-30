@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - '**'
 
 jobs:
   migrate:
@@ -27,5 +28,17 @@ jobs:
       - name: Build project
         run: dotnet build --configuration Release
 
+      - name: Determine environment
+        id: env
+        run: |
+          if [ "${GITHUB_REF##*/}" = "dev" ]; then
+            echo "ENV_FILE=appsettings.json" >> $GITHUB_ENV
+          else
+            echo "ENV_FILE=appsettings.Development.json" >> $GITHUB_ENV
+          fi
+
       - name: Apply migrations
-        run: dotnet ef database update --project CoffeePeek.Domain --startup-project CoffeePeek.Api
+        run: |
+          dotnet ef database update --project CoffeePeek.Domain \
+            --startup-project CoffeePeek.Api \
+            -- --environment $ENV_FILE
