@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - feature/**
 
 jobs:
   build:
@@ -13,11 +14,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set Docker tag
+        id: vars
+        run: |
+          if [[ "${GITHUB_REF_NAME}" == "dev" ]]; then
+            echo "DOCKER_TAG=prod" >> $GITHUB_ENV
+          elif [[ "${GITHUB_REF_NAME}" == feature/* ]]; then
+            echo "DOCKER_TAG=dev" >> $GITHUB_ENV
+          else
+            echo "DOCKER_TAG=latest" >> $GITHUB_ENV
+          fi
+
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
       - name: Build Docker image
-        run: docker build -t winststreloc/coffeepeek.api:latest -f CoffeePeek.Api/Dockerfile .
+        run: docker build -t winststreloc/coffeepeek.api:${DOCKER_TAG} -f CoffeePeek.Api/Dockerfile .
 
       - name: Push Docker image
-        run: docker push winststreloc/coffeepeek.api:latest
+        run: docker push winststreloc/coffeepeek.api:${DOCKER_TAG}
