@@ -24,7 +24,6 @@ jobs:
         elif [[ "${GITHUB_REF_NAME}" == feature/* ]]; then
           echo "DOCKER_TAG=dev" >> $GITHUB_ENV
         else
-          # fallback на случай другой ветки
           echo "DOCKER_TAG=latest" >> $GITHUB_ENV
         fi
 
