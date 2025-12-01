@@ -2,9 +2,9 @@ name: Docker CoffeePeek.Web
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "dev", "feature" ]
   pull_request:
-    branches: [ "feature" ]
+    branches: [ "dev", "feature" ]
 
 jobs:
 
@@ -21,7 +21,7 @@ jobs:
       run: |
         if [[ "${GITHUB_REF_NAME}" == "dev" ]]; then
           echo "DOCKER_TAG=prod" >> $GITHUB_ENV
-        elif [[ "${GITHUB_REF_NAME}" == feature/* ]]; then
+        elif [[ "${GITHUB_REF_NAME}" == feature ]]; then
           echo "DOCKER_TAG=dev" >> $GITHUB_ENV
         else
           echo "DOCKER_TAG=latest" >> $GITHUB_ENV
