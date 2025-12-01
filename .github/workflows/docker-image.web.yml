@@ -16,11 +16,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Set Docker tag
+      id: vars
+      run: |
+        if [[ "${GITHUB_REF_NAME}" == "dev" ]]; then
+          echo "DOCKER_TAG=prod" >> $GITHUB_ENV
+        elif [[ "${GITHUB_REF_NAME}" == feature/* ]]; then
+          echo "DOCKER_TAG=dev" >> $GITHUB_ENV
+        else
+          # fallback на случай другой ветки
+          echo "DOCKER_TAG=latest" >> $GITHUB_ENV
+        fi
+
     - name: Login to Docker Hub
-      run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+      run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
       
     - name: Build coffeePeek.Web the Docker image
-      run: docker build -t winststreloc/coffeepeek.web:latest -f CoffeePeek.Web/Dockerfile .
+      run: docker build -t winststreloc/coffeepeek.web:${DOCKER_TAG} -f CoffeePeek.Web/Dockerfile .
 
     - name: Push coffeePeek.Web Docker Image
-      run: docker push winststreloc/coffeepeek.web:latest
+      run: docker push winststreloc/coffeepeek.web:${DOCKER_TAG}
