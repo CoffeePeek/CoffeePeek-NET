@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Dtos.Internal;
 using CoffeePeek.Domain.Entities.Address;
 using CoffeePeek.Domain.UnitOfWork;
 using CoffeePeek.Infrastructure.Cache.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using MapsterMapper;
 
 namespace CoffeePeek.Infrastructure.Cache;

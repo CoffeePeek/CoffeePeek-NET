@@ -2,10 +2,11 @@ using CoffeePeek.Api.Middleware;
 using CoffeePeek.BuildingBlocks.AuthOptions;
 using CoffeePeek.BuildingBlocks.EfCore;
 using CoffeePeek.BuildingBlocks.Extensions;
-using CoffeePeek.BuildingBlocks.RedisOptions;
 using CoffeePeek.BuildingBlocks.Sentry;
 using CoffeePeek.BusinessLogic.Configuration;
 using CoffeePeek.Infrastructure.Configuration;
+using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Extensions.Swagger;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +21,7 @@ builder.Services.RedisConfigurationOptions();
 
 builder.Services
     .ConfigureMapster()
-    .AddSwagger()
+    .AddSwagger("Coffee Peek API", "v1")
     .AddBearerAuthentication()
     .AddValidators()
     .RegisterInfrastructure()

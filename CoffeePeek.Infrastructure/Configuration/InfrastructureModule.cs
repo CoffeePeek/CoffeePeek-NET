@@ -7,6 +7,9 @@ using CoffeePeek.Infrastructure.Services;
 using CoffeePeek.Infrastructure.Services.Secure;
 using CoffeePeek.Infrastructure.Services.Secure.Interfaces;
 using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Extensions.Options;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using CoffeePeek.Shared.Infrastructure.Services;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +21,6 @@ public static class InfrastructureModule
     {
         #region Auth
         
-        services.AddTransient<IJWTTokenService, JWTTokenService>();
         services.AddTransient<IJWTTokenService, JWTTokenService>();
         services.AddScoped<IHashingService, HashingService>();
         services.AddScoped<IGoogleAuthService, GoogleAuthService>();
