@@ -9,6 +9,15 @@ public static class RedisConfiguration
     public static void RedisConfigurationOptions(this IServiceCollection services)
     {
         var options = services.AddValidateOptions<Options.RedisOptions>();
+        
+        // Переопределяем опции если они получены из Railway переменных окружения
+        var railwayOptions = RedisConnectionHelper.GetRedisOptions();
+        if (railwayOptions != null)
+        {
+            options.Host = railwayOptions.Host;
+            options.Port = railwayOptions.Port;
+            options.Password = railwayOptions.Password;
+        }
 
         var redisConfig = new ConfigurationOptions
         {

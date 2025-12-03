@@ -1,17 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Api", "CoffeePeek.Api\CoffeePeek.Api.csproj", "{24BEE6CC-0CA1-429C-95CD-3F63F1259BE7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Contract", "CoffeePeek.Contract\CoffeePeek.Contract.csproj", "{D2F0D897-F81F-4A35-92E8-0A1AD3618D6E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.BuildingBlocks", "CoffeePeek.BuildingBlocks\CoffeePeek.BuildingBlocks.csproj", "{19719F2F-1DB7-43B8-9C3A-F2F8AF1F10C4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.BusinessLogic", "CoffeePeek.BusinessLogic\CoffeePeek.BusinessLogic.csproj", "{158B9913-2A77-4659-9F76-BBD7E50FC74B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F0C1F125-18A6-46BC-98FB-E2036131E7DC}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
-		CoffeePeek.Api\Api.Dockerfile = CoffeePeek.Api\Api.Dockerfile
 		CoffeePeek.Photo.Api\Photo.API.Dockerfile = CoffeePeek.Photo.Api\Photo.API.Dockerfile
 		CoffeePeek.Web\WEB.Dockerfile = CoffeePeek.Web\WEB.Dockerfile
 		CoffeePeek.AuthService\AuthService.Dockerfile = CoffeePeek.AuthService\AuthService.Dockerfile
@@ -22,8 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		nginx\Dockerfile = nginx\Dockerfile
 		nginx\nginx.conf = nginx\nginx.conf
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Infrastructure", "CoffeePeek.Infrastructure\CoffeePeek.Infrastructure.csproj", "{E492DF9B-8C32-4421-91B1-4AE4E8355A6B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CoffeePeek.Photo", "CoffeePeek.Photo", "{B135B7F3-9AB9-49D4-9487-001B656C3A36}"
 EndProject
@@ -42,8 +33,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Shared.Extensions", "CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj", "{BF2B708A-CD0A-4E90-8314-9CFEFAE7E2C0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Photo.BuildingBlocks", "CoffeePeek.Photo.BuildingBlocks\CoffeePeek.Photo.BuildingBlocks.csproj", "{D0989C8E-BBCF-4395-ACB4-3AEEE0F3124D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MainApi", "MainApi", "{C484B1CF-7338-4357-9719-E2D1B57DDAC4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Domain", "CoffeePeek.Domain\CoffeePeek.Domain.csproj", "{80072F45-5145-48F1-B54F-3A59843AB427}"
 EndProject
@@ -75,32 +64,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AuthService", "AuthService"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Shared.Infrastructure", "CoffeePeek.Shared.Infrastructure\CoffeePeek.Shared.Infrastructure.csproj", "{8263F50E-FECF-4613-A98B-F46A951C9E39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.ModerationService", "CoffeePeek.ModerationService\CoffeePeek.ModerationService.csproj", "{CD0FAA76-CC2A-4C05-AF68-84EE1724A3ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Shops", "CoffeePeek.Shops\CoffeePeek.Shops.csproj", "{8C7DA135-5D75-4CCF-B1CB-2FAFC03EC91B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{24BEE6CC-0CA1-429C-95CD-3F63F1259BE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24BEE6CC-0CA1-429C-95CD-3F63F1259BE7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{24BEE6CC-0CA1-429C-95CD-3F63F1259BE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24BEE6CC-0CA1-429C-95CD-3F63F1259BE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2F0D897-F81F-4A35-92E8-0A1AD3618D6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D2F0D897-F81F-4A35-92E8-0A1AD3618D6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2F0D897-F81F-4A35-92E8-0A1AD3618D6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2F0D897-F81F-4A35-92E8-0A1AD3618D6E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{19719F2F-1DB7-43B8-9C3A-F2F8AF1F10C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19719F2F-1DB7-43B8-9C3A-F2F8AF1F10C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19719F2F-1DB7-43B8-9C3A-F2F8AF1F10C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19719F2F-1DB7-43B8-9C3A-F2F8AF1F10C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{158B9913-2A77-4659-9F76-BBD7E50FC74B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{158B9913-2A77-4659-9F76-BBD7E50FC74B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{158B9913-2A77-4659-9F76-BBD7E50FC74B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{158B9913-2A77-4659-9F76-BBD7E50FC74B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E492DF9B-8C32-4421-91B1-4AE4E8355A6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E492DF9B-8C32-4421-91B1-4AE4E8355A6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E492DF9B-8C32-4421-91B1-4AE4E8355A6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E492DF9B-8C32-4421-91B1-4AE4E8355A6B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F0E8ABFC-8079-40BF-8A62-5134395E6EC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F0E8ABFC-8079-40BF-8A62-5134395E6EC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0E8ABFC-8079-40BF-8A62-5134395E6EC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -173,6 +150,14 @@ Global
 		{8263F50E-FECF-4613-A98B-F46A951C9E39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8263F50E-FECF-4613-A98B-F46A951C9E39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8263F50E-FECF-4613-A98B-F46A951C9E39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD0FAA76-CC2A-4C05-AF68-84EE1724A3ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD0FAA76-CC2A-4C05-AF68-84EE1724A3ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD0FAA76-CC2A-4C05-AF68-84EE1724A3ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD0FAA76-CC2A-4C05-AF68-84EE1724A3ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C7DA135-5D75-4CCF-B1CB-2FAFC03EC91B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C7DA135-5D75-4CCF-B1CB-2FAFC03EC91B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C7DA135-5D75-4CCF-B1CB-2FAFC03EC91B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C7DA135-5D75-4CCF-B1CB-2FAFC03EC91B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F0E8ABFC-8079-40BF-8A62-5134395E6EC6} = {B135B7F3-9AB9-49D4-9487-001B656C3A36}
@@ -181,11 +166,6 @@ Global
 		{27104E80-BC14-4DCF-A7B8-E5400D98F87E} = {DFBC1184-60D4-4FB2-999A-441CD36F162D}
 		{BF2B708A-CD0A-4E90-8314-9CFEFAE7E2C0} = {DFBC1184-60D4-4FB2-999A-441CD36F162D}
 		{D0989C8E-BBCF-4395-ACB4-3AEEE0F3124D} = {B135B7F3-9AB9-49D4-9487-001B656C3A36}
-		{C484B1CF-7338-4357-9719-E2D1B57DDAC4} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
-		{24BEE6CC-0CA1-429C-95CD-3F63F1259BE7} = {C484B1CF-7338-4357-9719-E2D1B57DDAC4}
-		{19719F2F-1DB7-43B8-9C3A-F2F8AF1F10C4} = {C484B1CF-7338-4357-9719-E2D1B57DDAC4}
-		{158B9913-2A77-4659-9F76-BBD7E50FC74B} = {C484B1CF-7338-4357-9719-E2D1B57DDAC4}
-		{E492DF9B-8C32-4421-91B1-4AE4E8355A6B} = {C484B1CF-7338-4357-9719-E2D1B57DDAC4}
 		{80072F45-5145-48F1-B54F-3A59843AB427} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
 		{43DA1B02-AB8A-44D6-9062-C0491AEB568D} = {FEFF7B90-11D7-4751-9CB7-780FBBDA637A}
 		{13FF6FA1-DE38-4378-B47E-A7C6FCA6BE9D} = {FEFF7B90-11D7-4751-9CB7-780FBBDA637A}
@@ -200,5 +180,7 @@ Global
 		{5BFEE5FF-B26D-46DB-9164-0BAFCDCE018E} = {325A4B29-924A-4ABB-A68F-BE87C80A5B55}
 		{1FCF5A5D-9618-44BD-92F8-B7A4337C3C15} = {325A4B29-924A-4ABB-A68F-BE87C80A5B55}
 		{8263F50E-FECF-4613-A98B-F46A951C9E39} = {DFBC1184-60D4-4FB2-999A-441CD36F162D}
+		{CD0FAA76-CC2A-4C05-AF68-84EE1724A3ED} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
+		{8C7DA135-5D75-4CCF-B1CB-2FAFC03EC91B} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
 	EndGlobalSection
 EndGlobal

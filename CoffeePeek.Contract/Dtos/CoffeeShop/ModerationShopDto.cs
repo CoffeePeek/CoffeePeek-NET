@@ -13,7 +13,7 @@ public class ModerationShopDto
     public string NotValidatedAddress { get; set; }
     [JsonIgnore] public int? AddressId { get; set; }
     [JsonIgnore] public int? ShopContactId { get; set; }
-    [JsonIgnore] public int UserId { get; set; }
+    [JsonIgnore] public Guid UserId { get; set; }
 
     public ModerationStatus ModerationStatus { get; set; }
     public AddressDto Address { get; set; }

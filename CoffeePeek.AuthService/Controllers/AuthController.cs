@@ -1,8 +1,8 @@
 ﻿using CoffeePeek.AuthService.Commands;
-using CoffeePeek.AuthService.Utils;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Auth;
 using CoffeePeek.Contract.Response.Login;
+using CoffeePeek.Shared.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,5 +40,11 @@ public class AuthController(IMediator mediator) : ControllerBase
         };
         
         return mediator.Send(request);
+    }
+    
+    [HttpPost("google/login")]
+    public Task<Response<GoogleLoginResponse>> GoogleLogin([FromBody] GoogleLoginCommand command)
+    {
+        return mediator.Send(command);
     }
 }

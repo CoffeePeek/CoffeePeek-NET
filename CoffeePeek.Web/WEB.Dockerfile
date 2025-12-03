@@ -1,8 +1,16 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+
+# Настройка для прослушивания на IPv6 (требуется для Railway приватной сети)
+ENV ASPNETCORE_URLS=http://[::]:80
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+
+# Web не использует базу данных напрямую
+# Если в будущем понадобится БД, добавьте:
+# ENV PostgresCpOptions__ConnectionString=""
+
+EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release

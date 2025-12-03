@@ -25,11 +25,19 @@
       <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shared.Infrastructure\CoffeePeek.Shared.Infrastructure.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="Google.Apis.Auth" Version="1.73.0" />
+    </ItemGroup>
 
     <ItemGroup>
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Utils\Extensions\" />
     </ItemGroup>
 
 </Project>

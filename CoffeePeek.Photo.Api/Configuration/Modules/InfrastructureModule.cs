@@ -3,6 +3,7 @@ using CoffeePeek.Photo.Infrastructure.Consumers;
 using CoffeePeek.Photo.Infrastructure.Options;
 using CoffeePeek.Photo.Infrastructure.Storage;
 using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Extensions.Options;
 using MassTransit;
 
 namespace CoffeePeek.Photo.Api.Configuration;
@@ -22,9 +23,16 @@ internal static class InfrastructureModule
 
     private static void ConfigureMassTransit(IServiceCollection services)
     {
-        services.AddValidateOptions<RabbitMqOptions>();
-        
-        var rabbitMqOptions = services.GetOptions<RabbitMqOptions>();
+        var rabbitMqOptions = services.AddValidateOptions<RabbitMqOptions>();
+        // Переопределяем опции если они получены из Railway переменных окружения
+        var railwayRabbitMqOptions = RabbitMqConnectionHelper.GetRabbitMqOptions();
+        if (railwayRabbitMqOptions != null)
+        {
+            rabbitMqOptions.HostName = railwayRabbitMqOptions.HostName;
+            rabbitMqOptions.Port = railwayRabbitMqOptions.Port;
+            rabbitMqOptions.Username = railwayRabbitMqOptions.Username;
+            rabbitMqOptions.Password = railwayRabbitMqOptions.Password;
+        }
 
         services.AddMassTransit(x =>
         {

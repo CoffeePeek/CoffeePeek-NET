@@ -8,7 +8,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
 {
     private readonly IDatabase _db = redis.GetDatabase();
 
-    public async Task<T> GetAsync<T>(string key)
+    public async Task<T?> GetAsync<T>(string key)
     {
         string? value = await _db.StringGetAsync(key);
         return (string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value)!)!;

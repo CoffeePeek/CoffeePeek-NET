@@ -10,8 +10,17 @@ builder.Services.AddHostedService<Worker>();
 var dbOptions = builder.Services.AddValidateOptions<PostgresCpOptions>();
 builder.Services.AddDbContext<AuthDbContext>(opt => { opt.UseNpgsql(dbOptions.ConnectionString); });
 
-builder.Services.AddValidateOptions<RabbitMqOptions>();
-var rabbitMqOptions = builder.Services.GetOptions<RabbitMqOptions>();
+var rabbitMqOptions = builder.Services.AddValidateOptions<RabbitMqOptions>();
+// Переопределяем опции если они получены из Railway переменных окружения
+var railwayRabbitMqOptions = RabbitMqConnectionHelper.GetRabbitMqOptions();
+if (railwayRabbitMqOptions != null)
+{
+    rabbitMqOptions.HostName = railwayRabbitMqOptions.HostName;
+    rabbitMqOptions.Port = railwayRabbitMqOptions.Port;
+    rabbitMqOptions.Username = railwayRabbitMqOptions.Username;
+    rabbitMqOptions.Password = railwayRabbitMqOptions.Password;
+}
+
 builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>

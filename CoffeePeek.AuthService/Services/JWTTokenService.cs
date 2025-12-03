@@ -6,6 +6,8 @@ using CoffeePeek.AuthService.Configuration;
 using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Models;
 using CoffeePeek.Contract.Dtos.Auth;
+using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

@@ -1,6 +1,7 @@
-﻿namespace CoffeePeek.AuthService.Commands;
+﻿using CoffeePeek.Contract.Response;
+using CoffeePeek.Contract.Response.Auth;
+using MediatR;
 
-public class OAuthLoginCommand
-{
-    
-}
+namespace CoffeePeek.AuthService.Commands;
+
+public record GoogleLoginCommand(string IdToken) : IRequest<Response<GoogleLoginResponse>>;

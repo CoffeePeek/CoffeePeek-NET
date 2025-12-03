@@ -2,6 +2,8 @@
 using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Models;
 using CoffeePeek.AuthService.Repositories;
+using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.AuthService.Services;

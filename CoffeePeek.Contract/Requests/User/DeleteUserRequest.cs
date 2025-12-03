@@ -5,9 +5,9 @@ namespace CoffeePeek.Contract.Requests.User;
 
 public class DeleteUserRequest : IRequest<Response<bool>>
 {
-    public int UserId { get; }
+    public Guid UserId { get; }
 
-    public DeleteUserRequest(int userId)
+    public DeleteUserRequest(Guid userId)
     {
         UserId = userId;
     }

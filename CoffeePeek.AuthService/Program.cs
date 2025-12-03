@@ -4,23 +4,22 @@ using CoffeePeek.AuthService.Configuration;
 using CoffeePeek.AuthService.Repositories;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.AuthService.Services.Validation;
-using CoffeePeek.AuthService.Utils;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Options;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.Shared.Infrastructure.Services;
+using CoffeePeek.BuildingBlocks.AuthOptions;
+using CoffeePeek.Shared.Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using IJWTTokenService = CoffeePeek.AuthService.Services.IJWTTokenService;
+using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
+using JWTTokenService = CoffeePeek.AuthService.Services.JWTTokenService;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Настройка для прослушивания на IPv6 (требуется для Railway приватной сети)
-// IPv6 слушает на всех интерфейсах, включая IPv4 через IPv6-mapped адреса
-builder.WebHost.UseUrls("http://[::]:80");
-
-// Add services to the container.
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
@@ -49,7 +48,14 @@ builder.Services.AddAuthentication(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+var connectionString = DatabaseConnectionHelper.GetDatabaseConnectionString();
+
 var dbOptions = builder.Services.AddValidateOptions<PostgresCpOptions>();
+if (!string.IsNullOrEmpty(connectionString))
+{
+    dbOptions.ConnectionString = connectionString;
+}
+
 builder.Services.AddDbContext<AuthDbContext>(opt => { opt.UseNpgsql(dbOptions.ConnectionString); });
 
 builder.Services.AddScoped<IJWTTokenService, JWTTokenService>();
@@ -60,6 +66,9 @@ builder.Services.AddScoped<ISessionManager, SessionManager>();
 builder.Services.AddScoped<ISignInManager, SignInManager>();
 builder.Services.AddScoped<IUserCredentialsRepository, UserCredentialsRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
+builder.Services.AddValidateOptions<OAuthGoogleOptions>();
+builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -73,9 +82,15 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
 });
 
-builder.Services.AddValidateOptions<RabbitMqOptions>();
-        
-var rabbitMqOptions = builder.Services.GetOptions<RabbitMqOptions>();
+var rabbitMqOptions = builder.Services.AddValidateOptions<RabbitMqOptions>();
+var railwayRabbitMqOptions = RabbitMqConnectionHelper.GetRabbitMqOptions();
+if (railwayRabbitMqOptions != null)
+{
+    rabbitMqOptions.HostName = railwayRabbitMqOptions.HostName;
+    rabbitMqOptions.Port = railwayRabbitMqOptions.Port;
+    rabbitMqOptions.Username = railwayRabbitMqOptions.Username;
+    rabbitMqOptions.Password = railwayRabbitMqOptions.Password;
+}
 
 builder.Services.AddMassTransit(x =>
 {
@@ -108,7 +123,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-Console.WriteLine("Listening on: http://[::]:80 (IPv6 for Railway private network)");
 
 app.Run();

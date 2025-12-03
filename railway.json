@@ -18,6 +18,11 @@
       "dockerfile": "CoffeePeek.UserService/UserService.Dockerfile"
     },
     {
+      "name": "moderation-service",
+      "root": ".",
+      "dockerfile": "CoffeePeek.ModerationService/ModerationService.Dockerfile"
+    },
+    {
       "name": "api",
       "root": ".",
       "dockerfile": "CoffeePeek.Api/Api.Dockerfile"

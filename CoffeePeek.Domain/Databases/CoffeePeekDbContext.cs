@@ -3,15 +3,12 @@ using CoffeePeek.Domain.Entities.Address;
 using CoffeePeek.Domain.Entities.Review;
 using CoffeePeek.Domain.Entities.Schedules;
 using CoffeePeek.Domain.Entities.Shop;
-using CoffeePeek.Domain.Entities.Users;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Domain.Databases;
 
 public class CoffeePeekDbContext(DbContextOptions<CoffeePeekDbContext> options)
-    : IdentityDbContext<User, IdentityRole<int>,  int>(options)
+    : DbContext
 {
     public virtual DbSet<Shop> Shops { get; set; }
     public virtual DbSet<ShopContacts> ShopContacts { get; set; }
@@ -30,8 +27,6 @@ public class CoffeePeekDbContext(DbContextOptions<CoffeePeekDbContext> options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>();
-
         modelBuilder.AddressConfigure();
         modelBuilder.ReviewConfigure();
         modelBuilder.ScheduleConfigure();

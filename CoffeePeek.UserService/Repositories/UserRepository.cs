@@ -6,17 +6,39 @@ namespace CoffeePeek.UserService.Repositories;
 
 public class UserRepository(UserDbContext context) : IUserRepository
 {
-    private readonly DbSet<User> _context = context.Users;
+    private readonly DbSet<User> _users = context.Users;
+    private readonly UserDbContext _context = context;
 
-    public async Task<User?> GetByIdAsync(Guid eventUserId)
+    public async Task<User?> GetByIdAsync(Guid userId)
     {
-        return await _context.FirstOrDefaultAsync(u => u.Id == eventUserId);
+        return await _users.FirstOrDefaultAsync(u => u.Id == userId);
+    }
+
+    public async Task<User?> GetByEmailAsync(string email)
+    {
+        return await _users.FirstOrDefaultAsync(u => u.Email == email);
+    }
+
+    public async Task<List<User>> GetAllAsync()
+    {
+        return await _users.Where(u => !u.IsSoftDelete).ToListAsync();
     }
 
     public async Task AddAsync(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
+        await _users.AddAsync(user);
+    }
 
-        await _context.AddAsync(user);
+    public Task UpdateAsync(User user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        _users.Update(user);
+        return Task.CompletedTask;
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
     }
 }
