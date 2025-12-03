@@ -5,6 +5,8 @@ using CoffeePeek.BuildingBlocks.Extensions;
 using CoffeePeek.BuildingBlocks.RedisOptions;
 using CoffeePeek.BuildingBlocks.Sentry;
 using CoffeePeek.BusinessLogic.Configuration;
+using CoffeePeek.Domain;
+using CoffeePeek.Domain.Databases;
 using CoffeePeek.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Identity;
 
@@ -45,6 +47,7 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+
 app.MapControllers();
 
 app.Run();
@@ -66,5 +69,9 @@ async Task IdentitySeed(WebApplication webApplication)
             await roleManager.CreateAsync(new IdentityRole<int>(role));
         }
     }
+    
+    var db = scope.ServiceProvider.GetRequiredService<CoffeePeekDbContext>();
+
+    await SeedService.SeedShopsAsync(db);
 }
 

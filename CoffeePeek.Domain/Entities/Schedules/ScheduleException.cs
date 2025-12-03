@@ -7,8 +7,8 @@ public class ScheduleException : BaseEntity
 
     public DateTime ExceptionStartDate { get; set; }
     public DateTime ExceptionEndDate { get; set; }
-    public TimeSpan? SpecialOpeningTime { get; set; }
-    public TimeSpan? SpecialClosingTime { get; set; }
+    public DateTime? SpecialOpeningTime { get; set; }
+    public DateTime? SpecialClosingTime { get; set; }
     public bool IsSpecialOpen24Hours { get; set; }
     
 }

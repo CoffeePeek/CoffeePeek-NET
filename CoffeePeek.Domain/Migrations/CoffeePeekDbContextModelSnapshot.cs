@@ -418,7 +418,7 @@ namespace CoffeePeek.Domain.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ShopPhoto");
+                    b.ToTable("ShopPhotos");
                 });
 
             modelBuilder.Entity("CoffeePeek.Domain.Entities.Users.User", b =>
