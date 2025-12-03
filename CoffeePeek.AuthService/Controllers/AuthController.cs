@@ -1,6 +1,5 @@
 ﻿using CoffeePeek.AuthService.Commands;
 using CoffeePeek.AuthService.Utils;
-using CoffeePeek.Contract.Requests.Auth;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Auth;
 using CoffeePeek.Contract.Response.Login;

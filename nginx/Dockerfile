@@ -1,11 +1,12 @@
 FROM nginx:alpine
 
-# Копируем конфигурацию
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+COPY nginx.conf /etc/nginx/nginx.conf
+
 COPY conf.d/ /etc/nginx/conf.d/
 
-# Открываем порт
 EXPOSE 80
 
-# Запускаем nginx
 CMD ["nginx", "-g", "daemon off;"]
 

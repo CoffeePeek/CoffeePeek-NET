@@ -11,6 +11,10 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Настройка для прослушивания на IPv6 (требуется для Railway приватной сети)
+// IPv6 слушает на всех интерфейсах, включая IPv4 через IPv6-mapped адреса
+builder.WebHost.UseUrls("http://[::]:80");
+
 builder.WebHost.BuildSentry();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -47,6 +51,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+
+Console.WriteLine("Listening on: http://[::]:80 (IPv6 for Railway private network)");
 
 app.Run();
 

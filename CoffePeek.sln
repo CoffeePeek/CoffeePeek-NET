@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CoffeePeek.UserService\UserService.Dockerfile = CoffeePeek.UserService\UserService.Dockerfile
 		nginx\conf.d\gateway.conf = nginx\conf.d\gateway.conf
 		railway.json = railway.json
+		nginx\Dockerfile = nginx\Dockerfile
+		nginx\nginx.conf = nginx\nginx.conf
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Infrastructure", "CoffeePeek.Infrastructure\CoffeePeek.Infrastructure.csproj", "{E492DF9B-8C32-4421-91B1-4AE4E8355A6B}"
