@@ -1,0 +1,80 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "services": [
+    {
+      "name": "nginx-gateway",
+      "root": "nginx",
+      "type": "docker",
+      "dockerfilePath": "Dockerfile",
+      "domain": "public",
+      "watchPatterns": [
+        "nginx/**"
+      ]
+    },
+    {
+      "name": "auth-service",
+      "root": ".",
+      "type": "docker",
+      "dockerfilePath": "CoffeePeek.AuthService/AuthService.Dockerfile",
+      "watchPatterns": [
+        "CoffeePeek.AuthService/**",
+        "CoffeePeek.Contract/**",
+        "CoffeePeek.Domain/**",
+        "CoffeePeek.Shared.Extensions/**",
+        "CoffeePeek.Shared.Infrastructure/**"
+      ]
+    },
+    {
+      "name": "user-service",
+      "root": ".",
+      "type": "docker",
+      "dockerfilePath": "CoffeePeek.UserService/UserService.Dockerfile",
+      "watchPatterns": [
+        "CoffeePeek.UserService/**",
+        "CoffeePeek.Contract/**",
+        "CoffeePeek.Domain/**",
+        "CoffeePeek.Shared.Extensions/**"
+      ]
+    },
+    {
+      "name": "api",
+      "root": ".",
+      "type": "docker",
+      "dockerfilePath": "CoffeePeek.Api/Api.Dockerfile",
+      "watchPatterns": [
+        "CoffeePeek.Api/**",
+        "CoffeePeek.Contract/**",
+        "CoffeePeek.Infrastructure/**",
+        "CoffeePeek.BuildingBlocks/**",
+        "CoffeePeek.BusinessLogic/**",
+        "CoffeePeek.Domain/**",
+        "CoffeePeek.Shared.Extensions/**",
+        "CoffeePeek.Shared.Models/**"
+      ]
+    },
+    {
+      "name": "photo-api",
+      "root": ".",
+      "type": "docker",
+      "dockerfilePath": "CoffeePeek.Photo.Api/Photo.API.Dockerfile",
+      "watchPatterns": [
+        "CoffeePeek.Photo.Api/**",
+        "CoffeePeek.Photo.Infrastructure/**",
+        "CoffeePeek.Photo.Core/**",
+        "CoffeePeek.Photo.BuildingBlocks/**",
+        "CoffeePeek.Shared.Extensions/**",
+        "CoffeePeek.Shared.Models/**"
+      ]
+    },
+    {
+      "name": "web",
+      "root": ".",
+      "type": "docker",
+      "dockerfilePath": "CoffeePeek.Web/WEB.Dockerfile",
+      "watchPatterns": [
+        "CoffeePeek.Web/**",
+        "CoffeePeek.Web.Contract/**"
+      ]
+    }
+  ]
+}
