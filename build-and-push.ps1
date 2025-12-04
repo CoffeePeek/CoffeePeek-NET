@@ -37,7 +37,7 @@ Invoke-DockerCommand `
     -Command "docker push winststreloc/coffeepeek.authservice:dev" `
     -Description "Pushing AuthService image"
 
-# 1..1 AuthService
+# 1..1 OutboxBackgroundService
 Invoke-DockerCommand `
     -Command "docker build -t winststreloc/coffeepeek.authservice.outbox-bg:dev -f OutboxBackgroundService/OutboxBackgroundService.Dockerfile ." `
     -Description "Building OutboxBackgroundService image"
@@ -55,23 +55,23 @@ Invoke-DockerCommand `
     -Command "docker push winststreloc/coffeepeek.userservice:dev" `
     -Description "Pushing UserService image"
 
-# 3. Api
+# 3. ShopsService
 Invoke-DockerCommand `
-    -Command "docker build -t winststreloc/coffeepeek.api:dev -f CoffeePeek.Api/Api.Dockerfile ." `
-    -Description "Building Api image"
+    -Command "docker build -t winststreloc/coffeepeek.shopsservice:dev -f CoffeePeek.ShopsService/ShopsService.Dockerfile ." `
+    -Description "Building ShopsService image"
 
 Invoke-DockerCommand `
-    -Command "docker push winststreloc/coffeepeek.api:dev" `
-    -Description "Pushing Api image"
+    -Command "docker push winststreloc/coffeepeek.shopsservice:dev" `
+    -Description "Pushing ShopsService image"
 
-# 4. Web
+# 4. ModerationService
 Invoke-DockerCommand `
-    -Command "docker build -t winststreloc/coffeepeek.web:dev -f CoffeePeek.Web/WEB.Dockerfile ." `
-    -Description "Building Web image"
+    -Command "docker build -t winststreloc/coffeepeek.moderationservice:dev -f CoffeePeek.ModerationService/ModerationService.Dockerfile ." `
+    -Description "Building ModerationService image"
 
 Invoke-DockerCommand `
-    -Command "docker push winststreloc/coffeepeek.web:dev" `
-    -Description "Pushing Web image"
+    -Command "docker push winststreloc/coffeepeek.moderationservice:dev" `
+    -Description "Pushing ModerationService image"
 
 # 5. Nginx
 Invoke-DockerCommand `

@@ -1,6 +1,7 @@
 using CoffeePeek.AuthService.Configuration;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Options;
+using CoffeePeek.Shared.Infrastructure.Options;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using OutboxBackgroundService;
@@ -11,7 +12,6 @@ var dbOptions = builder.Services.AddValidateOptions<PostgresCpOptions>();
 builder.Services.AddDbContext<AuthDbContext>(opt => { opt.UseNpgsql(dbOptions.ConnectionString); });
 
 var rabbitMqOptions = builder.Services.AddValidateOptions<RabbitMqOptions>();
-// Переопределяем опции если они получены из Railway переменных окружения
 var railwayRabbitMqOptions = RabbitMqConnectionHelper.GetRabbitMqOptions();
 if (railwayRabbitMqOptions != null)
 {

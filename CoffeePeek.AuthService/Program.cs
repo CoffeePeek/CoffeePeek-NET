@@ -1,19 +1,22 @@
 using System.Reflection;
 using CoffeePeek.AuthService.Commands;
 using CoffeePeek.AuthService.Configuration;
+using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Repositories;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.AuthService.Services.Validation;
+using CoffeePeek.Data.Extensions;
 using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Options;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.Shared.Infrastructure.Services;
 using CoffeePeek.BuildingBlocks.AuthOptions;
 using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Infrastructure.Options;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
 using IJWTTokenService = CoffeePeek.AuthService.Services.IJWTTokenService;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
 using JWTTokenService = CoffeePeek.AuthService.Services.JWTTokenService;
@@ -56,7 +59,10 @@ if (!string.IsNullOrEmpty(connectionString))
     dbOptions.ConnectionString = connectionString;
 }
 
-builder.Services.AddDbContext<AuthDbContext>(opt => { opt.UseNpgsql(dbOptions.ConnectionString); });
+builder.Services.AddEfCoreData<AuthDbContext>(dbOptions);
+builder.Services.AddGenericRepository<UserCredentials, AuthDbContext>();
+builder.Services.AddGenericRepository<OutboxEvent, AuthDbContext>();
+builder.Services.AddGenericRepository<Role, AuthDbContext>();
 
 builder.Services.AddScoped<IJWTTokenService, JWTTokenService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
@@ -110,6 +116,8 @@ var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
+app.UseExceptionHandling();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

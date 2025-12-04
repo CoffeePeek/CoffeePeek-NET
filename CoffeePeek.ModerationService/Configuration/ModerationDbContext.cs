@@ -6,7 +6,6 @@ namespace CoffeePeek.ModerationService.Configuration;
 public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) : DbContext(options)
 {
     public DbSet<ModerationShop> ModerationShops { get; set; }
-    public DbSet<Address> Addresses { get; set; }
     public DbSet<ShopContacts> ShopContacts { get; set; }
     public DbSet<ShopPhoto> ShopPhotos { get; set; }
     public DbSet<Schedule> Schedules { get; set; }
@@ -25,11 +24,6 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => e.ModerationStatus);
             
-            entity.HasOne(e => e.Address)
-                .WithMany()
-                .HasForeignKey(e => e.AddressId)
-                .OnDelete(DeleteBehavior.SetNull);
-                
             entity.HasOne(e => e.ShopContacts)
                 .WithMany()
                 .HasForeignKey(e => e.ShopContactId)
@@ -51,11 +45,6 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
                 .OnDelete(DeleteBehavior.Cascade);
         });
         
-        modelBuilder.Entity<Address>(entity =>
-        {
-            entity.ToTable("Addresses");
-            entity.HasKey(e => e.Id);
-        });
         
         modelBuilder.Entity<ShopContacts>(entity =>
         {

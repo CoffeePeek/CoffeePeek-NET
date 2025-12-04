@@ -4,6 +4,7 @@ using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.ModerationService.Handlers;
 using CoffeePeek.ModerationService.Repositories;
+using CoffeePeek.ModerationService.Repositories.Interfaces;
 using MediatR;
 
 namespace CoffeePeek.ModerationService.Handlers;
@@ -21,4 +22,6 @@ public class GetCoffeeShopsInModerationByIdHandler(IModerationShopRepository rep
         return Response.SuccessResponse<Response<GetCoffeeShopsInModerationByIdResponse>>(result);
     }
 }
+
+
 

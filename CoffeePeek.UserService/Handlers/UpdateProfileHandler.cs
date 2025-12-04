@@ -1,12 +1,15 @@
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.User;
+using CoffeePeek.Data.Interfaces;
 using CoffeePeek.UserService.Repositories;
 using MediatR;
 
 namespace CoffeePeek.UserService.Handlers;
 
-public class UpdateProfileHandler(IUserRepository userRepository) 
+public class UpdateProfileHandler(
+    IUserRepository userRepository,
+    IUnitOfWork unitOfWork) 
     : IRequestHandler<UpdateProfileRequest, Response<UpdateProfileResponse>>
 {
     public async Task<Response<UpdateProfileResponse>> Handle(UpdateProfileRequest request, CancellationToken cancellationToken)
@@ -29,9 +32,10 @@ public class UpdateProfileHandler(IUserRepository userRepository)
         }
 
         await userRepository.UpdateAsync(user);
-        await userRepository.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Response.SuccessResponse<Response<UpdateProfileResponse>>(new UpdateProfileResponse(), "Profile updated successfully");
     }
 }
+
 

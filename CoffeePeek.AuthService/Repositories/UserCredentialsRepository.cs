@@ -1,26 +1,28 @@
-﻿using CoffeePeek.AuthService.Configuration;
-using CoffeePeek.AuthService.Entities;
+﻿using CoffeePeek.AuthService.Entities;
+using CoffeePeek.AuthService.Models;
+using CoffeePeek.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.AuthService.Repositories;
 
-public class UserCredentialsRepository(AuthDbContext context) : IUserCredentialsRepository
+public class UserCredentialsRepository(
+    IGenericRepository<UserCredentials> userRepository,
+    IGenericRepository<OutboxEvent> outboxRepository) : IUserCredentialsRepository
 {
     public async Task AddAsync(UserCredentials user, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(user);
-
-        await context.Users.AddAsync(user, ct);
+        await userRepository.AddAsync(user, ct);
     }
 
     public async Task<bool> UserExists(string email, CancellationToken ct = default)
     {
-        return await context.Users.AnyAsync(u => u.Email == email, ct);
+        return await userRepository.AnyAsync(u => u.Email == email, ct);
     }
 
-    public Task<UserCredentials?> GetByIdAsync(Guid userId)
+    public async Task<UserCredentials?> GetByIdAsync(Guid userId)
     {
-        return context.Users
+        return await userRepository.Query()
             .Include(u => u.RefreshTokens)
             .Include(u => u.UserRoles)
             .SingleOrDefaultAsync(x => x.Id == userId);
@@ -28,41 +30,32 @@ public class UserCredentialsRepository(AuthDbContext context) : IUserCredentials
 
     public async Task<UserCredentials?> GetByEmailAsync(string email, CancellationToken ct = default)
     {
-        return await context.Users
-            .AsNoTracking()
+        return await userRepository.QueryAsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == email, ct);
     }
 
     public async Task<UserCredentials?> GetByProviderAsync(string provider, string providerId, CancellationToken ct = default)
     {
-        return await context.Users
-            .FirstOrDefaultAsync(u => u.OAuthProvider == provider && u.ProviderId == providerId, ct);
+        return await userRepository.FirstOrDefaultAsync(
+            u => u.OAuthProvider == provider && u.ProviderId == providerId, ct);
     }
 
-    public async Task UpdateAsync(UserCredentials user, CancellationToken ct = default)
+    public Task UpdateAsync(UserCredentials user, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(user);
-
-        user.Email = user.Email;
-        user.PasswordHash = user.PasswordHash;
-        user.OAuthProvider = user.OAuthProvider;
-        user.ProviderId = user.ProviderId;
-
-        user.RefreshTokens = new HashSet<RefreshToken>(user.RefreshTokens);
-        user.UserRoles = new HashSet<UserRole>(user.UserRoles);
-
+        userRepository.Update(user);
+        return Task.CompletedTask;
     }
 
     public async Task AddOutboxEventAsync(OutboxEvent @event, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(@event);
-
-        await context.OutboxEvents.AddAsync(@event, ct);
+        await outboxRepository.AddAsync(@event, ct);
     }
 
     public async Task<List<OutboxEvent>> GetUnprocessedOutboxEvents(CancellationToken ct = default)
     {
-        return await context.OutboxEvents
+        return await outboxRepository.Query()
             .Where(e => !e.Processed)
             .OrderBy(e => e.CreatedAt)
             .ToListAsync(ct);
@@ -70,7 +63,11 @@ public class UserCredentialsRepository(AuthDbContext context) : IUserCredentials
 
     public async Task MarkOutboxEventAsProcessed(Guid eventId, CancellationToken ct = default)
     {
-        var @event = await context.OutboxEvents.FirstOrDefaultAsync(e => e.Id == eventId, ct);
-        @event?.Processed = true;
+        var @event = await outboxRepository.FirstOrDefaultAsync(e => e.Id == eventId, ct);
+        if (@event != null)
+        {
+            @event.Processed = true;
+            outboxRepository.Update(@event);
+        }
     }
 }

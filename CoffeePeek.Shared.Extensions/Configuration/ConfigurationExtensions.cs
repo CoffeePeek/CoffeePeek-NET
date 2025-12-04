@@ -5,24 +5,21 @@ namespace CoffeePeek.Shared.Extensions.Configuration;
 
 public static class ConfigurationExtensions
 {
-    extension(IServiceCollection service)
+    public static TModel AddValidateOptions<TModel>(this IServiceCollection service) where TModel : class, new()
     {
-        public TModel AddValidateOptions<TModel>() where TModel : class, new()
-        {
-            service.AddOptions<TModel>()
-                .BindConfiguration(typeof(TModel).Name)
-                .ValidateDataAnnotations();
-            var options = service.BuildServiceProvider().GetRequiredService<IOptions<TModel>>().Value;
-            service.AddSingleton(options);
-        
-            return options; 
-        }
+        service.AddOptions<TModel>()
+            .BindConfiguration(typeof(TModel).Name)
+            .ValidateDataAnnotations();
+        var options = service.BuildServiceProvider().GetRequiredService<IOptions<TModel>>().Value;
+        service.AddSingleton(options);
+    
+        return options; 
+    }
 
-        public TModel GetOptions<TModel>() where TModel : new()
-        {
-            var options = service.BuildServiceProvider().GetService<TModel>();
-        
-            return options ?? new TModel();
-        }
+    public static TModel GetOptions<TModel>(this IServiceCollection service) where TModel : new()
+    {
+        var options = service.BuildServiceProvider().GetService<TModel>();
+    
+        return options ?? new TModel();
     }
 }

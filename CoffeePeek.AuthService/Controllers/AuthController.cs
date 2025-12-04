@@ -26,7 +26,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("register")]
-    public Task<Response<RegisterUserResponse>> Register([FromBody] RegisterUserCommand command)
+    public Task<CreateEntityResponse<Guid>> Register([FromBody] RegisterUserCommand command)
     {
         return mediator.Send(command);
     }
@@ -46,5 +46,16 @@ public class AuthController(IMediator mediator) : ControllerBase
     public Task<Response<GoogleLoginResponse>> GoogleLogin([FromBody] GoogleLoginCommand command)
     {
         return mediator.Send(command);
+    }
+    
+    [HttpPost("logout")]
+    public Task<Response> Logout()
+    {
+        var request = new LogoutCommand
+        {
+            UserId = User.GetUserIdOrThrow()
+        };
+        
+        return mediator.Send(request);
     }
 }

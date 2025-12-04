@@ -11,7 +11,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["CoffeePeek.AuthService/CoffeePeek.AuthService.csproj", "CoffeePeek.AuthService/"]
 COPY ["CoffeePeek.Contract/CoffeePeek.Contract.csproj", "CoffeePeek.Contract/"]
-COPY ["CoffeePeek.Domain/CoffeePeek.Domain.csproj", "CoffeePeek.Domain/"]
+COPY ["CoffeePeek.Data/CoffeePeek.Data.csproj", "CoffeePeek.Data/"]
 COPY ["CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj", "CoffeePeek.Shared.Extensions/"]
 COPY ["CoffeePeek.Shared.Infrastructure/CoffeePeek.Shared.Infrastructure.csproj", "CoffeePeek.Shared.Infrastructure/"]
 RUN dotnet restore "CoffeePeek.AuthService/CoffeePeek.AuthService.csproj"
@@ -26,5 +26,4 @@ RUN dotnet publish "./CoffeePeek.AuthService.csproj" -c $BUILD_CONFIGURATION -o 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-
 ENTRYPOINT ["dotnet", "CoffeePeek.AuthService.dll"]

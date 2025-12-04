@@ -1,16 +1,13 @@
 ﻿using CoffeePeek.AuthService.Commands;
-using CoffeePeek.AuthService.Configuration;
 using CoffeePeek.AuthService.Entities;
-using CoffeePeek.AuthService.Models;
 using CoffeePeek.AuthService.Repositories;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.AuthService.Services.Validation;
 using CoffeePeek.Contract.Events;
-using CoffeePeek.Contract.Response.Auth;
+using CoffeePeek.Contract.Response;
+using CoffeePeek.Data.Interfaces;
 using CoffeePeek.Shared.Infrastructure;
-using MassTransit;
 using MediatR;
-using Response = CoffeePeek.Contract.Response.Response;
 
 namespace CoffeePeek.AuthService.Handlers;
 
@@ -18,24 +15,23 @@ public class RegisterUserHandler(
     IUserCredentialsRepository credentialsRepo,
     IPasswordHasherService passwordHasher,
     IUserManager userManager,
-    IPublishEndpoint publishEndpoint,
     IValidationStrategy<RegisterUserCommand> validationStrategy,
-    AuthDbContext context)
-    : IRequestHandler<RegisterUserCommand, Contract.Response.Response<RegisterUserResponse>>
+    IUnitOfWork unitOfWork)
+    : IRequestHandler<RegisterUserCommand, CreateEntityResponse<Guid>>
 {
-    public async Task<Contract.Response.Response<RegisterUserResponse>> Handle(RegisterUserCommand request,
+    public async Task<CreateEntityResponse<Guid>> Handle(RegisterUserCommand request,
         CancellationToken ct)
     {
         var validationResult = validationStrategy.Validate(request);
 
         if (!validationResult.IsValid)
         {
-            return Response.ErrorResponse<Contract.Response.Response<RegisterUserResponse>>(validationResult.ErrorMessage);
+            return CreateEntityResponse<Guid>.Error(validationResult.ErrorMessage);
         }
         
         if (await credentialsRepo.UserExists(request.Email, ct))
         {
-            return Response.ErrorResponse<Contract.Response.Response<RegisterUserResponse>>("Email already exists");
+            return CreateEntityResponse<Guid>.Error("Email already exists");
         }
 
         var userAuth = new UserCredentials
@@ -58,8 +54,8 @@ public class RegisterUserHandler(
 
         await credentialsRepo.AddOutboxEventAsync(outboxEvent, ct); 
     
-        await context.SaveChangesAsync(ct); 
+        await unitOfWork.SaveChangesAsync(ct); 
 
-        return Contract.Response.Response<RegisterUserResponse>.SuccessResponse<Contract.Response.Response<RegisterUserResponse>>();
+        return CreateEntityResponse<Guid>.Success(userAuth.Id);
     }
 }

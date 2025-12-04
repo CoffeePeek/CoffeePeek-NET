@@ -11,3 +11,5 @@ public class Schedule
     public TimeSpan? ClosingTime { get; set; }
 }
 
+
+

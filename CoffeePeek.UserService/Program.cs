@@ -1,21 +1,26 @@
 using System.Text;
+using CoffeePeek.Data.Extensions;
 using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Options;
 using CoffeePeek.Shared.Extensions.Swagger;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.Shared.Infrastructure.Options;
+using CoffeePeek.Shared.Infrastructure.Services;
 using CoffeePeek.UserService.Configuration;
 using CoffeePeek.UserService.EventConsumer;
+using CoffeePeek.UserService.Models;
 using CoffeePeek.UserService.Repositories;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwagger("Coffee Peek UserService", "v1");
 builder.Services.AddControllers();
+
+// Swagger
+builder.Services.AddSwagger("Coffee Peek UserService", "v1");
 
 var rabbitMqOptions = builder.Services.AddValidateOptions<RabbitMqOptions>();
 // Переопределяем опции если они получены из Railway переменных окружения
@@ -38,9 +43,14 @@ if (!string.IsNullOrEmpty(connectionString))
     dbOptions.ConnectionString = connectionString;
 }
 
-builder.Services.AddDbContext<UserDbContext>(opt => { opt.UseNpgsql(dbOptions.ConnectionString); });
+builder.Services.AddEfCoreData<UserDbContext>(dbOptions);
+builder.Services.AddGenericRepository<User, UserDbContext>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Redis
+builder.Services.RedisConfigurationOptions();
+builder.Services.AddScoped<IRedisService, RedisService>();
 
 // MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
@@ -91,14 +101,12 @@ builder.Services.AddMassTransit(x =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseExceptionHandling();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwaggerDocumentation();
 
 app.UseHttpsRedirection();
 

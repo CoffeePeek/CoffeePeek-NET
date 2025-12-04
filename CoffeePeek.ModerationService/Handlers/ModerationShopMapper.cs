@@ -1,4 +1,3 @@
-using CoffeePeek.Contract.Dtos.Address;
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Dtos.Schedule;
@@ -16,19 +15,9 @@ public static class ModerationShopMapper
             Name = shop.Name,
             NotValidatedAddress = shop.NotValidatedAddress,
             UserId = shop.UserId,
-            AddressId = shop.AddressId,
             ShopContactId = shop.ShopContactId,
             ModerationStatus = shop.ModerationStatus,
             Status = shop.Status,
-            Address = shop.Address != null ? new AddressDto
-            {
-                CityId = shop.Address.CityId,
-                StreetId = shop.Address.StreetId,
-                BuildingNumber = shop.Address.BuildingNumber,
-                PostalCode = shop.Address.PostalCode,
-                Latitude = shop.Address.Latitude,
-                Longitude = shop.Address.Longitude
-            } : null,
             ShopContact = shop.ShopContacts != null ? new ShopContactDto
             {
                 PhoneNumber = shop.ShopContacts.PhoneNumber,

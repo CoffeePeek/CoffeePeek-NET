@@ -22,6 +22,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Data\CoffeePeek.Data.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shared.Infrastructure\CoffeePeek.Shared.Infrastructure.csproj" />
     </ItemGroup>
@@ -31,13 +32,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+      <Folder Include="Utils\Extensions\" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Utils\Extensions\" />
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

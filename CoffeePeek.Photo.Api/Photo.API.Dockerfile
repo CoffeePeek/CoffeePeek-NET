@@ -6,10 +6,6 @@ WORKDIR /app
 ENV ASPNETCORE_URLS=http://[::]:80
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 
-# Photo.Api не использует базу данных напрямую
-# Если в будущем понадобится БД, добавьте:
-# ENV PostgresCpOptions__ConnectionString=""
-
 EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build

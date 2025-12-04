@@ -1,19 +1,16 @@
-using CoffeePeek.Domain.Enums.Shop;
-using CoffeePeek.ModerationService.Configuration;
+using CoffeePeek.Contract.Enums;
+using CoffeePeek.Data.Interfaces;
 using CoffeePeek.ModerationService.Models;
+using CoffeePeek.ModerationService.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.ModerationService.Repositories;
 
-public class ModerationShopRepository(ModerationDbContext context) : IModerationShopRepository
+public class ModerationShopRepository(IGenericRepository<ModerationShop> shopRepository) : IModerationShopRepository
 {
-    private readonly DbSet<ModerationShop> _shops = context.ModerationShops;
-    private readonly ModerationDbContext _context = context;
-
     public async Task<ModerationShop?> GetByIdAsync(int id)
     {
-        return await _shops
-            .Include(s => s.Address)
+        return await shopRepository.Query()
             .Include(s => s.ShopContacts)
             .Include(s => s.ShopPhotos)
             .Include(s => s.Schedules)
@@ -23,8 +20,7 @@ public class ModerationShopRepository(ModerationDbContext context) : IModeration
 
     public async Task<List<ModerationShop>> GetByUserIdAsync(Guid userId)
     {
-        return await _shops
-            .Include(s => s.Address)
+        return await shopRepository.Query()
             .Include(s => s.ShopContacts)
             .Include(s => s.ShopPhotos)
             .Include(s => s.Schedules)
@@ -34,8 +30,7 @@ public class ModerationShopRepository(ModerationDbContext context) : IModeration
 
     public async Task<List<ModerationShop>> GetAllAsync()
     {
-        return await _shops
-            .Include(s => s.Address)
+        return await shopRepository.Query()
             .Include(s => s.ShopContacts)
             .Include(s => s.ShopPhotos)
             .Include(s => s.Schedules)
@@ -44,8 +39,7 @@ public class ModerationShopRepository(ModerationDbContext context) : IModeration
 
     public async Task<List<ModerationShop>> GetByStatusAsync(ModerationStatus status)
     {
-        return await _shops
-            .Include(s => s.Address)
+        return await shopRepository.Query()
             .Include(s => s.ShopContacts)
             .Include(s => s.ShopPhotos)
             .Include(s => s.Schedules)
@@ -55,29 +49,25 @@ public class ModerationShopRepository(ModerationDbContext context) : IModeration
 
     public async Task<ModerationShop?> GetByNameAndAddressAsync(string name, string address, Guid userId)
     {
-        return await _shops
-            .FirstOrDefaultAsync(s => s.Name == name 
-                && s.NotValidatedAddress == address 
-                && s.UserId == userId 
-                && s.ModerationStatus == ModerationStatus.Pending);
+        return await shopRepository.FirstOrDefaultAsync(s => s.Name == name 
+            && s.NotValidatedAddress == address 
+            && s.UserId == userId 
+            && s.ModerationStatus == ModerationStatus.Pending);
     }
 
     public async Task AddAsync(ModerationShop shop)
     {
         ArgumentNullException.ThrowIfNull(shop);
-        await _shops.AddAsync(shop);
+        await shopRepository.AddAsync(shop);
     }
 
     public Task UpdateAsync(ModerationShop shop)
     {
         ArgumentNullException.ThrowIfNull(shop);
-        _shops.Update(shop);
+        shopRepository.Update(shop);
         return Task.CompletedTask;
     }
 
-    public async Task SaveChangesAsync()
-    {
-        await _context.SaveChangesAsync();
-    }
 }
+
 

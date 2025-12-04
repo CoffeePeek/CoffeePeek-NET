@@ -61,7 +61,7 @@ public class UserManager(
             Name = refreshTokenName,
             LoginProvider = defaultProvider,
             Token = token,
-            ExpiryDate = DateTime.Now.AddDays(_options.RefreshTokenLifetimeDays),
+            ExpiryDate = DateTime.UtcNow.AddDays(_options.RefreshTokenLifetimeDays),
             IsRevoked = false,
         };
         user.RefreshTokens.Add(refreshToken);

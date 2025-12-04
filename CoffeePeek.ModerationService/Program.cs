@@ -1,22 +1,25 @@
 using System.Text;
+using CoffeePeek.Data.Extensions;
 using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Options;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.ModerationService.Configuration;
+using CoffeePeek.ModerationService.Models;
 using CoffeePeek.ModerationService.Repositories;
+using CoffeePeek.ModerationService.Repositories.Interfaces;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Options;
 using MassTransit;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwagger("Coffee Peek ModerationService", "v1");
 builder.Services.AddControllers();
+
+// Swagger
+builder.Services.AddSwagger("Coffee Peek ModerationService", "v1");
 
 // Настройка строки подключения к БД с поддержкой Railway переменных окружения
 var connectionString = DatabaseConnectionHelper.GetDatabaseConnectionString();
@@ -27,7 +30,8 @@ if (!string.IsNullOrEmpty(connectionString))
     dbOptions.ConnectionString = connectionString;
 }
 
-builder.Services.AddDbContext<ModerationDbContext>(opt => { opt.UseNpgsql(dbOptions.ConnectionString); });
+builder.Services.AddEfCoreData<ModerationDbContext>(dbOptions);
+builder.Services.AddGenericRepository<ModerationShop, ModerationDbContext>();
 
 builder.Services.AddScoped<IModerationShopRepository, ModerationShopRepository>();
 
@@ -93,18 +97,17 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
+app.UseExceptionHandling();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwaggerDocumentation();
 
 app.UseHttpsRedirection();
 
 app.MapControllers();
 
 app.Run();
+
 

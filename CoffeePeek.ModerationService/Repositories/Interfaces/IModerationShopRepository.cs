@@ -1,7 +1,7 @@
-using CoffeePeek.Domain.Enums.Shop;
+using CoffeePeek.Contract.Enums;
 using CoffeePeek.ModerationService.Models;
 
-namespace CoffeePeek.ModerationService.Repositories;
+namespace CoffeePeek.ModerationService.Repositories.Interfaces;
 
 public interface IModerationShopRepository
 {
@@ -12,6 +12,6 @@ public interface IModerationShopRepository
     Task<ModerationShop?> GetByNameAndAddressAsync(string name, string address, Guid userId);
     Task AddAsync(ModerationShop shop);
     Task UpdateAsync(ModerationShop shop);
-    Task SaveChangesAsync();
 }
+
 

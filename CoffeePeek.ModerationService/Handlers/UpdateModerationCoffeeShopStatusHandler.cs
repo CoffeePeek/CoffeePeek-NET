@@ -1,10 +1,10 @@
-using CoffeePeek.Contract.Dtos.Address;
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Schedule;
+using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
-using CoffeePeek.Domain.Enums.Shop;
-using CoffeePeek.ModerationService.Repositories;
+using CoffeePeek.Data.Interfaces;
+using CoffeePeek.ModerationService.Repositories.Interfaces;
 using MassTransit;
 using MediatR;
 using Response = CoffeePeek.Contract.Response.Response;
@@ -13,7 +13,8 @@ namespace CoffeePeek.ModerationService.Handlers;
 
 public class UpdateModerationCoffeeShopStatusHandler(
     IModerationShopRepository repository,
-    IPublishEndpoint publishEndpoint) 
+    IPublishEndpoint publishEndpoint,
+    IUnitOfWork unitOfWork) 
     : IRequestHandler<UpdateModerationCoffeeShopStatusRequest, Response>
 {
     public async Task<Response> Handle(UpdateModerationCoffeeShopStatusRequest request, CancellationToken cancellationToken)
@@ -30,16 +31,6 @@ public class UpdateModerationCoffeeShopStatusHandler(
         // Если одобрено, публикуем событие
         if (request.ModerationStatus == ModerationStatus.Approved)
         {
-            var addressDto = shop.Address != null ? new AddressDto
-            {
-                CityId = shop.Address.CityId,
-                StreetId = shop.Address.StreetId,
-                BuildingNumber = shop.Address.BuildingNumber,
-                PostalCode = shop.Address.PostalCode,
-                Latitude = shop.Address.Latitude,
-                Longitude = shop.Address.Longitude
-            } : null;
-
             var contactDto = shop.ShopContacts != null ? new ShopContactDto
             {
                 PhoneNumber = shop.ShopContacts.PhoneNumber,
@@ -59,10 +50,9 @@ public class UpdateModerationCoffeeShopStatusHandler(
                 shop.Name,
                 shop.NotValidatedAddress,
                 shop.UserId,
-                shop.AddressId,
+                shop.Address,
                 shop.ShopContactId,
                 shop.Status,
-                addressDto,
                 contactDto,
                 photos,
                 schedules
@@ -72,9 +62,10 @@ public class UpdateModerationCoffeeShopStatusHandler(
         }
 
         await repository.UpdateAsync(shop);
-        await repository.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         
         return Response.SuccessResponse<Response>();
     }
 }
+
 

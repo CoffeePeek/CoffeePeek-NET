@@ -1,4 +1,4 @@
-﻿namespace CoffeePeek.Shared.Extensions.Options;
+﻿namespace CoffeePeek.Shared.Infrastructure.Options;
 
 public class PostgresCpOptions
 {

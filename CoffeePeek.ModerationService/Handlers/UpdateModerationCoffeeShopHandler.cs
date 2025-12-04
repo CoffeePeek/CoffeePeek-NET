@@ -1,12 +1,16 @@
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
+using CoffeePeek.Data.Interfaces;
 using CoffeePeek.ModerationService.Repositories;
+using CoffeePeek.ModerationService.Repositories.Interfaces;
 using MediatR;
 
 namespace CoffeePeek.ModerationService.Handlers;
 
-public class UpdateModerationCoffeeShopHandler(IModerationShopRepository repository) 
+public class UpdateModerationCoffeeShopHandler(
+    IModerationShopRepository repository,
+    IUnitOfWork unitOfWork) 
     : IRequestHandler<UpdateModerationCoffeeShopRequest, Response<UpdateModerationCoffeeShopResponse>>
 {
     public async Task<Response<UpdateModerationCoffeeShopResponse>> Handle(UpdateModerationCoffeeShopRequest request,
@@ -23,9 +27,10 @@ public class UpdateModerationCoffeeShopHandler(IModerationShopRepository reposit
         // This is a simplified version - full implementation would map Address, ShopContacts, Photos, Schedules
         
         await repository.UpdateAsync(shop);
-        await repository.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Response.SuccessResponse<Response<UpdateModerationCoffeeShopResponse>>();
     }
 }
+
 

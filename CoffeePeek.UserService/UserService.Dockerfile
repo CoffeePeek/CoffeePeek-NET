@@ -1,8 +1,6 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
-USER $APP_UID
 WORKDIR /app
 
-# Настройка для прослушивания на IPv6 (требуется для Railway приватной сети)
 ENV ASPNETCORE_URLS=http://[::]:80
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 EXPOSE 80
@@ -12,8 +10,9 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["CoffeePeek.UserService/CoffeePeek.UserService.csproj", "CoffeePeek.UserService/"]
 COPY ["CoffeePeek.Contract/CoffeePeek.Contract.csproj", "CoffeePeek.Contract/"]
-COPY ["CoffeePeek.Domain/CoffeePeek.Domain.csproj", "CoffeePeek.Domain/"]
+COPY ["CoffeePeek.Data/CoffeePeek.Data.csproj", "CoffeePeek.Data/"]
 COPY ["CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj", "CoffeePeek.Shared.Extensions/"]
+COPY ["CoffeePeek.Shared.Infrastructure/CoffeePeek.Shared.Infrastructure.csproj", "CoffeePeek.Shared.Infrastructure/"]
 RUN dotnet restore "CoffeePeek.UserService/CoffeePeek.UserService.csproj"
 COPY . .
 WORKDIR "/src/CoffeePeek.UserService"

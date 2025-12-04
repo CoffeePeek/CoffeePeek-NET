@@ -1,22 +1,29 @@
-﻿using CoffeePeek.AuthService.Configuration;
-using CoffeePeek.AuthService.Entities;
+﻿using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Models;
+using CoffeePeek.Data.Interfaces;
 
 namespace CoffeePeek.AuthService.Repositories;
 
-public class RoleRepository(AuthDbContext context) : IRoleRepository
+public class RoleRepository(IGenericRepository<Role> roleRepository) : IRoleRepository
 {
-    public Task<bool> RoleExistsAsync(string roleName) =>
-        Task.FromResult(context.Roles.Any(r => r.Name.Equals(roleName, StringComparison.OrdinalIgnoreCase)));
-
-    public Task CreateRoleAsync(Role role)
+    public async Task<bool> RoleExistsAsync(string roleName)
     {
-        context.Roles.Add(role);
-        return Task.CompletedTask;
+        return await roleRepository.AnyAsync(
+            r => r.Name.Equals(roleName, StringComparison.OrdinalIgnoreCase));
     }
 
-    public Task<Role?> GetRoleAsync(string roleName) =>
-        Task.FromResult(context.Roles.FirstOrDefault(r => r.Name == roleName));
+    public async Task CreateRoleAsync(Role role)
+    {
+        await roleRepository.AddAsync(role);
+    }
 
-    public Task<IEnumerable<Role>> GetAllRolesAsync() => Task.FromResult(context.Roles.AsEnumerable());
+    public async Task<Role?> GetRoleAsync(string roleName)
+    {
+        return await roleRepository.FirstOrDefaultAsync(r => r.Name == roleName);
+    }
+
+    public async Task<IEnumerable<Role>> GetAllRolesAsync()
+    {
+        return await roleRepository.GetAllAsync();
+    }
 }

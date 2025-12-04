@@ -13,12 +13,21 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CoffeePeek.AuthService\CoffeePeek.AuthService.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
     </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CoffeePeek.AuthService\CoffeePeek.AuthService.csproj">
+            <PublishContentFiles>false</PublishContentFiles>
+        </ProjectReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Remove="..\CoffeePeek.AuthService\appsettings.json" />
+        <Content Remove="..\CoffeePeek.AuthService\appsettings.Development.json" />
+        <Content Remove="..\CoffeePeek.AuthService\appsettings.*.json" />
+    </ItemGroup>
+
 </Project>

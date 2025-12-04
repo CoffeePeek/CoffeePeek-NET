@@ -9,7 +9,7 @@ public class UpdateCoffeeShopReviewRequest : IRequest<Response.Response<UpdateCo
     [JsonIgnore]
     public Guid UserId { get; set; }
     
-    public int ReviewId { get; set; }
+    public Guid ReviewId { get; set; }
     
     public string Header { get; set; }
     public string Comment { get; set; }

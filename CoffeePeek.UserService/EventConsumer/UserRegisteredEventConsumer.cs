@@ -1,6 +1,6 @@
 ﻿using CoffeePeek.Contract.Events;
+using CoffeePeek.Data.Interfaces;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
-using CoffeePeek.UserService.Configuration;
 using CoffeePeek.UserService.Models;
 using CoffeePeek.UserService.Repositories;
 using MassTransit;
@@ -10,7 +10,7 @@ namespace CoffeePeek.UserService.EventConsumer;
 public class UserRegisteredEventConsumer(
     IUserRepository userRepository,
     IRedisService redisService,
-    UserDbContext userDbContext) : IConsumer<UserRegisteredEvent>
+    IUnitOfWork unitOfWork) : IConsumer<UserRegisteredEvent>
 {
     public async Task Consume(ConsumeContext<UserRegisteredEvent> context)
     {
@@ -28,6 +28,6 @@ public class UserRegisteredEventConsumer(
         await userRepository.AddAsync(user);
         await redisService.SetAsync($"{nameof(User)}{user.Id}", user);
 
-        await userDbContext.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(context.CancellationToken);
     }
 }

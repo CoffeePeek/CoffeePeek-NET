@@ -1,14 +1,18 @@
+using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
-using CoffeePeek.Domain.Enums.Shop;
+using CoffeePeek.Data.Interfaces;
 using CoffeePeek.ModerationService.Models;
 using CoffeePeek.ModerationService.Repositories;
+using CoffeePeek.ModerationService.Repositories.Interfaces;
 using MediatR;
 
 namespace CoffeePeek.ModerationService.Handlers;
 
-public class SendCoffeeShopToModerationHandler(IModerationShopRepository repository) 
+public class SendCoffeeShopToModerationHandler(
+    IModerationShopRepository repository,
+    IUnitOfWork unitOfWork) 
     : IRequestHandler<SendCoffeeShopToModerationRequest, Response<SendCoffeeShopToModerationResponse>>
 {
     public async Task<Response<SendCoffeeShopToModerationResponse>> Handle(SendCoffeeShopToModerationRequest request,
@@ -31,9 +35,10 @@ public class SendCoffeeShopToModerationHandler(IModerationShopRepository reposit
         };
 
         await repository.AddAsync(moderationShop);
-        await repository.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Response.SuccessResponse<Response<SendCoffeeShopToModerationResponse>>(null, "CoffeeShop added to moderation.");
     }
 }
+
 

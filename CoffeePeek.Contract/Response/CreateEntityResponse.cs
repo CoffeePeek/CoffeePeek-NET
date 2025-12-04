@@ -1,32 +1,43 @@
 namespace CoffeePeek.Contract.Response;
 
-public class CreateEntityResponse<T>
+public class CreateEntityResponse<T> : Response<T>
 {
-    public bool Success { get; set; }
-    
-    public string Message { get; set; }
-    
-    public T Data { get; set; }
-    
     public int? EntityId { get; set; }
 
     public CreateEntityResponse() { }
 
     public CreateEntityResponse(bool success, string message, T data, int? entityId = null)
+        : base(success, message, data)
     {
-        Success = success;
-        Message = message;
-        Data = data;
         EntityId = entityId;
     }
 
-    public static CreateEntityResponse<T> SuccessResponse(T data, string message = "Entity created successfully", int? entityId = null)
+    /// <summary>
+    /// Creates a successful response for entity creation.
+    /// </summary>
+    public static CreateEntityResponse<T> Success(T data, string message = null, int? entityId = null)
     {
-        return new CreateEntityResponse<T>(true, message, data, entityId);
+        return new CreateEntityResponse<T>
+        {
+            IsSuccess = true,
+            Message = message ?? "Entity created successfully",
+            Data = data,
+            EntityId = entityId
+        };
     }
 
-    public static CreateEntityResponse<T> ErrorResponse(string message, T data = default)
+    /// <summary>
+    /// Creates an error response for entity creation.
+    /// </summary>
+    public static CreateEntityResponse<T> Error(string message, Dictionary<string, string[]> errors = null, string errorCode = null)
     {
-        return new CreateEntityResponse<T>(false, message, data);
+        return new CreateEntityResponse<T>
+        {
+            IsSuccess = false,
+            Message = message,
+            Data = default,
+            Errors = errors,
+            ErrorCode = errorCode
+        };
     }
 }
