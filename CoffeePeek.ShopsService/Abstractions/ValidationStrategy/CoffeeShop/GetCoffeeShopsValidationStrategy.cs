@@ -41,4 +41,3 @@ public class GetCoffeeShopsValidationStrategy : IValidationStrategy<GetCoffeeSho
         return ValidationResult.Valid;
     }
 }
-

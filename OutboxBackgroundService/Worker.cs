@@ -1,7 +1,8 @@
 using System.Text.Json;
-using CoffeePeek.AuthService.Configuration;
+using CoffeePeek.Contract.Events;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using OutboxBackgroundService.Configuration;
 
 namespace OutboxBackgroundService;
 
@@ -27,7 +28,7 @@ public class Worker(ILogger<Worker> logger, IServiceProvider serviceProvider) : 
                 {
                     var fullTypeName = $"CoffeePeek.Contract.Events.{e.EventType}";
 
-                    var contractAssembly = typeof(CoffeePeek.Contract.Events.UserRegisteredEvent).Assembly; 
+                    var contractAssembly = typeof(UserRegisteredEvent).Assembly; 
                     var eventType = contractAssembly.GetType(fullTypeName, throwOnError: false, ignoreCase: true);
                     
                     var message = JsonSerializer.Deserialize(e.Payload, eventType!);

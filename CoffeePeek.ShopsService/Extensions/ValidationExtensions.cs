@@ -1,8 +1,4 @@
-using CoffeePeek.BusinessLogic.Abstractions;
-using CoffeePeek.BusinessLogic.Abstractions.Review;
-using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.ShopsService.Abstractions;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy.CoffeeShop;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy.Review;

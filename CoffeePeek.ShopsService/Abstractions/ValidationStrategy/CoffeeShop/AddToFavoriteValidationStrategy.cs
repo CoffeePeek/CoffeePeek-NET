@@ -21,4 +21,3 @@ public class AddToFavoriteValidationStrategy : IValidationStrategy<AddToFavorite
         return ValidationResult.Valid;
     }
 }
-

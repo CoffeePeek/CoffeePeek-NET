@@ -26,5 +26,3 @@ public interface IGenericRepository<TEntity> where TEntity : class
     IQueryable<TEntity> Query();
     IQueryable<TEntity> QueryAsNoTracking();
 }
-
-

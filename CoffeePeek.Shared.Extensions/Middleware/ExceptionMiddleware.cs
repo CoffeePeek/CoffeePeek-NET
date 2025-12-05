@@ -110,4 +110,3 @@ public class ExceptionMiddleware(
         return exception is BaseException baseException ? baseException.ErrorCode : null;
     }
 }
-

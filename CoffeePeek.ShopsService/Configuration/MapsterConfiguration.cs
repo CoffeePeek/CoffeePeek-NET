@@ -1,6 +1,4 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Dtos.Schedule;
-using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.ShopsService.Entities;
 using Mapster;
 using MapsterMapper;

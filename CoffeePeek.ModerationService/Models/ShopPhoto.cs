@@ -12,6 +12,3 @@ public class ShopPhoto
     public int ShopId { get; set; }
     public Guid UserId { get; set; }
 }
-
-
-

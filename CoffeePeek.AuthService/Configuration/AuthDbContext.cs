@@ -1,5 +1,4 @@
 ﻿using CoffeePeek.AuthService.Entities;
-using CoffeePeek.AuthService.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.AuthService.Configuration;

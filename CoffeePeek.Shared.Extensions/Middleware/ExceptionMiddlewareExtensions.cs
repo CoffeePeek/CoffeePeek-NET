@@ -10,4 +10,3 @@ public static class ExceptionMiddlewareExtensions
         return app.UseMiddleware<ExceptionMiddleware>();
     }
 }
-

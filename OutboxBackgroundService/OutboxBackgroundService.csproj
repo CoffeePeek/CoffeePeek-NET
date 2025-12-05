@@ -9,25 +9,22 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MassTransit" Version="8.5.7" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\CoffeePeek.AuthService\CoffeePeek.AuthService.csproj">
-            <PublishContentFiles>false</PublishContentFiles>
-        </ProjectReference>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Remove="..\CoffeePeek.AuthService\appsettings.json" />
-        <Content Remove="..\CoffeePeek.AuthService\appsettings.Development.json" />
-        <Content Remove="..\CoffeePeek.AuthService\appsettings.*.json" />
     </ItemGroup>
 
 </Project>

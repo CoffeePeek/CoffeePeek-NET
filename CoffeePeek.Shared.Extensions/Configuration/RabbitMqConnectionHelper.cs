@@ -68,7 +68,3 @@ public static class RabbitMqConnectionHelper
         return null;
     }
 }
-
-
-
-

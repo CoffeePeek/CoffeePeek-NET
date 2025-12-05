@@ -19,4 +19,3 @@ public abstract class BaseException : Exception
         StatusCode = statusCode;
     }
 }
-

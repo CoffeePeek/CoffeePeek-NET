@@ -122,5 +122,3 @@ public sealed class GenericRepository<TEntity, TDbContext>(TDbContext context) :
         return _dbSet.AsNoTracking();
     }
 }
-
-

@@ -21,4 +21,3 @@ public class RemoveFromFavoriteValidationStrategy : IValidationStrategy<RemoveFr
         return ValidationResult.Valid;
     }
 }
-

@@ -22,6 +22,3 @@ public class GetCoffeeShopsInModerationByIdHandler(IModerationShopRepository rep
         return Response.SuccessResponse<Response<GetCoffeeShopsInModerationByIdResponse>>(result);
     }
 }
-
-
-

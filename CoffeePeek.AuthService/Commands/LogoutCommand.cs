@@ -7,5 +7,3 @@ public class LogoutCommand : IRequest<Response>
 {
     public Guid UserId { get; set; }
 }
-
-

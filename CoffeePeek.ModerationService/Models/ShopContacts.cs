@@ -13,6 +13,3 @@ public class ShopContacts
     [MaxLength(50)]
     public string InstagramLink { get; set; }
 }
-
-
-

@@ -12,4 +12,3 @@ public class ErrorResponse
     public string? StackTrace { get; set; }
     public string? InnerException { get; set; }
 }
-
