@@ -2,9 +2,9 @@ name: Docker Build
 
 on:
   push:
-    branches:
-      - dev
-      - feature/**
+    branches: [ "dev", "feature" ]
+  pull_request:
+    branches: [ "dev", "feature" ]
 
 jobs:
   build:
@@ -19,7 +19,7 @@ jobs:
         run: |
           if [[ "${GITHUB_REF_NAME}" == "dev" ]]; then
             echo "DOCKER_TAG=prod" >> $GITHUB_ENV
-          elif [[ "${GITHUB_REF_NAME}" == feature/* ]]; then
+          elif [[ "${GITHUB_REF_NAME}" == "feature" ]]; then
             echo "DOCKER_TAG=dev" >> $GITHUB_ENV
           else
             echo "DOCKER_TAG=latest" >> $GITHUB_ENV
