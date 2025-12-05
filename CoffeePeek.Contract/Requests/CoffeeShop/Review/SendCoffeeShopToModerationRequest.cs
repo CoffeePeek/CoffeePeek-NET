@@ -14,5 +14,5 @@ public class SendCoffeeShopToModerationRequest : IRequest<Response<SendCoffeeSho
     [JsonPropertyName("fullAddress")]
     public string NotValidatedAddress { get; set; }
     [JsonIgnore]
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
 }

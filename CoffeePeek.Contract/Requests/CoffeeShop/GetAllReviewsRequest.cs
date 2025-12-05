@@ -5,8 +5,8 @@ using MediatR;
 
 namespace CoffeePeek.Contract.Requests.CoffeeShop;
 
-public class GetAllReviewsRequest(int userId) : IRequest<Response<GetAllReviewsResponse>>
+public class GetAllReviewsRequest(Guid userId) : IRequest<Response<GetAllReviewsResponse>>
 {
     [JsonIgnore]
-    public int UserId { get; } = userId;
+    public Guid UserId { get; } = userId;
 }

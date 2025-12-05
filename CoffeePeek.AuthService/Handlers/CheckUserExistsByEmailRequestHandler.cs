@@ -1,0 +1,34 @@
+﻿using CoffeePeek.AuthService.Commands;
+using CoffeePeek.AuthService.Entities;
+using CoffeePeek.AuthService.Services;
+using CoffeePeek.Contract.Response;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using MediatR;
+
+namespace CoffeePeek.AuthService.Handlers;
+
+public class CheckUserExistsByEmailRequestHandler(IRedisService redisService, IUserManager userManager)
+    : IRequestHandler<CheckUserExistsByEmailCommand, Response<bool>>
+{
+    public async Task<Response<bool>> Handle(CheckUserExistsByEmailCommand request, CancellationToken cancellationToken)
+    {
+        var cacheKey = $"{nameof(UserCredentials)}{request.Email}";
+        var userFromRedis = await redisService.GetAsync<UserCredentials>(cacheKey);
+
+        if (userFromRedis != null)
+        {
+            return Response.SuccessResponse<Response<bool>>(true);
+        }
+
+        var user = await userManager.FindByEmailAsync(request.Email);
+
+        if (user != null)
+        {
+            await redisService.SetAsync(cacheKey, user, TimeSpan.FromMinutes(5));
+        }
+
+        return user == null
+            ? Response.ErrorResponse<Response<bool>>("User not found")
+            : Response.SuccessResponse<Response<bool>>(true);
+    }
+}

@@ -7,7 +7,7 @@ namespace CoffeePeek.Contract.Requests.User;
 
 public record UpdateProfileRequest : IRequest<Response<UpdateProfileResponse>>
 {
-    [JsonIgnore] public int UserId { get; set; }
+    [JsonIgnore] public Guid UserId { get; set; }
 
     [JsonIgnore] public string PhotoUrl { get; set; }
     public string UserName { get; set; }

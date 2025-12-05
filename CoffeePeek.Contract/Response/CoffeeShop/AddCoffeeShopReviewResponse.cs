@@ -1,6 +1,6 @@
 ﻿namespace CoffeePeek.Contract.Response.CoffeeShop;
 
-public class AddCoffeeShopReviewResponse(int reviewId)
+public class AddCoffeeShopReviewResponse(Guid reviewId)
 {
-    public int ReviewId { get; } = reviewId;
+    public Guid ReviewId { get; } = reviewId;
 }

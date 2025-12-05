@@ -4,7 +4,7 @@ using MediatR;
 
 namespace CoffeePeek.Contract.Requests.User;
 
-public class GetProfileRequest(int userId) : IRequest<Response<UserDto>>
+public class GetProfileRequest(Guid userId) : IRequest<Response<UserDto>>
 {
-    public int UserId { get;} = userId;
+    public Guid UserId { get;} = userId;
 }

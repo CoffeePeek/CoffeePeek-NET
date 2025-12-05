@@ -7,9 +7,9 @@ namespace CoffeePeek.Contract.Requests.CoffeeShop;
 public class AddCoffeeShopReviewRequest : IRequest<Response.Response<AddCoffeeShopReviewResponse>>
 {
     [JsonIgnore]
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
     
-    public int ShopId { get; init; }
+    public Guid ShopId { get; init; }
     
     public string Header { get; init; }
     public string Comment { get; init; }
