@@ -16,12 +16,12 @@ public class GetProfileHandler(IUserRepository userRepository)
 
         if (user == null)
         {
-            return Response.ErrorResponse<Response<UserDto>>("User not found.");
+            return Response<UserDto>.Error("User not found.");
         }
 
         var result = MapToDto(user);
         
-        return Response.SuccessResponse<Response<UserDto>>(result);
+        return Response<UserDto>.Success(result);
     }
 
     public static UserDto MapToDto(User user)

@@ -22,7 +22,7 @@ public class SendCoffeeShopToModerationHandler(
 
         if (existingShop != null)
         {
-            return Response.ErrorResponse<Response<SendCoffeeShopToModerationResponse>>("A moderation submission with this name and address already exists.");
+            return Response<SendCoffeeShopToModerationResponse>.Error("A moderation submission with this name and address already exists.");
         }
 
         var moderationShop = new ModerationShop
@@ -37,7 +37,7 @@ public class SendCoffeeShopToModerationHandler(
         await repository.AddAsync(moderationShop);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Response.SuccessResponse<Response<SendCoffeeShopToModerationResponse>>(null, "CoffeeShop added to moderation.");
+        return Response<SendCoffeeShopToModerationResponse>.Success(null, "CoffeeShop added to moderation.");
     }
 }
 

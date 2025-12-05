@@ -24,13 +24,13 @@ public class GoogleLoginHandler(
     {
         if (string.IsNullOrEmpty(request.IdToken))
         {
-            return Response.ErrorResponse<Response<GoogleLoginResponse>>("IdToken is required");
+            return Response<GoogleLoginResponse>.Error("IdToken is required");
         }
 
         var googlePayload = await googleAuthService.ValidateIdTokenAsync(request.IdToken, cancellationToken);
         if (googlePayload == null)
         {
-            return Response.ErrorResponse<Response<GoogleLoginResponse>>("Invalid Google token");
+            return Response<GoogleLoginResponse>.Error("Invalid Google token");
         }
 
         var user = await userRepository.GetByProviderAsync(ProviderConsts.GoogleProvider, googlePayload.Subject, cancellationToken);
@@ -79,6 +79,6 @@ public class GoogleLoginHandler(
             }
         };
 
-        return Response.SuccessResponse<Response<GoogleLoginResponse>>(response);
+        return Response<GoogleLoginResponse>.Success(response);
     }
 }

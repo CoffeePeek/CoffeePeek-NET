@@ -15,7 +15,6 @@ public class GetAllUsersHandler(IUserRepository userRepository)
         
         var result = users.Select(GetProfileHandler.MapToDto).ToArray();
         
-        return Response.SuccessResponse<Response<UserDto[]>>(result);
+        return Response<UserDto[]>.Success(result);
     }
 }
-

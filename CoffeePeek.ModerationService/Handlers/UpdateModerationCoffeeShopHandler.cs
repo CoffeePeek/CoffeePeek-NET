@@ -20,7 +20,7 @@ public class UpdateModerationCoffeeShopHandler(
 
         if (shop == null || shop.UserId != request.UserId)
         {
-            return Response.ErrorResponse<Response<UpdateModerationCoffeeShopResponse>>("Moderation CoffeeShop not found");
+            return Response<UpdateModerationCoffeeShopResponse>.Error("Moderation CoffeeShop not found");
         }
 
         // TODO: Update shop properties from request
@@ -29,8 +29,6 @@ public class UpdateModerationCoffeeShopHandler(
         await repository.UpdateAsync(shop);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Response.SuccessResponse<Response<UpdateModerationCoffeeShopResponse>>();
+        return Response<UpdateModerationCoffeeShopResponse>.Success(null);
     }
 }
-
-

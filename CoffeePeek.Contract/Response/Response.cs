@@ -26,6 +26,19 @@ public class Response
     /// <summary>
     /// Creates a successful response with data.
     /// </summary>
+    public static Response Success(object data = null, string message = null)
+    {
+        return new Response
+        {
+            IsSuccess = true,
+            Message = message ?? "Operation successful",
+            Data = null
+        };
+    }
+    
+    /// <summary>
+    /// Creates a successful response with data.
+    /// </summary>
     public static Response<T> Success<T>(T data, string message = null)
     {
         return new Response<T>
@@ -36,6 +49,21 @@ public class Response
         };
     }
 
+    /// <summary>
+    /// Creates an error response with message and optional validation errors.
+    /// </summary>
+    public static Response Error(string message, Dictionary<string, string[]> errors = null, string errorCode = null)
+    {
+        return new Response
+        {
+            IsSuccess = false,
+            Message = message,
+            Data = null,
+            Errors = errors,
+            ErrorCode = errorCode
+        };
+    }
+    
     /// <summary>
     /// Creates an error response with message and optional validation errors.
     /// </summary>
@@ -64,30 +92,6 @@ public class Response
             Data = default,
             ErrorCode = errorCode,
             Errors = errors
-        };
-    }
-    
-    [Obsolete("Use Response<T>.Success instead")]
-    public static T SuccessResponse<T>(object data = null, string message = "Operation successful")
-        where T : Response, new()
-    {
-        return new T
-        {
-            IsSuccess = true,
-            Message = message,
-            Data = data
-        };
-    }
-
-    [Obsolete("Use Response<T>.Error instead")]
-    public static T ErrorResponse<T>(string message, object data = default)
-        where T : Response, new()
-    {
-        return new T
-        {
-            IsSuccess = false,
-            Message = message,
-            Data = data
         };
     }
 }
