@@ -96,12 +96,12 @@ builder.Services.AddScoped<DatabaseSeederService>();
 
 var app = builder.Build();
 
-// Seed database
-using (var scope = app.Services.CreateScope())
-{
-    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeederService>();
-    await seeder.SeedAsync();
-}
+//// Seed database
+//using (var scope = app.Services.CreateScope())
+//{
+//    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeederService>();
+//    await seeder.SeedAsync();
+//}
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandling();

@@ -38,4 +38,3 @@ envsubst '${AUTH_HOST} ${AUTH_PORT} ${USER_HOST} ${USER_PORT} ${SHOPS_HOST} ${SH
 
 # Start nginx
 exec "$@"
-

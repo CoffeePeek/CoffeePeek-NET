@@ -10,8 +10,21 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
 
     public async Task<T?> GetAsync<T>(string key)
     {
-        string? value = await _db.StringGetAsync(key);
-        return (string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value)!)!;
+        try
+        {
+            string? value = await _db.StringGetAsync(key);
+            return (string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value)!)!;
+        }
+        catch (RedisConnectionException)
+        {
+            // Redis недоступен, возвращаем null для использования fallback (БД)
+            return default;
+        }
+        catch (Exception)
+        {
+            // Другие ошибки Redis, возвращаем null
+            return default;
+        }
     }
     
     public async Task<(bool success, T value)> TryGetAsync<T>(string key)
@@ -44,20 +57,55 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
     
     public async Task<T> GetAsyncById<T>(string id)
     {
-        var key = $"{typeof(T).Name}-{id}";
-        
-        string? value = await _db.StringGetAsync(key);
-        
-        return (string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value))!;
+        try
+        {
+            var key = $"{typeof(T).Name}-{id}";
+            
+            string? value = await _db.StringGetAsync(key);
+            
+            return (string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value))!;
+        }
+        catch (RedisConnectionException)
+        {
+            // Redis недоступен, возвращаем null для использования fallback (БД)
+            return default!;
+        }
+        catch (Exception)
+        {
+            // Другие ошибки Redis, возвращаем null
+            return default!;
+        }
     }
 
     public async Task SetAsync<T>(string key, T value, TimeSpan? expiry = null)
     {
-        await _db.StringSetAsync(key, JsonSerializer.Serialize(value), new Expiration(expiry ?? TimeSpan.FromDays(1)));
+        try
+        {
+            await _db.StringSetAsync(key, JsonSerializer.Serialize(value), new Expiration(expiry ?? TimeSpan.FromDays(1)));
+        }
+        catch (RedisConnectionException)
+        {
+            // Redis недоступен, игнорируем ошибку (кэш не критичен)
+        }
+        catch (Exception)
+        {
+            // Другие ошибки Redis, игнорируем
+        }
     }
 
     public async Task RemoveAsync(string key)
     {
-        await _db.KeyDeleteAsync(key);
+        try
+        {
+            await _db.KeyDeleteAsync(key);
+        }
+        catch (RedisConnectionException)
+        {
+            // Redis недоступен, игнорируем ошибку
+        }
+        catch (Exception)
+        {
+            // Другие ошибки Redis, игнорируем
+        }
     }
 }
