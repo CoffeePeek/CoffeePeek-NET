@@ -23,7 +23,7 @@ public class UpdateModerationCoffeeShopStatusHandler(
 
         if (shop == null)
         {
-            return Response.ErrorResponse<Response>("CoffeeShop not found");
+            return Response.Error("CoffeeShop not found");
         }
         
         shop.ModerationStatus = request.ModerationStatus;
@@ -64,7 +64,7 @@ public class UpdateModerationCoffeeShopStatusHandler(
         await repository.UpdateAsync(shop);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        return Response.SuccessResponse<Response>();
+        return Response.Success();
     }
 }
 

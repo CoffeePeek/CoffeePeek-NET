@@ -17,7 +17,7 @@ public class LogoutHandler(IUserManager userManager) : IRequestHandler<LogoutCom
             var user = await userManager.FindByIdAsync(request.UserId);
             if (user == null)
             {
-                return Response.ErrorResponse<Response>("User not found");
+                return Response.Error("User not found");
             }
 
             await userManager.RemoveAuthenticationTokenAsync(
@@ -26,11 +26,11 @@ public class LogoutHandler(IUserManager userManager) : IRequestHandler<LogoutCom
                 RefreshTokenName
             );
 
-            return Response.SuccessResponse<Response>(message: "Logout successful");
+            return Response.Success(message: "Logout successful");
         }
         catch (Exception e)
         {
-            return Response.ErrorResponse<Response>("Error occurred during logout");
+            return Response.Error(message: "Error occurred during logout");
         }
     }
 }

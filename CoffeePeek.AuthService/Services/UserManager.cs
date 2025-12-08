@@ -37,7 +37,8 @@ public class UserManager(
             {
                 UserId = user.Id,
                 RoleId = role.Id,
-                Role = role
+                Role = role,
+                User = user
             });
 
             await userRepository.UpdateAsync(user, ct);

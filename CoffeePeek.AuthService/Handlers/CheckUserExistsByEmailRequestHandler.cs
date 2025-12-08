@@ -17,7 +17,7 @@ public class CheckUserExistsByEmailRequestHandler(IRedisService redisService, IU
 
         if (userFromRedis != null)
         {
-            return Response.SuccessResponse<Response<bool>>(true);
+            return Response<bool>.Success(true);
         }
 
         var user = await userManager.FindByEmailAsync(request.Email);
@@ -28,7 +28,7 @@ public class CheckUserExistsByEmailRequestHandler(IRedisService redisService, IU
         }
 
         return user == null
-            ? Response.ErrorResponse<Response<bool>>("User not found")
-            : Response.SuccessResponse<Response<bool>>(true);
+            ? Response<bool>.Error("User not found")
+            : Response<bool>.Success(true);
     }
 }

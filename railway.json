@@ -2,9 +2,9 @@
   "$schema": "https://railway.app/railway.schema.json",
   "services": [
     {
-      "name": "nginx-gateway",
-      "root": "nginx",
-      "dockerfile": "Dockerfile",
+      "name": "gateway",
+      "root": ".",
+      "dockerfile": "CoffeePeek.Gateway/Gateway.Dockerfile",
       "domain": "public"
     },
     {

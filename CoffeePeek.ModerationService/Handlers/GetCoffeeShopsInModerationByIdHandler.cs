@@ -19,6 +19,6 @@ public class GetCoffeeShopsInModerationByIdHandler(IModerationShopRepository rep
         var dtos = shops.Select(ModerationShopMapper.MapToDto).ToArray();
         var result = new GetCoffeeShopsInModerationByIdResponse(dtos);
         
-        return Response.SuccessResponse<Response<GetCoffeeShopsInModerationByIdResponse>>(result);
+        return Response<GetCoffeeShopsInModerationByIdResponse>.Success(result);
     }
 }

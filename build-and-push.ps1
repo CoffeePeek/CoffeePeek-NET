@@ -73,14 +73,14 @@ Invoke-DockerCommand `
     -Command "docker push winststreloc/coffeepeek.moderationservice:dev" `
     -Description "Pushing ModerationService image"
 
-# 5. Nginx
+# 5. Gateway
 Invoke-DockerCommand `
-    -Command "docker build -t winststreloc/nginx:dev -f nginx/Dockerfile nginx/" `
-    -Description "Building Nginx image"
+    -Command "docker build -t winststreloc/gateway:dev -f CoffeePeek.Gateway/Gateway.Dockerfile ." `
+    -Description "Building Gateway image"
 
 Invoke-DockerCommand `
-    -Command "docker push winststreloc/nginx:dev" `
-    -Description "Pushing Nginx image"
+    -Command "docker push winststreloc/gateway:dev" `
+    -Description "Pushing Gateway image"
 
 Write-Host ""
 Write-Host "=========================================" -ForegroundColor Cyan

@@ -22,7 +22,7 @@ namespace CoffeePeek.AuthService.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CoffeePeek.AuthService.Models.OutboxEvent", b =>
+            modelBuilder.Entity("CoffeePeek.AuthService.Entities.OutboxEvent", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,7 +50,7 @@ namespace CoffeePeek.AuthService.Migrations
                     b.ToTable("OutboxEvents");
                 });
 
-            modelBuilder.Entity("CoffeePeek.AuthService.Models.RefreshToken", b =>
+            modelBuilder.Entity("CoffeePeek.AuthService.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,7 +84,7 @@ namespace CoffeePeek.AuthService.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("CoffeePeek.AuthService.Models.Role", b =>
+            modelBuilder.Entity("CoffeePeek.AuthService.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -99,7 +99,7 @@ namespace CoffeePeek.AuthService.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("CoffeePeek.AuthService.Models.UserCredentials", b =>
+            modelBuilder.Entity("CoffeePeek.AuthService.Entities.UserCredentials", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -124,7 +124,7 @@ namespace CoffeePeek.AuthService.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("CoffeePeek.AuthService.Models.UserRole", b =>
+            modelBuilder.Entity("CoffeePeek.AuthService.Entities.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -142,9 +142,9 @@ namespace CoffeePeek.AuthService.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("CoffeePeek.AuthService.Models.RefreshToken", b =>
+            modelBuilder.Entity("CoffeePeek.AuthService.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("CoffeePeek.AuthService.Models.UserCredentials", "User")
+                    b.HasOne("CoffeePeek.AuthService.Entities.UserCredentials", "User")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -153,15 +153,15 @@ namespace CoffeePeek.AuthService.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CoffeePeek.AuthService.Models.UserRole", b =>
+            modelBuilder.Entity("CoffeePeek.AuthService.Entities.UserRole", b =>
                 {
-                    b.HasOne("CoffeePeek.AuthService.Models.Role", "Role")
+                    b.HasOne("CoffeePeek.AuthService.Entities.Role", "Role")
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoffeePeek.AuthService.Models.UserCredentials", "User")
+                    b.HasOne("CoffeePeek.AuthService.Entities.UserCredentials", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -172,12 +172,12 @@ namespace CoffeePeek.AuthService.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CoffeePeek.AuthService.Models.Role", b =>
+            modelBuilder.Entity("CoffeePeek.AuthService.Entities.Role", b =>
                 {
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("CoffeePeek.AuthService.Models.UserCredentials", b =>
+            modelBuilder.Entity("CoffeePeek.AuthService.Entities.UserCredentials", b =>
                 {
                     b.Navigation("RefreshTokens");
 

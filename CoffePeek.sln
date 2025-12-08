@@ -9,14 +9,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CoffeePeek.AuthService\AuthService.Dockerfile = CoffeePeek.AuthService\AuthService.Dockerfile
 		OutboxBackgroundService\OutboxBackgroundService.Dockerfile = OutboxBackgroundService\OutboxBackgroundService.Dockerfile
 		CoffeePeek.UserService\UserService.Dockerfile = CoffeePeek.UserService\UserService.Dockerfile
-		nginx\conf.d\gateway.conf = nginx\conf.d\gateway.conf
 		railway.json = railway.json
-		nginx\Dockerfile = nginx\Dockerfile
-		nginx\nginx.conf = nginx\nginx.conf
 		CoffeePeek.ModerationService\ModerationService.Dockerfile = CoffeePeek.ModerationService\ModerationService.Dockerfile
 		build-and-push.ps1 = build-and-push.ps1
 		CoffeePeek.ShopsService\ShopsService.Dockerfile = CoffeePeek.ShopsService\ShopsService.Dockerfile
-		nginx\conf.d\gateway.conf.template = nginx\conf.d\gateway.conf.template
+		CoffeePeek.Gateway\CoffeePeek.Gateway.csproj = CoffeePeek.Gateway\CoffeePeek.Gateway.csproj
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CoffeePeek.Photo", "CoffeePeek.Photo", "{B135B7F3-9AB9-49D4-9487-001B656C3A36}"
@@ -52,6 +49,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.ShopsService", "CoffeePeek.ShopsService\CoffeePeek.ShopsService.csproj", "{8C7DA135-5D75-4CCF-B1CB-2FAFC03EC91B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Data", "CoffeePeek.Data\CoffeePeek.Data.csproj", "{ABE7F92D-DD3F-43E2-80E8-CDFDC4F390FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Gateway", "CoffeePeek.Gateway\CoffeePeek.Gateway.csproj", "{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,6 +114,10 @@ Global
 		{ABE7F92D-DD3F-43E2-80E8-CDFDC4F390FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABE7F92D-DD3F-43E2-80E8-CDFDC4F390FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABE7F92D-DD3F-43E2-80E8-CDFDC4F390FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F0E8ABFC-8079-40BF-8A62-5134395E6EC6} = {B135B7F3-9AB9-49D4-9487-001B656C3A36}
@@ -132,5 +135,6 @@ Global
 		{CD0FAA76-CC2A-4C05-AF68-84EE1724A3ED} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
 		{8C7DA135-5D75-4CCF-B1CB-2FAFC03EC91B} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
 		{ABE7F92D-DD3F-43E2-80E8-CDFDC4F390FD} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
+		{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014} = {DFBC1184-60D4-4FB2-999A-441CD36F162D}
 	EndGlobalSection
 EndGlobal

@@ -20,7 +20,7 @@ public class UpdateCoffeeShopReviewRequestHandler(
         var validationResult = validationStrategy.Validate(request);
         if (!validationResult.IsValid)
         {
-            return Response.ErrorResponse<Response<UpdateCoffeeShopReviewResponse>>(validationResult.ErrorMessage);
+            return Response<UpdateCoffeeShopReviewResponse>.Error(validationResult.ErrorMessage);
         }
 
         var review = await dbContext.Reviews
@@ -28,12 +28,12 @@ public class UpdateCoffeeShopReviewRequestHandler(
 
         if (review == null)
         {
-            return Response.ErrorResponse<Response<UpdateCoffeeShopReviewResponse>>("Review not found");
+            return Response<UpdateCoffeeShopReviewResponse>.Error("Review not found");
         }
 
         if (review.UserId != request.UserId)
         {
-            return Response.ErrorResponse<Response<UpdateCoffeeShopReviewResponse>>("You are not authorized to update this review");
+            return Response<UpdateCoffeeShopReviewResponse>.Error("You are not authorized to update this review");
         }
 
         review.Header = request.Header;
@@ -45,6 +45,6 @@ public class UpdateCoffeeShopReviewRequestHandler(
         dbContext.Reviews.Update(review);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return Response.SuccessResponse<Response<UpdateCoffeeShopReviewResponse>>(new UpdateCoffeeShopReviewResponse(review.Id));
+        return Response<UpdateCoffeeShopReviewResponse>.Success(new UpdateCoffeeShopReviewResponse(review.Id));
     }
 }

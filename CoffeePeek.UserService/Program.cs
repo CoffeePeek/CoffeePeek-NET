@@ -17,12 +17,18 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region PORT
+
 // Configure PORT from environment variable
 var port = Environment.GetEnvironmentVariable("PORT");
 if (!string.IsNullOrEmpty(port) && int.TryParse(port, out var portNumber))
 {
     builder.WebHost.UseUrls($"http://*:{portNumber}");
 }
+
+#endregion
+
+#region ALLOWED_HOSTS
 
 // Configure AllowedHosts from environment variable
 var allowedHosts = Environment.GetEnvironmentVariable("ALLOWED_HOSTS");
@@ -31,30 +37,21 @@ if (!string.IsNullOrEmpty(allowedHosts))
     builder.Configuration["AllowedHosts"] = allowedHosts;
 }
 
-// Configure CORS from environment variable
-var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS");
-if (!string.IsNullOrEmpty(allowedOrigins))
-{
-    var origins = allowedOrigins.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-    builder.Services.AddCors(options =>
-    {
-        options.AddDefaultPolicy(policy =>
-        {
-            policy.WithOrigins(origins)
-                  .AllowAnyMethod()
-                  .AllowAnyHeader()
-                  .AllowCredentials();
-        });
-    });
-}
+#endregion
 
+
+#region Endpoints
+
+builder.Services.AddAuthorization();
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
+
+#endregion
 
 // Swagger
 builder.Services.AddSwagger("Coffee Peek UserService", "v1");
 
 var rabbitMqOptions = builder.Services.AddValidateOptions<RabbitMqOptions>();
-// Переопределяем опции если они получены из Railway переменных окружения
 var railwayRabbitMqOptions = RabbitMqConnectionHelper.GetRabbitMqOptions();
 if (railwayRabbitMqOptions != null)
 {
@@ -88,7 +85,6 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Progr
 
 // JWT Authentication
 var authOptions = builder.Services.AddValidateOptions<JWTOptions>();
-builder.Services.AddAuthorization();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -129,12 +125,28 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+// Configure CORS from environment variable
+var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS");
+if (!string.IsNullOrEmpty(allowedOrigins))
+{
+    var origins = allowedOrigins.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    builder.Services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(policy =>
+        {
+            policy.WithOrigins(origins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        });
+    });
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandling();
 
-// Use CORS if configured
 if (!string.IsNullOrEmpty(allowedOrigins))
 {
     app.UseCors();
@@ -144,8 +156,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseSwaggerDocumentation();
-
-app.UseHttpsRedirection();
 
 app.MapControllers();
 

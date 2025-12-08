@@ -19,13 +19,13 @@ public class RefreshTokenHandler(IJWTTokenService jwtTokenService) : IRequestHan
         }
         catch (UnauthorizedAccessException e)
         {
-            return Response.ErrorResponse<Response<GetRefreshTokenResponse>>("Invalid refresh token", e);
+            return Response<GetRefreshTokenResponse>.Error("Invalid refresh token");
         }
         catch (Exception e)
         {
-            return Response.ErrorResponse<Response<GetRefreshTokenResponse>>("Error occurred", e);
+            return Response<GetRefreshTokenResponse>.Error("Error occurred");
         }
 
-        return Response.SuccessResponse<Response<GetRefreshTokenResponse>>(response);
+        return Response<GetRefreshTokenResponse>.Success(response);
     }
 }

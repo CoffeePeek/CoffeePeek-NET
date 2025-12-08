@@ -17,7 +17,7 @@ public class AddCoffeeShopReviewRequestHandler(ShopsDbContext dbContext,
         var validationResult = validationStrategy.Validate(request);
         if (!validationResult.IsValid)
         {
-            return Response.ErrorResponse<Response<AddCoffeeShopReviewResponse>>(validationResult.ErrorMessage);
+            return Response<AddCoffeeShopReviewResponse>.Error(validationResult.ErrorMessage);
         }
 
         var review = new Entities.Review
@@ -34,6 +34,6 @@ public class AddCoffeeShopReviewRequestHandler(ShopsDbContext dbContext,
         dbContext.Reviews.Add(review);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return Response.SuccessResponse<Response<AddCoffeeShopReviewResponse>>(new AddCoffeeShopReviewResponse(review.Id));
+        return Response<AddCoffeeShopReviewResponse>.Success(new AddCoffeeShopReviewResponse(review.Id));
     }
 }

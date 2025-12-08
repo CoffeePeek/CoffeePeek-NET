@@ -42,6 +42,9 @@ public class RegisterUserHandler(
         };
 
         await credentialsRepo.AddAsync(userAuth, ct);
+            
+        await unitOfWork.SaveChangesAsync(ct);
+        
         await userManager.AddToRoleAsync(userAuth, RoleConsts.User, ct);
 
         var userRegisteredEvent = new UserRegisteredEvent(userAuth.Id, request.Email, request.UserName);

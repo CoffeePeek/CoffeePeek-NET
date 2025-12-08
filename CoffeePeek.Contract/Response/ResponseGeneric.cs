@@ -58,16 +58,4 @@ public class Response<TData> : Response
             Errors = errors
         };
     }
-
-    [Obsolete("Use Response<TData>.Success instead")]
-    public static TResponse SuccessResponse<TResponse>(TData data = default, string message = "Operation successful")
-        where TResponse : Response<TData>, new()
-    {
-        return new TResponse
-        {
-            IsSuccess = true,
-            Message = message,
-            Data = data
-        };
-    }
 }

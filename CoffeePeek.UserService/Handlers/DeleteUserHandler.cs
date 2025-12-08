@@ -17,7 +17,7 @@ public class DeleteUserHandler(
 
         if (user == null)
         {
-            return Response.ErrorResponse<Response<bool>>("User not found");
+            return Response<bool>.Error("User not found");
         }
         
         user.IsSoftDelete = true;
@@ -25,7 +25,7 @@ public class DeleteUserHandler(
         await userRepository.UpdateAsync(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Response.SuccessResponse<Response<bool>>(true);
+        return Response<bool>.Success(true);
     }
 }
 

@@ -29,19 +29,19 @@ public class LoginUserHandler(
                 user = await userManager.FindByEmailAsync(request.Email);
                 if (user == null)
                 {
-                    return Response.ErrorResponse<Response<LoginResponse>>("Account does not exist.");
+                    return Response<LoginResponse>.Error("Account does not exist.");
                 }
             }
             catch (Exception e)
             {
-                return Response.ErrorResponse<Response<LoginResponse>>(e.Message);
+                return Response<LoginResponse>.Error(e.Message);
             }
         }
 
         var signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password);
         if (signInResult.Result != SignInResult.Success)
         {
-            return Response.ErrorResponse<Response<LoginResponse>>("Password is incorrect.");
+            return Response<LoginResponse>.Error("Password is incorrect.");
         }
 
         var authResult = await jwtTokenService.GenerateTokensAsync(user);
@@ -49,6 +49,6 @@ public class LoginUserHandler(
         await redisService.SetAsync($"{nameof(UserCredentials)}{user.Id}", user);
 
         var result = new LoginResponse(authResult.AccessToken, authResult.RefreshToken);
-        return Response.SuccessResponse<Response<LoginResponse>>(result);
+        return Response<LoginResponse>.Success(result);
     }
 }

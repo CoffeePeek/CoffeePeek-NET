@@ -2,5 +2,5 @@ namespace CoffeePeek.Contract.Constants;
 
 public static class BusinessConstants
 {
-    public static readonly Guid DefaultUnAuthorizedCityId = Guid.Parse("032bbf21-2511-4ebf-9420-6471f4d669e2");
+    public static readonly Guid DefaultUnAuthorizedCityId = Guid.Parse("39f0b293-ac83-491a-9ef1-8ba060c935d9");
 }

@@ -18,7 +18,7 @@ public class UpdateProfileHandler(
 
         if (user == null)
         {
-            return Response.ErrorResponse<Response<UpdateProfileResponse>>("User not found");
+            return Response<UpdateProfileResponse>.Error("User not found");
         }
 
         if (!string.IsNullOrWhiteSpace(request.UserName))
@@ -34,7 +34,7 @@ public class UpdateProfileHandler(
         await userRepository.UpdateAsync(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Response.SuccessResponse<Response<UpdateProfileResponse>>(new UpdateProfileResponse(), "Profile updated successfully");
+        return Response<UpdateProfileResponse>.Success(new UpdateProfileResponse(), "Profile updated successfully");
     }
 }
 
