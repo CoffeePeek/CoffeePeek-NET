@@ -3,4 +3,5 @@ using MediatR;
 
 namespace CoffeePeek.Contract.Requests.CoffeeShop.Review;
 
-public record GetReviewsByUserIdCommand(Guid UserId) : IRequest<Response.Response<GetReviewsByUserIdResponse>>;
+public record GetReviewsByUserIdCommand(Guid UserId, int PageNumber = 1, int PageSize = 10)
+    : IRequest<Response.Response<GetReviewsByUserIdResponse>>;

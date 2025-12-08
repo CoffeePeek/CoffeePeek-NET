@@ -16,9 +16,21 @@ namespace CoffeePeek.ShopsService.Controllers;
 public class ReviewCoffeeController(IMediator mediator) : Controller
 {
     [HttpGet]
-    public Task<Response<GetAllReviewsResponse>> GetAllReviews()
+    public async Task<Response<GetAllReviewsResponse>> GetAllReviews(
+        [FromHeader(Name = "X-Page-Number")] int pageNumber = 1,
+        [FromHeader(Name = "X-Page-Size")] int pageSize = 10)
     {
-        return mediator.Send(new GetAllReviewsRequest(User.GetUserIdOrThrow()));
+        pageNumber = Math.Max(1, pageNumber);
+        pageSize = pageSize <= 0 ? 10 : pageSize;
+
+        var result = await mediator.Send(new GetAllReviewsRequest(User.GetUserIdOrThrow(), pageNumber, pageSize));
+
+        if (result.IsSuccess && result.Data is not null)
+        {
+            AddPaginationHeaders(result.Data.TotalItems, result.Data.TotalPages, result.Data.CurrentPage, result.Data.PageSize);
+        }
+
+        return result;
     }
 
     [HttpGet("{id:guid}")]
@@ -28,9 +40,30 @@ public class ReviewCoffeeController(IMediator mediator) : Controller
     }
     
     [HttpGet("user/{id:guid}")]
-    public Task<Response<GetReviewsByUserIdResponse>> GetReviewsByUserId(Guid id)
+    public async Task<Response<GetReviewsByUserIdResponse>> GetReviewsByUserId(
+        Guid id,
+        [FromHeader(Name = "X-Page-Number")] int pageNumber = 1,
+        [FromHeader(Name = "X-Page-Size")] int pageSize = 10)
     {
-        return mediator.Send(new GetReviewsByUserIdCommand(id));
+        pageNumber = Math.Max(1, pageNumber);
+        pageSize = pageSize <= 0 ? 10 : pageSize;
+
+        var result = await mediator.Send(new GetReviewsByUserIdCommand(id, pageNumber, pageSize));
+
+        if (result.IsSuccess && result.Data is not null)
+        {
+            AddPaginationHeaders(result.Data.TotalItems, result.Data.TotalPages, result.Data.CurrentPage, result.Data.PageSize);
+        }
+
+        return result;
+    }
+
+    private void AddPaginationHeaders(int totalItems, int totalPages, int currentPage, int pageSize)
+    {
+        Response.Headers.TryAdd("X-Total-Count", totalItems.ToString());
+        Response.Headers.TryAdd("X-Total-Pages", totalPages.ToString());
+        Response.Headers.TryAdd("X-Current-Page", currentPage.ToString());
+        Response.Headers.TryAdd("X-Page-Size", pageSize.ToString());
     }
 
     [HttpPost]
