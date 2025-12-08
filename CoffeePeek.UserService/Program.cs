@@ -112,6 +112,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserRegisteredEventConsumer>();
+    x.AddConsumer<UserLoggedInEventConsumer>();
     
     x.UsingRabbitMq((context, cfg) =>
     {

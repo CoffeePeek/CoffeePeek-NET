@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.Contract.Events;
 using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.UserService.Models;
 using CoffeePeek.UserService.Repositories;
@@ -26,8 +27,7 @@ public class UserRegisteredEventConsumer(
         };
 
         await userRepository.AddAsync(user);
-        await redisService.SetAsync($"{nameof(User)}{user.Id}", user);
-
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
+        await redisService.SetAsync(CacheKey.User.ById(user.Id), user);
     }
 }

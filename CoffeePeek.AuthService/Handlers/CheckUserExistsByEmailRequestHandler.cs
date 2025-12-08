@@ -2,6 +2,7 @@
 using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.Contract.Response;
+using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using MediatR;
 
@@ -12,7 +13,7 @@ public class CheckUserExistsByEmailRequestHandler(IRedisService redisService, IU
 {
     public async Task<Response<bool>> Handle(CheckUserExistsByEmailCommand request, CancellationToken cancellationToken)
     {
-        var cacheKey = $"{nameof(UserCredentials)}{request.Email}";
+        var cacheKey = CacheKey.Auth.CredentialsByEmail(request.Email);
         var userFromRedis = await redisService.GetAsync<UserCredentials>(cacheKey);
 
         if (userFromRedis != null)
@@ -24,7 +25,7 @@ public class CheckUserExistsByEmailRequestHandler(IRedisService redisService, IU
 
         if (user != null)
         {
-            await redisService.SetAsync(cacheKey, user, TimeSpan.FromMinutes(5));
+            await redisService.SetAsync(cacheKey, user);
         }
 
         return user == null
