@@ -168,7 +168,12 @@ if (!string.IsNullOrEmpty(allowedOrigins))
     app.UseCors();
 }
 
-if (app.Environment.IsDevelopment())
+// Check IS_DEBUG environment variable
+var isDebug = Environment.GetEnvironmentVariable("IS_DEBUG");
+var showSwagger = app.Environment.IsDevelopment() || 
+                  (!string.IsNullOrEmpty(isDebug) && isDebug.Equals("true", StringComparison.OrdinalIgnoreCase));
+
+if (showSwagger)
 {
     app.MapOpenApi();
     app.UseSwagger();

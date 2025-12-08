@@ -49,7 +49,14 @@ public class Program
 
         var app = builder.Build();
 
-        if (app.Environment.IsDevelopment())
+        // Check IS_DEBUG environment variable
+        var isDebug = Environment.GetEnvironmentVariable("IS_DEBUG");
+        var showSwagger = app.Environment.IsDevelopment() || 
+                          (!string.IsNullOrEmpty(isDebug) && 
+                           (isDebug.Equals("true", StringComparison.OrdinalIgnoreCase) || 
+                            isDebug.Equals("1", StringComparison.OrdinalIgnoreCase)));
+
+        if (showSwagger)
         {
             app.UseSwagger();
             app.UseSwaggerUI();

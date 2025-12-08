@@ -1,4 +1,6 @@
 using CoffeePeek.Shared.Extensions.Middleware;
+using CoffeePeek.Shared.Extensions.Swagger;
+using Microsoft.OpenApi;
 using Yarp.ReverseProxy.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +31,9 @@ if (!string.IsNullOrEmpty(allowedHosts))
 builder.Services.AddReverseProxy()
     .LoadFromMemory(GetRoutes(), GetClusters());
 
+// Add Swagger
+builder.Services.AddSwagger("CoffeePeek Gateway API", "v1");
+
 // Configure CORS from environment variable
 var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS");
 if (!string.IsNullOrEmpty(allowedOrigins))
@@ -56,12 +61,49 @@ if (!string.IsNullOrEmpty(allowedOrigins))
     app.UseCors();
 }
 
-app.MapReverseProxy();
+// Swagger documentation - check IS_DEBUG environment variable (must be before MapReverseProxy)
+var isDebug = Environment.GetEnvironmentVariable("IS_DEBUG");
+var showSwagger = app.Environment.IsDevelopment() || 
+                  (!string.IsNullOrEmpty(isDebug) && 
+                   (isDebug.Equals("true", StringComparison.OrdinalIgnoreCase) || 
+                    isDebug.Equals("1", StringComparison.OrdinalIgnoreCase)));
+
+// Log Swagger status
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("Swagger enabled: {ShowSwagger}, IsDevelopment: {IsDev}, IS_DEBUG: {IsDebug}", 
+    showSwagger, app.Environment.IsDevelopment(), isDebug ?? "not set");
+
+if (showSwagger)
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        // Gateway's own endpoints
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Gateway API");
+        
+        // Aggregate Swagger from all microservices through Gateway proxy
+        c.SwaggerEndpoint("/swagger/auth/v1/swagger.json", "Auth Service");
+        c.SwaggerEndpoint("/swagger/user/v1/swagger.json", "User Service");
+        c.SwaggerEndpoint("/swagger/shops/v1/swagger.json", "Shops Service");
+        c.SwaggerEndpoint("/swagger/moderation/v1/swagger.json", "Moderation Service");
+        c.SwaggerEndpoint("/swagger/photo/v1/swagger.json", "Photo Service");
+        
+        c.RoutePrefix = "swagger";
+        c.DisplayRequestDuration();
+        c.EnableDeepLinking();
+        c.EnableFilter();
+        c.ShowExtensions();
+        c.EnableValidator();
+        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
+    });
+}
 
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "Gateway", timestamp = DateTime.UtcNow }))
     .WithName("HealthCheck")
     .WithTags("Health");
+
+app.MapReverseProxy();
 
 app.Run();
 
@@ -129,14 +171,100 @@ static RouteConfig[] GetRoutes()
                 }
             }
         },
+        // Swagger proxy routes for each service (must be before web-route)
+        new RouteConfig
+        {
+            RouteId = "auth-swagger-route",
+            ClusterId = "auth-cluster",
+            Match = new RouteMatch
+            {
+                Path = "/swagger/auth/{**catch-all}"
+            },
+            Transforms = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>
+                {
+                    { "PathPattern", "/swagger/{**catch-all}" }
+                }
+            }
+        },
+        new RouteConfig
+        {
+            RouteId = "user-swagger-route",
+            ClusterId = "user-cluster",
+            Match = new RouteMatch
+            {
+                Path = "/swagger/user/{**catch-all}"
+            },
+            Transforms = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>
+                {
+                    { "PathPattern", "/swagger/{**catch-all}" }
+                }
+            }
+        },
+        new RouteConfig
+        {
+            RouteId = "shops-swagger-route",
+            ClusterId = "shops-cluster",
+            Match = new RouteMatch
+            {
+                Path = "/swagger/shops/{**catch-all}"
+            },
+            Transforms = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>
+                {
+                    { "PathPattern", "/swagger/{**catch-all}" }
+                }
+            }
+        },
+        new RouteConfig
+        {
+            RouteId = "moderation-swagger-route",
+            ClusterId = "moderation-cluster",
+            Match = new RouteMatch
+            {
+                Path = "/swagger/moderation/{**catch-all}"
+            },
+            Transforms = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>
+                {
+                    { "PathPattern", "/swagger/{**catch-all}" }
+                }
+            }
+        },
+        new RouteConfig
+        {
+            RouteId = "photo-swagger-route",
+            ClusterId = "photo-cluster",
+            Match = new RouteMatch
+            {
+                Path = "/swagger/photo/{**catch-all}"
+            },
+            Transforms = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>
+                {
+                    { "PathPattern", "/swagger/{**catch-all}" }
+                }
+            }
+        },
+        // Web route - exclude swagger and health endpoints
+        // Note: This route should be last to allow other routes to match first
         new RouteConfig
         {
             RouteId = "web-route",
             ClusterId = "web-cluster",
             Match = new RouteMatch
             {
+                // Match everything except swagger and health
                 Path = "/{**catch-all}"
-            }
+            },
+            // Set lower priority to ensure other routes match first
+            Order = 1000
         }
     ];
 }

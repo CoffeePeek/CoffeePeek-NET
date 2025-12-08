@@ -36,9 +36,15 @@ public static class SwaggerExtensions
     
     extension(WebApplication app)
     {
-        public WebApplication UseSwaggerDocumentation()
+        private static bool IsDebugMode()
         {
-            if (app.Environment.IsDevelopment())
+            var isDebug = Environment.GetEnvironmentVariable("IS_DEBUG");
+            return !string.IsNullOrEmpty(isDebug) && isDebug.Equals("true", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public void UseSwaggerDocumentation()
+        {
+            if (app.Environment.IsDevelopment() || IsDebugMode())
             {
                 app.UseSwagger();
             
@@ -60,13 +66,11 @@ public static class SwaggerExtensions
                     c.EnableValidator();
                 });
             }
-
-            return app;
         }
 
         public WebApplication UseSwaggerDocumentation(string version)
         {
-            if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment() || IsDebugMode())
             {
                 app.UseSwagger(c =>
                 {
