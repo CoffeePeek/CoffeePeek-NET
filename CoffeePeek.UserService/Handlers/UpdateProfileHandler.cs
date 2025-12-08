@@ -35,6 +35,10 @@ public class UpdateProfileHandler(
         }
 
         var oldEmail = user.Email;
+        if (!string.IsNullOrWhiteSpace(request.Email))
+        {
+            user.Email = request.Email.Trim();
+        }
         
         await userRepository.UpdateAsync(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -42,6 +46,7 @@ public class UpdateProfileHandler(
         await ClearUserCacheAsync(request.UserId, oldEmail);
         
         await redisService.SetAsync(CacheKey.User.ById(request.UserId), user);
+        await redisService.SetAsync(CacheKey.User.ByEmail(user.Email), user);
 
         return Response<UpdateProfileResponse>.Success(new UpdateProfileResponse(), "Profile updated successfully");
     }
