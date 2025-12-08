@@ -1,7 +1,5 @@
 using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
-using CoffeePeek.Shared.Extensions.Swagger;
-using Microsoft.OpenApi;
 using Yarp.ReverseProxy.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
