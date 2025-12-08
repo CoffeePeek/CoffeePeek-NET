@@ -71,4 +71,48 @@ public class CoffeeShopController(IMediator mediator) : Controller
     {
         return mediator.Send(new RemoveFromFavoriteCommand(id, userId));
     }
+
+    [HttpGet("search")]
+    [ProducesResponseType(typeof(Response<GetCoffeeShopsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<Response<GetCoffeeShopsResponse>> SearchCoffeeShops(
+        [FromQuery] string? q = null,
+        [FromQuery] Guid? cityId = null,
+        [FromQuery] Guid[]? equipments = null,
+        [FromQuery] Guid[]? beans = null,
+        [FromQuery] decimal? minRating = null,
+        [FromHeader(Name = "X-Page-Number")] int pageNumber = 1,
+        [FromHeader(Name = "X-Page-Size")] int pageSize = 10)
+    {
+        pageNumber = Math.Max(1, pageNumber);
+        pageSize = pageSize <= 0 ? 10 : Math.Min(pageSize, 100);
+
+        var command = new SearchCoffeeShopsCommand(
+            Query: q,
+            CityId: cityId,
+            Equipments: equipments,
+            Beans: beans,
+            MinRating: minRating,
+            PageNumber: pageNumber,
+            PageSize: pageSize);
+
+        var response = await mediator.Send(command);
+
+        if (response.IsSuccess && response.Data != null)
+        {
+            AddPaginationHeaders(response.Data);
+        }
+
+        return response;
+
+        void AddPaginationHeaders(GetCoffeeShopsResponse data)
+        {
+            Response.Headers.TryAdd("X-Total-Count", data.TotalItems.ToString());
+            Response.Headers.TryAdd("X-Total-Pages", data.TotalPages.ToString());
+            Response.Headers.TryAdd("X-Current-Page", data.CurrentPage.ToString());
+            Response.Headers.TryAdd("X-Page-Size", data.PageSize.ToString());
+        }
+    }
 }
