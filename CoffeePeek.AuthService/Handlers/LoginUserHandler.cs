@@ -51,7 +51,7 @@ public class LoginUserHandler(
         await redisService.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
         await redisService.SetAsync(credentialsByEmailKey, user);
         
-        _ = publishEndpoint.Publish(new UserLoggedInEvent(user.Id), cancellationToken);
+        await publishEndpoint.Publish(new UserLoggedInEvent(user.Id), cancellationToken);
 
         var result = new LoginResponse(authResult.AccessToken, authResult.RefreshToken);
         return Contract.Response.Response<LoginResponse>.Success(result);

@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Contract.Events;
+﻿using CoffeePeek.Contract.Dtos.User;
+using CoffeePeek.Contract.Events;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.UserService.Handlers;
@@ -17,7 +18,7 @@ public class UserLoggedInEventConsumer(
     {
         var @event = context.Message;
         
-        var userFromCache = await redisService.GetAsync<User>(CacheKey.User.Profile(@event.UserId));
+        var userFromCache = await redisService.GetAsync<UserDto>(CacheKey.User.Profile(@event.UserId));
 
         if (userFromCache != null)
         {

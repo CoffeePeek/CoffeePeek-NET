@@ -4,7 +4,6 @@ using CoffeePeek.Contract.Response.User;
 using CoffeePeek.Data.Interfaces;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
-using CoffeePeek.UserService.Models;
 using CoffeePeek.UserService.Repositories;
 using MediatR;
 
@@ -18,15 +17,11 @@ public class UpdateProfileHandler(
 {
     public async Task<Response<UpdateProfileResponse>> Handle(UpdateProfileRequest request, CancellationToken cancellationToken)
     {
-        var user = await redisService.GetAsync<User>(CacheKey.User.ById(request.UserId));
+        var user = await userRepository.GetByIdAsync(request.UserId);
+        
         if (user == null)
         {
-            user = await userRepository.GetByIdAsync(request.UserId);
-            
-            if (user == null)
-            {
-                return Response<UpdateProfileResponse>.Error("User not found");
-            }
+            return Response<UpdateProfileResponse>.Error("User not found");
         }
 
         if (!string.IsNullOrWhiteSpace(request.UserName))
@@ -39,7 +34,7 @@ public class UpdateProfileHandler(
             user.About = request.About;
         }
 
-        var oldEmail = user.Email; // Сохраняем старый email для очистки кэша
+        var oldEmail = user.Email;
         
         await userRepository.UpdateAsync(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);

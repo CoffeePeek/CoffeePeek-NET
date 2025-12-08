@@ -8,14 +8,17 @@ namespace CoffeePeek.Shared.Infrastructure.Services;
 public class RedisService(IConnectionMultiplexer redis) : IRedisService
 {
     private readonly IDatabase _db = redis.GetDatabase();
-    private readonly IServer _server = redis.GetServer(redis.GetEndPoints().First());
-    
+
+    private readonly IServer _server = redis.GetServer(redis.GetEndPoints().FirstOrDefault() ??
+                                                       throw new InvalidOperationException(
+                                                           "No Redis endpoints configured"));
+
     public async Task<T?> GetAsync<T>(CacheKey cacheKey)
     {
         try
         {
             string? value = await _db.StringGetAsync(cacheKey.Key);
-            return (string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value)!)!;
+            return string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value);
         }
         catch (RedisConnectionException)
         {
@@ -33,7 +36,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
     {
         try
         {
-            await _db.StringSetAsync(key, JsonSerializer.Serialize(value), new Expiration(expiry ?? TimeSpan.FromDays(1)));
+            await _db.StringSetAsync(key, JsonSerializer.Serialize(value), new Expiration(expiry ?? TimeSpan.FromHours(1)));
         }
         catch (RedisConnectionException)
         {
@@ -44,7 +47,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
             // Другие ошибки Redis, игнорируем
         }
     }
-    
+
     public async Task RemoveAsync(string key)
     {
         try
@@ -77,7 +80,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
             // Другие ошибки Redis, игнорируем
         }
     }
-    
+
     public async Task RemoveAsync(CacheKey cacheKey)
     {
         try
@@ -93,7 +96,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
             // Другие ошибки Redis, игнорируем
         }
     }
-    
+
     public async Task<bool> ExistsAsync(CacheKey cacheKey)
     {
         try
@@ -109,7 +112,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
             return false;
         }
     }
-    
+
     public async Task RemoveByPatternAsync(string pattern)
     {
         try

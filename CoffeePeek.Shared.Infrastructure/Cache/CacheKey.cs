@@ -65,7 +65,7 @@ public record CacheKey(
             Service: "ShopsService");
             
         public static CacheKey Cities() => new(
-            Key: $"{nameof(Shop)}:all",
+            Key: $"{nameof(Cities)}:all",
             DefaultTtl: TimeSpan.FromDays(1),
             Description: "All cities list",
             Service: "ShopsService");

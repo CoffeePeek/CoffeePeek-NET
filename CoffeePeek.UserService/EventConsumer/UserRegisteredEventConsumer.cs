@@ -27,8 +27,7 @@ public class UserRegisteredEventConsumer(
         };
 
         await userRepository.AddAsync(user);
-        await redisService.SetAsync(CacheKey.User.ById(user.Id), user);
-
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
+        await redisService.SetAsync(CacheKey.User.ById(user.Id), user);
     }
 }

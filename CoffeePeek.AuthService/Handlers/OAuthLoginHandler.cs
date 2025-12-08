@@ -78,7 +78,7 @@ public class GoogleLoginHandler(
         await redisService.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
         await redisService.SetAsync(CacheKey.Auth.CredentialsByEmail(user.Email), user);
         
-        _ = publishEndpoint.Publish(new UserLoggedInEvent(user.Id), cancellationToken);
+        await publishEndpoint.Publish(new UserLoggedInEvent(user.Id), cancellationToken);
 
         var response = new GoogleLoginResponse
         {
