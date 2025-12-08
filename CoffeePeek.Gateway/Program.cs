@@ -1,74 +1,39 @@
 using CoffeePeek.Shared.Extensions.Middleware;
-using CoffeePeek.Shared.Extensions.Swagger;
-using Microsoft.OpenApi;
+using CoffeePeek.Shared.Extensions.Modules;
 using Yarp.ReverseProxy.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region PORT
+// Environment configuration
+builder.ConfigureEnvironment();
 
-// Configure PORT from environment variable
-var port = Environment.GetEnvironmentVariable("PORT");
-if (!string.IsNullOrEmpty(port) && int.TryParse(port, out var portNumber))
-{
-    builder.WebHost.UseUrls($"http://*:{portNumber}");
-}
-
-#endregion
-
-#region ALLOWED_HOSTS
-
-// Configure AllowedHosts from environment variable
-var allowedHosts = Environment.GetEnvironmentVariable("ALLOWED_HOSTS");
-if (!string.IsNullOrEmpty(allowedHosts))
-{
-    builder.Configuration["AllowedHosts"] = allowedHosts;
-}
-
-#endregion
-
-// Add YARP
+// YARP Reverse Proxy
 builder.Services.AddReverseProxy()
     .LoadFromMemory(GetRoutes(), GetClusters());
 
-// Add Swagger
-builder.Services.AddSwagger("CoffeePeek Gateway API", "v1");
+// Swagger
+builder.Services.AddSwaggerModule("CoffeePeek Gateway API", "v1");
 
-// Configure CORS from environment variable
-var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS");
-if (!string.IsNullOrEmpty(allowedOrigins))
-{
-    var origins = allowedOrigins.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-    builder.Services.AddCors(options =>
-    {
-        options.AddDefaultPolicy(policy =>
-        {
-            policy.WithOrigins(origins)
-                  .AllowAnyMethod()
-                  .AllowAnyHeader()
-                  .AllowCredentials();
-        });
-    });
-}
+// CORS
+builder.Services.AddCorsModule();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+// Middleware pipeline
 app.UseExceptionHandling();
 
-if (!string.IsNullOrEmpty(allowedOrigins))
+if (CorsModule.IsCorsEnabled())
 {
     app.UseCors();
 }
 
-// Swagger documentation - check IS_DEBUG environment variable (must be before MapReverseProxy)
+// Swagger documentation
 var isDebug = Environment.GetEnvironmentVariable("IS_DEBUG");
 var showSwagger = app.Environment.IsDevelopment() || 
                   (!string.IsNullOrEmpty(isDebug) && 
                    (isDebug.Equals("true", StringComparison.OrdinalIgnoreCase) || 
                     isDebug.Equals("1", StringComparison.OrdinalIgnoreCase)));
 
-// Log Swagger status
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("Swagger enabled: {ShowSwagger}, IsDevelopment: {IsDev}, IS_DEBUG: {IsDebug}", 
     showSwagger, app.Environment.IsDevelopment(), isDebug ?? "not set");
@@ -78,16 +43,12 @@ if (showSwagger)
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        // Gateway's own endpoints
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Gateway API");
-        
-        // Aggregate Swagger from all microservices through Gateway proxy
         c.SwaggerEndpoint("/swagger/auth/v1/swagger.json", "Auth Service");
         c.SwaggerEndpoint("/swagger/user/v1/swagger.json", "User Service");
         c.SwaggerEndpoint("/swagger/shops/v1/swagger.json", "Shops Service");
         c.SwaggerEndpoint("/swagger/moderation/v1/swagger.json", "Moderation Service");
         c.SwaggerEndpoint("/swagger/photo/v1/swagger.json", "Photo Service");
-        
         c.RoutePrefix = "swagger";
         c.DisplayRequestDuration();
         c.EnableDeepLinking();
@@ -253,17 +214,14 @@ static RouteConfig[] GetRoutes()
             }
         },
         // Web route - exclude swagger and health endpoints
-        // Note: This route should be last to allow other routes to match first
         new RouteConfig
         {
             RouteId = "web-route",
             ClusterId = "web-cluster",
             Match = new RouteMatch
             {
-                // Match everything except swagger and health
                 Path = "/{**catch-all}"
             },
-            // Set lower priority to ensure other routes match first
             Order = 1000
         }
     ];
@@ -271,9 +229,6 @@ static RouteConfig[] GetRoutes()
 
 static ClusterConfig[] GetClusters()
 {
-    // Get service hosts and ports from environment variables
-    // In Railway, services are accessible via service discovery
-    // Try Railway service variables first, then fallback to custom env vars, then service names
     var authHost = GetServiceHost("AUTH_SERVICE_HOST", "AUTH_HOST", "coffeepeekauthservice.railway.internal");
     var authPort = GetServicePort("AUTH_SERVICE_PORT", "AUTH_PORT", "80");
     
@@ -345,7 +300,6 @@ static ClusterConfig[] GetClusters()
     };
 }
 
-// Helper methods for service discovery
 static string GetServiceHost(string railwayVar, string customVar, string defaultName)
 {
     return Environment.GetEnvironmentVariable(railwayVar) 
