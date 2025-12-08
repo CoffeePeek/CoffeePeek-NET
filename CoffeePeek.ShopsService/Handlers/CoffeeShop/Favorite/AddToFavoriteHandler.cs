@@ -1,6 +1,8 @@
 ﻿using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.Entities;
 using MediatR;
@@ -11,7 +13,8 @@ public class AddToFavoriteHandler(
     IGenericRepository<FavoriteShop> favoriteShopRepository,
     IGenericRepository<Shop> shopRepository,
     IUnitOfWork unitOfWork,
-    IValidationStrategy<AddToFavoriteCommand> validationStrategy)
+    IValidationStrategy<AddToFavoriteCommand> validationStrategy,
+    IRedisService redisService)
     : IRequestHandler<AddToFavoriteCommand, CreateEntityResponse<Guid>>
 {
     public async Task<CreateEntityResponse<Guid>> Handle(AddToFavoriteCommand request, CancellationToken cancellationToken)
@@ -46,6 +49,8 @@ public class AddToFavoriteHandler(
 
         await favoriteShopRepository.AddAsync(favoriteShop, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        await redisService.RemoveAsync(CacheKey.Shop.Favorites(request.UserId));
 
         return CreateEntityResponse<Guid>.Success(favoriteShop.Id, "Coffee shop added to favorites");
     }

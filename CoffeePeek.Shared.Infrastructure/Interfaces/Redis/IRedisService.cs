@@ -1,10 +1,13 @@
-﻿namespace CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+﻿using CoffeePeek.Shared.Infrastructure.Cache;
+
+namespace CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 
 public interface IRedisService
 {
-    Task<T?> GetAsync<T>(string key);
-    Task<T?> GetAsyncById<T>(string id);
-    Task<(bool success, T value)> TryGetAsync<T>(string key);
-    Task SetAsync<T>(string key, T value, TimeSpan? expiry = null);
-    Task RemoveAsync(string key);
+    Task<T?> GetAsync<T>(CacheKey cacheKey);
+    Task SetAsync<T>(CacheKey cacheKey, T value, TimeSpan? customTtl = null);
+    Task RemoveAsync(CacheKey cacheKey);
+    Task<bool> ExistsAsync(CacheKey cacheKey);
+    
+    Task RemoveByPatternAsync(string pattern);
 }
