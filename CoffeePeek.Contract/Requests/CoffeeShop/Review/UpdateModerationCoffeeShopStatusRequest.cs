@@ -1,13 +1,13 @@
 using System.Text.Json.Serialization;
-using CoffeePeek.Domain.Enums.Shop;
+using CoffeePeek.Contract.Enums;
 using MediatR;
 
 namespace CoffeePeek.Contract.Requests.CoffeeShop.Review;
 
-public class UpdateModerationCoffeeShopStatusRequest(int id, ModerationStatus moderationStatus, int userId) 
+public class UpdateModerationCoffeeShopStatusRequest(int id, ModerationStatus moderationStatus, Guid userId) 
     : IRequest<Response.Response>
 {
-    public int UserId { get; set; } = userId;
+    public Guid UserId { get; set; } = userId;
     public int Id { get; set; } = id;
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ModerationStatus ModerationStatus { get; set; } = moderationStatus;

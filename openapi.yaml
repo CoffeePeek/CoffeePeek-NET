@@ -1,0 +1,1419 @@
+openapi: 3.0.3
+info:
+  title: CoffeePeek API
+  description: API для платформы CoffeePeek - поиска и оценки кофеен
+  version: 1.0.0
+  contact:
+    name: CoffeePeek Team
+
+servers:
+  - url: https://api.coffeepeek.com
+    description: Production server
+  - url: http://localhost:80
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: Аутентификация и авторизация
+  - name: User
+    description: Управление пользователями
+  - name: CoffeeShop
+    description: Управление кофейнями
+  - name: Review
+    description: Отзывы о кофейнях
+  - name: Moderation
+    description: Модерация кофеен
+  - name: Internal
+    description: Внутренние API
+
+paths:
+  # ==================== Auth Endpoints ====================
+  /api/auth/check-exists:
+    get:
+      tags:
+        - Auth
+      summary: Проверка существования пользователя по email
+      operationId: checkUserExists
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+          description: Email пользователя для проверки
+      responses:
+        '200':
+          description: Результат проверки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Вход в систему
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Регистрация нового пользователя
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Пользователь успешно зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEntityResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Пользователь с таким email уже существует
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/refresh:
+    get:
+      tags:
+        - Auth
+      summary: Обновление токена доступа
+      operationId: refreshToken
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: refreshToken
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Refresh token
+      responses:
+        '200':
+          description: Токены успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshTokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/google/login:
+    post:
+      tags:
+        - Auth
+      summary: Вход через Google OAuth
+      operationId: googleLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleLoginRequest'
+      responses:
+        '200':
+          description: Успешный вход через Google
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleLoginResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Выход из системы
+      operationId: logout
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Успешный выход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ==================== User Endpoints ====================
+  /api/user:
+    get:
+      tags:
+        - User
+      summary: Получить профиль текущего пользователя
+      operationId: getProfile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Профиль пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - User
+      summary: Обновить профиль пользователя
+      operationId: updateProfile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Профиль успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateProfileResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/user/Users:
+    get:
+      tags:
+        - User
+      summary: Получить всех пользователей
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersListResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/user/{id}:
+    delete:
+      tags:
+        - User
+      summary: Удалить пользователя
+      operationId: deleteUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID пользователя
+      responses:
+        '200':
+          description: Пользователь успешно удален
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ==================== CoffeeShop Endpoints ====================
+  /api/coffeeshop:
+    get:
+      tags:
+        - CoffeeShop
+      summary: Получить список кофеен с пагинацией
+      operationId: getCoffeeShops
+      parameters:
+        - name: cityId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: ID города для фильтрации
+        - name: X-Page-Number
+          in: header
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Номер страницы
+        - name: X-Page-Size
+          in: header
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Размер страницы
+      responses:
+        '200':
+          description: Список кофеен
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+              description: Общее количество элементов
+            X-Total-Pages:
+              schema:
+                type: integer
+              description: Общее количество страниц
+            X-Current-Page:
+              schema:
+                type: integer
+              description: Текущая страница
+            X-Page-Size:
+              schema:
+                type: integer
+              description: Размер страницы
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCoffeeShopsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/coffeeshop/{id}:
+    get:
+      tags:
+        - CoffeeShop
+      summary: Получить детальную информацию о кофейне
+      operationId: getCoffeeShop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID кофейни
+      responses:
+        '200':
+          description: Детальная информация о кофейне
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCoffeeShopResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /favorite{id}:
+    post:
+      tags:
+        - CoffeeShop
+      summary: Добавить кофейню в избранное
+      operationId: addToFavorite
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID кофейни
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Кофейня добавлена в избранное
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEntityResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+    delete:
+      tags:
+        - CoffeeShop
+      summary: Удалить кофейню из избранного
+      operationId: removeFromFavorite
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID кофейни
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+      responses:
+        '204':
+          description: Кофейня удалена из избранного
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  # ==================== Review Endpoints ====================
+  /api/reviewcoffee:
+    get:
+      tags:
+        - Review
+      summary: Получить все отзывы текущего пользователя
+      operationId: getAllReviews
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Список отзывов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllReviewsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Review
+      summary: Создать новый отзыв о кофейне
+      operationId: addCoffeeShopReview
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCoffeeShopReviewRequest'
+      responses:
+        '200':
+          description: Отзыв успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddCoffeeShopReviewResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Review
+      summary: Обновить отзыв о кофейне
+      operationId: updateCoffeeShopReview
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCoffeeShopReviewRequest'
+      responses:
+        '200':
+          description: Отзыв успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCoffeeShopReviewResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/reviewcoffee/{id}:
+    get:
+      tags:
+        - Review
+      summary: Получить отзыв по ID
+      operationId: getReviewById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID отзыва
+      responses:
+        '200':
+          description: Отзыв найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetReviewByIdResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/reviewcoffee/user/{id}:
+    get:
+      tags:
+        - Review
+      summary: Получить все отзывы пользователя
+      operationId: getReviewsByUserId
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID пользователя
+      responses:
+        '200':
+          description: Список отзывов пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetReviewsByUserIdResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ==================== Moderation Endpoints ====================
+  /api/moderation:
+    get:
+      tags:
+        - Moderation
+      summary: Получить все кофейни на модерации для текущего пользователя
+      operationId: getCoffeeShopsInModerationByUserId
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Список кофеен на модерации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCoffeeShopsInModerationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Moderation
+      summary: Отправить кофейню на модерацию
+      operationId: sendCoffeeShopToModeration
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendCoffeeShopToModerationRequest'
+      responses:
+        '200':
+          description: Кофейня отправлена на модерацию
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendCoffeeShopToModerationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Moderation
+      summary: Обновить кофейню на модерации
+      operationId: updateModerationCoffeeShop
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateModerationCoffeeShopRequest'
+      responses:
+        '200':
+          description: Кофейня на модерации обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateModerationCoffeeShopResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/moderation/all:
+    get:
+      tags:
+        - Moderation
+      summary: Получить все кофейни на модерации (только для администраторов)
+      operationId: getAllModerationShops
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Список всех кофеен на модерации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCoffeeShopsInModerationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Доступ запрещен (требуются права администратора)
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/moderation/status:
+    put:
+      tags:
+        - Moderation
+      summary: Обновить статус модерации кофейни (только для администраторов)
+      operationId: updateModerationCoffeeShopStatus
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID кофейни на модерации
+        - name: status
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/ModerationStatus'
+          description: Новый статус модерации
+      responses:
+        '200':
+          description: Статус модерации обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Доступ запрещен (требуются права администратора)
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ==================== Internal Endpoints ====================
+  /api/internal/cities:
+    get:
+      tags:
+        - Internal
+      summary: Получить список всех городов
+      operationId: getCities
+      responses:
+        '200':
+          description: Список городов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCitiesResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT токен доступа
+
+  schemas:
+    # Base Response Models
+    BaseResponse:
+      type: object
+      properties:
+        isSuccess:
+          type: boolean
+        message:
+          type: string
+        errorCode:
+          type: string
+          nullable: true
+        traceId:
+          type: string
+          nullable: true
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          nullable: true
+
+    BooleanResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: boolean
+
+    # Auth Schemas
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    RegisterRequest:
+      type: object
+      required:
+        - userName
+        - email
+        - password
+      properties:
+        userName:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 6
+
+    LoginResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                refreshToken:
+                  type: string
+
+    RefreshTokenResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                refreshToken:
+                  type: string
+
+    GoogleLoginRequest:
+      type: object
+      required:
+        - idToken
+      properties:
+        idToken:
+          type: string
+          description: Google ID Token
+
+    GoogleLoginResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                refreshToken:
+                  type: string
+                user:
+                  $ref: '#/components/schemas/GoogleLoginUserDto'
+
+    GoogleLoginUserDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        picture:
+          type: string
+          format: uri
+
+    # User Schemas
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: true
+        userName:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        token:
+          type: string
+          nullable: true
+        roles:
+          type: array
+          items:
+            type: string
+          nullable: true
+        about:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        photoUrl:
+          type: string
+          nullable: true
+        reviewCount:
+          type: integer
+
+    UserResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/UserDto'
+
+    UsersListResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserDto'
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        userName:
+          type: string
+        about:
+          type: string
+          nullable: true
+
+    UpdateProfileResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+
+    # CoffeeShop Schemas
+    ShortShopDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        imageUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+        rating:
+          type: number
+          format: decimal
+        reviewCount:
+          type: integer
+        location:
+          $ref: '#/components/schemas/LocationDto'
+        isOpen:
+          type: boolean
+        equipments:
+          type: array
+          items:
+            $ref: '#/components/schemas/EquipmentDto'
+          nullable: true
+        priceRange:
+          $ref: '#/components/schemas/PriceRange'
+
+    ShopDto:
+      allOf:
+        - $ref: '#/components/schemas/ShortShopDto'
+        - type: object
+          properties:
+            beans:
+              type: array
+              items:
+                $ref: '#/components/schemas/BeansDto'
+              nullable: true
+            roasters:
+              type: array
+              items:
+                $ref: '#/components/schemas/RoasterDto'
+              nullable: true
+            description:
+              type: string
+              nullable: true
+            shopContact:
+              $ref: '#/components/schemas/ShopContactDto'
+              nullable: true
+            schedules:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScheduleDto'
+              nullable: true
+
+    LocationDto:
+      type: object
+      properties:
+        address:
+          type: string
+        latitude:
+          type: number
+          format: decimal
+          nullable: true
+        longitude:
+          type: number
+          format: decimal
+          nullable: true
+
+    EquipmentDto:
+      type: object
+      properties:
+        name:
+          type: string
+
+    BeansDto:
+      type: object
+      properties:
+        name:
+          type: string
+
+    RoasterDto:
+      type: object
+      properties:
+        name:
+          type: string
+
+    ShopContactDto:
+      type: object
+      properties:
+        phone:
+          type: string
+          nullable: true
+        website:
+          type: string
+          format: uri
+          nullable: true
+        instagram:
+          type: string
+          nullable: true
+
+    ScheduleDto:
+      type: object
+      properties:
+        dayOfWeek:
+          type: integer
+          minimum: 0
+          maximum: 6
+        intervals:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShopScheduleIntervalDto'
+
+    ShopScheduleIntervalDto:
+      type: object
+      properties:
+        startTime:
+          type: string
+          format: time
+        endTime:
+          type: string
+          format: time
+
+    PriceRange:
+      type: integer
+      enum: [1, 2, 3, 4]
+      description: |
+        1 - Cheap ($)
+        2 - Moderate ($$)
+        3 - Expensive ($$$)
+        4 - Luxury ($$$$)
+
+    GetCoffeeShopsResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                content:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ShortShopDto'
+
+    GetCoffeeShopResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                shop:
+                  $ref: '#/components/schemas/ShopDto'
+
+    CreateEntityResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: string
+              format: uuid
+              nullable: true
+
+    # Review Schemas
+    CoffeeShopReviewDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        shopId:
+          type: integer
+        userId:
+          type: integer
+        header:
+          type: string
+        comment:
+          type: string
+        ratingCoffee:
+          type: number
+          format: decimal
+        ratingService:
+          type: number
+          format: decimal
+        ratingPlace:
+          type: number
+          format: decimal
+        createdAt:
+          type: string
+          format: date-time
+        shopName:
+          type: string
+
+    AddCoffeeShopReviewRequest:
+      type: object
+      required:
+        - shopId
+        - header
+        - comment
+        - ratingCoffee
+        - ratingService
+        - ratingPlace
+      properties:
+        shopId:
+          type: string
+          format: uuid
+        header:
+          type: string
+        comment:
+          type: string
+        ratingCoffee:
+          type: integer
+          minimum: 1
+          maximum: 5
+        ratingService:
+          type: integer
+          minimum: 1
+          maximum: 5
+        ratingPlace:
+          type: integer
+          minimum: 1
+          maximum: 5
+
+    UpdateCoffeeShopReviewRequest:
+      type: object
+      required:
+        - reviewId
+      properties:
+        reviewId:
+          type: string
+          format: uuid
+        header:
+          type: string
+        comment:
+          type: string
+        ratingCoffee:
+          type: integer
+          minimum: 1
+          maximum: 5
+        ratingService:
+          type: integer
+          minimum: 1
+          maximum: 5
+        ratingPlace:
+          type: integer
+          minimum: 1
+          maximum: 5
+
+    AddCoffeeShopReviewResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                reviewId:
+                  type: string
+                  format: uuid
+
+    UpdateCoffeeShopReviewResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                reviewId:
+                  type: string
+                  format: uuid
+
+    GetAllReviewsResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                reviews:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CoffeeShopReviewDto'
+
+    GetReviewByIdResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                review:
+                  $ref: '#/components/schemas/CoffeeShopReviewDto'
+
+    GetReviewsByUserIdResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                reviewDtos:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CoffeeShopReviewDto'
+
+    # Moderation Schemas
+    ModerationStatus:
+      type: string
+      enum: [Pending, Approved]
+
+    ModerationShopDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        notValidatedAddress:
+          type: string
+        address:
+          type: integer
+          nullable: true
+        moderationStatus:
+          $ref: '#/components/schemas/ModerationStatus'
+        status:
+          type: string
+        shopContact:
+          $ref: '#/components/schemas/ShopContactDto'
+          nullable: true
+        shopPhotos:
+          type: array
+          items:
+            type: string
+            format: uri
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleDto'
+
+    SendCoffeeShopToModerationRequest:
+      type: object
+      required:
+        - name
+        - notValidatedAddress
+      properties:
+        name:
+          type: string
+        notValidatedAddress:
+          type: string
+        shopContact:
+          $ref: '#/components/schemas/ShopContactDto'
+        shopPhotos:
+          type: array
+          items:
+            type: string
+            format: uri
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleDto'
+
+    UpdateModerationCoffeeShopRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        notValidatedAddress:
+          type: string
+        shopContact:
+          $ref: '#/components/schemas/ShopContactDto'
+        shopPhotos:
+          type: array
+          items:
+            type: string
+            format: uri
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleDto'
+
+    SendCoffeeShopToModerationResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+
+    UpdateModerationCoffeeShopResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+
+    GetCoffeeShopsInModerationResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                moderationShop:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ModerationShopDto'
+
+    # Internal Schemas
+    CityDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    GetCitiesResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                cities:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CityDto'
+
+  responses:
+    BadRequest:
+      description: Неверный запрос
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+
+    Unauthorized:
+      description: Не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+
+    InternalServerError:
+      description: Внутренняя ошибка сервера
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'
+
+    ServiceUnavailable:
+      description: Сервис недоступен
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseResponse'

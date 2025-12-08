@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -13,14 +12,14 @@ public static class ConfigurationExtensions
             .ValidateDataAnnotations();
         var options = service.BuildServiceProvider().GetRequiredService<IOptions<TModel>>().Value;
         service.AddSingleton(options);
-        
+    
         return options; 
     }
-    
+
     public static TModel GetOptions<TModel>(this IServiceCollection service) where TModel : new()
     {
         var options = service.BuildServiceProvider().GetService<TModel>();
-        
+    
         return options ?? new TModel();
     }
 }

@@ -6,7 +6,7 @@ namespace CoffeePeek.Contract.Response.CoffeeShop;
 public class GetCoffeeShopsResponse
 {
     [JsonPropertyName("content")]
-    public CoffeeShopDto[] CoffeeShopDtos { get; set; }
+    public ShortShopDto[] CoffeeShops { get; set; }
 
     [JsonIgnore]
     public int CurrentPage { get; set; }

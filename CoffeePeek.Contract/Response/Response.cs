@@ -2,78 +2,96 @@ namespace CoffeePeek.Contract.Response;
 
 public class Response
 {
-    public bool Success { get; set; }
+    public bool IsSuccess { get; set; }
     
-    public string Message { get; set; }
+    public string Message { get; init; }
     
     public object Data { get; set; }
+    
+    public string ErrorCode { get; set; }
+    
+    public string TraceId { get; set; }
+    
+    public Dictionary<string, string[]> Errors { get; set; }
 
     public Response() { }
 
     public Response(bool success, string message, object data)
     {
-        Success = success;
+        IsSuccess = success;
         Message = message;
         Data = data;
     }
     
-    public static T SuccessResponse<T>(object data = null, string message = "Operation successful")
-        where T : Response, new()
+    /// <summary>
+    /// Creates a successful response with data.
+    /// </summary>
+    public static Response Success(object data = null, string message = null)
     {
-        return new T
+        return new Response
         {
-            Success = true,
-            Message = message,
-            Data = data
-        };
-    }
-
-    public static T ErrorResponse<T>(string message, object data = default)
-        where T : Response, new()
-    {
-        return new T
-        {
-            Success = false,
-            Message = message,
-            Data = data
-        };
-    }
-}
-
-public class Response<TData> : Response
-{
-    public new TData Data
-    {
-        get => (TData)base.Data;
-        set => base.Data = value;
-    }
-
-    public Response() { }
-
-    public Response(bool success, string message, TData data)
-        : base(success, message, data)
-    {
-    }
-
-    public static TResponse SuccessResponse<TResponse>(TData data = default, string message = "Operation successful")
-        where TResponse : Response<TData>, new()
-    {
-        return new TResponse
-        {
-            Success = true,
-            Message = message,
-            Data = data
+            IsSuccess = true,
+            Message = message ?? "Operation successful",
+            Data = null
         };
     }
     
-    public static TResponse ErrorResponse<TResponse>(string message, TData data = default)
-        where TResponse : Response<TData>, new()
+    /// <summary>
+    /// Creates a successful response with data.
+    /// </summary>
+    public static Response<T> Success<T>(T data, string message = null)
     {
-        return new TResponse
+        return new Response<T>
         {
-            Success = false,
-            Message = message,
+            IsSuccess = true,
+            Message = message ?? "Operation successful",
             Data = data
+        };
+    }
+
+    /// <summary>
+    /// Creates an error response with message and optional validation errors.
+    /// </summary>
+    public static Response Error(string message, Dictionary<string, string[]> errors = null, string errorCode = null)
+    {
+        return new Response
+        {
+            IsSuccess = false,
+            Message = message,
+            Data = null,
+            Errors = errors,
+            ErrorCode = errorCode
+        };
+    }
+    
+    /// <summary>
+    /// Creates an error response with message and optional validation errors.
+    /// </summary>
+    public static Response<T> Error<T>(string message, Dictionary<string, string[]> errors = null, string errorCode = null)
+    {
+        return new Response<T>
+        {
+            IsSuccess = false,
+            Message = message,
+            Data = default,
+            Errors = errors,
+            ErrorCode = errorCode
+        };
+    }
+
+    /// <summary>
+    /// Creates a response from an exception.
+    /// </summary>
+    public static Response<T> FromException<T>(Exception ex, string traceId = null, string errorCode = null, Dictionary<string, string[]> errors = null)
+    {
+        return new Response<T>
+        {
+            IsSuccess = false,
+            Message = ex.Message,
+            TraceId = traceId,
+            Data = default,
+            ErrorCode = errorCode,
+            Errors = errors
         };
     }
 }
