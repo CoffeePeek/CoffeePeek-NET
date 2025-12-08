@@ -10,7 +10,7 @@ public static class CacheModule
     public static IServiceCollection AddCacheModule(this IServiceCollection services)
     {
         services.RedisConfigurationOptions();
-        services.AddScoped<IRedisService, RedisService>();
+        services.AddSingleton<IRedisService, RedisService>();
         
         return services;
     }

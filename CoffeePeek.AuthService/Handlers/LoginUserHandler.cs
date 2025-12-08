@@ -16,7 +16,8 @@ public class LoginUserHandler(
     IUserManager userManager,
     IJWTTokenService jwtTokenService,
     ISignInManager signInManager,
-    IPublishEndpoint publishEndpoint)
+    IPublishEndpoint publishEndpoint,
+    ILogger logger)
     : IRequestHandler<LoginUserCommand, Contract.Response.Response<LoginResponse>>
 {
     public async Task<Contract.Response.Response<LoginResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -49,9 +50,19 @@ public class LoginUserHandler(
         var authResult = await jwtTokenService.GenerateTokensAsync(user);
 
         await redisService.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
-        await redisService.SetAsync(credentialsByEmailKey, user);
+        await redisService.SetAsync(credentialsByEmailKey, user, TimeSpan.FromMinutes(5));
         
-        await publishEndpoint.Publish(new UserLoggedInEvent(user.Id), cancellationToken);
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await publishEndpoint.Publish(new UserLoggedInEvent(user.Id), cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to publish UserLoggedInEvent");
+            }
+        }, cancellationToken);
 
         var result = new LoginResponse(authResult.AccessToken, authResult.RefreshToken);
         return Contract.Response.Response<LoginResponse>.Success(result);

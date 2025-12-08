@@ -15,5 +15,5 @@ public record UpdateProfileRequest : IRequest<Response<UpdateProfileResponse>>
     public string About { get; set; }
     
     [EmailAddress(ErrorMessage = "Email must be a valid email address")]
-    public string? Email { get; set; }
+    public string Email { get; set; }
 }
