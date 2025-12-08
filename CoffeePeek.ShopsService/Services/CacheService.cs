@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.Contract.Dtos.Internal;
 using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.ShopsService.Entities;
 using CoffeePeek.ShopsService.Services.Interfaces;
@@ -9,21 +10,21 @@ namespace CoffeePeek.ShopsService.Services;
 
 public class CacheService(IRedisService redisService, IGenericRepository<City> cityRepository, IMapper mapper) : ICacheService
 {
-    private static readonly TimeSpan LongTimeout = TimeSpan.FromDays(5);
-    
     public async Task<CityDto[]> GetCities()
     {
-        const string key = $"{nameof(CityDto)}s";
-
-        var result = await redisService.TryGetAsync<CityDto[]>(key);
+        var cacheKey = CacheKey.Shop.Cities();
+        var cachedCities = await redisService.GetAsync<CityDto[]>(cacheKey);
         
-        if (!result.success)
+        if (cachedCities != null)
         {
-            var cities = await cityRepository.GetAllAsNoTrackingAsync();
-            result.value = mapper.Map<CityDto[]>(cities);
-            await redisService.SetAsync(key, result.value, LongTimeout);
+            return cachedCities;
         }
+        
+        var cities = await cityRepository.GetAllAsNoTrackingAsync();
+        var citiesDto = mapper.Map<CityDto[]>(cities);
+        
+        await redisService.SetAsync(cacheKey, citiesDto);
 
-        return result.value;
+        return citiesDto;
     }
 }

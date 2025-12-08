@@ -1,6 +1,8 @@
 ﻿using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.Entities;
 using MediatR;
@@ -10,7 +12,8 @@ namespace CoffeePeek.ShopsService.Handlers.CoffeeShop;
 public class RemoveFromFavoriteHandler(
     IGenericRepository<FavoriteShop> favoriteShopRepository,
     IUnitOfWork unitOfWork,
-    IValidationStrategy<RemoveFromFavoriteCommand> validationStrategy)
+    IValidationStrategy<RemoveFromFavoriteCommand> validationStrategy,
+    IRedisService redisService)
     : IRequestHandler<RemoveFromFavoriteCommand, UpdateEntityResponse<Guid>>
 {
     public async Task<UpdateEntityResponse<Guid>> Handle(RemoveFromFavoriteCommand request, CancellationToken cancellationToken)
@@ -34,6 +37,8 @@ public class RemoveFromFavoriteHandler(
 
         favoriteShopRepository.Remove(favoriteShop);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        await redisService.RemoveAsync(CacheKey.Shop.Favorites(request.UserId));
 
         return UpdateEntityResponse<Guid>.Success(shopId, "Coffee shop removed from favorites");
     }

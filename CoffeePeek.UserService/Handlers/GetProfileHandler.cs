@@ -1,25 +1,35 @@
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response;
+using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.UserService.Models;
 using CoffeePeek.UserService.Repositories;
 using MediatR;
 
 namespace CoffeePeek.UserService.Handlers;
 
-public class GetProfileHandler(IUserRepository userRepository) 
+public class GetProfileHandler(IUserRepository userRepository, IRedisService redisService) 
     : IRequestHandler<GetProfileRequest, Response<UserDto>>
 {
     public async Task<Response<UserDto>> Handle(GetProfileRequest request, CancellationToken cancellationToken)
     {
+        var cacheKey = CacheKey.User.Profile(request.UserId);
+        var cachedUser = await redisService.GetAsync<UserDto>(cacheKey);
+        if (cachedUser != null)
+        {
+            return Response<UserDto>.Success(cachedUser);
+        }
+        
         var user = await userRepository.GetByIdAsync(request.UserId);
-
         if (user == null)
         {
             return Response<UserDto>.Error("User not found.");
         }
 
         var result = MapToDto(user);
+        
+        await redisService.SetAsync(cacheKey, result);
         
         return Response<UserDto>.Success(result);
     }
@@ -31,13 +41,8 @@ public class GetProfileHandler(IUserRepository userRepository)
             Id = user.Id,
             UserName = user.Username,
             Email = user.Email,
-            Password = string.Empty, // Password не хранится в UserService
-            Token = string.Empty, // Token генерируется в AuthService
-            Roles = null, // Roles хранятся в AuthService
             About = user.About ?? string.Empty,
-            CreatedAt = DateTime.UtcNow, // TODO: добавить CreatedAt в User модель
             PhotoUrl = user.AvatarUrl ?? string.Empty,
-            ReviewCount = 0 // Reviews хранятся в другом сервисе
         };
     }
 }
