@@ -2,15 +2,15 @@
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
-using CoffeePeek.UserService.Handlers;
-using CoffeePeek.UserService.Models;
 using CoffeePeek.UserService.Repositories;
+using MapsterMapper;
 using MassTransit;
 
 namespace CoffeePeek.UserService.EventConsumer;
 
 public class UserLoggedInEventConsumer(
     IUserRepository userRepository,
+    IMapper mapper,
     IRedisService redisService) 
     : IConsumer<UserLoggedInEvent>
 {
@@ -28,7 +28,7 @@ public class UserLoggedInEventConsumer(
         var user = await userRepository.GetByIdAsync(@event.UserId);
         if (user == null) return;
         
-        var userDto = GetProfileHandler.MapToDto(user);
+        var userDto = mapper.Map<UserDto>(user);
         
         await redisService.SetAsync(CacheKey.User.Profile(@event.UserId), userDto);
     }

@@ -1,0 +1,12 @@
+namespace CoffeePeek.Contract.Dtos.CoffeeShop;
+
+public class CheckInDto
+{
+    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
+    public Guid ShopId { get; set; }
+    public string? Note { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public Guid? ReviewId { get; set; }
+    public string ShopName { get; set; } = string.Empty;
+}

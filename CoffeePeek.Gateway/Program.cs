@@ -64,6 +64,7 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "Gate
     .WithName("HealthCheck")
     .WithTags("Health");
 
+// Map reverse proxy routes
 app.MapReverseProxy();
 
 app.Run();
@@ -105,6 +106,15 @@ static RouteConfig[] GetRoutes()
                 {
                     { "PathPattern", "/api/CoffeeShop/{**catch-all}" }
                 }
+            }
+        },
+        new RouteConfig
+        {
+            RouteId = "checkin-route",
+            ClusterId = "shops-cluster",
+            Match = new RouteMatch
+            {
+                Path = "/api/checkin/{**catch-all}"
             }
         },
         new RouteConfig

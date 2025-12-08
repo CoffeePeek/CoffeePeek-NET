@@ -1,15 +1,21 @@
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response;
+using CoffeePeek.Data.Interfaces;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.UserService.Models;
-using CoffeePeek.UserService.Repositories;
+using Mapster;
+using MapsterMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.UserService.Handlers;
 
-public class GetProfileHandler(IUserRepository userRepository, IRedisService redisService) 
+public class GetProfileHandler(
+    IGenericRepository<User> userRepository, 
+    IRedisService redisService,
+    IMapper mapper) 
     : IRequestHandler<GetProfileRequest, Response<UserDto>>
 {
     public async Task<Response<UserDto>> Handle(GetProfileRequest request, CancellationToken cancellationToken)
@@ -20,30 +26,20 @@ public class GetProfileHandler(IUserRepository userRepository, IRedisService red
         {
             return Response<UserDto>.Success(cachedUser);
         }
+
+        var userDto = await userRepository
+            .QueryAsNoTracking()
+            .ProjectToType<UserDto>(mapper.Config)
+            .SingleOrDefaultAsync(x => x.Id == request.UserId, cancellationToken);
         
-        var user = await userRepository.GetByIdAsync(request.UserId);
-        if (user == null)
+        if (userDto == null)
         {
             return Response<UserDto>.Error("User not found.");
         }
 
-        var result = MapToDto(user);
+        await redisService.SetAsync(cacheKey, userDto);
         
-        await redisService.SetAsync(cacheKey, result);
-        
-        return Response<UserDto>.Success(result);
-    }
-
-    public static UserDto MapToDto(User user)
-    {
-        return new UserDto
-        {
-            Id = user.Id,
-            UserName = user.Username,
-            Email = user.Email,
-            About = user.About ?? string.Empty,
-            PhotoUrl = user.AvatarUrl ?? string.Empty,
-        };
+        return Response<UserDto>.Success(userDto);
     }
 }
 

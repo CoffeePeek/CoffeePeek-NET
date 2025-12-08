@@ -31,4 +31,11 @@ public class InternalController(IMediator mediator) : Controller
         var command = new GetAllEquipmentCommand();
         return mediator.Send(command);
     }
+    
+    [HttpGet("statistics/{userId:guid}")]
+    public Task<Response<GetUserStatisticsResponse>> GetUserStatistics(Guid userId)
+    {
+        var command = new GetUserStatisticsCommand(userId);
+        return mediator.Send(command);
+    }
 }

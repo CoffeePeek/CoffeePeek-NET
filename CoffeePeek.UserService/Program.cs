@@ -22,6 +22,9 @@ builder.Services.AddSwaggerModule("Coffee Peek UserService", "v1");
 builder.Services.AddMessagingModule(x =>
 {
     x.AddConsumer<UserRegisteredEventConsumer>();
+    x.AddConsumer<CheckinCreatedEventConsumer>();
+    x.AddConsumer<ReviewAddedEventConsumer>();
+    x.AddConsumer<CoffeeShopApprovedEventConsumer>();
 });
 
 // Database
@@ -34,6 +37,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Cache
 builder.Services.AddCacheModule();
+
+// Mapster
+builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
 
 // MediatR
 builder.Services.AddMediatRModule(typeof(Program));

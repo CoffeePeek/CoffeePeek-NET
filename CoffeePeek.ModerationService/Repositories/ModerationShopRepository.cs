@@ -55,6 +55,14 @@ public class ModerationShopRepository(IGenericRepository<ModerationShop> shopRep
             && s.ModerationStatus == ModerationStatus.Pending);
     }
 
+    public async Task<int> GetApprovedShopsCountByUserIdAsync(Guid userId)
+    {
+        return await shopRepository.Query()
+            .CountAsync(s => s.UserId == userId 
+                && s.ModerationStatus == ModerationStatus.Approved 
+                && s.ShopId != null);
+    }
+
     public async Task AddAsync(ModerationShop shop)
     {
         ArgumentNullException.ThrowIfNull(shop);

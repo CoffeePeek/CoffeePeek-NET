@@ -25,8 +25,11 @@ public record CacheKey(
             DefaultTtl: TimeSpan.FromHours(1),
             Description: "User by email",
             Service: "UserService");
+        
             
         public static string ProfilePattern() => $"{nameof(User)}:profile:*";
+        
+        public static string StatisticsPattern() => $"{nameof(User)}:statistics:*";
         
         public static string AllPattern() => $"{nameof(User)}:*";
     }

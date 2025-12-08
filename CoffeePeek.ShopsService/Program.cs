@@ -7,6 +7,7 @@ using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.ShopsService.Configuration;
 using CoffeePeek.ShopsService.DB;
 using CoffeePeek.ShopsService.Entities;
+using CoffeePeek.ShopsService.Entities.CheckIn;
 using CoffeePeek.ShopsService.Extensions;
 using CoffeePeek.ShopsService.Services;
 using CoffeePeek.ShopsService.Services.Interfaces;
@@ -25,6 +26,9 @@ builder.Services.AddSwaggerModule("CoffeePeek.ShopsService Service", "v1");
 // MediatR
 builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
 
+// JWT Authentication
+builder.Services.AddJwtAuthModule();
+
 // Cache
 builder.Services.AddCacheModule();
 
@@ -36,6 +40,9 @@ builder.Services.AddValidators();
 
 // Cache service
 builder.Services.AddScoped<ICacheService, CacheService>();
+
+// Messaging for publishing events
+builder.Services.AddMessagingModule();
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions();

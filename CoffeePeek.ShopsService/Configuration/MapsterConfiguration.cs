@@ -1,6 +1,6 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.ShopsService.Entities;
+using CoffeePeek.ShopsService.Entities.CheckIn;
 using Mapster;
 using MapsterMapper;
 
@@ -38,16 +38,10 @@ public static class MapsterConfiguration
             .Map(dest => dest.Roasters, src => src.RoasterShops)
             .Map(dest => dest.Equipments, src => src.ShopEquipments);
 
-        // Маппинг для CoffeeBean -> BeansDto
-        config.NewConfig<CoffeeBean, BeansDto>()
-            .Map(dest => dest.Name, src => src.Name);
+        config.NewConfig<CheckIn, CheckInDto>()
+            .Map(dest => dest.ShopName, src => src.Shop != null ? src.Shop.Name : string.Empty);
 
-        // Маппинг для Equipment -> EquipmentDto
-        config.NewConfig<Equipment, EquipmentDto>()
-            .Map(dest => dest.Name, src => src.Name);
-        
         return config;
     }
-    
 }
 

@@ -16,4 +16,6 @@ public class UserDto
     public DateTime CreatedAt { get; set; }
     public string PhotoUrl { get; set; }
     public int ReviewCount { get; set; }
+    public int CheckInCount { get; set; }
+    public int AddedShopsCount { get; set; }
 }

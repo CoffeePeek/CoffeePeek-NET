@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.ShopsService.Entities;
+using CoffeePeek.ShopsService.Entities.CheckIn;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.ShopsService.DB;
@@ -15,6 +16,7 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     public virtual DbSet<ShopEquipment> ShopEquipments { get; set; }
     
     public virtual DbSet<Review> Reviews { get; set; }
+    public virtual DbSet<CheckIn> CheckIns { get; set; }
     
     public virtual DbSet<Roaster> Roasters { get; set; }
     public virtual DbSet<RoasterShop> RoasterShops { get; set; }
@@ -60,6 +62,26 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
         modelBuilder.Entity<Shop>(entity =>
         {
             entity.HasIndex(s => s.LocationId);
+        });
+        
+        modelBuilder.Entity<CheckIn>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+            entity.HasIndex(c => c.UserId);
+            entity.HasIndex(c => c.ShopId);
+            entity.HasIndex(c => new { c.UserId, c.ShopId, c.CreatedAt });
+            
+            entity.HasOne(c => c.Shop)
+                .WithMany(s => s.CheckIns)
+                .HasForeignKey(c => c.ShopId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(c => c.Review)
+                .WithMany()
+                .HasForeignKey(c => c.ReviewId)
+                .OnDelete(DeleteBehavior.SetNull);
+                
+            entity.Property(c => c.Note).HasMaxLength(500);
         });
     }
 }

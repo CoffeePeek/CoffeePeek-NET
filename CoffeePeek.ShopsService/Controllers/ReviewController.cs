@@ -21,7 +21,7 @@ public class ReviewCoffeeController(IMediator mediator) : Controller
         [FromHeader(Name = "X-Page-Size")] int pageSize = 10)
     {
         pageNumber = Math.Max(1, pageNumber);
-        pageSize = pageSize <= 0 ? 10 : pageSize;
+        pageSize = Math.Clamp(pageSize <= 0 ? 10 : pageSize, 1, 100);
 
         var result = await mediator.Send(new GetAllReviewsRequest(User.GetUserIdOrThrow(), pageNumber, pageSize));
 
@@ -69,8 +69,8 @@ public class ReviewCoffeeController(IMediator mediator) : Controller
     [HttpPost]
     public Task<Response<AddCoffeeShopReviewResponse>> AddCoffeeShopReview([FromBody] AddCoffeeShopReviewRequest request)
     {
-        request.UserId = User.GetUserIdOrThrow();
-        return mediator.Send(request);
+        var command = request with { UserId = User.GetUserIdOrThrow() };
+        return mediator.Send(command);
     }
 
     [HttpPut]

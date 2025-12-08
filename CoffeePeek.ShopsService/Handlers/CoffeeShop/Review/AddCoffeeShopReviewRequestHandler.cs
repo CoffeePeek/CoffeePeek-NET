@@ -1,11 +1,11 @@
-﻿using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Contract.Response;
+﻿using CoffeePeek.Contract.Events.Shops;
+using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop;
-using CoffeePeek.ShopsService.Abstractions;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.DB;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,15 +14,16 @@ namespace CoffeePeek.ShopsService.Handlers.CoffeeShop.Review;
 public class AddCoffeeShopReviewRequestHandler(
     ShopsDbContext dbContext,
     IValidationStrategy<AddCoffeeShopReviewRequest> validationStrategy,
-    IRedisService redisService) 
-    : IRequestHandler<AddCoffeeShopReviewRequest, Response<AddCoffeeShopReviewResponse>>
+    IRedisService redisService,
+    IPublishEndpoint publishEndpoint) 
+    : IRequestHandler<AddCoffeeShopReviewRequest, Contract.Response.Response<AddCoffeeShopReviewResponse>>
 {
-    public async Task<Response<AddCoffeeShopReviewResponse>> Handle(AddCoffeeShopReviewRequest request, CancellationToken cancellationToken)
+    public async Task<Contract.Response.Response<AddCoffeeShopReviewResponse>> Handle(AddCoffeeShopReviewRequest request, CancellationToken cancellationToken)
     {
         var validationResult = validationStrategy.Validate(request);
         if (!validationResult.IsValid)
         {
-            return Response<AddCoffeeShopReviewResponse>.Error(validationResult.ErrorMessage);
+            return Contract.Response.Response<AddCoffeeShopReviewResponse>.Error(validationResult.ErrorMessage);
         }
 
         var review = new Entities.Review
@@ -34,6 +35,7 @@ public class AddCoffeeShopReviewRequestHandler(
             RatingCoffee = request.RatingCoffee,
             RatingPlace = request.RatingPlace,
             RatingService = request.RatingService,
+            ReviewDate = DateTime.UtcNow
         };
         
         dbContext.Reviews.Add(review);
@@ -41,8 +43,16 @@ public class AddCoffeeShopReviewRequestHandler(
 
         // invalidate caches: shop details and city listing
         await InvalidateShopCacheAsync(request.ShopId, cancellationToken);
+        
+        await publishEndpoint.Publish(new ReviewAddedEvent
+        {
+            UserId = request.UserId,
+            ShopId = request.ShopId,
+            ReviewId = review.Id,
+            CreatedAt = review.ReviewDate
+        }, cancellationToken);
 
-        return Response<AddCoffeeShopReviewResponse>.Success(new AddCoffeeShopReviewResponse(review.Id));
+        return Contract.Response.Response<AddCoffeeShopReviewResponse>.Success(new AddCoffeeShopReviewResponse(review.Id));
     }
 
     private async Task InvalidateShopCacheAsync(Guid shopId, CancellationToken cancellationToken)
