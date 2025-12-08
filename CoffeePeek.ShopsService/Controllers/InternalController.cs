@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/")]
 public class InternalController(IMediator mediator) : Controller
 {
     [HttpGet("cities")]
