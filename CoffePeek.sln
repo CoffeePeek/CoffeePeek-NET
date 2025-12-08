@@ -13,7 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CoffeePeek.ModerationService\ModerationService.Dockerfile = CoffeePeek.ModerationService\ModerationService.Dockerfile
 		build-and-push.ps1 = build-and-push.ps1
 		CoffeePeek.ShopsService\ShopsService.Dockerfile = CoffeePeek.ShopsService\ShopsService.Dockerfile
-		CoffeePeek.Gateway\CoffeePeek.Gateway.csproj = CoffeePeek.Gateway\CoffeePeek.Gateway.csproj
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CoffeePeek.Photo", "CoffeePeek.Photo", "{B135B7F3-9AB9-49D4-9487-001B656C3A36}"

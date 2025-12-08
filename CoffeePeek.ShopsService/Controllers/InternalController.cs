@@ -17,4 +17,18 @@ public class InternalController(IMediator mediator) : Controller
         
         return mediator.Send(request);
     }
+
+    [HttpGet("beans")]
+    public Task<Response<GetAllBeansResponse>> GetAllBeans()
+    {
+        var command = new GetAllBeansCommand();
+        return mediator.Send(command);
+    }
+    
+    [HttpGet("equipments")]
+    public Task<Response<GetAllEquipmentResponse>> GetAllEquipment()
+    {
+        var command = new GetAllEquipmentCommand();
+        return mediator.Send(command);
+    }
 }

@@ -79,6 +79,18 @@ public record CacheKey(
             DefaultTtl: TimeSpan.FromDays(1),
             Description: "All cities list",
             Service: "ShopsService");
+        
+        public static CacheKey Equipment() => new(
+            Key: $"{nameof(Equipment)}:all",
+            DefaultTtl: TimeSpan.FromDays(1),
+            Description: "All equipment list",
+            Service: "ShopsService");
+        
+        public static CacheKey Beans() => new(
+            Key: $"{nameof(Beans)}:all",
+            DefaultTtl: TimeSpan.FromDays(1),
+            Description: "All beans list",
+            Service: "ShopsService");
             
         public static CacheKey Favorites(Guid userId) => new(
             Key: $"{nameof(Shop)}:favorites:{userId}",

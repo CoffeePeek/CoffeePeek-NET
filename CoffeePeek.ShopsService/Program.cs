@@ -46,6 +46,8 @@ builder.Services.AddGenericRepository<ShopPhoto, ShopsDbContext>();
 builder.Services.AddGenericRepository<City, ShopsDbContext>();
 builder.Services.AddGenericRepository<Review, ShopsDbContext>();
 builder.Services.AddGenericRepository<FavoriteShop, ShopsDbContext>();
+builder.Services.AddGenericRepository<CoffeeBean, ShopsDbContext>();
+builder.Services.AddGenericRepository<Equipment, ShopsDbContext>();
 
 // Database Seeder
 builder.Services.AddScoped<DatabaseSeederService>();
