@@ -60,9 +60,19 @@ public record CacheKey(
     {
         public static CacheKey ById(Guid shopId) => new(
             Key: $"{nameof(Shop)}:id:{shopId}",
-            DefaultTtl: TimeSpan.FromHours(2),
-            Description: "Coffee shop entity",
+            DefaultTtl: TimeSpan.FromMinutes(3),
+            Description: "Coffee shop entity (details)",
             Service: "ShopsService");
+        
+        public static string ByIdPattern() => $"{nameof(Shop)}:id:*";
+        
+        public static CacheKey ByCity(Guid cityId, int pageNumber, int pageSize) => new(
+            Key: $"{nameof(Shop)}:city:{cityId}:page:{pageNumber}:size:{pageSize}",
+            DefaultTtl: TimeSpan.FromMinutes(5),
+            Description: "Coffee shops list by city with paging",
+            Service: "ShopsService");
+        
+        public static string ByCityPattern(Guid cityId) => $"{nameof(Shop)}:city:{cityId}:*";
             
         public static CacheKey Cities() => new(
             Key: $"{nameof(Cities)}:all",

@@ -1,9 +1,10 @@
 ﻿using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
-using CoffeePeek.ShopsService.Abstractions;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.DB;
+using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +12,8 @@ namespace CoffeePeek.ShopsService.Handlers.CoffeeShop.Review;
 
 public class UpdateCoffeeShopReviewRequestHandler(
     ShopsDbContext dbContext,
-    IValidationStrategy<UpdateCoffeeShopReviewRequest> validationStrategy)
+    IValidationStrategy<UpdateCoffeeShopReviewRequest> validationStrategy,
+    IRedisService redisService)
     : IRequestHandler<UpdateCoffeeShopReviewRequest, Response<UpdateCoffeeShopReviewResponse>>
 {
     public async Task<Response<UpdateCoffeeShopReviewResponse>> Handle(UpdateCoffeeShopReviewRequest request,
@@ -45,6 +47,23 @@ public class UpdateCoffeeShopReviewRequestHandler(
         dbContext.Reviews.Update(review);
         await dbContext.SaveChangesAsync(cancellationToken);
 
+        await InvalidateShopCacheAsync(review.ShopId, cancellationToken);
+
         return Response<UpdateCoffeeShopReviewResponse>.Success(new UpdateCoffeeShopReviewResponse(review.Id));
+    }
+
+    private async Task InvalidateShopCacheAsync(Guid shopId, CancellationToken cancellationToken)
+    {
+        var cityId = await dbContext.Shops
+            .AsNoTracking()
+            .Where(s => s.Id == shopId)
+            .Select(s => s.CityId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        await redisService.RemoveAsync(CacheKey.Shop.ById(shopId));
+        if (cityId != Guid.Empty)
+        {
+            await redisService.RemoveByPatternAsync(CacheKey.Shop.ByCityPattern(cityId));
+        }
     }
 }

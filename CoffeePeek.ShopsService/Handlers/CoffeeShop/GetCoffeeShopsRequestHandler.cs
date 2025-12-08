@@ -3,6 +3,8 @@ using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.Entities;
 using Mapster;
@@ -15,7 +17,8 @@ namespace CoffeePeek.ShopsService.Handlers.CoffeeShop;
 public class GetCoffeeShopsRequestHandler(
     IGenericRepository<Shop> shopRepository,
     IValidationStrategy<GetCoffeeShopsCommand> validationStrategy,
-    IMapper mapper) 
+    IMapper mapper,
+    IRedisService redisService) 
     : IRequestHandler<GetCoffeeShopsCommand, Response<GetCoffeeShopsResponse>>
 {
     public async Task<Response<GetCoffeeShopsResponse>> Handle(GetCoffeeShopsCommand command, CancellationToken cancellationToken)
@@ -24,6 +27,13 @@ public class GetCoffeeShopsRequestHandler(
         if (!validationResult.IsValid)
         {
             return Response<GetCoffeeShopsResponse>.Error(validationResult.ErrorMessage);
+        }
+
+        var cacheKey = CacheKey.Shop.ByCity(command.CityId, command.PageNumber, command.PageSize);
+        var cached = await redisService.GetAsync<Response<GetCoffeeShopsResponse>>(cacheKey);
+        if (cached != null)
+        {
+            return cached;
         }
 
         var query = shopRepository.QueryAsNoTracking()
@@ -47,6 +57,8 @@ public class GetCoffeeShopsRequestHandler(
             TotalPages = totalPages
         };
 
-        return Response<GetCoffeeShopsResponse>.Success(response);
+        var result = Response<GetCoffeeShopsResponse>.Success(response);
+        await redisService.SetAsync(cacheKey, result);
+        return result;
     }
 }
