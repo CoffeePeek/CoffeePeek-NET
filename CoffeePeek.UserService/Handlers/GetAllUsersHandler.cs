@@ -1,6 +1,7 @@
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.Data.Interfaces;
 using CoffeePeek.UserService.Models;
 using Mapster;

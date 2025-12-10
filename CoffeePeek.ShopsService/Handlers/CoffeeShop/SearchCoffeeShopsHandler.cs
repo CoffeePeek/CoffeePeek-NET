@@ -11,6 +11,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Cache;
 
 namespace CoffeePeek.ShopsService.Handlers.CoffeeShop;

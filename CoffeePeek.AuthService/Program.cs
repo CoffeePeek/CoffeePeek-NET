@@ -9,10 +9,8 @@ using CoffeePeek.Data.Extensions;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
-using CoffeePeek.Shared.Extensions.Options;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure;
-using CoffeePeek.Shared.Infrastructure.Options;
 using CoffeePeek.BuildingBlocks.AuthOptions;
 using IJWTTokenService = CoffeePeek.AuthService.Services.IJWTTokenService;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
@@ -37,9 +35,6 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin));
     options.AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
 });
-
-// OpenAPI
-builder.Services.AddOpenApi();
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions();

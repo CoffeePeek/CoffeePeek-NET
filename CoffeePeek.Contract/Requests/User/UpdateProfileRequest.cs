@@ -3,6 +3,7 @@ using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.User;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Contract.Responses;
 
 namespace CoffeePeek.Contract.Requests.User;
 

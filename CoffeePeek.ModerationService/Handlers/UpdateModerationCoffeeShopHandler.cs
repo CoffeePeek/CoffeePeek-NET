@@ -1,6 +1,7 @@
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.Data.Interfaces;
 using CoffeePeek.ModerationService.Repositories;
 using CoffeePeek.ModerationService.Repositories.Interfaces;

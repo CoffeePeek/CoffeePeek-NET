@@ -1,5 +1,6 @@
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Response;
+using CoffeePeek.Contract.Responses;
 using MediatR;
 
 namespace CoffeePeek.Contract.Requests.User;

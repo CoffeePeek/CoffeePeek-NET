@@ -24,19 +24,19 @@ public class GoogleLoginHandler(
     IRedisService redisService,
     IUnitOfWork unitOfWork,
     IPublishEndpoint publishEndpoint)
-    : IRequestHandler<GoogleLoginCommand, Contract.Response.Response<GoogleLoginResponse>>
+    : IRequestHandler<GoogleLoginCommand, Contract.Responses.Response<GoogleLoginResponse>>
 {
-    public async Task<Contract.Response.Response<GoogleLoginResponse>> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
+    public async Task<Contract.Responses.Response<GoogleLoginResponse>> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(request.IdToken))
         {
-            return Contract.Response.Response<GoogleLoginResponse>.Error("IdToken is required");
+            return Contract.Responses.Response<GoogleLoginResponse>.Error("IdToken is required");
         }
 
         var googlePayload = await googleAuthService.ValidateIdTokenAsync(request.IdToken, cancellationToken);
         if (googlePayload == null)
         {
-            return Contract.Response.Response<GoogleLoginResponse>.Error("Invalid Google token");
+            return Contract.Responses.Response<GoogleLoginResponse>.Error("Invalid Google token");
         }
 
         var user = await userRepository.GetByProviderAsync(ProviderConsts.GoogleProvider, googlePayload.Subject, cancellationToken);
@@ -58,26 +58,24 @@ public class GoogleLoginHandler(
                 };
 
                 await userRepository.AddAsync(user, cancellationToken);
-                // Сохраняем пользователя в БД перед добавлением роли, чтобы Id был установлен
                 await unitOfWork.SaveChangesAsync(cancellationToken);
                 
                 await userManager.AddToRoleAsync(user, RoleConsts.User, cancellationToken);
-                await unitOfWork.SaveChangesAsync(cancellationToken);
             }
             else
             {
                 user.OAuthProvider = ProviderConsts.GoogleProvider;
                 user.ProviderId = googlePayload.Subject;
                 await userRepository.UpdateAsync(user, cancellationToken);
-                await unitOfWork.SaveChangesAsync(cancellationToken);
             }
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         var authResult = await jwtTokenService.GenerateTokensAsync(user);
 
-        await redisService.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
-        await redisService.SetAsync(CacheKey.Auth.CredentialsByEmail(user.Email), user);
-        
+        await CacheUser(user);
+
         await publishEndpoint.Publish(new UserLoggedInEvent(user.Id), cancellationToken);
 
         var response = new GoogleLoginResponse
@@ -92,6 +90,14 @@ public class GoogleLoginHandler(
             }
         };
 
-        return Contract.Response.Response<GoogleLoginResponse>.Success(response);
+        return Contract.Responses.Response<GoogleLoginResponse>.Success(response);
+    }
+
+    private async Task CacheUser(UserCredentials user)
+    {
+        user.PasswordHash = string.Empty;
+        
+        await redisService.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
+        await redisService.SetAsync(CacheKey.Auth.CredentialsByEmail(user.Email), user);
     }
 }

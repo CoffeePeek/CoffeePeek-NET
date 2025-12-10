@@ -2,6 +2,7 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.ShopsService.DB;
 using MapsterMapper;
 using MediatR;

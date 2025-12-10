@@ -1,6 +1,6 @@
-﻿namespace CoffeePeek.Contract.Response;
+﻿namespace CoffeePeek.Contract.Responses;
 
-public class Response<TData> : Response
+public class Response<TData> : Response.Response
 {
     public new TData Data
     {

@@ -8,7 +8,6 @@ public static class ControllersModule
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();
-        services.AddAuthorization();
         
         return services;
     }

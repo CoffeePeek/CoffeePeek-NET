@@ -1,6 +1,8 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
+using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -17,8 +19,8 @@ public class CheckInController(IMediator mediator) : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<Response<CreateCheckInResponse>> CreateCheckIn([FromBody] CreateCheckInRequest request)
     {
-        request.UserId = User.GetUserIdOrThrow();
-        return mediator.Send(request);
+        var command = request with { UserId = HttpContext.User.GetUserIdOrThrow() };
+        return mediator.Send(command);
     }
 
     [HttpGet]

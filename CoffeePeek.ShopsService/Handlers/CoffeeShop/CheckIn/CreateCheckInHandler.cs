@@ -17,14 +17,14 @@ public class CreateCheckInHandler(
     IRedisService redisService,
     IPublishEndpoint publishEndpoint,
     ICacheService cacheService)
-    : IRequestHandler<CreateCheckInRequest, Contract.Response.Response<CreateCheckInResponse>>
+    : IRequestHandler<CreateCheckInRequest, Contract.Responses.Response<CreateCheckInResponse>>
 {
-    public async Task<Contract.Response.Response<CreateCheckInResponse>> Handle(CreateCheckInRequest request, CancellationToken cancellationToken)
+    public async Task<Contract.Responses.Response<CreateCheckInResponse>> Handle(CreateCheckInRequest request, CancellationToken cancellationToken)
     {
         var validationResult = validationStrategy.Validate(request);
         if (!validationResult.IsValid)
         {
-            return Contract.Response.Response<CreateCheckInResponse>.Error(validationResult.ErrorMessage);
+            return Contract.Responses.Response<CreateCheckInResponse>.Error(validationResult.ErrorMessage);
         }
 
         var checkIn = new Entities.CheckIn.CheckIn
@@ -47,9 +47,9 @@ public class CreateCheckInHandler(
                 Comment = request.Review.Comment,
                 UserId = request.UserId,
                 ShopId = request.ShopId,
-                RatingCoffee = request.Review.RatingCoffee,
-                RatingPlace = request.Review.RatingPlace,
-                RatingService = request.Review.RatingService,
+                RatingCoffee = request.Review.RatingCoffee ?? 0,
+                RatingPlace = request.Review.RatingPlace ?? 0,
+                RatingService = request.Review.RatingService ?? 0,
                 ReviewDate = DateTime.UtcNow
             };
 
@@ -61,6 +61,11 @@ public class CreateCheckInHandler(
         }
 
         dbContext.CheckIns.Add(checkIn);
+        if (request.Review != null)
+        {
+            await InvalidateShopCacheAsync(request.ShopId);
+        }
+        
         await dbContext.SaveChangesAsync(cancellationToken);
 
         await publishEndpoint.Publish(new CheckinCreatedEvent
@@ -81,7 +86,7 @@ public class CreateCheckInHandler(
             }, cancellationToken);
         }
 
-        return Contract.Response.Response<CreateCheckInResponse>.Success(new CreateCheckInResponse(checkIn.Id, reviewId));
+        return Contract.Responses.Response<CreateCheckInResponse>.Success(new CreateCheckInResponse(checkIn.Id, reviewId));
     }
 
     private async Task InvalidateShopCacheAsync(Guid shopId)

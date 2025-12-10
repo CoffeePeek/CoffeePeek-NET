@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.Contract.Response;
+using CoffeePeek.Contract.Responses;
 using MediatR;
 
 namespace CoffeePeek.AuthService.Commands;

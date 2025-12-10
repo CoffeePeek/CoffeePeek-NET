@@ -16,7 +16,5 @@ public class User
 
     public bool IsSoftDelete { get; set; }
     
-    public Guid UserStatisticId { get; set; }
-    
     public virtual UserStatistics? UserStatistics { get; set; }
 }

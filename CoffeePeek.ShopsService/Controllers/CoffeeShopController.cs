@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
+using CoffeePeek.Contract.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -82,9 +84,9 @@ public class CoffeeShopController(IMediator mediator) : Controller
         [FromQuery] Guid? cityId = null,
         [FromQuery] Guid[]? equipments = null,
         [FromQuery] Guid[]? beans = null,
-        [FromQuery] decimal? minRating = null,
-        [FromHeader(Name = "X-Page-Number")] int pageNumber = 1,
-        [FromHeader(Name = "X-Page-Size")] int pageSize = 10)
+        [FromQuery][Range(0, 5)] decimal? minRating = null,
+        [FromHeader(Name = "X-Page-Number")][Range(1, int.MaxValue)] int pageNumber = 1,
+        [FromHeader(Name = "X-Page-Size")][Range(1, 100)] int pageSize = 10)
     {
         pageNumber = Math.Max(1, pageNumber);
         pageSize = pageSize <= 0 ? 10 : Math.Min(pageSize, 100);

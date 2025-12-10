@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.Data.Interfaces;
 using CoffeePeek.ModerationService.Models;
 using CoffeePeek.ModerationService.Repositories;

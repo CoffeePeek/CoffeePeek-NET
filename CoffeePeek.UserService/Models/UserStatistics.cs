@@ -8,5 +8,5 @@ public class UserStatistics
     public int AddedShopsCount { get; set; }
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     
-    public virtual User User { get; set; }
+    public virtual User? User { get; set; }
 }

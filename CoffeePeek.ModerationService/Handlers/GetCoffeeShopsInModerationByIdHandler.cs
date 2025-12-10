@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.ModerationService.Handlers;
 using CoffeePeek.ModerationService.Repositories;
 using CoffeePeek.ModerationService.Repositories.Interfaces;

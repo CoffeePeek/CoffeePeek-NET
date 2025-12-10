@@ -2,6 +2,7 @@
 using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.Contract.Response;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using MediatR;

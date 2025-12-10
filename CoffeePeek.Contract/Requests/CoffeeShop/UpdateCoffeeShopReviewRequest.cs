@@ -2,10 +2,11 @@
 using CoffeePeek.Contract.Response.CoffeeShop;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Contract.Responses;
 
 namespace CoffeePeek.Contract.Requests.CoffeeShop;
 
-public class UpdateCoffeeShopReviewRequest : IRequest<Response.Response<UpdateCoffeeShopReviewResponse>>
+public class UpdateCoffeeShopReviewRequest : IRequest<Response<UpdateCoffeeShopReviewResponse>>
 {
     [JsonIgnore]
     public Guid UserId { get; set; }

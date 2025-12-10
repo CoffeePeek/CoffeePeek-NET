@@ -68,6 +68,7 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "Gate
 app.MapReverseProxy();
 
 app.Run();
+return;
 
 // YARP Configuration
 static RouteConfig[] GetRoutes()
@@ -102,7 +103,7 @@ static RouteConfig[] GetRoutes()
             },
             Transforms = new List<Dictionary<string, string>>
             {
-                new Dictionary<string, string>
+                new()
                 {
                     { "PathPattern", "/api/CoffeeShop/{**catch-all}" }
                 }
@@ -114,7 +115,7 @@ static RouteConfig[] GetRoutes()
             ClusterId = "shops-cluster",
             Match = new RouteMatch
             {
-                Path = "/api/checkin/{**catch-all}"
+                Path = "/api/CheckIn/{**catch-all}"
             }
         },
         new RouteConfig

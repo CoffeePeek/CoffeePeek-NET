@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace CoffeePeek.Shared.Extensions.Swagger;
 
@@ -31,17 +32,22 @@ public static class SwaggerPipelineExtensions
                 {
                     c.SwaggerEndpoint($"/swagger/{docName}/swagger.json", docName);
                 }
-            
-                c.RoutePrefix = "swagger";
-                c.DisplayRequestDuration();
-                c.EnableDeepLinking();
-                c.EnableFilter();
-                c.ShowExtensions();
-                c.EnableValidator();
+
+                ConfigureSwaggerUI(c);
             });
         }
 
         return app;
+    }
+
+    private static void ConfigureSwaggerUI(SwaggerUIOptions c)
+    {
+        c.RoutePrefix = "swagger";
+        c.DisplayRequestDuration();
+        c.EnableDeepLinking();
+        c.EnableFilter();
+        c.ShowExtensions();
+        c.EnableValidator();
     }
 
     public static WebApplication UseSwaggerDocumentation(this WebApplication app, string version)
@@ -68,4 +74,3 @@ public static class SwaggerPipelineExtensions
         return app;
     }
 }
-

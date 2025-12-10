@@ -18,9 +18,9 @@ public class LoginUserHandler(
     ISignInManager signInManager,
     IPublishEndpoint publishEndpoint,
     ILogger logger)
-    : IRequestHandler<LoginUserCommand, Contract.Response.Response<LoginResponse>>
+    : IRequestHandler<LoginUserCommand, Contract.Responses.Response<LoginResponse>>
 {
-    public async Task<Contract.Response.Response<LoginResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+    public async Task<Contract.Responses.Response<LoginResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
         var credentialsByEmailKey = CacheKey.Auth.CredentialsByEmail(request.Email);
         var user = await redisService.GetAsync<UserCredentials>(credentialsByEmailKey);
@@ -32,19 +32,19 @@ public class LoginUserHandler(
                 user = await userManager.FindByEmailAsync(request.Email);
                 if (user == null)
                 {
-                    return Contract.Response.Response<LoginResponse>.Error("Account does not exist.");
+                    return Contract.Responses.Response<LoginResponse>.Error("Account does not exist.");
                 }
             }
             catch (Exception e)
             {
-                return Contract.Response.Response<LoginResponse>.Error(e.Message);
+                return Contract.Responses.Response<LoginResponse>.Error(e.Message);
             }
         }
 
         var signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password);
         if (signInResult.Result != SignInResult.Success)
         {
-            return Contract.Response.Response<LoginResponse>.Error("Password is incorrect.");
+            return Contract.Responses.Response<LoginResponse>.Error("Password is incorrect.");
         }
 
         var authResult = await jwtTokenService.GenerateTokensAsync(user);
@@ -65,6 +65,6 @@ public class LoginUserHandler(
         }, cancellationToken);
 
         var result = new LoginResponse(authResult.AccessToken, authResult.RefreshToken);
-        return Contract.Response.Response<LoginResponse>.Success(result);
+        return Contract.Responses.Response<LoginResponse>.Success(result);
     }
 }

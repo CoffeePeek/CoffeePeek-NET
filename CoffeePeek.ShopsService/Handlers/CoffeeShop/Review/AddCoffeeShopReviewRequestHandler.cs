@@ -16,14 +16,14 @@ public class AddCoffeeShopReviewRequestHandler(
     IValidationStrategy<AddCoffeeShopReviewRequest> validationStrategy,
     IRedisService redisService,
     IPublishEndpoint publishEndpoint) 
-    : IRequestHandler<AddCoffeeShopReviewRequest, Contract.Response.Response<AddCoffeeShopReviewResponse>>
+    : IRequestHandler<AddCoffeeShopReviewRequest, Contract.Responses.Response<AddCoffeeShopReviewResponse>>
 {
-    public async Task<Contract.Response.Response<AddCoffeeShopReviewResponse>> Handle(AddCoffeeShopReviewRequest request, CancellationToken cancellationToken)
+    public async Task<Contract.Responses.Response<AddCoffeeShopReviewResponse>> Handle(AddCoffeeShopReviewRequest request, CancellationToken cancellationToken)
     {
         var validationResult = validationStrategy.Validate(request);
         if (!validationResult.IsValid)
         {
-            return Contract.Response.Response<AddCoffeeShopReviewResponse>.Error(validationResult.ErrorMessage);
+            return Contract.Responses.Response<AddCoffeeShopReviewResponse>.Error(validationResult.ErrorMessage);
         }
 
         var review = new Entities.Review
@@ -52,7 +52,7 @@ public class AddCoffeeShopReviewRequestHandler(
             CreatedAt = review.ReviewDate
         }, cancellationToken);
 
-        return Contract.Response.Response<AddCoffeeShopReviewResponse>.Success(new AddCoffeeShopReviewResponse(review.Id));
+        return Contract.Responses.Response<AddCoffeeShopReviewResponse>.Success(new AddCoffeeShopReviewResponse(review.Id));
     }
 
     private async Task InvalidateShopCacheAsync(Guid shopId, CancellationToken cancellationToken)

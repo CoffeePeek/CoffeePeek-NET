@@ -2,14 +2,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
+using CoffeePeek.Contract.Responses;
 using MediatR;
 
 namespace CoffeePeek.Contract.Requests.CoffeeShop;
 
-public class CreateCheckInRequest : IRequest<Response<CreateCheckInResponse>>
+public record CreateCheckInRequest : IRequest<Response<CreateCheckInResponse>>
 {
     [JsonIgnore]
-    public Guid UserId { get; set; }
+    public Guid UserId { get; init; }
     
     [Required]
     public Guid ShopId { get; init; }
@@ -18,24 +19,4 @@ public class CreateCheckInRequest : IRequest<Response<CreateCheckInResponse>>
     public string? Note { get; init; }
     
     public CheckInReviewRequest? Review { get; init; }
-}
-
-public class CheckInReviewRequest
-{
-    [Required]
-    [MaxLength(70)]
-    public string Header { get; init; } = string.Empty;
-    
-    [Required]
-    [MaxLength(2000)]
-    public string Comment { get; init; } = string.Empty;
-    
-    [Range(1, 5)]
-    public int RatingCoffee { get; init; }
-    
-    [Range(1, 5)]
-    public int RatingPlace { get; init; }
-    
-    [Range(1, 5)]
-    public int RatingService { get; init; }
 }

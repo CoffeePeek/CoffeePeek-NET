@@ -1,6 +1,8 @@
 using CoffeePeek.Contract.Requests.Internal;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Internal;
+using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.Internal;
 using CoffeePeek.ShopsService.Services.Interfaces;
 using MediatR;
 
