@@ -1,13 +1,15 @@
 using CoffeePeek.Contract.Requests.Internal;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Internal;
+using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.Internal;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/")]
 public class InternalController(IMediator mediator) : Controller
 {
     [HttpGet("cities")]
@@ -16,5 +18,26 @@ public class InternalController(IMediator mediator) : Controller
         var request = new GetCitiesCommand();
         
         return mediator.Send(request);
+    }
+
+    [HttpGet("beans")]
+    public Task<Response<GetAllBeansResponse>> GetAllBeans()
+    {
+        var command = new GetAllBeansCommand();
+        return mediator.Send(command);
+    }
+    
+    [HttpGet("equipments")]
+    public Task<Response<GetAllEquipmentResponse>> GetAllEquipment()
+    {
+        var command = new GetAllEquipmentCommand();
+        return mediator.Send(command);
+    }
+    
+    [HttpGet("statistics/{userId:guid}")]
+    public Task<Response<GetUserStatisticsResponse>> GetUserStatistics(Guid userId)
+    {
+        var command = new GetUserStatisticsCommand(userId);
+        return mediator.Send(command);
     }
 }

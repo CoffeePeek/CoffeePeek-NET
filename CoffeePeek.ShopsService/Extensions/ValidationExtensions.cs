@@ -1,5 +1,6 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
+using CoffeePeek.ShopsService.Abstractions.ValidationStrategy.CheckIn;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy.CoffeeShop;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy.Review;
 
@@ -14,6 +15,7 @@ public static class ValidationExtensions
         services.AddTransient<IValidationStrategy<GetCoffeeShopsCommand>, GetCoffeeShopsValidationStrategy>();
         services.AddTransient<IValidationStrategy<AddToFavoriteCommand>, AddToFavoriteValidationStrategy>();
         services.AddTransient<IValidationStrategy<RemoveFromFavoriteCommand>, RemoveFromFavoriteValidationStrategy>();
+        services.AddTransient<IValidationStrategy<CreateCheckInRequest>, CheckInValidationStrategy>();
         
         return services;
     }

@@ -15,4 +15,6 @@ public class User
     public bool EmailConfirmed { get; set; }
 
     public bool IsSoftDelete { get; set; }
+    
+    public virtual UserStatistics? UserStatistics { get; set; }
 }

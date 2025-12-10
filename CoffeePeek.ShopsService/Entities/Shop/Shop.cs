@@ -19,6 +19,7 @@ public class Shop
     public virtual Location? Location { get; set; }
     
     public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
+    public virtual ICollection<CheckIn.CheckIn> CheckIns { get; set; } = new HashSet<CheckIn.CheckIn>();
     public virtual ICollection<CoffeeBeanShop> CoffeeBeanShops { get; set; } = new HashSet<CoffeeBeanShop>();
     public virtual ICollection<RoasterShop> RoasterShops { get; set; } = new HashSet<RoasterShop>();
     public virtual ICollection<ShopBrewMethod> ShopBrewMethods { get; set; } = new HashSet<ShopBrewMethod>();

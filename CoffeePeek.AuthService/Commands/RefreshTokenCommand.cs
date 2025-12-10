@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Auth;
+using CoffeePeek.Contract.Responses;
 using MediatR;
 
 namespace CoffeePeek.AuthService.Commands;

@@ -2,13 +2,16 @@
 using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Repositories;
 using CoffeePeek.AuthService.Services;
-using CoffeePeek.Contract.Response;
+using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Response.Auth;
 using CoffeePeek.Data.Interfaces;
 using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using MassTransit;
 using MediatR;
+using Response = CoffeePeek.Contract.Response.Response;
 using IJWTTokenService = CoffeePeek.AuthService.Services.IJWTTokenService;
 
 namespace CoffeePeek.AuthService.Handlers;
@@ -19,20 +22,21 @@ public class GoogleLoginHandler(
     IUserManager userManager,
     IJWTTokenService jwtTokenService,
     IRedisService redisService,
-    IUnitOfWork unitOfWork)
-    : IRequestHandler<GoogleLoginCommand, Response<GoogleLoginResponse>>
+    IUnitOfWork unitOfWork,
+    IPublishEndpoint publishEndpoint)
+    : IRequestHandler<GoogleLoginCommand, Contract.Responses.Response<GoogleLoginResponse>>
 {
-    public async Task<Response<GoogleLoginResponse>> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
+    public async Task<Contract.Responses.Response<GoogleLoginResponse>> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(request.IdToken))
         {
-            return Response<GoogleLoginResponse>.Error("IdToken is required");
+            return Contract.Responses.Response<GoogleLoginResponse>.Error("IdToken is required");
         }
 
         var googlePayload = await googleAuthService.ValidateIdTokenAsync(request.IdToken, cancellationToken);
         if (googlePayload == null)
         {
-            return Response<GoogleLoginResponse>.Error("Invalid Google token");
+            return Contract.Responses.Response<GoogleLoginResponse>.Error("Invalid Google token");
         }
 
         var user = await userRepository.GetByProviderAsync(ProviderConsts.GoogleProvider, googlePayload.Subject, cancellationToken);
@@ -54,24 +58,25 @@ public class GoogleLoginHandler(
                 };
 
                 await userRepository.AddAsync(user, cancellationToken);
-                // Сохраняем пользователя в БД перед добавлением роли, чтобы Id был установлен
                 await unitOfWork.SaveChangesAsync(cancellationToken);
                 
                 await userManager.AddToRoleAsync(user, RoleConsts.User, cancellationToken);
-                await unitOfWork.SaveChangesAsync(cancellationToken);
             }
             else
             {
                 user.OAuthProvider = ProviderConsts.GoogleProvider;
                 user.ProviderId = googlePayload.Subject;
                 await userRepository.UpdateAsync(user, cancellationToken);
-                await unitOfWork.SaveChangesAsync(cancellationToken);
             }
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         var authResult = await jwtTokenService.GenerateTokensAsync(user);
 
-        await redisService.SetAsync($"{nameof(UserCredentials)}{user.Id}", user);
+        await CacheUser(user);
+
+        await publishEndpoint.Publish(new UserLoggedInEvent(user.Id), cancellationToken);
 
         var response = new GoogleLoginResponse
         {
@@ -85,6 +90,14 @@ public class GoogleLoginHandler(
             }
         };
 
-        return Response<GoogleLoginResponse>.Success(response);
+        return Contract.Responses.Response<GoogleLoginResponse>.Success(response);
+    }
+
+    private async Task CacheUser(UserCredentials user)
+    {
+        user.PasswordHash = string.Empty;
+        
+        await redisService.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
+        await redisService.SetAsync(CacheKey.Auth.CredentialsByEmail(user.Email), user);
     }
 }

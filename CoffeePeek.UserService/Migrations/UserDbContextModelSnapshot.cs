@@ -50,6 +50,9 @@ namespace CoffeePeek.UserService.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid>("UserStatisticId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
@@ -57,6 +60,50 @@ namespace CoffeePeek.UserService.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CoffeePeek.UserService.Models.UserStatistics", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AddedShopsCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("CheckInCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("ReviewCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserStatistics");
+                });
+
+            modelBuilder.Entity("CoffeePeek.UserService.Models.UserStatistics", b =>
+                {
+                    b.HasOne("CoffeePeek.UserService.Models.User", "User")
+                        .WithOne("UserStatistics")
+                        .HasForeignKey("CoffeePeek.UserService.Models.UserStatistics", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CoffeePeek.UserService.Models.User", b =>
+                {
+                    b.Navigation("UserStatistics");
                 });
 #pragma warning restore 612, 618
         }

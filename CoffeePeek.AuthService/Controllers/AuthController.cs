@@ -2,6 +2,7 @@
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Auth;
 using CoffeePeek.Contract.Response.Login;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

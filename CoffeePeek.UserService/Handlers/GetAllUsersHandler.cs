@@ -1,20 +1,26 @@
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response;
-using CoffeePeek.UserService.Repositories;
+using CoffeePeek.Contract.Responses;
+using CoffeePeek.Data.Interfaces;
+using CoffeePeek.UserService.Models;
+using Mapster;
+using MapsterMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.UserService.Handlers;
 
-public class GetAllUsersHandler(IUserRepository userRepository) 
+public class GetAllUsersHandler(IGenericRepository<User> userRepository, IMapper mapper) 
     : IRequestHandler<GetAllUsersRequest, Response<UserDto[]>>
 {
     public async Task<Response<UserDto[]>> Handle(GetAllUsersRequest request, CancellationToken cancellationToken)
     {
-        var users = await userRepository.GetAllAsync();
+        var users = await userRepository
+            .QueryAsNoTracking()
+            .ProjectToType<UserDto>(mapper.Config)
+            .ToArrayAsync(cancellationToken);
         
-        var result = users.Select(GetProfileHandler.MapToDto).ToArray();
-        
-        return Response<UserDto[]>.Success(result);
+        return Response<UserDto[]>.Success(users);
     }
 }

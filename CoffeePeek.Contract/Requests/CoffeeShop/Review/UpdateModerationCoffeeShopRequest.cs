@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
+using CoffeePeek.Contract.Responses;
 using MediatR;
 
 namespace CoffeePeek.Contract.Requests.CoffeeShop.Review;

@@ -10,6 +10,7 @@ public interface IModerationShopRepository
     Task<List<ModerationShop>> GetAllAsync();
     Task<List<ModerationShop>> GetByStatusAsync(ModerationStatus status);
     Task<ModerationShop?> GetByNameAndAddressAsync(string name, string address, Guid userId);
+    Task<int> GetApprovedShopsCountByUserIdAsync(Guid userId);
     Task AddAsync(ModerationShop shop);
     Task UpdateAsync(ModerationShop shop);
 }

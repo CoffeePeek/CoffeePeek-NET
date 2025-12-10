@@ -1,3 +1,5 @@
+using CoffeePeek.Contract.Responses;
+
 namespace CoffeePeek.Contract.Response;
 
 public class Response

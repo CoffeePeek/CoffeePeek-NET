@@ -37,6 +37,41 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.ToTable("BrewMethods");
                 });
 
+            modelBuilder.Entity("CoffeePeek.ShopsService.Entities.CheckIn.CheckIn", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid?>("ReviewId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReviewId");
+
+                    b.HasIndex("ShopId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "ShopId", "CreatedAt");
+
+                    b.ToTable("CheckIns");
+                });
+
             modelBuilder.Entity("CoffeePeek.ShopsService.Entities.City", b =>
                 {
                     b.Property<Guid>("Id")
@@ -412,6 +447,24 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.ToTable("ShopScheduleIntervals");
                 });
 
+            modelBuilder.Entity("CoffeePeek.ShopsService.Entities.CheckIn.CheckIn", b =>
+                {
+                    b.HasOne("CoffeePeek.ShopsService.Entities.Review", "Review")
+                        .WithMany()
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CoffeePeek.ShopsService.Entities.Shop", "Shop")
+                        .WithMany("CheckIns")
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Review");
+
+                    b.Navigation("Shop");
+                });
+
             modelBuilder.Entity("CoffeePeek.ShopsService.Entities.CoffeeBeanShop", b =>
                 {
                     b.HasOne("CoffeePeek.ShopsService.Entities.CoffeeBean", "CoffeeBean")
@@ -550,7 +603,7 @@ namespace CoffeePeek.ShopsService.Migrations
             modelBuilder.Entity("CoffeePeek.ShopsService.Entities.ShopSchedule", b =>
                 {
                     b.HasOne("CoffeePeek.ShopsService.Entities.Shop", "Shop")
-                        .WithMany("Schedule")
+                        .WithMany("Schedules")
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -596,6 +649,8 @@ namespace CoffeePeek.ShopsService.Migrations
 
             modelBuilder.Entity("CoffeePeek.ShopsService.Entities.Shop", b =>
                 {
+                    b.Navigation("CheckIns");
+
                     b.Navigation("CoffeeBeanShops");
 
                     b.Navigation("Location");
@@ -604,7 +659,7 @@ namespace CoffeePeek.ShopsService.Migrations
 
                     b.Navigation("RoasterShops");
 
-                    b.Navigation("Schedule");
+                    b.Navigation("Schedules");
 
                     b.Navigation("ShopBrewMethods");
 

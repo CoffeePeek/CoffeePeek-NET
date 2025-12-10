@@ -1,44 +1,46 @@
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response;
+using CoffeePeek.Contract.Responses;
+using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.UserService.Models;
-using CoffeePeek.UserService.Repositories;
+using Mapster;
+using MapsterMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.UserService.Handlers;
 
-public class GetProfileHandler(IUserRepository userRepository) 
+public class GetProfileHandler(
+    IGenericRepository<User> userRepository, 
+    IRedisService redisService,
+    IMapper mapper) 
     : IRequestHandler<GetProfileRequest, Response<UserDto>>
 {
     public async Task<Response<UserDto>> Handle(GetProfileRequest request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId);
+        var cacheKey = CacheKey.User.Profile(request.UserId);
+        var cachedUser = await redisService.GetAsync<UserDto>(cacheKey);
+        if (cachedUser != null)
+        {
+            return Response<UserDto>.Success(cachedUser);
+        }
 
-        if (user == null)
+        var userDto = await userRepository
+            .QueryAsNoTracking()
+            .ProjectToType<UserDto>(mapper.Config)
+            .SingleOrDefaultAsync(x => x.Id == request.UserId, cancellationToken);
+        
+        if (userDto == null)
         {
             return Response<UserDto>.Error("User not found.");
         }
 
-        var result = MapToDto(user);
+        await redisService.SetAsync(cacheKey, userDto);
         
-        return Response<UserDto>.Success(result);
-    }
-
-    public static UserDto MapToDto(User user)
-    {
-        return new UserDto
-        {
-            Id = user.Id,
-            UserName = user.Username,
-            Email = user.Email,
-            Password = string.Empty, // Password не хранится в UserService
-            Token = string.Empty, // Token генерируется в AuthService
-            Roles = null, // Roles хранятся в AuthService
-            About = user.About ?? string.Empty,
-            CreatedAt = DateTime.UtcNow, // TODO: добавить CreatedAt в User модель
-            PhotoUrl = user.AvatarUrl ?? string.Empty,
-            ReviewCount = 0 // Reviews хранятся в другом сервисе
-        };
+        return Response<UserDto>.Success(userDto);
     }
 }
 
