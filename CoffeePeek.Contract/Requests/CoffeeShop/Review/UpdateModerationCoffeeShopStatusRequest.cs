@@ -4,11 +4,11 @@ using MediatR;
 
 namespace CoffeePeek.Contract.Requests.CoffeeShop.Review;
 
-public class UpdateModerationCoffeeShopStatusRequest(int id, ModerationStatus moderationStatus, Guid userId) 
+public class UpdateModerationCoffeeShopStatusRequest(Guid id, ModerationStatus moderationStatus, Guid userId) 
     : IRequest<Response.Response>
 {
     public Guid UserId { get; set; } = userId;
-    public int Id { get; set; } = id;
+    public Guid Id { get; set; } = id;
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ModerationStatus ModerationStatus { get; set; } = moderationStatus;
 }
