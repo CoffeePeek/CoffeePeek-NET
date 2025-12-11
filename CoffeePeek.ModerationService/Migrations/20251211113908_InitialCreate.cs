@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -9,7 +9,9 @@ namespace CoffeePeek.ModerationService.Migrations
     /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Создаёт начальную схему базы данных для сервиса модерации — создаёт таблицы ShopContacts, ModerationShops, ScheduleExceptions, Schedules и ShopPhotos вместе с соответствующими столбцами, ограничениями, внешними ключами и индексами.
+        /// </summary>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(

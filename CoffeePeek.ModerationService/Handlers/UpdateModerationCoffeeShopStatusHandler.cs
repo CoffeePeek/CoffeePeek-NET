@@ -17,6 +17,12 @@ public class UpdateModerationCoffeeShopStatusHandler(
     IUnitOfWork unitOfWork) 
     : IRequestHandler<UpdateModerationCoffeeShopStatusRequest, Response>
 {
+    /// <summary>
+    /// Обновляет статус модерации кофейни, сохраняет изменения и при одобрении публикует событие о подтверждении.
+    /// </summary>
+    /// <param name="request">Запрос с идентификатором кофейни и новым значением ModerationStatus.</param>
+    /// <param name="cancellationToken">Токен отмены для асинхронных операций.</param>
+    /// <returns>Response, указывающий на результат операции. Если кофейня не найдена, возвращается ошибка с сообщением "CoffeeShop not found".</returns>
     public async Task<Response> Handle(UpdateModerationCoffeeShopStatusRequest request, CancellationToken cancellationToken)
     {
         var shop = await repository.GetByIdAsync(request.Id);
@@ -69,5 +75,4 @@ public class UpdateModerationCoffeeShopStatusHandler(
         return Response.Success();
     }
 }
-
 

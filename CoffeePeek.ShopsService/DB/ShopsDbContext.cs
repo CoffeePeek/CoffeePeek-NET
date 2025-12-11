@@ -1,4 +1,4 @@
-﻿using CoffeePeek.ShopsService.Entities;
+using CoffeePeek.ShopsService.Entities;
 using CoffeePeek.ShopsService.Entities.CheckIn;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +34,10 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     
     public virtual DbSet<Location> Locations { get; set; }
 
+    /// <summary>
+    /// Настраивает модель EF Core для контекста: конфигурирует отношения между сущностями, поведение удаления, индексы и ограничения для таблиц, используемых в ShopsDbContext.
+    /// </summary>
+    /// <param name="modelBuilder">Объект ModelBuilder, используемый для определения сущностей, их свойств, связей, индексов и правил удаления.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

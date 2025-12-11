@@ -12,6 +12,11 @@ namespace CoffeePeek.ShopsService.Handlers.CoffeeShop;
 public class GetShopsInBoundsHandler(ShopsDbContext dbContext)
     : IRequestHandler<GetShopsInBoundsRequest, Response<GetShopsInBoundsResponse>>
 {
+    /// <summary>
+    /// Получает магазины, чьи координаты лежат внутри заданных географических границ.
+    /// </summary>
+    /// <param name="request">Запрос, содержащий границы поиска: MinLat, MaxLat, MinLon и MaxLon.</param>
+    /// <returns>Response, содержащий GetShopsInBoundsResponse с массивом MapShopDto для магазинов, у которых есть значения широты и долготы и которые находятся внутри указанных границ.</returns>
     public async Task<Response<GetShopsInBoundsResponse>> Handle(GetShopsInBoundsRequest request, CancellationToken cancellationToken)
     {
         var shops = await dbContext.Shops
@@ -37,4 +42,3 @@ public class GetShopsInBoundsHandler(ShopsDbContext dbContext)
         return Response<GetShopsInBoundsResponse>.Success(response);
     }
 }
-

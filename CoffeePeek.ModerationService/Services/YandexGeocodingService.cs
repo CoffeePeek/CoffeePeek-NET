@@ -12,6 +12,12 @@ public class YandexGeocodingService(
 {
     private readonly YandexApiOptions _options = options.Value;
 
+    /// <summary>
+    /// Преобразует строковый адрес в географические координаты (широту и долготу) с использованием Yandex Geocoding API.
+    /// </summary>
+    /// <param name="address">Адрес для геокодирования.</param>
+    /// <param name="cancellationToken">Токен отмены для прерывания операции.</param>
+    /// <returns>`GeocodingResult` с широтой и долготой при успешном геокодировании, `null` если адрес пуст, не найден или произошла ошибка.</returns>
     public async Task<GeocodingResult?> GeocodeAsync(string address, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(address))
@@ -69,4 +75,3 @@ public class YandexGeocodingService(
         }
     }
 }
-

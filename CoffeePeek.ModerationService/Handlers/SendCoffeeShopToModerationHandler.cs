@@ -18,6 +18,12 @@ public class SendCoffeeShopToModerationHandler(
     IYandexGeocodingService geocodingService) 
     : IRequestHandler<SendCoffeeShopToModerationRequest, Response<SendCoffeeShopToModerationResponse>>
 {
+    /// <summary>
+    /// Обрабатывает запрос на отправку кофейни на модерацию и создаёт соответствующую запись модерации.
+    /// </summary>
+    /// <param name="request">Запрос с данными кофейни (название, адрес для проверки и идентификатор пользователя).</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>`Response&lt;SendCoffeeShopToModerationResponse&gt;`: в случае успеха — успешный ответ с null в полезной нагрузке и сообщением о добавлении в модерацию; в случае дубликата — ошибочный ответ с сообщением о существующей заявке.</returns>
     public async Task<Response<SendCoffeeShopToModerationResponse>> Handle(SendCoffeeShopToModerationRequest request,
         CancellationToken cancellationToken)
     {
@@ -49,5 +55,4 @@ public class SendCoffeeShopToModerationHandler(
         return Response<SendCoffeeShopToModerationResponse>.Success(null, "CoffeeShop added to moderation.");
     }
 }
-
 

@@ -12,6 +12,10 @@ public class CoffeeShopApprovedEventConsumer(
     IGenericRepository<Location> locationRepository,
     IUnitOfWork unitOfWork) : IConsumer<CoffeeShopApprovedEvent>
 {
+    /// <summary>
+    /// Обрабатывает событие подтверждения кофейни: создаёт запись Shop и при наличии данных создаёт связанные Location, ShopContact и ShopPhoto, затем сохраняет изменения в репозиториях.
+    /// </summary>
+    /// <param name="consumeContext">Контекст сообщения MassTransit, содержащий экземпляр CoffeeShopApprovedEvent и CancellationToken для отмены операции.</param>
     public async Task Consume(ConsumeContext<CoffeeShopApprovedEvent> consumeContext)
     {
         var @event = consumeContext.Message;
@@ -78,4 +82,3 @@ public class CoffeeShopApprovedEventConsumer(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
-
