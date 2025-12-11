@@ -1,14 +1,15 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.DB;
-using CoffeePeek.ShopsService.Entities.Shop;
 using CoffeePeek.ShopsService.Handlers.CoffeeShop.Review;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using CoffeePeek.ShopsService.Entities;
 using FluentAssertions;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
+using ValidationResult = CoffeePeek.ShopsService.Abstractions.ValidationStrategy.ValidationResult;
 
 namespace CoffeePeek.ShopsService.Tests.Handlers;
 
@@ -69,7 +70,7 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 
         _validationStrategyMock
             .Setup(x => x.Validate(request))
-            .Returns(new Abstractions.ValidationStrategy.ValidationResult { IsValid = true });
+            .Returns(new ValidationResult() { IsValid = true });
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -105,7 +106,7 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 
         _validationStrategyMock
             .Setup(x => x.Validate(request))
-            .Returns(new Abstractions.ValidationStrategy.ValidationResult 
+            .Returns(new ValidationResult 
             { 
                 IsValid = false, 
                 ErrorMessage = "Header is required" 
@@ -170,7 +171,7 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 
         _validationStrategyMock
             .Setup(x => x.Validate(request))
-            .Returns(new Abstractions.ValidationStrategy.ValidationResult { IsValid = true });
+            .Returns(new ValidationResult { IsValid = true });
 
         // Act
         await _sut.Handle(request, CancellationToken.None);

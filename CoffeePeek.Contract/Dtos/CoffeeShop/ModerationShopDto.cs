@@ -7,11 +7,11 @@ namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 
 public class ModerationShopDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Name { get; set; }
     public string NotValidatedAddress { get; set; } 
     public int? Address { get; set; }
-    [JsonIgnore] public int? ShopContactId { get; set; }
+    [JsonIgnore] public Guid? ShopContactId { get; set; }
     [JsonIgnore] public Guid UserId { get; set; }
 
     public ModerationStatus ModerationStatus { get; set; }

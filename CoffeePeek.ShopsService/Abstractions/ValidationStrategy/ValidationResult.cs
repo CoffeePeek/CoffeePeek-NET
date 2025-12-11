@@ -1,4 +1,4 @@
-namespace CoffeePeek.BusinessLogic.Abstractions;
+namespace CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 
 public class ValidationResult
 {

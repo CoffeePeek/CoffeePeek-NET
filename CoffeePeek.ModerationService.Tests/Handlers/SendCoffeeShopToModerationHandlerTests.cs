@@ -32,7 +32,7 @@ public class SendCoffeeShopToModerationHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WithValidRequest_CreatesModeration ShopAndReturnsSuccess()
+    public async Task Handle_WithValidRequest_CreatesModerationShopAndReturnsSuccess()
     {
         // Arrange
         var request = new SendCoffeeShopToModerationRequest
@@ -42,11 +42,7 @@ public class SendCoffeeShopToModerationHandlerTests
             UserId = Guid.NewGuid()
         };
 
-        var geocodingResult = new GeocodingResult
-        {
-            Latitude = 55.7558m,
-            Longitude = 37.6173m
-        };
+        var geocodingResult = new GeocodingResult(Latitude:55.7558m, Longitude:37.6173m);
 
         _repositoryMock
             .Setup(x => x.GetByNameAndAddressAsync(request.Name, request.NotValidatedAddress, request.UserId))

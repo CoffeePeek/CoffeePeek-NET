@@ -41,7 +41,7 @@ public class GetProfileHandlerTests : IDisposable
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync();
 
-        var request = new GetProfileRequest { UserId = userId };
+        var request = new GetProfileRequest(userId);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -59,7 +59,7 @@ public class GetProfileHandlerTests : IDisposable
     public async Task Handle_WithNonExistentUser_ReturnsError()
     {
         // Arrange
-        var request = new GetProfileRequest { UserId = Guid.NewGuid() };
+        var request = new GetProfileRequest(Guid.NewGuid());
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -94,7 +94,7 @@ public class GetProfileHandlerTests : IDisposable
         _dbContext.UserStatistics.Add(statistics);
         await _dbContext.SaveChangesAsync();
 
-        var request = new GetProfileRequest { UserId = userId };
+        var request = new GetProfileRequest(userId);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -120,7 +120,7 @@ public class GetProfileHandlerTests : IDisposable
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync();
 
-        var request = new GetProfileRequest { UserId = userId };
+        var request = new GetProfileRequest(userId);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -134,7 +134,7 @@ public class GetProfileHandlerTests : IDisposable
     public async Task Handle_WithEmptyGuid_ReturnsError()
     {
         // Arrange
-        var request = new GetProfileRequest { UserId = Guid.Empty };
+        var request = new GetProfileRequest(Guid.Empty);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
