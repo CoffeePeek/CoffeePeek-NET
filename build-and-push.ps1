@@ -73,7 +73,16 @@ Invoke-DockerCommand `
     -Command "docker push winststreloc/coffeepeek.moderationservice:dev" `
     -Description "Pushing ModerationService image"
 
-# 5. Gateway
+# 5. JobVacancies
+Invoke-DockerCommand `
+    -Command "docker build -t winststreloc/coffeepeek.jobvacancies:dev -f CoffeePeek.JobVacancies/JobVacancies.Dockerfile ." `
+    -Description "Building JobVacancies image"
+
+Invoke-DockerCommand `
+    -Command "docker push winststreloc/coffeepeek.jobvacancies:dev" `
+    -Description "Pushing JobVacancies image"
+
+# 6. Gateway
 Invoke-DockerCommand `
     -Command "docker build -t winststreloc/gateway:dev -f CoffeePeek.Gateway/Gateway.Dockerfile ." `
     -Description "Building Gateway image"

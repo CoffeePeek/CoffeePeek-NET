@@ -74,3 +74,6 @@ public class CheckInController(IMediator mediator) : Controller
     }
 }
 
+
+
+

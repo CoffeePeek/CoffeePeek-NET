@@ -10,3 +10,5 @@ public class ScheduleException
     public TimeSpan? OpeningTime { get; set; }
     public TimeSpan? ClosingTime { get; set; }
 }
+
+

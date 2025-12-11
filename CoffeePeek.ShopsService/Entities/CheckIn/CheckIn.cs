@@ -19,3 +19,6 @@ public class CheckIn
     public virtual Review? Review { get; set; }
 }
 
+
+
+

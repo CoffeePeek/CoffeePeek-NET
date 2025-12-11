@@ -9,6 +9,7 @@ using CoffeePeek.ModerationService.Models;
 using CoffeePeek.ModerationService.Repositories;
 using CoffeePeek.ModerationService.Repositories.Interfaces;
 using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Infrastructure.Options;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

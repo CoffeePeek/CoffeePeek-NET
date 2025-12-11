@@ -16,3 +16,5 @@ public record CoffeeShopApprovedEvent(
     ICollection<string> ShopPhotos,
     ICollection<ScheduleDto> Schedules
 );
+
+

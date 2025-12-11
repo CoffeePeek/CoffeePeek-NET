@@ -17,7 +17,7 @@ public class LoginUserHandler(
     IJWTTokenService jwtTokenService,
     ISignInManager signInManager,
     IPublishEndpoint publishEndpoint,
-    ILogger logger)
+    ILogger<LoginUserHandler> logger)
     : IRequestHandler<LoginUserCommand, Contract.Responses.Response<LoginResponse>>
 {
     public async Task<Contract.Responses.Response<LoginResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)

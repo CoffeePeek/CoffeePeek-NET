@@ -32,3 +32,5 @@ public class ModerationShop
     public ICollection<Schedule> Schedules { get; set; }
     public ICollection<ScheduleException> ScheduleExceptions { get; set; }
 }
+
+

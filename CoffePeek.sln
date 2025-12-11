@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CoffeePeek.ModerationService\ModerationService.Dockerfile = CoffeePeek.ModerationService\ModerationService.Dockerfile
 		build-and-push.ps1 = build-and-push.ps1
 		CoffeePeek.ShopsService\ShopsService.Dockerfile = CoffeePeek.ShopsService\ShopsService.Dockerfile
+		CoffeePeek.JobVacancies\JobVacancies.Dockerfile = CoffeePeek.JobVacancies\JobVacancies.Dockerfile
+		CoffeePeek.Gateway\Gateway.Dockerfile = CoffeePeek.Gateway\Gateway.Dockerfile
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CoffeePeek.Photo", "CoffeePeek.Photo", "{B135B7F3-9AB9-49D4-9487-001B656C3A36}"
@@ -50,6 +52,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Data", "CoffeePeek.Data\CoffeePeek.Data.csproj", "{ABE7F92D-DD3F-43E2-80E8-CDFDC4F390FD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Gateway", "CoffeePeek.Gateway\CoffeePeek.Gateway.csproj", "{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.JobVacancies", "CoffeePeek.JobVacancies\CoffeePeek.JobVacancies.csproj", "{131AA69D-0328-4198-8FA2-01E879DD32ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ShopService", "ShopService", "{AF31A30C-BF88-49FA-8728-A74210FD536A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,6 +123,10 @@ Global
 		{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014}.Release|Any CPU.Build.0 = Release|Any CPU
+		{131AA69D-0328-4198-8FA2-01E879DD32ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{131AA69D-0328-4198-8FA2-01E879DD32ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{131AA69D-0328-4198-8FA2-01E879DD32ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{131AA69D-0328-4198-8FA2-01E879DD32ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F0E8ABFC-8079-40BF-8A62-5134395E6EC6} = {B135B7F3-9AB9-49D4-9487-001B656C3A36}
@@ -132,8 +142,10 @@ Global
 		{1FCF5A5D-9618-44BD-92F8-B7A4337C3C15} = {325A4B29-924A-4ABB-A68F-BE87C80A5B55}
 		{8263F50E-FECF-4613-A98B-F46A951C9E39} = {DFBC1184-60D4-4FB2-999A-441CD36F162D}
 		{CD0FAA76-CC2A-4C05-AF68-84EE1724A3ED} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
-		{8C7DA135-5D75-4CCF-B1CB-2FAFC03EC91B} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
 		{ABE7F92D-DD3F-43E2-80E8-CDFDC4F390FD} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
-		{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014} = {DFBC1184-60D4-4FB2-999A-441CD36F162D}
+		{131AA69D-0328-4198-8FA2-01E879DD32ED} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
+		{7FE533B7-FFAB-49EF-B40D-C02E1C8F6014} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
+		{AF31A30C-BF88-49FA-8728-A74210FD536A} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
+		{8C7DA135-5D75-4CCF-B1CB-2FAFC03EC91B} = {AF31A30C-BF88-49FA-8728-A74210FD536A}
 	EndGlobalSection
 EndGlobal
