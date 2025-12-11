@@ -12,7 +12,7 @@ public class ModerationShop
         ScheduleExceptions = new HashSet<ScheduleException>();
     }
     
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     [MaxLength(50)]
@@ -21,8 +21,8 @@ public class ModerationShop
     public string NotValidatedAddress { get; set; }
     public string Address { get; set; }
     public Guid UserId { get; set; }
-    public int? ShopContactId { get; set; }
-    public int? ShopId { get; set; }
+    public Guid? ShopContactId { get; set; }
+    public Guid? ShopId { get; set; }
 
     public ModerationStatus ModerationStatus { get; set; }
     public ShopStatus Status { get; set; }

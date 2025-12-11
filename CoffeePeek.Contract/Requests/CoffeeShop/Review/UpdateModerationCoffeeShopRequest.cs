@@ -10,7 +10,7 @@ namespace CoffeePeek.Contract.Requests.CoffeeShop.Review;
 public class UpdateModerationCoffeeShopRequest : IRequest<Response<UpdateModerationCoffeeShopResponse>>
 {
     [JsonIgnore] public Guid UserId { get; set; }
-    public int ReviewShopId { get; set; }
+    public Guid ReviewShopId { get; set; }
     public string? Description { get; set; }
     public List<byte[]>? ShopPhotos { get; set; }
     public List<ScheduleDto>? Schedules { get; set; }
