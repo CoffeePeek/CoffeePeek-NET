@@ -37,7 +37,7 @@ public class GetVacanciesHandler(
         }
 
         var items = await repository.GetAllByCityIdWithPagination(request.CityId, request.JobType, request.Page,
-            request.PerPage, cancellationToken);
+                        request.PerPage, cancellationToken);
 
         var dtoItems = mapper.Map<List<JobVacancyDto>>(items);
 
@@ -47,7 +47,7 @@ public class GetVacanciesHandler(
             Page = request.Page,
             PerPage = request.PerPage,
             Total = items.Length,
-            TotalPages = (int)Math.Ceiling(items.Length / (double)request.PerPage)
+                       TotalPages = (int)Math.Ceiling(items.Length / (double)request.PerPage)
         };
 
         await redisService.SetAsync(cacheKey, response);

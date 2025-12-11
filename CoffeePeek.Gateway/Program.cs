@@ -25,7 +25,8 @@ if (CorsModule.IsCorsEnabled())
 app.UseResponseCaching();
 app.ConfigureCustomCaching();
 
-app.ConfigureSwaggerEndpoints();
+    
+app.ConfigureSwaggerEndpoints(app.Services.GetRequiredService<ILogger<Program>>());
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "Gateway", timestamp = DateTime.UtcNow }))
     .WithName("HealthCheck")

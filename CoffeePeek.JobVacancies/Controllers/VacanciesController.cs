@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Contract.Responses;
+﻿using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.JobVacancies.Commands;
 using CoffeePeek.JobVacancies.Entities;
 using CoffeePeek.JobVacancies.Models.Responses;
@@ -13,10 +14,10 @@ public class VacanciesController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     public async Task<Response<JobVacanciesResponse>> GetJobs(
-        [FromQuery] Guid cityId,
+        [FromQuery, Required] Guid cityId,
         [FromQuery] CPJobType jobType = CPJobType.All,
-        [FromQuery] int page = 1,
-        [FromQuery] int perPage = 20,
+        [FromQuery][Range(1, int.MaxValue)] int page = 1,
+        [FromQuery][Range(1, 100)] int perPage = 20,
         CancellationToken cancellationToken = default)
     {
         return await mediator.Send(new GetVacanciesCommand(cityId, jobType, page, perPage), cancellationToken);

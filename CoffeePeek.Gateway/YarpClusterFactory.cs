@@ -43,7 +43,7 @@ public static class YarpClusterFactory
     private static string GetServiceVariable(string hostVar, string defaultName)
     {
         return Environment.GetEnvironmentVariable(hostVar) 
-            ?? Environment.GetEnvironmentVariable(hostVar.Replace("_SERVICE_", "_")) // Поиск по сокращенному имени (AUTH_HOST)
+            ?? Environment.GetEnvironmentVariable(hostVar.Replace("_SERVICE_", "_")) // Search by shortened name (e.g., AUTH_HOST)
             ?? defaultName;
     }
 }

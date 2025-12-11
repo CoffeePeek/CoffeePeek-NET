@@ -23,18 +23,17 @@ public class MapsterConfiguration
             .Map(dest => dest.Source, _ => "hh.ru")
             .Map(dest => dest.Title, src => src.Name)
             .Map(dest => dest.Company, src => src.Employer != null ? src.Employer.Name : "Unknown")
-            .Map(dest => dest.Url, src => src.AlternateUrl ?? src.ApplyAlternateUrl)
+            .Map(dest => dest.Url, src => src.AlternateUrl)
             .Map(dest => dest.SalaryFrom, src => src.Salary != null ? src.Salary.From : null)
             .Map(dest => dest.SalaryTo, src => src.Salary != null ? src.Salary.To : null)
             .Map(dest => dest.Currency, src => src.Salary != null ? src.Salary.Currency : null)
             .Map(dest => dest.PublishedAt, src => src.PublishedAt)
             .Map(dest => dest.SyncedAt, _ => DateTime.UtcNow)
-            .Map(dest => dest.ProfessionalRole, 
+            .Map(dest => dest.ProfessionalRole,
                 src => src.ProfessionalRoles != null && src.ProfessionalRoles.Any()
                     ? src.ProfessionalRoles.First().Name
                     : null)
-            .Map(dest => dest.Area, src => src.Area != null ? (src.Area.Name ?? src.Area.Id) : null)
-            .Map(dest => dest.Type, _ => CPJobType.Barista);
+            .Map(dest => dest.Area, src => src.Area != null ? (src.Area.Name ?? src.Area.Id) : null);
         
         return config;
     }

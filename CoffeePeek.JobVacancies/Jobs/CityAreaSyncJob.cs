@@ -1,4 +1,5 @@
 using CoffeePeek.JobVacancies.Services;
+using Hangfire;
 
 namespace CoffeePeek.JobVacancies.Jobs;
 
@@ -7,20 +8,20 @@ public class CityAreaSyncJob(
     ICitySyncService citySyncService,
     ILogger<CityAreaSyncJob> logger)
 {
-    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public async Task ExecuteAsync(IJobCancellationToken cancellationToken)
     {
         logger.LogInformation("Starting CityAreaSyncJob...");
 
         try
         {
-            var hhAreas = await hhApiService.GetAreas(cancellationToken);
+            var hhAreas = await hhApiService.GetAreas(cancellationToken.ShutdownToken);
             if (hhAreas.Count == 0)
             {
                 logger.LogWarning("No areas found in hh.ru response");
                 return;
             }
 
-            var stats = await citySyncService.SyncCitiesAsync(hhAreas, cancellationToken);
+            var stats = await citySyncService.SyncCitiesAsync(hhAreas, cancellationToken.ShutdownToken);
 
             logger.LogInformation("CityAreaSyncJob finished: updated={Updated}, notFound={NotFound}", stats.updated, stats.notFound);
         }

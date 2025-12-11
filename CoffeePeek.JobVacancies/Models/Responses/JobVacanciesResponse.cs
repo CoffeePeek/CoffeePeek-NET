@@ -9,7 +9,5 @@ public class JobVacanciesResponse
     public int Found { get; init; }
     public int Total { get; init; }
     public int TotalPages { get; init; }
-    public IReadOnlyCollection<JobVacancyDto> Items { get; init; }
+    public IReadOnlyCollection<JobVacancyDto> Items { get; init; } = new HashSet<JobVacancyDto>();
 }
-
-

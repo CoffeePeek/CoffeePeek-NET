@@ -57,9 +57,6 @@ builder.Services.AddHangfire((sp, config) =>
 });
 builder.Services.AddHangfireServer();
 
-// Cache
-builder.Services.AddCacheModule();
-
 // MediatR
 builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
 
@@ -96,12 +93,12 @@ app.UseHangfireDashboard();
 // Recurring job: sync cities with hh.ru areas once per 24 hours
 RecurringJob.AddOrUpdate<CityAreaSyncJob>(
     "city-area-sync",
-    job => job.ExecuteAsync(CancellationToken.None),
+    job => job.ExecuteAsync(JobCancellationToken.Null),
     Cron.Daily);
 
 RecurringJob.AddOrUpdate<HhVacanciesRecurringJob>(
     "vacancies-sync",
-    job => job.ExecuteAsync(CancellationToken.None),
+    job => job.ExecuteAsync(JobCancellationToken.Null),
     Cron.HourInterval(2));
 
 app.Run();

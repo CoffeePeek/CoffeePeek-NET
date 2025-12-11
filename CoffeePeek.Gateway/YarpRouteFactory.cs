@@ -11,11 +11,9 @@ public static class YarpRouteFactory
     [
         new("auth", "auth", "auth-cluster"),
         new("user", "user", "user-cluster"),
-        // Преобразование пути: /api/shops/ -> /api/CoffeeShop/
         new("shops", "shops", "shops-cluster", "/api/CoffeeShop/{**catch-all}"),
-        new("checkin", "CheckIn", "shops-cluster"), // CheckIn также идет в shops-cluster
+        new("checkin", "CheckIn", "shops-cluster"), 
         new("moderation", "moderation", "moderation-cluster"),
-        // Преобразование пути: /api/photo/ -> /api/
         new("photo", "photo", "photo-cluster", "/api/{**catch-all}"),
         new("jobs", "vacancies", "jobs-cluster", "/api/vacancies/{**catch-all}")
     ];
@@ -44,7 +42,6 @@ public static class YarpRouteFactory
         routes.Add(new RouteConfig
         {
             RouteId = "gateway-swagger-json",
-            // ClusterId = null, 
             Match = new RouteMatch
             {
                 Path = "/swagger/v1/swagger.json"

@@ -7,7 +7,8 @@ public static class ApplicationExtensions
         app.Use(async (context, next) =>
         {
             await next();
-            if (HttpMethods.IsGet(context.Request.Method) &&
+            if (!context.Response.HasStarted &&
+                HttpMethods.IsGet(context.Request.Method) &&
                 context.Request.Path.StartsWithSegments("/api/vacancies", StringComparison.OrdinalIgnoreCase) &&
                 context.Response.StatusCode == StatusCodes.Status200OK)
             {
@@ -16,10 +17,8 @@ public static class ApplicationExtensions
         });
     }
 
-    public static void ConfigureSwaggerEndpoints(this WebApplication app)
+    public static void ConfigureSwaggerEndpoints(this WebApplication app, ILogger logger)
     {
-        var logger = app.Services.GetRequiredService<ILogger<Program>>();
-        
         var isDebug = Environment.GetEnvironmentVariable("IS_DEBUG");
         var showSwagger = app.Environment.IsDevelopment() || 
                           (!string.IsNullOrEmpty(isDebug) && 

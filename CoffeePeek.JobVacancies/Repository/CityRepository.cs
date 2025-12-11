@@ -10,7 +10,7 @@ public class CityRepository(JobVacanciesDbContext dbContext) : ICityRepository
 
     public async Task<IReadOnlyList<int>> GetHhAreasAsync(CancellationToken cancellationToken = default)
     {
-        return await _cities.AsNoTracking().Select(x => x.HhAreaId).ToArrayAsync(cancellationToken);
+        return await _cities.AsNoTracking().Select(x => x.HhAreaId).Distinct().ToArrayAsync(cancellationToken);
     }
 
     public async Task UpsertAsync(CityMap map, CancellationToken cancellationToken = default)
@@ -28,8 +28,8 @@ public class CityRepository(JobVacanciesDbContext dbContext) : ICityRepository
         else
         {
             existing.HhAreaId = map.HhAreaId;
+            existing.CityName = map.CityName;
             existing.UpdatedAt = DateTime.UtcNow;
-            _cities.Update(existing);
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
@@ -53,7 +53,8 @@ public class CityRepository(JobVacanciesDbContext dbContext) : ICityRepository
             .Where(x => areaIdsList.Contains(x.HhAreaId))
             .ToListAsync(cancellationToken);
 
-        return cities.ToDictionary(x => x.HhAreaId, x => x);
+        return cities
+            .GroupBy(x => x.HhAreaId)
+            .ToDictionary(g => g.Key, g => g.First());
     }
 }
-

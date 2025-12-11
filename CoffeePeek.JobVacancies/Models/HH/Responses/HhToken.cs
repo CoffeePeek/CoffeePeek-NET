@@ -17,5 +17,5 @@ public class HhToken
     public string TokenType { get; set; } = null!;
 
     [JsonIgnore]
-    public DateTime IssuedAt { get; set; }
+    public DateTimeOffset IssuedAt { get; set; }
 }

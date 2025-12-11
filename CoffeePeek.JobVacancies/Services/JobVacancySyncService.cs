@@ -29,8 +29,9 @@ public class JobVacancySyncService(
                 .ToList();
 
             var hhAreaIds = vacancies
-                .Where(v => v.Area?.Id != null && int.TryParse(v.Area.Id, out _))
-                .Select(v => int.Parse(v.Area!.Id!))
+                .Select(v => (Vacancy: v, Parsed: int.TryParse(v.Area?.Id, out var id) ? id : (int?)null))
+                .Where(x => x.Parsed.HasValue)
+                .Select(x => x.Parsed!.Value)
                 .Distinct()
                 .ToList();
 

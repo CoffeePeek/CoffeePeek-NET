@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace CoffeePeek.JobVacancies.Entities;
+﻿namespace CoffeePeek.JobVacancies.Entities;
 
 public class JobVacancy
 {
@@ -29,5 +27,5 @@ public class JobVacancy
     public DateTime PublishedAt { get; set; }
     public DateTime SyncedAt { get; set; }
     
-    public virtual CityMap CityMap { get; set; }
+    public virtual CityMap CityMap { get; set; } = null!;
 }
