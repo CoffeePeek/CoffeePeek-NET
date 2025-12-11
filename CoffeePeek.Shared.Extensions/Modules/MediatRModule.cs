@@ -6,23 +6,22 @@ namespace CoffeePeek.Shared.Extensions.Modules;
 
 public static class MediatRModule
 {
-    public static IServiceCollection AddMediatRModule(
-        this IServiceCollection services,
-        Assembly assembly)
+    extension(IServiceCollection services)
     {
-        services.AddMediatR(cfg =>
+        public IServiceCollection AddMediatRModule(Assembly assembly)
         {
-            cfg.RegisterServicesFromAssembly(assembly);
-        });
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(assembly);
+            });
 
-        return services;
-    }
+            return services;
+        }
 
-    public static IServiceCollection AddMediatRModule(
-        this IServiceCollection services,
-        Type typeFromAssembly)
-    {
-        return services.AddMediatRModule(typeFromAssembly.Assembly);
+        public IServiceCollection AddMediatRModule(Type typeFromAssembly)
+        {
+            return services.AddMediatRModule(typeFromAssembly.Assembly);
+        }
     }
 }
 

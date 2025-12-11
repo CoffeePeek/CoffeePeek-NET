@@ -17,3 +17,5 @@ public class GetUserCheckInsCommand(Guid userId, int pageNumber, int pageSize)
     [Range(1, 100)]
     public int PageSize { get; init; } = pageSize;
 }
+
+

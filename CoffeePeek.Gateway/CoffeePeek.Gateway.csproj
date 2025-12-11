@@ -15,4 +15,10 @@
     <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>

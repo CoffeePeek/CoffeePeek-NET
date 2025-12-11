@@ -1,4 +1,4 @@
-﻿namespace CoffeePeek.Shared.Infrastructure;
+﻿namespace CoffeePeek.Shared.Infrastructure.Constants;
 
 public class RoleConsts
 {

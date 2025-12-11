@@ -7,6 +7,7 @@ using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Data.Interfaces;
 using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Infrastructure.Constants;
 using MediatR;
 
 namespace CoffeePeek.AuthService.Handlers;
