@@ -9,4 +9,3 @@ public record GeocodingResult(
     decimal Latitude,
     decimal Longitude
 );
-

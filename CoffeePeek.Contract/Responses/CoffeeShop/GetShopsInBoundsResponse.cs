@@ -2,13 +2,8 @@ using CoffeePeek.Contract.Dtos.CoffeeShop;
 
 namespace CoffeePeek.Contract.Responses.CoffeeShop;
 
-public class GetShopsInBoundsResponse
+public class GetShopsInBoundsResponse(IEnumerable<MapShopDto> shops)
 {
-    public GetShopsInBoundsResponse(IEnumerable<MapShopDto> shops)
-    {
-        Shops = shops.ToArray();
-    }
-
-    public MapShopDto[] Shops { get; set; }
+    public MapShopDto[] Shops { get; } = shops.ToArray();
 }
 

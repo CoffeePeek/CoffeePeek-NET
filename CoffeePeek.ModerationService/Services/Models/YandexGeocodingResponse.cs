@@ -5,10 +5,10 @@ namespace CoffeePeek.ModerationService.Services.Models;
 public class YandexGeocodingResponse
 {
     [JsonPropertyName("response")]
-    public Response? Response { get; set; }
+    public GeocodingResponseData? Response { get; set; }
 }
 
-public class Response
+public class GeocodingResponseData
 {
     [JsonPropertyName("GeoObjectCollection")]
     public GeoObjectCollection? GeoObjectCollection { get; set; }

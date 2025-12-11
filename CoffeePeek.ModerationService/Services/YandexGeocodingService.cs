@@ -42,15 +42,15 @@ public class YandexGeocodingService(
             }
 
             var coordinates = geoObject.Point.Pos.Split(' ');
-            if (coordinates.Length != 2 ||
-                !decimal.TryParse(coordinates[1], out var latitude) ||
-                !decimal.TryParse(coordinates[0], out var longitude))
+            if (coordinates.Length == 2 &&
+                decimal.TryParse(coordinates[1], out var latitude) &&
+                decimal.TryParse(coordinates[0], out var longitude))
             {
-                logger.LogWarning("Invalid coordinates format in geocoding response for address: {Address}", address);
-                return null;
+                return new GeocodingResult(latitude, longitude);
             }
+            logger.LogWarning("Invalid coordinates format in geocoding response for address: {Address}", address);
+            return null;
 
-            return new GeocodingResult(latitude, longitude);
         }
         catch (HttpRequestException ex)
         {

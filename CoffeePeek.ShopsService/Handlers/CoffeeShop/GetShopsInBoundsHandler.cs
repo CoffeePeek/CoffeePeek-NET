@@ -16,7 +16,6 @@ public class GetShopsInBoundsHandler(ShopsDbContext dbContext)
     {
         var shops = await dbContext.Shops
             .AsNoTracking()
-            .Include(s => s.Location)
             .Where(s => s.Location != null &&
                        s.Location.Latitude.HasValue &&
                        s.Location.Longitude.HasValue &&
@@ -31,6 +30,7 @@ public class GetShopsInBoundsHandler(ShopsDbContext dbContext)
                 Longitude = s.Location!.Longitude!.Value,
                 Title = s.Name
             })
+            .Take(500)
             .ToArrayAsync(cancellationToken);
 
         var response = new GetShopsInBoundsResponse(shops);

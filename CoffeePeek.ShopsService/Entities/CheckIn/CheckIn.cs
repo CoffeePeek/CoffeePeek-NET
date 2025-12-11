@@ -18,4 +18,3 @@ public class CheckIn
     public virtual Shop Shop { get; set; }
     public virtual Review? Review { get; set; }
 }
-
