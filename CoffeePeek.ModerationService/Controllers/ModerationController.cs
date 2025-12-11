@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
@@ -65,8 +66,9 @@ public class ModerationController(IMediator mediator) : Controller
     [HttpPut("status")]
     [Authorize(Policy = RoleConsts.Admin)]
     [Description("Updates a review coffee shop status")]
-    public async Task<Response> UpdateModerationCoffeeShopStatus([FromQuery] int id, 
-        [FromQuery] ModerationStatus status)
+    public async Task<Response> UpdateModerationCoffeeShopStatus(
+        [FromQuery, Required] Guid id, 
+        [FromQuery, Required] ModerationStatus status)
     {
         var userId = User.GetUserIdOrThrow();
         

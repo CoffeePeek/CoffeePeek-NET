@@ -8,7 +8,7 @@ namespace CoffeePeek.ModerationService.Repositories;
 
 public class ModerationShopRepository(IGenericRepository<ModerationShop> shopRepository) : IModerationShopRepository
 {
-    public async Task<ModerationShop?> GetByIdAsync(int id)
+    public async Task<ModerationShop?> GetByIdAsync(Guid id)
     {
         return await shopRepository.Query()
             .Include(s => s.ShopContacts)

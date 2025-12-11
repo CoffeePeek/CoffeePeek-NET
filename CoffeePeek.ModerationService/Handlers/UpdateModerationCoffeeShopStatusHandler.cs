@@ -55,7 +55,9 @@ public class UpdateModerationCoffeeShopStatusHandler(
                 shop.Status,
                 contactDto,
                 photos,
-                schedules
+                schedules,
+                shop.Latitude,
+                shop.Longitude
             );
 
             await publishEndpoint.Publish(approvedEvent, cancellationToken);

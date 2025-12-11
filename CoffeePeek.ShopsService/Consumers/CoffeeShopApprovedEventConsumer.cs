@@ -9,72 +9,73 @@ public class CoffeeShopApprovedEventConsumer(
     IGenericRepository<Shop> shopRepository,
     IGenericRepository<ShopContact> shopContactsRepository,
     IGenericRepository<ShopPhoto> shopPhotoRepository,
+    IGenericRepository<Location> locationRepository,
     IUnitOfWork unitOfWork) : IConsumer<CoffeeShopApprovedEvent>
 {
-    public  Task Consume(ConsumeContext<CoffeeShopApprovedEvent> consumeContext)
+    public async Task Consume(ConsumeContext<CoffeeShopApprovedEvent> consumeContext)
     {
-        return Task.CompletedTask;
-        // var @event = consumeContext.Message;
-        // var cancellationToken = consumeContext.CancellationToken;
-        //
-        // // Создаем Shop
-        // var shop = new Shop
-        // {
-        //     Id = Guid.NewGuid(),
-        //     Name = @event.Name,
-        //     Address = @event.NotValidatedAddress,
-        //     Latitude = @event.Latitude,
-        //     Longitude = @event.Longitude
-        // };
-        //
-        // await shopRepository.AddAsync(shop, cancellationToken);
-        // await unitOfWork.SaveChangesAsync(cancellationToken);
-        //
-        // // Получаем числовой идентификатор для связи с сущностями, использующими int ShopId
-        // // Используем хеш от Guid для получения int значения
-        // var shopIdInt = Math.Abs(shop.Id.GetHashCode());
-        //
-        // // Создаем ShopContacts если есть
-        // if (@event.ShopContact != null)
-        // {
-        //     var shopContacts = new ShopContact
-        //     {
-        //         ShopId = shopIdInt,
-        //         PhoneNumber = @event.ShopContact.PhoneNumber,
-        //         InstagramLink = @event.ShopContact.InstagramLink
-        //     };
-        //     await shopContactsRepository.AddAsync(shopContacts, cancellationToken);
-        // }
-        //
-        // // Создаем ShopPhotos
-        // if (@event.ShopPhotos != null && @event.ShopPhotos.Any())
-        // {
-        //     var photos = @event.ShopPhotos.Select(url => new ShopPhoto
-        //     {
-        //         ShopId = shopIdInt,
-        //         Url = url,
-        //         UserId = @event.UserId
-        //     }).ToList();
-        //     
-        //     await shopPhotoRepository.AddRangeAsync(photos, cancellationToken);
-        // }
-        //
-        // // Создаем Schedules
-        // if (@event.Schedules != null && @event.Schedules.Any())
-        // {
-        //     var schedules = @event.Schedules.Select(s => new Schedule
-        //     {
-        //         ShopId = shopIdInt,
-        //         DayOfWeek = s.DayOfWeek.Value,
-        //         OpeningTime = s.OpeningTime,
-        //         ClosingTime = s.ClosingTime
-        //     }).ToList();
-        //     
-        //     await scheduleRepository.AddRangeAsync(schedules, cancellationToken);
-        // }
-        //
-        // // Сохраняем все изменения одним вызовом
-        // await unitOfWork.SaveChangesAsync(cancellationToken);
+        var @event = consumeContext.Message;
+        var cancellationToken = consumeContext.CancellationToken;
+
+        // Создаем Shop
+        var shop = new Shop
+        {
+            Id = Guid.NewGuid(),
+            Name = @event.Name,
+            CityId = Guid.Empty // TODO: Get CityId from event or other source
+        };
+
+        await shopRepository.AddAsync(shop, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Создаем Location с координатами, если они есть
+        if (@event.Latitude.HasValue && @event.Longitude.HasValue)
+        {
+            var location = new Location
+            {
+                Id = Guid.NewGuid(),
+                Address = @event.address ?? @event.NotValidatedAddress,
+                Latitude = @event.Latitude,
+                Longitude = @event.Longitude,
+                ShopId = shop.Id
+            };
+
+            await locationRepository.AddAsync(location, cancellationToken);
+            shop.LocationId = location.Id;
+            shopRepository.Update(shop);
+        }
+
+        // Создаем ShopContacts если есть
+        if (@event.ShopContact != null)
+        {
+            var shopContacts = new ShopContact
+            {
+                Id = Guid.NewGuid(),
+                ShopId = shop.Id,
+                PhoneNumber = @event.ShopContact.PhoneNumber,
+                InstagramLink = @event.ShopContact.InstagramLink
+            };
+            await shopContactsRepository.AddAsync(shopContacts, cancellationToken);
+            shop.ShopContactId = shopContacts.Id;
+            shopRepository.Update(shop);
+        }
+
+        // Создаем ShopPhotos
+        if (@event.ShopPhotos != null && @event.ShopPhotos.Any())
+        {
+            var photos = @event.ShopPhotos.Select(url => new ShopPhoto
+            {
+                Id = Guid.NewGuid(),
+                ShopId = shop.Id,
+                Url = url,
+                UserId = @event.UserId
+            }).ToList();
+            
+            await shopPhotoRepository.AddRangeAsync(photos, cancellationToken);
+        }
+
+        // Сохраняем все изменения одним вызовом
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
 

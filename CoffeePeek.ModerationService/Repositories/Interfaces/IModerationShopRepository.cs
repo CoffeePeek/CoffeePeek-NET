@@ -5,7 +5,7 @@ namespace CoffeePeek.ModerationService.Repositories.Interfaces;
 
 public interface IModerationShopRepository
 {
-    Task<ModerationShop?> GetByIdAsync(int id);
+    Task<ModerationShop?> GetByIdAsync(Guid id);
     Task<List<ModerationShop>> GetByUserIdAsync(Guid userId);
     Task<List<ModerationShop>> GetAllAsync();
     Task<List<ModerationShop>> GetByStatusAsync(ModerationStatus status);

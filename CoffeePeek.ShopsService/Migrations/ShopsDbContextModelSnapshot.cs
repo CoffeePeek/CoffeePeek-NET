@@ -179,6 +179,8 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.HasIndex("ShopId")
                         .IsUnique();
 
+                    b.HasIndex("Latitude", "Longitude");
+
                     b.ToTable("Locations");
                 });
 
