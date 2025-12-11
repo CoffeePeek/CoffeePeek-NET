@@ -57,6 +57,9 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
                 .WithOne(s => s.Location)
                 .HasForeignKey<Location>(sc => sc.ShopId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            // Spatial index for efficient geographical queries
+            entity.HasIndex(l => new { l.Latitude, l.Longitude });
         });
 
         modelBuilder.Entity<Shop>(entity =>

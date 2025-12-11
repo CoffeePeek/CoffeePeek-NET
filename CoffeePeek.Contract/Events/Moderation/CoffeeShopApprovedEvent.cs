@@ -14,5 +14,7 @@ public record CoffeeShopApprovedEvent(
     ShopStatus Status,
     ShopContactDto? ShopContact,
     ICollection<string> ShopPhotos,
-    ICollection<ScheduleDto> Schedules
+    ICollection<ScheduleDto> Schedules,
+    decimal? Latitude,
+    decimal? Longitude
 );

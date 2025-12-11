@@ -27,6 +27,10 @@ public class ModerationShop
     public ModerationStatus ModerationStatus { get; set; }
     public ShopStatus Status { get; set; }
     
+    public bool IsAddressValidated { get; set; } = false;
+    public decimal? Latitude { get; set; }
+    public decimal? Longitude { get; set; }
+    
     public virtual ShopContacts? ShopContacts { get; set; }
     public ICollection<ShopPhoto> ShopPhotos { get; set; }
     public ICollection<Schedule> Schedules { get; set; }
