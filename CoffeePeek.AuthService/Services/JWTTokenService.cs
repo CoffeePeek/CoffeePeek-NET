@@ -52,7 +52,7 @@ public class JWTTokenService(IOptions<JWTOptions> options, IUserManager userMana
             RefreshTokenName
         );
 
-        if (storedToken != refreshToken)
+        if (storedToken == null || storedToken != refreshToken)
             throw new UnauthorizedAccessException("Invalid refresh token.");
 
         await userManager.RemoveAuthenticationTokenAsync(

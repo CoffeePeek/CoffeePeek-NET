@@ -3,6 +3,7 @@ using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Response.Login;
+using CoffeePeek.Data.Interfaces;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using MassTransit;
@@ -17,6 +18,7 @@ public class LoginUserHandler(
     IJWTTokenService jwtTokenService,
     ISignInManager signInManager,
     IPublishEndpoint publishEndpoint,
+    IUnitOfWork unitOfWork,
     ILogger<LoginUserHandler> logger)
     : IRequestHandler<LoginUserCommand, Contract.Responses.Response<LoginResponse>>
 {
@@ -48,6 +50,9 @@ public class LoginUserHandler(
         }
 
         var authResult = await jwtTokenService.GenerateTokensAsync(user);
+        
+        // Save refresh token to database
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         await redisService.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
         await redisService.SetAsync(credentialsByEmailKey, user, TimeSpan.FromMinutes(5));

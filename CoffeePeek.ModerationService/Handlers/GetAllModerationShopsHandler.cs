@@ -23,5 +23,3 @@ public class GetAllModerationShopsHandler(IModerationShopRepository repository)
         return Response<GetCoffeeShopsInModerationByIdResponse>.Success(result);
     }
 }
-
-

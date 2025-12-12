@@ -9,7 +9,7 @@ using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
-using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Infrastructure.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 

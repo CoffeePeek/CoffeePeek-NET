@@ -10,5 +10,3 @@ public class UserStatistics
     
     public virtual User? User { get; set; }
 }
-
-

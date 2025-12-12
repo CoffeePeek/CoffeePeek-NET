@@ -6,12 +6,7 @@ namespace CoffeePeek.AuthService.Tests.Services;
 
 public class PasswordHasherServiceTests
 {
-    private readonly PasswordHasherService _sut;
-
-    public PasswordHasherServiceTests()
-    {
-        _sut = new PasswordHasherService();
-    }
+    private readonly PasswordHasherService _sut = new();
 
     [Fact]
     public void HashPassword_WithValidPassword_ReturnsNonEmptyHash()
@@ -42,8 +37,6 @@ public class PasswordHasherServiceTests
     }
 
     [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
     [InlineData("a")]
     [InlineData("VeryLongPasswordThatExceedsNormalLimitsButShouldStillBeHashedCorrectly123456789012345678901234567890")]
     public void HashPassword_WithVariousLengths_ReturnsValidHash(string password)
@@ -53,6 +46,17 @@ public class PasswordHasherServiceTests
 
         // Assert
         hash.Should().NotBeNullOrEmpty();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void HashPassword_WithEmptyOrWhitespace_ThrowsArgumentException(string password)
+    {
+        // Act & Assert
+        var act = () => _sut.HashPassword(password);
+        act.Should().Throw<ArgumentException>()
+            .WithParameterName("password");
     }
 
     [Fact]
@@ -85,44 +89,40 @@ public class PasswordHasherServiceTests
     }
 
     [Fact]
-    public void VerifyPassword_WithEmptyPassword_ReturnsFalse()
+    public void VerifyPassword_WithEmptyPassword_ThrowsArgumentException()
     {
         // Arrange
         var password = "TestPassword123!";
         var hash = _sut.HashPassword(password);
 
-        // Act
-        var result = _sut.VerifyPassword(hash, "");
-
-        // Assert
-        result.Should().BeFalse();
+        // Act & Assert
+        var act = () => _sut.VerifyPassword(hash, "");
+        act.Should().Throw<ArgumentException>()
+            .WithParameterName("providedPassword");
     }
 
     [Fact]
-    public void VerifyPassword_WithNullHash_ReturnsFalse()
+    public void VerifyPassword_WithNullHash_ThrowsArgumentException()
     {
         // Arrange
         var password = "TestPassword123!";
 
-        // Act
-        var result = _sut.VerifyPassword(null!, password);
-
-        // Assert
-        result.Should().BeFalse();
+        // Act & Assert
+        var act = () => _sut.VerifyPassword(null!, password);
+        act.Should().Throw<ArgumentException>()
+            .WithParameterName("hashedPassword");
     }
 
     [Fact]
-    public void VerifyPassword_WithInvalidHashFormat_ReturnsFalse()
+    public void VerifyPassword_WithInvalidHashFormat_ThrowsFormatException()
     {
         // Arrange
         var password = "TestPassword123!";
         var invalidHash = "InvalidHashFormat";
 
-        // Act
-        var result = _sut.VerifyPassword(invalidHash, password);
-
-        // Assert
-        result.Should().BeFalse();
+        // Act & Assert
+        var act = () => _sut.VerifyPassword(invalidHash, password);
+        act.Should().Throw<FormatException>();
     }
 
     [Fact]

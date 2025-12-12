@@ -35,7 +35,3 @@ namespace CoffeePeek.UserService.Migrations
         }
     }
 }
-
-
-
-

@@ -14,4 +14,3 @@ public class ShopContacts
     public string InstagramLink { get; set; }
 }
 
-

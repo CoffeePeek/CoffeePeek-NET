@@ -21,7 +21,7 @@ public class CheckInValidationStrategyTests : IDisposable
             .Options;
 
         _dbContext = new ShopsDbContext(options);
-        
+
         // Seed test data
         _validShopId = Guid.NewGuid();
         _dbContext.Shops.Add(new Shop

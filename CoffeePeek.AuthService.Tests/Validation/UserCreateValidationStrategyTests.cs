@@ -7,12 +7,7 @@ namespace CoffeePeek.AuthService.Tests.Validation;
 
 public class UserCreateValidationStrategyTests
 {
-    private readonly UserCreateValidationStrategy _sut;
-
-    public UserCreateValidationStrategyTests()
-    {
-        _sut = new UserCreateValidationStrategy();
-    }
+    private readonly UserCreateValidationStrategy _sut = new();
 
     [Theory]
     [InlineData("test@example.com", "ValidPass123", true)]

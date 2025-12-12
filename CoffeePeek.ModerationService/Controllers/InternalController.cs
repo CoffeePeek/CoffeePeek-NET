@@ -16,5 +16,3 @@ public class InternalController(IModerationShopRepository repository) : Controll
         return Ok(new { Count = count });
     }
 }
-
-
