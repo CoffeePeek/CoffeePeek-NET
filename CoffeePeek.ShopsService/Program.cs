@@ -29,6 +29,14 @@ builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
 // JWT Authentication
 builder.Services.AddJwtAuthModule();
 
+// Authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.Admin, policy => policy.RequireRole(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.Admin));
+    options.AddPolicy(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.User, policy => policy.RequireRole(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.User));
+    options.AddPolicy(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.Merchant, policy => policy.RequireRole(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.Merchant));
+});
+
 // Cache
 builder.Services.AddCacheModule();
 
@@ -55,6 +63,7 @@ builder.Services.AddGenericRepository<Review, ShopsDbContext>();
 builder.Services.AddGenericRepository<FavoriteShop, ShopsDbContext>();
 builder.Services.AddGenericRepository<CoffeeBean, ShopsDbContext>();
 builder.Services.AddGenericRepository<Equipment, ShopsDbContext>();
+builder.Services.AddGenericRepository<Location, ShopsDbContext>();
 
 // Database Seeder
 builder.Services.AddScoped<DatabaseSeederService>();
@@ -77,6 +86,7 @@ app.UseSwaggerDocumentation();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

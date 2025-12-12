@@ -41,6 +41,13 @@ public static class MapsterConfiguration
         config.NewConfig<CheckIn, CheckInDto>()
             .Map(dest => dest.ShopName, src => src.Shop != null ? src.Shop.Name : string.Empty);
 
+        config.NewConfig<Review, CoffeeShopReviewDto>()
+            .Map(dest => dest.Id, src => src.Id.GetHashCode()) // Convert Guid to int hash
+            .Map(dest => dest.ShopId, src => src.ShopId.GetHashCode()) // Convert Guid to int hash
+            .Map(dest => dest.UserId, src => src.UserId.GetHashCode()) // Convert Guid to int hash
+            .Map(dest => dest.CreatedAt, src => src.ReviewDate)
+            .Map(dest => dest.ShopName, src => src.Shop != null ? src.Shop.Name : string.Empty);
+
         return config;
     }
 }

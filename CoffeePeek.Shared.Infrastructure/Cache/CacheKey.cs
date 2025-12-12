@@ -104,6 +104,23 @@ public record CacheKey(
         public static string AllPattern() => $"{nameof(Shop)}:*";
     }
     
+    public static class Vacancies
+    {
+        public static CacheKey HHVacancies(string key) => new(
+            Key: $"{nameof(Vacancies)}:key:{key}",
+            DefaultTtl: TimeSpan.FromHours(1),
+            Description: "Vacancies list hh.ru by key",
+            Service: "JobVacancies");
+        
+        public static CacheKey GetAll(Guid cityId, int jobType, int page, int pageSize) => new(
+            Key: $"{nameof(Vacancies)}:city:{cityId}:type:{jobType}:page:{page}:size:{pageSize}",
+            DefaultTtl: TimeSpan.FromHours(1),
+            Description: "Vacancies list by cityId, jobType, page and pageSize",
+            Service: "JobVacancies");
+        
+        public static string AllPattern() => $"{nameof(Vacancies)}:*";
+    }
+    
     public static string AllPattern() => "*";
 }
 

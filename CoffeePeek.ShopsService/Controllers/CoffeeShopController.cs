@@ -4,6 +4,7 @@ using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.CoffeeShop;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -116,5 +117,26 @@ public class CoffeeShopController(IMediator mediator) : Controller
             Response.Headers.TryAdd("X-Current-Page", data.CurrentPage.ToString());
             Response.Headers.TryAdd("X-Page-Size", data.PageSize.ToString());
         }
+    }
+
+    [HttpGet("map")]
+    [ProducesResponseType(typeof(Response<GetShopsInBoundsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public Task<Response<GetShopsInBoundsResponse>> GetShopsInBounds(
+        [FromQuery] [Range(-90, 90)] decimal minLat,
+        [FromQuery] [Range(-180, 180)] decimal minLon,
+        [FromQuery] [Range(-90, 90)] decimal maxLat,
+        [FromQuery] [Range(-180, 180)] decimal maxLon)
+    {
+        if (minLat > maxLat || minLon > maxLon)
+        {
+            return Task.FromResult(
+                Response<GetShopsInBoundsResponse>.Error(
+                    "Invalid bounds: min values must be less than or equal to max values"));
+        }
+
+        var request = new GetShopsInBoundsRequest(minLat, minLon, maxLat, maxLon);
+        return mediator.Send(request);
     }
 }

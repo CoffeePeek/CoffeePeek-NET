@@ -11,6 +11,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["CoffeePeek.Gateway/CoffeePeek.Gateway.csproj", "CoffeePeek.Gateway/"]
 COPY ["CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj", "CoffeePeek.Shared.Extensions/"]
+COPY ["CoffeePeek.Shared.Infrastructure/CoffeePeek.Shared.Infrastructure.csproj", "CoffeePeek.Shared.Infrastructure/"]
 RUN dotnet restore "CoffeePeek.Gateway/CoffeePeek.Gateway.csproj"
 COPY . .
 WORKDIR "/src/CoffeePeek.Gateway"

@@ -25,12 +25,16 @@ public class UserCredentialsRepository(
         return await userRepository.Query()
             .Include(u => u.RefreshTokens)
             .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
             .SingleOrDefaultAsync(x => x.Id == userId);
     }
 
     public async Task<UserCredentials?> GetByEmailAsync(string email, CancellationToken ct = default)
     {
-        return await userRepository.QueryAsNoTracking()
+        return await userRepository.Query()
+            .Include(u => u.RefreshTokens)
+            .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(u => u.Email == email, ct);
     }
 

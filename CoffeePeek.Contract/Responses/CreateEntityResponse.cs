@@ -1,6 +1,4 @@
-using CoffeePeek.Contract.Responses;
-
-namespace CoffeePeek.Contract.Response;
+namespace CoffeePeek.Contract.Responses;
 
 public class CreateEntityResponse<T> : Response<T>
 {

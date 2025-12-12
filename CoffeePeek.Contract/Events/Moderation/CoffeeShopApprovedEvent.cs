@@ -5,14 +5,16 @@ using CoffeePeek.Contract.Enums;
 namespace CoffeePeek.Contract.Events.Moderation;
 
 public record CoffeeShopApprovedEvent(
-    int ModerationShopId,
+    Guid ModerationShopId,
     string Name,
     string NotValidatedAddress,
     Guid UserId,
     string address,
-    int? ShopContactId,
+    Guid? ShopContactId,
     ShopStatus Status,
     ShopContactDto? ShopContact,
     ICollection<string> ShopPhotos,
-    ICollection<ScheduleDto> Schedules
+    ICollection<ScheduleDto> Schedules,
+    decimal? Latitude,
+    decimal? Longitude
 );

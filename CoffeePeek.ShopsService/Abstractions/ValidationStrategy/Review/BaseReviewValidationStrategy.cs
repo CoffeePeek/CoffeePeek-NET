@@ -1,3 +1,5 @@
+using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
+
 namespace CoffeePeek.BusinessLogic.Abstractions.Review;
 
 public abstract class BaseReviewValidationStrategy
