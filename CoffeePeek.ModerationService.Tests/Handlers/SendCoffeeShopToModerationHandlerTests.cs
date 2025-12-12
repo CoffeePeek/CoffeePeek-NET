@@ -42,7 +42,7 @@ public class SendCoffeeShopToModerationHandlerTests
             UserId = Guid.NewGuid()
         };
 
-        var geocodingResult = new GeocodingResult(Latitude:55.7558m, Longitude:37.6173m);
+        var geocodingResult = new GeocodingResult(Latitude: 55.7558m, Longitude: 37.6173m);
 
         _repositoryMock
             .Setup(x => x.GetByNameAndAddressAsync(request.Name, request.NotValidatedAddress, request.UserId))
@@ -104,7 +104,7 @@ public class SendCoffeeShopToModerationHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessage.Should().Contain("already exists");
+        result.Message.Should().Contain("already exists");
 
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<ModerationShop>()), Times.Never);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);

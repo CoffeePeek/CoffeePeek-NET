@@ -37,4 +37,3 @@ public class Point
     [JsonPropertyName("pos")]
     public string? Pos { get; set; }
 }
-

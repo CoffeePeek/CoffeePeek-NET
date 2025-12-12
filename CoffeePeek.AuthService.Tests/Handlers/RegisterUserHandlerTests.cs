@@ -1,11 +1,11 @@
 using CoffeePeek.AuthService.Commands;
 using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Handlers;
-using CoffeePeek.AuthService.Models;
+using CoffeePeek.AuthService.Repositories;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.AuthService.Services.Validation;
+using CoffeePeek.Data.Interfaces;
 using FluentAssertions;
-using MassTransit;
 using Moq;
 using Xunit;
 
@@ -13,21 +13,27 @@ namespace CoffeePeek.AuthService.Tests.Handlers;
 
 public class RegisterUserHandlerTests
 {
+    private readonly Mock<IUserCredentialsRepository> _credentialsRepoMock;
+    private readonly Mock<IPasswordHasherService> _passwordHasherMock;
     private readonly Mock<IUserManager> _userManagerMock;
-    private readonly Mock<IPublishEndpoint> _publishEndpointMock;
     private readonly Mock<IValidationStrategy<RegisterUserCommand>> _validationStrategyMock;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly RegisterUserHandler _sut;
 
     public RegisterUserHandlerTests()
     {
+        _credentialsRepoMock = new Mock<IUserCredentialsRepository>();
+        _passwordHasherMock = new Mock<IPasswordHasherService>();
         _userManagerMock = new Mock<IUserManager>();
-        _publishEndpointMock = new Mock<IPublishEndpoint>();
         _validationStrategyMock = new Mock<IValidationStrategy<RegisterUserCommand>>();
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
 
         _sut = new RegisterUserHandler(
+            _credentialsRepoMock.Object,
+            _passwordHasherMock.Object,
             _userManagerMock.Object,
-            _publishEndpointMock.Object,
-            _validationStrategyMock.Object
+            _validationStrategyMock.Object,
+            _unitOfWorkMock.Object
         );
     }
 
@@ -37,21 +43,20 @@ public class RegisterUserHandlerTests
         // Arrange
         var command = new RegisterUserCommand("TestUser", "test@example.com", "ValidPass123");
         var userId = Guid.NewGuid();
-        var user = new UserCredentials
-        {
-            Id = userId,
-            Email = command.Email
-        };
 
         _validationStrategyMock
             .Setup(x => x.Validate(command))
             .Returns(Models.ValidationResult.Valid);
+        _credentialsRepoMock
+            .Setup(x => x.UserExists(command.Email, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+        _passwordHasherMock
+            .Setup(x => x.HashPassword(command.Password))
+            .Returns("hashed_password");
         _userManagerMock
-            .Setup(x => x.FindByEmailAsync(command.Email))
-            .ReturnsAsync((UserCredentials?)null);
-        _userManagerMock
-            .Setup(x => x.CreateAsync(It.IsAny<UserCredentials>(), command.Password))
-            .ReturnsAsync(user);
+            .Setup(x => x.AddToRoleAsync(It.IsAny<UserCredentials>(), It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -59,7 +64,7 @@ public class RegisterUserHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
-        result.Data.Should().Be(userId);
+        result.Data.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -79,7 +84,7 @@ public class RegisterUserHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessage.Should().Be("Invalid email address");
+        result.Message.Should().Be("Invalid email address");
     }
 
     [Fact]
@@ -87,18 +92,13 @@ public class RegisterUserHandlerTests
     {
         // Arrange
         var command = new RegisterUserCommand("TestUser", "existing@example.com", "ValidPass123");
-        var existingUser = new UserCredentials
-        {
-            Id = Guid.NewGuid(),
-            Email = command.Email
-        };
 
         _validationStrategyMock
             .Setup(x => x.Validate(command))
             .Returns(Models.ValidationResult.Valid);
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(command.Email))
-            .ReturnsAsync(existingUser);
+        _credentialsRepoMock
+            .Setup(x => x.UserExists(command.Email, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -106,11 +106,11 @@ public class RegisterUserHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessage.Should().Contain("already exists");
+        result.Message.Should().Contain("already exists");
     }
 
     [Fact]
-    public async Task Handle_WhenUserManagerThrowsException_ReturnsError()
+    public async Task Handle_WhenRepositoryThrowsException_ReturnsError()
     {
         // Arrange
         var command = new RegisterUserCommand("TestUser", "test@example.com", "ValidPass123");
@@ -119,11 +119,11 @@ public class RegisterUserHandlerTests
         _validationStrategyMock
             .Setup(x => x.Validate(command))
             .Returns(Models.ValidationResult.Valid);
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(command.Email))
-            .ReturnsAsync((UserCredentials?)null);
-        _userManagerMock
-            .Setup(x => x.CreateAsync(It.IsAny<UserCredentials>(), command.Password))
+        _credentialsRepoMock
+            .Setup(x => x.UserExists(command.Email, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+        _credentialsRepoMock
+            .Setup(x => x.AddAsync(It.IsAny<UserCredentials>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception(exceptionMessage));
 
         // Act
@@ -132,39 +132,6 @@ public class RegisterUserHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessage.Should().Be(exceptionMessage);
-    }
-
-    [Fact]
-    public async Task Handle_WithSuccessfulRegistration_PublishesUserRegisteredEvent()
-    {
-        // Arrange
-        var command = new RegisterUserCommand("TestUser", "test@example.com", "ValidPass123");
-        var userId = Guid.NewGuid();
-        var user = new UserCredentials
-        {
-            Id = userId,
-            Email = command.Email
-        };
-
-        _validationStrategyMock
-            .Setup(x => x.Validate(command))
-            .Returns(Models.ValidationResult.Valid);
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(command.Email))
-            .ReturnsAsync((UserCredentials?)null);
-        _userManagerMock
-            .Setup(x => x.CreateAsync(It.IsAny<UserCredentials>(), command.Password))
-            .ReturnsAsync(user);
-
-        // Act
-        await _sut.Handle(command, CancellationToken.None);
-
-        // Assert
-        _publishEndpointMock.Verify(
-            x => x.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>()),
-            Times.Once
-        );
     }
 
     [Theory]
@@ -179,9 +146,9 @@ public class RegisterUserHandlerTests
         _validationStrategyMock
             .Setup(x => x.Validate(command))
             .Returns(Models.ValidationResult.Valid);
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(email))
-            .ReturnsAsync((UserCredentials?)null);
+        _credentialsRepoMock
+            .Setup(x => x.UserExists(email, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);

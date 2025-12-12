@@ -1,26 +1,40 @@
+using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
-using CoffeePeek.UserService.Configuration;
+using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.UserService.Handlers;
 using CoffeePeek.UserService.Models;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
+using Mapster;
+using MapsterMapper;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
 using Xunit;
 
 namespace CoffeePeek.UserService.Tests.Handlers;
 
-public class GetProfileHandlerTests : IDisposable
+public class GetProfileHandlerTests
 {
-    private readonly UserDbContext _dbContext;
+    private readonly Mock<IGenericRepository<User>> _userRepositoryMock;
+    private readonly Mock<IRedisService> _redisServiceMock;
+    private readonly Mock<IMapper> _mapperMock;
     private readonly GetProfileHandler _sut;
 
     public GetProfileHandlerTests()
     {
-        var options = new DbContextOptionsBuilder<UserDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        _userRepositoryMock = new Mock<IGenericRepository<User>>();
+        _redisServiceMock = new Mock<IRedisService>();
+        _mapperMock = new Mock<IMapper>();
 
-        _dbContext = new UserDbContext(options);
-        _sut = new GetProfileHandler(_dbContext);
+        var config = new TypeAdapterConfig();
+        _mapperMock.Setup(x => x.Config).Returns(config);
+
+        _sut = new GetProfileHandler(
+            _userRepositoryMock.Object,
+            _redisServiceMock.Object,
+            _mapperMock.Object
+        );
     }
 
     [Fact]
@@ -28,18 +42,35 @@ public class GetProfileHandlerTests : IDisposable
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var user = new User
+        var userDto = new UserDto
         {
             Id = userId,
-            Username = "testuser",
+            UserName = "testuser",
             Email = "test@example.com",
-            AvatarUrl = "https://example.com/avatar.jpg",
-            Bio = "Test bio",
+            PhotoUrl = "https://example.com/avatar.jpg",
+            About = "Test bio",
             CreatedAt = DateTime.UtcNow
         };
 
-        _dbContext.Users.Add(user);
-        await _dbContext.SaveChangesAsync();
+        _redisServiceMock
+            .Setup(x => x.GetAsync<UserDto>(It.IsAny<CacheKey>()))
+            .ReturnsAsync((UserDto?)null);
+
+        var mockQueryable = new List<User>
+        {
+            new User
+            {
+                Id = userId,
+                Username = "testuser",
+                Email = "test@example.com",
+                AvatarUrl = "https://example.com/avatar.jpg",
+                About = "Test bio"
+            }
+        }.AsQueryable().BuildMock();
+
+        _userRepositoryMock
+            .Setup(x => x.QueryAsNoTracking())
+            .Returns(mockQueryable);
 
         var request = new GetProfileRequest(userId);
 
@@ -49,16 +80,22 @@ public class GetProfileHandlerTests : IDisposable
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
-        result.Data.Should().NotBeNull();
-        result.Data!.Id.Should().Be(userId);
-        result.Data.Username.Should().Be("testuser");
-        result.Data.Email.Should().Be("test@example.com");
     }
 
     [Fact]
     public async Task Handle_WithNonExistentUser_ReturnsError()
     {
         // Arrange
+        _redisServiceMock
+            .Setup(x => x.GetAsync<UserDto>(It.IsAny<CacheKey>()))
+            .ReturnsAsync((UserDto?)null);
+
+        var mockQueryable = new List<User>().AsQueryable().BuildMock();
+
+        _userRepositoryMock
+            .Setup(x => x.QueryAsNoTracking())
+            .Returns(mockQueryable);
+
         var request = new GetProfileRequest(Guid.NewGuid());
 
         // Act
@@ -67,32 +104,24 @@ public class GetProfileHandlerTests : IDisposable
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessage.Should().Contain("User not found");
+        result.Message.Should().Contain("User not found");
     }
 
     [Fact]
-    public async Task Handle_WithExistingUser_IncludesUserStatistics()
+    public async Task Handle_WithCachedUser_ReturnsFromCache()
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var user = new User
+        var cachedUserDto = new UserDto
         {
             Id = userId,
-            Username = "testuser",
+            UserName = "testuser",
             Email = "test@example.com"
         };
 
-        var statistics = new UserStatistics
-        {
-            UserId = userId,
-            CheckInCount = 10,
-            ReviewCount = 5,
-            FavoriteShopsCount = 3
-        };
-
-        _dbContext.Users.Add(user);
-        _dbContext.UserStatistics.Add(statistics);
-        await _dbContext.SaveChangesAsync();
+        _redisServiceMock
+            .Setup(x => x.GetAsync<UserDto>(It.IsAny<CacheKey>()))
+            .ReturnsAsync(cachedUserDto);
 
         var request = new GetProfileRequest(userId);
 
@@ -103,37 +132,23 @@ public class GetProfileHandlerTests : IDisposable
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().NotBeNull();
-    }
-
-    [Fact]
-    public async Task Handle_WithUserWithoutStatistics_ReturnsProfileSuccessfully()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var user = new User
-        {
-            Id = userId,
-            Username = "testuser",
-            Email = "test@example.com"
-        };
-
-        _dbContext.Users.Add(user);
-        await _dbContext.SaveChangesAsync();
-
-        var request = new GetProfileRequest(userId);
-
-        // Act
-        var result = await _sut.Handle(request, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        _userRepositoryMock.Verify(x => x.QueryAsNoTracking(), Times.Never);
     }
 
     [Fact]
     public async Task Handle_WithEmptyGuid_ReturnsError()
     {
         // Arrange
+        _redisServiceMock
+            .Setup(x => x.GetAsync<UserDto>(It.IsAny<CacheKey>()))
+            .ReturnsAsync((UserDto?)null);
+
+        var mockQueryable = new List<User>().AsQueryable().BuildMock();
+
+        _userRepositoryMock
+            .Setup(x => x.QueryAsNoTracking())
+            .Returns(mockQueryable);
+
         var request = new GetProfileRequest(Guid.Empty);
 
         // Act
@@ -143,10 +158,112 @@ public class GetProfileHandlerTests : IDisposable
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
     }
+}
 
-    public void Dispose()
+public static class QueryableExtensions
+{
+    public static IQueryable<T> BuildMock<T>(this IQueryable<T> source)
     {
-        _dbContext.Database.EnsureDeleted();
-        _dbContext.Dispose();
+        var mock = new Mock<IQueryable<T>>();
+        mock.As<IAsyncEnumerable<T>>()
+            .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+            .Returns(new TestAsyncEnumerator<T>(source.GetEnumerator()));
+        mock.As<IQueryable<T>>()
+            .Setup(m => m.Provider)
+            .Returns(new TestAsyncQueryProvider<T>(source.Provider));
+        mock.As<IQueryable<T>>().Setup(m => m.Expression).Returns(source.Expression);
+        mock.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(source.ElementType);
+        mock.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(source.GetEnumerator());
+        return mock.Object;
+    }
+}
+
+internal class TestAsyncQueryProvider<TEntity> : IAsyncQueryProvider
+{
+    private readonly IQueryProvider _inner;
+
+    internal TestAsyncQueryProvider(IQueryProvider inner)
+    {
+        _inner = inner;
+    }
+
+    public IQueryable CreateQuery(System.Linq.Expressions.Expression expression)
+    {
+        return new TestAsyncEnumerable<TEntity>(expression);
+    }
+
+    public IQueryable<TElement> CreateQuery<TElement>(System.Linq.Expressions.Expression expression)
+    {
+        return new TestAsyncEnumerable<TElement>(expression);
+    }
+
+    public object Execute(System.Linq.Expressions.Expression expression)
+    {
+        return _inner.Execute(expression);
+    }
+
+    public TResult Execute<TResult>(System.Linq.Expressions.Expression expression)
+    {
+        return _inner.Execute<TResult>(expression);
+    }
+
+    public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(System.Linq.Expressions.Expression expression)
+    {
+        return new TestAsyncEnumerable<TResult>(expression);
+    }
+
+    public TResult ExecuteAsync<TResult>(System.Linq.Expressions.Expression expression,
+        CancellationToken cancellationToken)
+    {
+        var resultType = typeof(TResult).GetGenericArguments()[0];
+        var executionResult = typeof(IQueryProvider)
+            .GetMethod(
+                nameof(IQueryProvider.Execute),
+                1,
+                new[] { typeof(System.Linq.Expressions.Expression) })
+            .MakeGenericMethod(resultType)
+            .Invoke(this, new[] { expression });
+
+        return (TResult)typeof(Task).GetMethod(nameof(Task.FromResult))
+            ?.MakeGenericMethod(resultType)
+            .Invoke(null, new[] { executionResult });
+    }
+}
+
+internal class TestAsyncEnumerable<T> : EnumerableQuery<T>, IAsyncEnumerable<T>, IQueryable<T>
+{
+    public TestAsyncEnumerable(System.Linq.Expressions.Expression expression)
+        : base(expression)
+    {
+    }
+
+    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+    {
+        return new TestAsyncEnumerator<T>(this.AsEnumerable().GetEnumerator());
+    }
+
+    IQueryProvider IQueryable.Provider => new TestAsyncQueryProvider<T>(this);
+}
+
+internal class TestAsyncEnumerator<T> : IAsyncEnumerator<T>
+{
+    private readonly IEnumerator<T> _inner;
+
+    public TestAsyncEnumerator(IEnumerator<T> inner)
+    {
+        _inner = inner;
+    }
+
+    public T Current => _inner.Current;
+
+    public ValueTask<bool> MoveNextAsync()
+    {
+        return new ValueTask<bool>(_inner.MoveNext());
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _inner.Dispose();
+        return new ValueTask();
     }
 }

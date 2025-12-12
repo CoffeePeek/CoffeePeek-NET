@@ -1,3 +1,4 @@
+using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.DB;
@@ -70,7 +71,7 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 
         _validationStrategyMock
             .Setup(x => x.Validate(request))
-            .Returns(new ValidationResult() { IsValid = true });
+            .Returns(ValidationResult.Valid);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -106,11 +107,7 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 
         _validationStrategyMock
             .Setup(x => x.Validate(request))
-            .Returns(new ValidationResult 
-            { 
-                IsValid = false, 
-                ErrorMessage = "Header is required" 
-            });
+            .Returns(ValidationResult.Invalid("Header is required"));
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -118,7 +115,7 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
         // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessage.Should().Be("Header is required");
+        result.Message.Should().Be("Header is required");
     }
 
     [Fact]
@@ -138,14 +135,14 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 
         _validationStrategyMock
             .Setup(x => x.Validate(request))
-            .Returns(new Abstractions.ValidationStrategy.ValidationResult { IsValid = true });
+            .Returns(ValidationResult.Valid);
 
         // Act
         await _sut.Handle(request, CancellationToken.None);
 
         // Assert
         _redisServiceMock.Verify(
-            x => x.RemoveAsync(It.IsAny<string>()),
+            x => x.RemoveAsync(It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>()),
             Times.AtLeastOnce
         );
         _redisServiceMock.Verify(
@@ -171,14 +168,14 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 
         _validationStrategyMock
             .Setup(x => x.Validate(request))
-            .Returns(new ValidationResult { IsValid = true });
+            .Returns(ValidationResult.Valid);
 
         // Act
         await _sut.Handle(request, CancellationToken.None);
 
         // Assert
         _publishEndpointMock.Verify(
-            x => x.Publish(It.IsAny<object>(), It.IsAny<CancellationToken>()),
+            x => x.Publish(It.IsAny<ReviewAddedEvent>(), It.IsAny<CancellationToken>()),
             Times.Once
         );
     }
@@ -200,7 +197,7 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 
         _validationStrategyMock
             .Setup(x => x.Validate(request))
-            .Returns(new Abstractions.ValidationStrategy.ValidationResult { IsValid = true });
+            .Returns(ValidationResult.Valid);
 
         var beforeTime = DateTime.UtcNow.AddSeconds(-1);
 
@@ -237,7 +234,7 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 
         _validationStrategyMock
             .Setup(x => x.Validate(request))
-            .Returns(new Abstractions.ValidationStrategy.ValidationResult { IsValid = true });
+            .Returns(ValidationResult.Valid);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);

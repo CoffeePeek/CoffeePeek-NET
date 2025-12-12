@@ -33,6 +33,7 @@ public class SendCoffeeShopToModerationHandler(
         {
             Name = request.Name,
             NotValidatedAddress = request.NotValidatedAddress,
+            Address = request.NotValidatedAddress, // Set Address to NotValidatedAddress initially
             UserId = request.UserId,
             ModerationStatus = ModerationStatus.Pending,
             Status = ShopStatus.NotConfirmed,

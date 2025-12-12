@@ -35,5 +35,3 @@ public class CheckinCreatedEventConsumer(UserDbContext dbContext) : IConsumer<Ch
         await dbContext.SaveChangesAsync();
     }
 }
-
-

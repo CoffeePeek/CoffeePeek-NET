@@ -24,7 +24,7 @@ public class YandexGeocodingServiceTests
         _optionsMock = new Mock<IOptions<YandexApiOptions>>();
         _options = new YandexApiOptions
         {
-            BaseUrl = "https://geocode-maps.yandex.ru/1.x/",
+            BaseUrl = "https://geocode-maps.yandex.ru/v1/",
             ApiKey = "test-api-key"
         };
         _optionsMock.Setup(x => x.Value).Returns(_options);
@@ -34,23 +34,23 @@ public class YandexGeocodingServiceTests
     public async Task GeocodeAsync_WithValidAddress_ReturnsCoordinates()
     {
         // Arrange
-        var address = "Moscow, Red Square";
-        var expectedLat = 55.753544m;
-        var expectedLon = 37.621202m;
+        const string address = "Moscow, Red Square";
+        const decimal expectedLat = 55.753544m;
+        const decimal expectedLon = 37.621202m;
 
         var response = new YandexGeocodingResponse
         {
-            Response = new YandexGeocodingResponse.ResponseData
+            Response = new GeocodingResponseData
             {
-                GeoObjectCollection = new YandexGeocodingResponse.GeoObjectCollectionData
+                GeoObjectCollection = new GeoObjectCollection
                 {
-                    FeatureMember = new List<YandexGeocodingResponse.FeatureMemberData>
+                    FeatureMember = new List<FeatureMember>
                     {
                         new()
                         {
-                            GeoObject = new YandexGeocodingResponse.GeoObjectData
+                            GeoObject = new GeoObject
                             {
-                                Point = new YandexGeocodingResponse.PointData
+                                Point = new Point
                                 {
                                     Pos = $"{expectedLon} {expectedLat}"
                                 }
@@ -61,8 +61,8 @@ public class YandexGeocodingServiceTests
             }
         };
 
-        var httpClientMock = CreateHttpClientMock(response);
-        var sut = new YandexGeocodingService(httpClientMock.Object, _optionsMock.Object, _loggerMock.Object);
+        var httpClient = CreateHttpClient(response);
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
 
         // Act
         var result = await sut.GeocodeAsync(address);
@@ -77,11 +77,11 @@ public class YandexGeocodingServiceTests
     [InlineData("")]
     [InlineData(" ")]
     [InlineData(null)]
-    public async Task GeocodeAsync_WithEmptyAddress_ReturnsNull(string address)
+    public async Task GeocodeAsync_WithEmptyAddress_ReturnsNull(string? address)
     {
         // Arrange
-        var httpClientMock = CreateHttpClientMock(new YandexGeocodingResponse());
-        var sut = new YandexGeocodingService(httpClientMock.Object, _optionsMock.Object, _loggerMock.Object);
+        var httpClient = CreateHttpClient(new YandexGeocodingResponse());
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
 
         // Act
         var result = await sut.GeocodeAsync(address!);
@@ -97,17 +97,17 @@ public class YandexGeocodingServiceTests
         var address = "NonexistentPlace123456789";
         var response = new YandexGeocodingResponse
         {
-            Response = new YandexGeocodingResponse.ResponseData
+            Response = new GeocodingResponseData
             {
-                GeoObjectCollection = new YandexGeocodingResponse.GeoObjectCollectionData
+                GeoObjectCollection = new GeoObjectCollection
                 {
-                    FeatureMember = new List<YandexGeocodingResponse.FeatureMemberData>()
+                    FeatureMember = new List<FeatureMember>()
                 }
             }
         };
 
-        var httpClientMock = CreateHttpClientMock(response);
-        var sut = new YandexGeocodingService(httpClientMock.Object, _optionsMock.Object, _loggerMock.Object);
+        var httpClient = CreateHttpClient(response);
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
 
         // Act
         var result = await sut.GeocodeAsync(address);
@@ -117,17 +117,75 @@ public class YandexGeocodingServiceTests
     }
 
     [Fact]
-    public async Task GeocodeAsync_WithInvalidResponse_ReturnsNull()
+    public async Task GeocodeAsync_WithNullResponse_ReturnsNull()
     {
         // Arrange
-        var address = "Test Address";
+        const string address = "Test Address";
         var response = new YandexGeocodingResponse
         {
             Response = null
         };
 
-        var httpClientMock = CreateHttpClientMock(response);
-        var sut = new YandexGeocodingService(httpClientMock.Object, _optionsMock.Object, _loggerMock.Object);
+        var httpClient = CreateHttpClient(response);
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
+
+        // Act
+        var result = await sut.GeocodeAsync(address);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GeocodeAsync_WithNullGeoObjectCollection_ReturnsNull()
+    {
+        // Arrange
+        var address = "Test Address";
+        var response = new YandexGeocodingResponse
+        {
+            Response = new GeocodingResponseData
+            {
+                GeoObjectCollection = null
+            }
+        };
+
+        var httpClient = CreateHttpClient(response);
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
+
+        // Act
+        var result = await sut.GeocodeAsync(address);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GeocodeAsync_WithNullPoint_ReturnsNull()
+    {
+        // Arrange
+        const string address = "Test Address";
+        var response = new YandexGeocodingResponse
+        {
+            Response = new GeocodingResponseData
+            {
+                GeoObjectCollection = new GeoObjectCollection
+                {
+                    FeatureMember = new List<FeatureMember>
+                    {
+                        new()
+                        {
+                            GeoObject = new GeoObject
+                            {
+                                Point = null
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        var httpClient = CreateHttpClient(response);
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
 
         // Act
         var result = await sut.GeocodeAsync(address);
@@ -140,20 +198,20 @@ public class YandexGeocodingServiceTests
     public async Task GeocodeAsync_WithInvalidCoordinateFormat_ReturnsNull()
     {
         // Arrange
-        var address = "Test Address";
+        const string address = "Test Address";
         var response = new YandexGeocodingResponse
         {
-            Response = new YandexGeocodingResponse.ResponseData
+            Response = new GeocodingResponseData
             {
-                GeoObjectCollection = new YandexGeocodingResponse.GeoObjectCollectionData
+                GeoObjectCollection = new GeoObjectCollection
                 {
-                    FeatureMember = new List<YandexGeocodingResponse.FeatureMemberData>
+                    FeatureMember = new List<FeatureMember>
                     {
                         new()
                         {
-                            GeoObject = new YandexGeocodingResponse.GeoObjectData
+                            GeoObject = new GeoObject
                             {
-                                Point = new YandexGeocodingResponse.PointData
+                                Point = new Point
                                 {
                                     Pos = "invalid format"
                                 }
@@ -164,8 +222,96 @@ public class YandexGeocodingServiceTests
             }
         };
 
-        var httpClientMock = CreateHttpClientMock(response);
-        var sut = new YandexGeocodingService(httpClientMock.Object, _optionsMock.Object, _loggerMock.Object);
+        var httpClient = CreateHttpClient(response);
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
+
+        // Act
+        var result = await sut.GeocodeAsync(address);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GeocodeAsync_WithSingleCoordinate_ReturnsNull()
+    {
+        // Arrange
+        const string address = "Test Address";
+        var response = new YandexGeocodingResponse
+        {
+            Response = new GeocodingResponseData
+            {
+                GeoObjectCollection = new GeoObjectCollection
+                {
+                    FeatureMember = new List<FeatureMember>
+                    {
+                        new()
+                        {
+                            GeoObject = new GeoObject
+                            {
+                                Point = new Point
+                                {
+                                    Pos = "37.621202"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        var httpClient = CreateHttpClient(response);
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
+
+        // Act
+        var result = await sut.GeocodeAsync(address);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GeocodeAsync_WithHttpError_ReturnsNull()
+    {
+        // Arrange
+        var address = "Test Address";
+        var handlerMock = new Mock<HttpMessageHandler>();
+        handlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ThrowsAsync(new HttpRequestException("Bad Request"));
+
+        var httpClient = new HttpClient(handlerMock.Object);
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
+
+        // Act
+        var result = await sut.GeocodeAsync(address);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GeocodeAsync_WithTimeout_ReturnsNull()
+    {
+        // Arrange
+        var address = "Test Address";
+        var handlerMock = new Mock<HttpMessageHandler>();
+        handlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ThrowsAsync(new TaskCanceledException("Timeout"));
+
+        var httpClient = new HttpClient(handlerMock.Object);
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
 
         // Act
         var result = await sut.GeocodeAsync(address);
@@ -178,23 +324,23 @@ public class YandexGeocodingServiceTests
     public async Task GeocodeAsync_WithSpecialCharacters_EncodesCorrectly()
     {
         // Arrange
-        var address = "Test & Address, City / Region";
-        var expectedLat = 50.0m;
-        var expectedLon = 40.0m;
+        const string address = "Test & Address, City / Region";
+        const decimal expectedLat = 50.0m;
+        const decimal expectedLon = 40.0m;
 
         var response = new YandexGeocodingResponse
         {
-            Response = new YandexGeocodingResponse.ResponseData
+            Response = new GeocodingResponseData
             {
-                GeoObjectCollection = new YandexGeocodingResponse.GeoObjectCollectionData
+                GeoObjectCollection = new GeoObjectCollection
                 {
-                    FeatureMember = new List<YandexGeocodingResponse.FeatureMemberData>
+                    FeatureMember = new List<FeatureMember>
                     {
                         new()
                         {
-                            GeoObject = new YandexGeocodingResponse.GeoObjectData
+                            GeoObject = new GeoObject
                             {
-                                Point = new YandexGeocodingResponse.PointData
+                                Point = new Point
                                 {
                                     Pos = $"{expectedLon} {expectedLat}"
                                 }
@@ -205,8 +351,8 @@ public class YandexGeocodingServiceTests
             }
         };
 
-        var httpClientMock = CreateHttpClientMock(response);
-        var sut = new YandexGeocodingService(httpClientMock.Object, _optionsMock.Object, _loggerMock.Object);
+        var httpClient = CreateHttpClient(response);
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
 
         // Act
         var result = await sut.GeocodeAsync(address);
@@ -217,14 +363,61 @@ public class YandexGeocodingServiceTests
         result.Longitude.Should().Be(expectedLon);
     }
 
-    private Mock<HttpClient> CreateHttpClientMock(YandexGeocodingResponse response)
+    [Fact]
+    public async Task GeocodeAsync_WithCorrectCoordinateOrder_ParsesCorrectly()
+    {
+        // Arrange
+        // Yandex API returns coordinates as "longitude latitude" (lon lat)
+        const string address = "Moscow";
+        const decimal expectedLat = 55.7558m;
+        const decimal expectedLon = 37.6173m;
+
+        var response = new YandexGeocodingResponse
+        {
+            Response = new GeocodingResponseData
+            {
+                GeoObjectCollection = new GeoObjectCollection
+                {
+                    FeatureMember = new List<FeatureMember>
+                    {
+                        new()
+                        {
+                            GeoObject = new GeoObject
+                            {
+                                Point = new Point
+                                {
+                                    Pos = $"{expectedLon} {expectedLat}" // lon lat order
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        var httpClient = CreateHttpClient(response);
+        var sut = new YandexGeocodingService(httpClient, _optionsMock.Object, _loggerMock.Object);
+
+        // Act
+        var result = await sut.GeocodeAsync(address);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.Latitude.Should().Be(expectedLat);
+        result.Longitude.Should().Be(expectedLon);
+    }
+
+    private HttpClient CreateHttpClient(YandexGeocodingResponse response)
     {
         var handlerMock = new Mock<HttpMessageHandler>();
-        var json = JsonSerializer.Serialize(response);
+        var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
         var httpResponse = new HttpResponseMessage
         {
             StatusCode = HttpStatusCode.OK,
-            Content = new StringContent(json)
+            Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
         };
 
         handlerMock
@@ -236,8 +429,9 @@ public class YandexGeocodingServiceTests
             )
             .ReturnsAsync(httpResponse);
 
-        var httpClient = new HttpClient(handlerMock.Object);
-        var httpClientMock = new Mock<HttpClient>();
-        return httpClientMock;
+        return new HttpClient(handlerMock.Object)
+        {
+            BaseAddress = new Uri(_options.BaseUrl)
+        };
     }
 }

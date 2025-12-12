@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Contract.Events.Shops;
+using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;

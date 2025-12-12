@@ -6,13 +6,19 @@ namespace CoffeePeek.AuthService.Services.Validation;
 
 public partial class UserCreateValidationStrategy : IValidationStrategy<RegisterUserCommand>
 {
-    private const string EmailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$";
+    private const string EmailPattern = @"^[a-zA-Z0-9]([a-zA-Z0-9._+-]*[a-zA-Z0-9])?@[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?\.[a-zA-Z]{2,}$";
 
     public ValidationResult Validate(RegisterUserCommand entity)
     {
         if (entity.Password.Length is > 30 or < 6)
         {
             return ValidationResult.Invalid("Password must be between 6 and 30 characters");
+        }
+
+        // Check for consecutive dots (invalid)
+        if (entity.Email.Contains(".."))
+        {
+            return ValidationResult.Invalid("Invalid email address");
         }
 
         if (!EmailRegex().IsMatch(entity.Email))
