@@ -139,9 +139,7 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          echo "Images pushed with tag ${{ github.sha::7 }}."
+          SHORT_SHA=${GITHUB_SHA::7}
+          echo "Images pushed with tag ${SHORT_SHA}."
           echo "Configure Railway services to use Docker images:"
-          echo "docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.*:${{ github.sha::7 }}"
-
-
-
+          echo "docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.*:${SHORT_SHA}"
