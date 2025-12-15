@@ -31,3 +31,11 @@ The project is built with a modern technology stack:
 *   **PostgreSQL**: The relational database for the services.
 *   **RabbitMQ**: Used for asynchronous communication between services.
 *   **xUnit/NUnit**: For unit and integration testing.
+
+## CI/CD
+
+*   flowchart LR
+  dev[Dev pushes to main] --> ciBuild[CI: build & test]
+  ciBuild --> ciImages[CI: build & push Docker images]
+  ciImages --> cdRailway[CD: deploy to Railway]
+  ciImages --> futureTargets["CD: other targets (VPS/K8s/etc)"]
