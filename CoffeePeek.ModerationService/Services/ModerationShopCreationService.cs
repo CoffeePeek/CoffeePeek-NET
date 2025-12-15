@@ -26,6 +26,10 @@ public class ModerationShopCreationService(
     {
         var moderationShop = mapper.Map<ModerationShop>(request);
 
+            // Always persist the not validated address as the main address so it is never null,
+            // even if geocoding fails.
+            moderationShop.Address = request.NotValidatedAddress;
+
         if (geocodingResult != null)
         {
             moderationShop.IsAddressValidated = true;
@@ -95,7 +99,7 @@ public class ModerationShopCreationService(
         moderationShop.ShopContactId = shopContact.Id;
     }
 
-    private void AddLocationIfNeeded(
+        private void AddLocationIfNeeded(
         SendCoffeeShopToModerationRequest request,
         ModerationShop moderationShop,
         GeocodingResult? geocodingResult)

@@ -15,6 +15,7 @@ using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.ModerationService.Entities;
 using CoffeePeek.ModerationService.Models;
+using CoffeePeek.Tests.Shared;
 using Xunit;
 
 namespace CoffeePeek.ModerationService.Tests.Integration;
@@ -184,7 +185,7 @@ public class ModerationFlowTests(ModerationServiceWebApplicationFactory factory)
         factory.PublishEndpointMock.Verify(
             x => x.Publish(
                 It.Is<CoffeeShopApprovedEvent>(e =>
-                    e.CreatorId == createRequest.UserId &&
+                    e.CreatorId == Consts.UserTestGuidId &&
                     e.Shop.Id == moderationShop.Id &&
                     e.Shop.Name == shopName &&
                     e.Shop.Location != null &&
@@ -271,7 +272,7 @@ public class ModerationFlowTests(ModerationServiceWebApplicationFactory factory)
         factory.PublishEndpointMock.Verify(
             x => x.Publish(
                 It.Is<CoffeeShopApprovedEvent>(e =>
-                    e.CreatorId == createRequest.UserId &&
+                    e.CreatorId == Consts.UserTestGuidId &&
                     e.Shop.Id == shop.Id &&
                     e.Shop.Name == shopName &&
                     e.Shop.Location != null &&
@@ -300,7 +301,7 @@ public class ModerationFlowTests(ModerationServiceWebApplicationFactory factory)
             null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK); // Controller returns 200 with error in body
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         var result = await response.Content.ReadFromJsonAsync<Response>();
         result.Should().NotBeNull();
         result!.IsSuccess.Should().BeFalse();

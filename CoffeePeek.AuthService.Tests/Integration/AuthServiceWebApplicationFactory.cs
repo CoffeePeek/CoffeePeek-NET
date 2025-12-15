@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using CoffeePeek.Tests.Shared;
 using Xunit;
 using Testcontainers.PostgreSql;
 
@@ -139,7 +140,7 @@ internal class TestAuthenticationHandler : AuthenticationHandler<AuthenticationS
     {
         var userIdHeader = Request.Headers.TryGetValue("X-Test-UserId", out var header) && Guid.TryParse(header, out var parsed)
             ? parsed
-            : Guid.Parse("00000000-0000-0000-0000-000000000001");
+            : Consts.UserTestGuidId;
 
         var claims = new[]
         {

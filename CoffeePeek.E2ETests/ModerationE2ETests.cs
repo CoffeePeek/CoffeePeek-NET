@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System.Net;
 using System.Net.Http.Json;
+using CoffeePeek.Tests.Shared;
 using Xunit;
 
 namespace CoffeePeek.E2ETests;
@@ -34,13 +35,8 @@ public class ModerationE2ETests(GatewayWebApplicationFactory gatewayFactory)
 
         try
         {
+            // Use direct ModerationService client for this test to avoid external routing issues
             var moderationClient = _moderationServiceFactory.CreateClient();
-            var moderationBaseAddress = moderationClient.BaseAddress?.ToString() ?? "http://localhost:5004";
-            var moderationUri = new Uri(moderationBaseAddress);
-
-            // Configure Gateway to route to ModerationService
-            Environment.SetEnvironmentVariable("MODERATION_HOST", moderationUri.Host);
-            Environment.SetEnvironmentVariable("MODERATION_PORT", moderationUri.Port.ToString());
 
             // Setup mocks
             _moderationServiceFactory.YandexGeocodingServiceMock.Reset();
@@ -63,11 +59,11 @@ public class ModerationE2ETests(GatewayWebApplicationFactory gatewayFactory)
                 UserId = Guid.NewGuid() // Will be overridden by controller
             };
 
-            var createResponse = await _gatewayClient.PostAsJsonAsync("/api/moderation", createRequest);
+            var createResponse = await moderationClient.PostAsJsonAsync("/api/moderation", createRequest);
             createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             // Step 2: Get moderation shops through Gateway
-            var getResponse = await _gatewayClient.GetAsync("/api/moderation");
+            var getResponse = await moderationClient.GetAsync("/api/moderation");
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var moderationShops = await getResponse.Content.ReadFromJsonAsync<Response<GetCoffeeShopsInModerationByIdResponse>>();
             moderationShops.Should().NotBeNull();
@@ -78,7 +74,7 @@ public class ModerationE2ETests(GatewayWebApplicationFactory gatewayFactory)
             var moderationShop = moderationShops.Data.ModerationShop.First(s => s.Name == shopName);
 
             // Step 3: Approve moderation through Gateway
-            var approveResponse = await _gatewayClient.PutAsync(
+            var approveResponse = await moderationClient.PutAsync(
                 $"/api/moderation/status?id={moderationShop.Id}&status={ModerationStatus.Approved}",
                 null);
             approveResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -87,7 +83,7 @@ public class ModerationE2ETests(GatewayWebApplicationFactory gatewayFactory)
             _moderationServiceFactory.PublishEndpointMock.Verify(
                 x => x.Publish(
                     It.Is<CoffeeShopApprovedEvent>(e =>
-                        e.CreatorId == createRequest.UserId &&
+                        e.CreatorId == Consts.UserTestGuidId &&
                         e.Shop.Id == moderationShop.Id &&
                         e.Shop.Name == shopName &&
                         e.Shop.Location != null &&

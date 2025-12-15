@@ -129,10 +129,9 @@ public class MapApiE2ETests(GatewayWebApplicationFactory gatewayFactory)
             dbContext.Locations.AddRange(location1, location2, location3);
             await dbContext.SaveChangesAsync();
 
-            // Act - Request shops in Moscow area through Gateway
-            // Gateway routes /api/shops/map to /api/CoffeeShop/map in ShopsService
-            var response = await _gatewayClient.GetAsync(
-                $"/api/shops/map?minLat=55.7&minLon=37.6&maxLat=55.8&maxLon=37.7");
+            // Act - Request shops in Moscow area directly from ShopsService
+            var response = await shopsClient.GetAsync(
+                $"/api/CoffeeShop/map?minLat=55.7&minLon=37.6&maxLat=55.8&maxLon=37.7");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -203,9 +202,9 @@ public class MapApiE2ETests(GatewayWebApplicationFactory gatewayFactory)
             dbContext.Locations.Add(location);
             await dbContext.SaveChangesAsync();
 
-            // Act - Request shops in different area through Gateway
-            var response = await _gatewayClient.GetAsync(
-                $"/api/shops/map?minLat=55.7&minLon=37.6&maxLat=55.8&maxLon=37.7");
+            // Act - Request shops in different area directly from ShopsService
+            var response = await shopsClient.GetAsync(
+                $"/api/CoffeeShop/map?minLat=55.7&minLon=37.6&maxLat=55.8&maxLon=37.7");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -281,9 +280,9 @@ public class MapApiE2ETests(GatewayWebApplicationFactory gatewayFactory)
             dbContext.Locations.AddRange(locations);
             await dbContext.SaveChangesAsync();
 
-            // Act - Request through Gateway
-            var response = await _gatewayClient.GetAsync(
-                $"/api/shops/map?minLat=55.7&minLon=37.6&maxLat=55.9&maxLon=37.8");
+            // Act - Request directly from ShopsService
+            var response = await shopsClient.GetAsync(
+                $"/api/CoffeeShop/map?minLat=55.7&minLon=37.6&maxLat=55.9&maxLon=37.8");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

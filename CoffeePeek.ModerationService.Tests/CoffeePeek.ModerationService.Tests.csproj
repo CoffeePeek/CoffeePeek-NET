@@ -29,6 +29,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\CoffeePeek.ModerationService\CoffeePeek.ModerationService.csproj" />
+        <ProjectReference Include="..\CoffeePeek.Tests.Shared\CoffeePeek.Tests.Shared.csproj" />
     </ItemGroup>
 
 </Project>

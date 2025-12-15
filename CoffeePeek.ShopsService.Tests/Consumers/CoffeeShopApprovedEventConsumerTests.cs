@@ -242,9 +242,7 @@ public class CoffeeShopApprovedEventConsumerTests : IDisposable
                     c.ShopId == shopId),
                 It.IsAny<CancellationToken>()),
             Times.Once);
-        // Update is called twice: once for LocationId (when coordinates are present), once for ShopContactId
-        // Since the shop object is mutable, we just verify the total count
-        _shopRepositoryMock.Verify(x => x.Update(It.IsAny<Shop>()), Times.Exactly(2));
+        _shopRepositoryMock.Verify(x => x.Update(It.IsAny<Shop>()), Times.Once);
     }
 
     [Fact]
@@ -264,6 +262,12 @@ public class CoffeeShopApprovedEventConsumerTests : IDisposable
             CityId = Guid.NewGuid(),
             Name = "Test Shop",
             Description = "Test Address",
+            Location = new LocationDto
+            {
+                Address = "Test Address",
+                Latitude = 55.7558m,
+                Longitude = 37.6173m
+            },
             ShopContact = contactDto,
             ImageUrls = photos.ToArray()
         };

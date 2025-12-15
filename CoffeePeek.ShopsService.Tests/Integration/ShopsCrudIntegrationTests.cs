@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using CoffeePeek.Tests.Shared;
 using Xunit;
 using City = CoffeePeek.ShopsService.Entities.City;
 
@@ -31,7 +32,7 @@ public class ShopsCrudIntegrationTests(ShopsServiceWebApplicationFactory factory
     public async Task InitializeAsync()
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-        _client.DefaultRequestHeaders.Add("X-Test-UserId", Guid.Parse("00000000-0000-0000-0000-000000000001").ToString());
+        _client.DefaultRequestHeaders.Add("X-Test-UserId", Consts.UserTestGuidId.ToString());
         await ClearDatabaseAsync();
         await SeedShopAsync();
     }
@@ -144,7 +145,7 @@ public class ShopsCrudIntegrationTests(ShopsServiceWebApplicationFactory factory
         var addRequest = new AddCoffeeShopReviewRequest
         {
             ShopId = _shopId,
-            UserId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            UserId = Consts.UserTestGuidId,
             Header = "Great",
             Comment = "Tasty coffee",
             RatingCoffee = 5,
@@ -169,7 +170,9 @@ public class ShopsCrudIntegrationTests(ShopsServiceWebApplicationFactory factory
         var getResult = await getResponse.Content.ReadFromJsonAsync<Response<GetReviewByIdResponse>>();
         getResult.Should().NotBeNull();
         getResult!.IsSuccess.Should().BeTrue();
-        getResult.Data!.Review.Id.Should().BeGreaterThan(0);
+        // Id мапится из Guid в int через GetHashCode, поэтому может быть отрицательным и/или 0.
+        // Достаточно проверить, что это не значение по умолчанию и что отзыв вообще загружен.
+        getResult.Data!.Review.Id.Should().NotBe(0);
     }
 
     [Fact]
@@ -178,7 +181,7 @@ public class ShopsCrudIntegrationTests(ShopsServiceWebApplicationFactory factory
         var request = new CreateCheckInRequest
         {
             ShopId = _shopId,
-            UserId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            UserId = Consts.UserTestGuidId,
             Note = "Visiting"
         };
 

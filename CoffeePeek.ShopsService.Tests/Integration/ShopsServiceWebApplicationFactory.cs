@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using CoffeePeek.Tests.Shared;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -131,7 +132,7 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         // Use a fixed test user ID for consistency across requests
-        var userId = "00000000-0000-0000-0000-000000000001";
+        var userId = Consts.UserTestGuidId.ToString();
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, userId),

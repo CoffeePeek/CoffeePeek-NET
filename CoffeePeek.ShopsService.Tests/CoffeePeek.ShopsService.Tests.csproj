@@ -30,6 +30,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\CoffeePeek.ShopsService\CoffeePeek.ShopsService.csproj" />
+        <ProjectReference Include="..\CoffeePeek.Tests.Shared\CoffeePeek.Tests.Shared.csproj" />
     </ItemGroup>
 
 </Project>

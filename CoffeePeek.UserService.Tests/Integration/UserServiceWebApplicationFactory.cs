@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using CoffeePeek.Tests.Shared;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -20,7 +21,7 @@ namespace CoffeePeek.UserService.Tests.Integration;
 public class UserServiceWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _postgresContainer = new PostgreSqlBuilder()
-        .WithImage("postgres:16-alpine")
+        .WithImage("postgres:17")
         .WithDatabase("user_test")
         .WithUsername("test")
         .WithPassword("test")
@@ -126,10 +127,10 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var userId = "00000000-0000-0000-0000-000000000001";
+        var userId = Consts.UserTestGuidId;
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, userId),
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
             new Claim(ClaimTypes.Name, "TestUser"),
             new Claim(ClaimTypes.Role, "User")
         };

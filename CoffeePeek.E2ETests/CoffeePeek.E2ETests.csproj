@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CoffeePeek.Gateway\CoffeePeek.Gateway.csproj" />
     <ProjectReference Include="..\CoffeePeek.AuthService\CoffeePeek.AuthService.csproj" />
+    <ProjectReference Include="..\CoffeePeek.Tests.Shared\CoffeePeek.Tests.Shared.csproj" />
     <ProjectReference Include="..\CoffeePeek.UserService\CoffeePeek.UserService.csproj" />
     <ProjectReference Include="..\CoffeePeek.ShopsService\CoffeePeek.ShopsService.csproj" />
     <ProjectReference Include="..\CoffeePeek.ModerationService\CoffeePeek.ModerationService.csproj" />

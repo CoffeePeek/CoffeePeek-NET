@@ -72,6 +72,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Contract.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Performance.Tests", "CoffeePeek.Performance.Tests\CoffeePeek.Performance.Tests.csproj", "{61E7814F-DDA6-4C31-92CD-471F091B595B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Tests.Shared", "CoffeePeek.Tests.Shared\CoffeePeek.Tests.Shared.csproj", "{E728194E-817E-4DB3-81B6-6451C074953C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -370,6 +372,18 @@ Global
 		{61E7814F-DDA6-4C31-92CD-471F091B595B}.Release|x64.Build.0 = Release|Any CPU
 		{61E7814F-DDA6-4C31-92CD-471F091B595B}.Release|x86.ActiveCfg = Release|Any CPU
 		{61E7814F-DDA6-4C31-92CD-471F091B595B}.Release|x86.Build.0 = Release|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Debug|x64.Build.0 = Debug|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Debug|x86.Build.0 = Debug|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Release|x64.ActiveCfg = Release|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Release|x64.Build.0 = Release|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Release|x86.ActiveCfg = Release|Any CPU
+		{E728194E-817E-4DB3-81B6-6451C074953C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -403,5 +417,6 @@ Global
 		{61850411-6D7C-4E18-93A2-8DB0CFE4AE38} = {384F5D08-513B-4F24-89A4-D648ABCC5513}
 		{8C7DA135-5D75-4CCF-B1CB-2FAFC03EC91B} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
 		{61E7814F-DDA6-4C31-92CD-471F091B595B} = {384F5D08-513B-4F24-89A4-D648ABCC5513}
+		{E728194E-817E-4DB3-81B6-6451C074953C} = {384F5D08-513B-4F24-89A4-D648ABCC5513}
 	EndGlobalSection
 EndGlobal
