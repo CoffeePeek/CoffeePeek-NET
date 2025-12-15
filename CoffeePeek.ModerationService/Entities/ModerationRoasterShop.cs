@@ -8,8 +8,3 @@ public class ModerationRoasterShop
     
     public virtual ModerationShop ModerationShop { get; set; }
 }
-
-
-
-
-

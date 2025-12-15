@@ -8,8 +8,3 @@ public class ModerationShopBrewMethod
     
     public virtual ModerationShop ModerationShop { get; set; }
 }
-
-
-
-
-

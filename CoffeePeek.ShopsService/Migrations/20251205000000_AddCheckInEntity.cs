@@ -68,8 +68,3 @@ namespace CoffeePeek.ShopsService.Migrations
         }
     }
 }
-
-
-
-
-

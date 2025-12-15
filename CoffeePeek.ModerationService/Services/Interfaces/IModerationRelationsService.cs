@@ -7,7 +7,3 @@ public interface IModerationRelationsService
     Task AddRoastersAsync(Guid shopId, IReadOnlyCollection<Guid>? roasterIds, CancellationToken cancellationToken);
     Task AddBrewMethodsAsync(Guid shopId, IReadOnlyCollection<Guid>? brewMethodIds, CancellationToken cancellationToken);
 }
-
-
-
-

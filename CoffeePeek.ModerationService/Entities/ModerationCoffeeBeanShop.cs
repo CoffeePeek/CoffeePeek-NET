@@ -9,8 +9,3 @@ public class ModerationCoffeeBeanShop
 
     public virtual ModerationShop ModerationShop { get; set; }
 }
-
-
-
-
-

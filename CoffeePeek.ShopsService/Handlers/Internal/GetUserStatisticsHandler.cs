@@ -26,8 +26,3 @@ public class GetUserStatisticsHandler(ShopsDbContext dbContext)
         return Response<GetUserStatisticsResponse>.Success(response);
     }
 }
-
-
-
-
-

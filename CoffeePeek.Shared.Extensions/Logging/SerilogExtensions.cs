@@ -50,7 +50,3 @@ public static class SerilogExtensions
         return builder;
     }
 }
-
-
-
-

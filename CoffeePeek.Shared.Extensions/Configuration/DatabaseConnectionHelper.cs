@@ -46,8 +46,3 @@ public static class DatabaseConnectionHelper
         return null;
     }
 }
-
-
-
-
-

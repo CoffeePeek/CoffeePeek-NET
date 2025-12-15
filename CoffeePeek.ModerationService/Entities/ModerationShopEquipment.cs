@@ -9,8 +9,3 @@ public class ModerationShopEquipment
     
     public virtual ModerationShop ModerationShop { get; set; }
 }
-
-
-
-
-

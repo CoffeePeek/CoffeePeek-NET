@@ -117,7 +117,3 @@ public class ModerationShopCreationService(
         moderationShop.Address = request.NotValidatedAddress;
     }
 }
-
-
-
-

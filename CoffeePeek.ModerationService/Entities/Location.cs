@@ -10,8 +10,3 @@ public class Location
     public Guid ShopId { get; set; }
     public virtual ModerationShop ModerationShop { get; set; }
 }
-
-
-
-
-

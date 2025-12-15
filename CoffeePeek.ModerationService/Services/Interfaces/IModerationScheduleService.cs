@@ -9,7 +9,3 @@ public interface IModerationScheduleService
         IReadOnlyCollection<ScheduleDto>? schedules,
         CancellationToken cancellationToken);
 }
-
-
-
-

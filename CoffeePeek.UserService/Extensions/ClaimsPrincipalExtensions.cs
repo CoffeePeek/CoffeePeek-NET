@@ -21,8 +21,3 @@ public static class ClaimsPrincipalExtensions
         return userId;
     }
 }
-
-
-
-
-

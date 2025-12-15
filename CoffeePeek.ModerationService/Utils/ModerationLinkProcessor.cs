@@ -36,7 +36,3 @@ public static class ModerationLinkProcessor
             shopId);
     }
 }
-
-
-
-

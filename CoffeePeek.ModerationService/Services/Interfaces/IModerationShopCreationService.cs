@@ -1,5 +1,4 @@
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
-using CoffeePeek.ModerationService.Services.Interfaces;
 
 namespace CoffeePeek.ModerationService.Services.Interfaces;
 
@@ -10,7 +9,3 @@ public interface IModerationShopCreationService
         GeocodingResult? geocodingResult,
         CancellationToken cancellationToken);
 }
-
-
-
-

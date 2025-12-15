@@ -1,0 +1,147 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore NuGet packages
+        run: dotnet restore "CoffePeek.sln"
+
+      - name: Build solution
+        run: dotnet build "CoffePeek.sln" --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test "CoffePeek.sln" --configuration Release --no-build --no-restore
+
+  build_and_push_images:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    env:
+      REGISTRY: docker.io
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Set image tag
+        id: vars
+        run: echo "TAG=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push AuthService image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: CoffeePeek.AuthService/AuthService.Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.authservice:dev
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.authservice:${{ steps.vars.outputs.TAG }}
+
+      - name: Build and push AuthService OutboxBackgroundService image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: OutboxBackgroundService/OutboxBackgroundService.Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.authservice.outbox-bg:dev
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.authservice.outbox-bg:${{ steps.vars.outputs.TAG }}
+
+      - name: Build and push UserService image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: CoffeePeek.UserService/UserService.Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.userservice:dev
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.userservice:${{ steps.vars.outputs.TAG }}
+
+      - name: Build and push ShopsService image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: CoffeePeek.ShopsService/ShopsService.Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.shopsservice:dev
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.shopsservice:${{ steps.vars.outputs.TAG }}
+
+      - name: Build and push ModerationService image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: CoffeePeek.ModerationService/ModerationService.Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.moderationservice:dev
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.moderationservice:${{ steps.vars.outputs.TAG }}
+
+      - name: Build and push JobVacancies image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: CoffeePeek.JobVacancies/JobVacancies.Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.jobvacancies:dev
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.jobvacancies:${{ steps.vars.outputs.TAG }}
+
+      - name: Build and push Gateway image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: CoffeePeek.Gateway/Gateway.Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:dev
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:${{ steps.vars.outputs.TAG }}
+
+  deploy_railway:
+    needs: build_and_push_images
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Install Railway CLI
+        run: |
+          curl -fsSL https://railway.app/install.sh | sh
+
+      - name: Deploy services on Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          echo "Images pushed with tag ${{ github.sha::7 }}."
+          echo "Configure Railway services to use Docker images:"
+          echo "docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.*:${{ github.sha::7 }}"
+
+
+

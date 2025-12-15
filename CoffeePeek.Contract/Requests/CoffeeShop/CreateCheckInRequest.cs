@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using MediatR;
@@ -20,8 +19,3 @@ public record CreateCheckInRequest : IRequest<Response<CreateCheckInResponse>>
     
     public CheckInReviewRequest? Review { get; init; }
 }
-
-
-
-
-

@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Contract.Response;
-using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using MediatR;
@@ -17,8 +15,3 @@ public class GetUserCheckInsCommand(Guid userId, int pageNumber, int pageSize)
     [Range(1, 100)]
     public int PageSize { get; init; } = pageSize;
 }
-
-
-
-
-

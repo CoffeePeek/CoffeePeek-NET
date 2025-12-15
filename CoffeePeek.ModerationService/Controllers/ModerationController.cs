@@ -76,8 +76,3 @@ public class ModerationController(IMediator mediator) : Controller
         return await mediator.Send(request);
     }
 }
-
-
-
-
-

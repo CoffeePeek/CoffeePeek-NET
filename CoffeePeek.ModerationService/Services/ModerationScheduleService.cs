@@ -46,7 +46,3 @@ public class ModerationScheduleService(ModerationDbContext dbContext)
         }
     }
 }
-
-
-
-

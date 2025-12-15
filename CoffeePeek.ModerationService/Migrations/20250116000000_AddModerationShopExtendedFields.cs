@@ -406,8 +406,3 @@ namespace CoffeePeek.ModerationService.Migrations
         }
     }
 }
-
-
-
-
-
