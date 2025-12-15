@@ -2,7 +2,6 @@ using CoffeePeek.AuthService.Configuration;
 using CoffeePeek.AuthService.Commands;
 using CoffeePeek.Contract.Response.Auth;
 using CoffeePeek.Contract.Response.CoffeeShop;
-using CoffeePeek.Contract.Response.Login;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.ShopsService.DB;
@@ -23,6 +22,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using CoffeePeek.Contract.Responses.Login;
 using Xunit;
 using City = CoffeePeek.ShopsService.Entities.City;
 

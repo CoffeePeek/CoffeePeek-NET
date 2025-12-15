@@ -1,12 +1,18 @@
+using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Dtos.Contact;
+using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Data.Interfaces;
+using CoffeePeek.ModerationService.Entities;
 using CoffeePeek.ModerationService.Handlers;
-using CoffeePeek.ModerationService.Models;
 using CoffeePeek.ModerationService.Repositories.Interfaces;
+using CoffeePeek.Shared.Extensions.Exceptions;
 using FluentAssertions;
+using MapsterMapper;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -17,6 +23,8 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
     private readonly Mock<IModerationShopRepository> _repositoryMock;
     private readonly Mock<IPublishEndpoint> _publishEndpointMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<ILogger<UpdateModerationCoffeeShopStatusHandler>> _loggerMock;
     private readonly UpdateModerationCoffeeShopStatusHandler _sut;
 
     public UpdateModerationCoffeeShopStatusHandlerTests()
@@ -24,11 +32,15 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
         _repositoryMock = new Mock<IModerationShopRepository>();
         _publishEndpointMock = new Mock<IPublishEndpoint>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _mapperMock = new Mock<IMapper>();
+        _loggerMock = new Mock<ILogger<UpdateModerationCoffeeShopStatusHandler>>();
 
         _sut = new UpdateModerationCoffeeShopStatusHandler(
             _repositoryMock.Object,
             _publishEndpointMock.Object,
-            _unitOfWorkMock.Object
+            _unitOfWorkMock.Object,
+            _mapperMock.Object,
+            _loggerMock.Object
         );
     }
 
@@ -37,21 +49,18 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
     {
         // Arrange
         var request = new UpdateModerationCoffeeShopStatusRequest(
-            id: Guid.NewGuid(),
-            moderationStatus: ModerationStatus.Approved,
-            userId: Guid.NewGuid()
+            Id: Guid.NewGuid(),
+            ModerationStatus: ModerationStatus.Approved,
+            UserId: Guid.NewGuid()
         );
 
         _repositoryMock
             .Setup(x => x.GetByIdAsync(request.Id))
             .ReturnsAsync((ModerationShop?)null);
 
-        // Act
-        var result = await _sut.Handle(request, CancellationToken.None);
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(() => _sut.Handle(request, CancellationToken.None));
 
-        // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Message.Should().Contain("CoffeeShop not found");
         _publishEndpointMock.Verify(
             x => x.Publish(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -71,22 +80,28 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
             Address = "Validated Address",
             UserId = userId,
             ModerationStatus = ModerationStatus.Pending,
-            Status = ShopStatus.NotConfirmed,
-            Latitude = 55.7558m,
-            Longitude = 37.6173m,
-            ShopPhotos = new List<ShopPhoto>(),
-            Schedules = new List<Schedule>()
+            Status = ShopStatus.NotConfirmed
         };
 
         var request = new UpdateModerationCoffeeShopStatusRequest(
-            id: shopId,
-            moderationStatus: ModerationStatus.Approved,
-            userId: Guid.NewGuid()
+            Id: shopId,
+            ModerationStatus: ModerationStatus.Approved,
+            UserId: Guid.NewGuid()
         );
 
         _repositoryMock
             .Setup(x => x.GetByIdAsync(shopId))
             .ReturnsAsync(shop);
+
+        var mappedShop = new ShopDto
+        {
+            Id = shopId,
+            Name = shop.Name
+        };
+
+        _mapperMock
+            .Setup(m => m.Map<ShopDto>(shop))
+            .Returns(mappedShop);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -96,10 +111,8 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
         _publishEndpointMock.Verify(
             x => x.Publish(
                 It.Is<CoffeeShopApprovedEvent>(e =>
-                    e.ModerationShopId == shopId &&
-                    e.Name == shop.Name &&
-                    e.Latitude == shop.Latitude &&
-                    e.Longitude == shop.Longitude),
+                    e.CreatorId == request.UserId &&
+                    e.Shop == mappedShop),
                 It.IsAny<CancellationToken>()),
             Times.Once);
         _repositoryMock.Verify(x => x.UpdateAsync(shop), Times.Once);
@@ -123,22 +136,34 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
             Address = "Validated Address",
             UserId = userId,
             ModerationStatus = ModerationStatus.Pending,
-            Status = ShopStatus.NotConfirmed,
-            Latitude = latitude,
-            Longitude = longitude,
-            ShopPhotos = new List<ShopPhoto>(),
-            Schedules = new List<Schedule>()
+            Status = ShopStatus.NotConfirmed
         };
 
         var request = new UpdateModerationCoffeeShopStatusRequest(
-            id: shopId,
-            moderationStatus: ModerationStatus.Approved,
-            userId: Guid.NewGuid()
+            Id: shopId,
+            ModerationStatus: ModerationStatus.Approved,
+            UserId: Guid.NewGuid()
         );
 
         _repositoryMock
             .Setup(x => x.GetByIdAsync(shopId))
             .ReturnsAsync(shop);
+
+        var mappedShop = new ShopDto
+        {
+            Id = shopId,
+            Name = shop.Name,
+            Location = new CoffeePeek.Contract.Dtos.Shop.LocationDto
+            {
+                Address = shop.Address,
+                Latitude = latitude,
+                Longitude = longitude
+            }
+        };
+
+        _mapperMock
+            .Setup(m => m.Map<ShopDto>(shop))
+            .Returns(mappedShop);
 
         CoffeeShopApprovedEvent? publishedEvent = null;
         _publishEndpointMock
@@ -151,8 +176,9 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
 
         // Assert
         publishedEvent.Should().NotBeNull();
-        publishedEvent!.Latitude.Should().Be(latitude);
-        publishedEvent.Longitude.Should().Be(longitude);
+        publishedEvent!.Shop.Location.Should().NotBeNull();
+        publishedEvent.Shop.Location!.Latitude.Should().Be(latitude);
+        publishedEvent.Shop.Location.Longitude.Should().Be(longitude);
     }
 
     [Fact]
@@ -172,25 +198,33 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
             UserId = userId,
             ShopContactId = contactId,
             ModerationStatus = ModerationStatus.Pending,
-            Status = ShopStatus.NotConfirmed,
-            ShopContacts = new ShopContacts
-            {
-                PhoneNumber = "+1234567890",
-                InstagramLink = "https://instagram.com/test"
-            },
-            ShopPhotos = new List<ShopPhoto>(),
-            Schedules = new List<Schedule>()
+            Status = ShopStatus.NotConfirmed
         };
 
         var request = new UpdateModerationCoffeeShopStatusRequest(
-            id: shopId,
-            moderationStatus: ModerationStatus.Approved,
-            userId: Guid.NewGuid()
+            Id: shopId,
+            ModerationStatus: ModerationStatus.Approved,
+            UserId: Guid.NewGuid()
         );
 
         _repositoryMock
             .Setup(x => x.GetByIdAsync(shopId))
             .ReturnsAsync(shop);
+
+        var mappedShop = new ShopDto
+        {
+            Id = shopId,
+            Name = shop.Name,
+            ShopContact = new ShopContactDto
+            {
+                PhoneNumber = "+1234567890",
+                InstagramLink = "https://instagram.com/test"
+            }
+        };
+
+        _mapperMock
+            .Setup(m => m.Map<ShopDto>(shop))
+            .Returns(mappedShop);
 
         CoffeeShopApprovedEvent? publishedEvent = null;
         _publishEndpointMock
@@ -203,9 +237,9 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
 
         // Assert
         publishedEvent.Should().NotBeNull();
-        publishedEvent!.ShopContact.Should().NotBeNull();
-        publishedEvent.ShopContact!.PhoneNumber.Should().Be("+1234567890");
-        publishedEvent.ShopContact.InstagramLink.Should().Be("https://instagram.com/test");
+        publishedEvent!.Shop.ShopContact.Should().NotBeNull();
+        publishedEvent.Shop.ShopContact!.PhoneNumber.Should().Be("+1234567890");
+        publishedEvent.Shop.ShopContact.InstagramLink.Should().Be("https://instagram.com/test");
     }
 
     [Fact]
@@ -214,11 +248,7 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
         // Arrange
         var shopId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var photos = new List<ShopPhoto>
-        {
-            new ShopPhoto { Url = "photo1.jpg" },
-            new ShopPhoto { Url = "photo2.jpg" }
-        };
+        var photos = new List<string> { "photo1.jpg", "photo2.jpg" };
 
         var shop = new ModerationShop
         {
@@ -228,20 +258,29 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
             Address = "Validated Address",
             UserId = userId,
             ModerationStatus = ModerationStatus.Pending,
-            Status = ShopStatus.NotConfirmed,
-            ShopPhotos = photos,
-            Schedules = new List<Schedule>()
+            Status = ShopStatus.NotConfirmed
         };
 
         var request = new UpdateModerationCoffeeShopStatusRequest(
-            id: shopId,
-            moderationStatus: ModerationStatus.Approved,
-            userId: Guid.NewGuid()
+            Id: shopId,
+            ModerationStatus: ModerationStatus.Approved,
+            UserId: Guid.NewGuid()
         );
 
         _repositoryMock
             .Setup(x => x.GetByIdAsync(shopId))
             .ReturnsAsync(shop);
+
+        var mappedShop = new ShopDto
+        {
+            Id = shopId,
+            Name = shop.Name,
+            ImageUrls = photos.ToArray()
+        };
+
+        _mapperMock
+            .Setup(m => m.Map<ShopDto>(shop))
+            .Returns(mappedShop);
 
         CoffeeShopApprovedEvent? publishedEvent = null;
         _publishEndpointMock
@@ -254,9 +293,10 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
 
         // Assert
         publishedEvent.Should().NotBeNull();
-        publishedEvent!.ShopPhotos.Should().HaveCount(2);
-        publishedEvent.ShopPhotos.Should().Contain("photo1.jpg");
-        publishedEvent.ShopPhotos.Should().Contain("photo2.jpg");
+        publishedEvent!.Shop.ImageUrls.Should().NotBeNull();
+        publishedEvent.Shop.ImageUrls!.Should().HaveCount(2);
+        publishedEvent.Shop.ImageUrls.Should().Contain("photo1.jpg");
+        publishedEvent.Shop.ImageUrls.Should().Contain("photo2.jpg");
     }
 
     [Fact]
@@ -265,9 +305,9 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
         // Arrange
         var shopId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        var schedules = new List<Schedule>
+        var schedules = new List<ScheduleDto>
         {
-            new Schedule
+            new ScheduleDto
             {
                 DayOfWeek = DayOfWeek.Monday,
                 OpeningTime = TimeSpan.FromHours(9),
@@ -283,20 +323,29 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
             Address = "Validated Address",
             UserId = userId,
             ModerationStatus = ModerationStatus.Pending,
-            Status = ShopStatus.NotConfirmed,
-            ShopPhotos = new List<ShopPhoto>(),
-            Schedules = schedules
+            Status = ShopStatus.NotConfirmed
         };
 
         var request = new UpdateModerationCoffeeShopStatusRequest(
-            id: shopId,
-            moderationStatus: ModerationStatus.Approved,
-            userId: Guid.NewGuid()
+            Id: shopId,
+            ModerationStatus: ModerationStatus.Approved,
+            UserId: Guid.NewGuid()
         );
 
         _repositoryMock
             .Setup(x => x.GetByIdAsync(shopId))
             .ReturnsAsync(shop);
+
+        var mappedShop = new ShopDto
+        {
+            Id = shopId,
+            Name = shop.Name,
+            Schedules = schedules
+        };
+
+        _mapperMock
+            .Setup(m => m.Map<ShopDto>(shop))
+            .Returns(mappedShop);
 
         CoffeeShopApprovedEvent? publishedEvent = null;
         _publishEndpointMock
@@ -309,10 +358,11 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
 
         // Assert
         publishedEvent.Should().NotBeNull();
-        publishedEvent!.Schedules.Should().HaveCount(1);
-        publishedEvent.Schedules.First().DayOfWeek.Should().Be(DayOfWeek.Monday);
-        publishedEvent.Schedules.First().OpeningTime.Should().Be(TimeSpan.FromHours(9));
-        publishedEvent.Schedules.First().ClosingTime.Should().Be(TimeSpan.FromHours(18));
+        publishedEvent!.Shop.Schedules.Should().NotBeNull();
+        publishedEvent.Shop.Schedules!.Should().HaveCount(1);
+        publishedEvent.Shop.Schedules.First().DayOfWeek.Should().Be(DayOfWeek.Monday);
+        publishedEvent.Shop.Schedules.First().OpeningTime.Should().Be(TimeSpan.FromHours(9));
+        publishedEvent.Shop.Schedules.First().ClosingTime.Should().Be(TimeSpan.FromHours(18));
     }
 
     [Fact]
@@ -328,15 +378,13 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
             Address = "Validated Address",
             UserId = Guid.NewGuid(),
             ModerationStatus = ModerationStatus.Pending,
-            Status = ShopStatus.NotConfirmed,
-            ShopPhotos = new List<ShopPhoto>(),
-            Schedules = new List<Schedule>()
+            Status = ShopStatus.NotConfirmed
         };
 
         var request = new UpdateModerationCoffeeShopStatusRequest(
-            id: shopId,
-            moderationStatus: ModerationStatus.Pending,
-            userId: Guid.NewGuid()
+            Id: shopId,
+            ModerationStatus: ModerationStatus.Pending,
+            UserId: Guid.NewGuid()
         );
 
         _repositoryMock
@@ -368,15 +416,13 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
             Address = "Validated Address",
             UserId = Guid.NewGuid(),
             ModerationStatus = ModerationStatus.Pending,
-            Status = ShopStatus.NotConfirmed,
-            ShopPhotos = new List<ShopPhoto>(),
-            Schedules = new List<Schedule>()
+            Status = ShopStatus.NotConfirmed
         };
 
         var request = new UpdateModerationCoffeeShopStatusRequest(
-            id: shopId,
-            moderationStatus: ModerationStatus.Pending,
-            userId: Guid.NewGuid()
+            Id: shopId,
+            ModerationStatus: ModerationStatus.Pending,
+            UserId: Guid.NewGuid()
         );
 
         _repositoryMock
@@ -406,15 +452,13 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
             Address = "Validated Address",
             UserId = Guid.NewGuid(),
             ModerationStatus = ModerationStatus.Pending,
-            Status = ShopStatus.NotConfirmed,
-            ShopPhotos = new List<ShopPhoto>(),
-            Schedules = new List<Schedule>()
+            Status = ShopStatus.NotConfirmed
         };
 
         var request = new UpdateModerationCoffeeShopStatusRequest(
-            id: shopId,
-            moderationStatus: ModerationStatus.Approved,
-            userId: Guid.NewGuid()
+            Id: shopId,
+            ModerationStatus: ModerationStatus.Approved,
+            UserId: Guid.NewGuid()
         );
 
         _repositoryMock

@@ -1,14 +1,14 @@
 using CoffeePeek.AuthService.Commands;
 using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Repositories;
-using CoffeePeek.Contract.Response.Auth;
-using CoffeePeek.Contract.Response.Login;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.Login;
 using FluentAssertions;
 using CoffeePeek.AuthService.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
+using CoffeePeek.Contract.Response.Auth;
 using Xunit;
 
 namespace CoffeePeek.AuthService.Tests.Integration;

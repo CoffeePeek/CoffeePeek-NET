@@ -6,6 +6,7 @@ using CoffeePeek.AuthService.Services;
 using CoffeePeek.AuthService.Services.Validation;
 using CoffeePeek.Data.Interfaces;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -17,7 +18,6 @@ public class RegisterUserHandlerTests
     private readonly Mock<IPasswordHasherService> _passwordHasherMock;
     private readonly Mock<IUserManager> _userManagerMock;
     private readonly Mock<IValidationStrategy<RegisterUserCommand>> _validationStrategyMock;
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly RegisterUserHandler _sut;
 
     public RegisterUserHandlerTests()
@@ -26,14 +26,16 @@ public class RegisterUserHandlerTests
         _passwordHasherMock = new Mock<IPasswordHasherService>();
         _userManagerMock = new Mock<IUserManager>();
         _validationStrategyMock = new Mock<IValidationStrategy<RegisterUserCommand>>();
-        _unitOfWorkMock = new Mock<IUnitOfWork>();
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
+        var logger =  new Mock<ILogger<RegisterUserHandler>>();
 
         _sut = new RegisterUserHandler(
             _credentialsRepoMock.Object,
             _passwordHasherMock.Object,
             _userManagerMock.Object,
             _validationStrategyMock.Object,
-            _unitOfWorkMock.Object
+            unitOfWorkMock.Object,
+            logger.Object
         );
     }
 

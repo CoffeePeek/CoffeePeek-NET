@@ -11,6 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System.Net;
 using System.Net.Http.Json;
+using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.CoffeeShop;
+using CoffeePeek.ModerationService.Entities;
+using CoffeePeek.ModerationService.Models;
 using Xunit;
 
 namespace CoffeePeek.ModerationService.Tests.Integration;
@@ -162,7 +166,7 @@ public class ModerationFlowTests(ModerationServiceWebApplicationFactory factory)
         // Step 2: Get moderation shops list
         var getResponse = await _client.GetAsync("/api/moderation");
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var moderationShops = await getResponse.Content.ReadFromJsonAsync<CoffeePeek.Contract.Responses.Response<GetCoffeeShopsInModerationByIdResponse>>();
+        var moderationShops = await getResponse.Content.ReadFromJsonAsync<Response<GetCoffeeShopsInModerationByIdResponse>>();
         moderationShops.Should().NotBeNull();
         moderationShops!.IsSuccess.Should().BeTrue();
         moderationShops.Data.Should().NotBeNull();
@@ -180,11 +184,13 @@ public class ModerationFlowTests(ModerationServiceWebApplicationFactory factory)
         factory.PublishEndpointMock.Verify(
             x => x.Publish(
                 It.Is<CoffeeShopApprovedEvent>(e =>
-                    e.ModerationShopId == moderationShop.Id &&
-                    e.Name == shopName &&
-                    e.NotValidatedAddress == address &&
-                    e.Latitude == latitude &&
-                    e.Longitude == longitude),
+                    e.CreatorId == createRequest.UserId &&
+                    e.Shop.Id == moderationShop.Id &&
+                    e.Shop.Name == shopName &&
+                    e.Shop.Location != null &&
+                    e.Shop.Location.Address == address &&
+                    e.Shop.Location.Latitude == latitude &&
+                    e.Shop.Location.Longitude == longitude),
                 It.IsAny<CancellationToken>()),
             Times.Once);
 
@@ -235,7 +241,7 @@ public class ModerationFlowTests(ModerationServiceWebApplicationFactory factory)
         shop.Should().NotBeNull();
 
         // Add contact and photo to shop (simulating update)
-        var contact = new CoffeePeek.ModerationService.Models.ShopContacts
+        var contact = new ShopContacts
         {
             Id = Guid.NewGuid(),
             ShopId = shop!.Id,
@@ -245,7 +251,7 @@ public class ModerationFlowTests(ModerationServiceWebApplicationFactory factory)
         dbContext.ShopContacts.Add(contact);
         shop.ShopContactId = contact.Id;
 
-        var photo = new CoffeePeek.ModerationService.Models.ShopPhoto
+        var photo = new ShopPhoto
         {
             Id = Guid.NewGuid(),
             ShopId = shop.Id,
@@ -265,16 +271,18 @@ public class ModerationFlowTests(ModerationServiceWebApplicationFactory factory)
         factory.PublishEndpointMock.Verify(
             x => x.Publish(
                 It.Is<CoffeeShopApprovedEvent>(e =>
-                    e.ModerationShopId == shop.Id &&
-                    e.Name == shopName &&
-                    e.NotValidatedAddress == address &&
-                    e.Latitude == latitude &&
-                    e.Longitude == longitude &&
-                    e.ShopContact != null &&
-                    e.ShopContact.PhoneNumber == phoneNumber &&
-                    e.ShopContact.InstagramLink == instagramLink &&
-                    e.ShopPhotos != null &&
-                    e.ShopPhotos.Contains(photoUrl)),
+                    e.CreatorId == createRequest.UserId &&
+                    e.Shop.Id == shop.Id &&
+                    e.Shop.Name == shopName &&
+                    e.Shop.Location != null &&
+                    e.Shop.Location.Address == address &&
+                    e.Shop.Location.Latitude == latitude &&
+                    e.Shop.Location.Longitude == longitude &&
+                    e.Shop.ShopContact != null &&
+                    e.Shop.ShopContact.PhoneNumber == phoneNumber &&
+                    e.Shop.ShopContact.InstagramLink == instagramLink &&
+                    e.Shop.ImageUrls != null &&
+                    e.Shop.ImageUrls.Contains(photoUrl)),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -293,7 +301,7 @@ public class ModerationFlowTests(ModerationServiceWebApplicationFactory factory)
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK); // Controller returns 200 with error in body
-        var result = await response.Content.ReadFromJsonAsync<CoffeePeek.Contract.Response.Response>();
+        var result = await response.Content.ReadFromJsonAsync<Response>();
         result.Should().NotBeNull();
         result!.IsSuccess.Should().BeFalse();
         result.Message.Should().Contain("CoffeeShop not found");
@@ -340,7 +348,7 @@ public class ModerationFlowTests(ModerationServiceWebApplicationFactory factory)
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<CoffeePeek.Contract.Responses.Response<GetCoffeeShopsInModerationByIdResponse>>();
+        var result = await response.Content.ReadFromJsonAsync<Response<GetCoffeeShopsInModerationByIdResponse>>();
         result.Should().NotBeNull();
         result!.IsSuccess.Should().BeTrue();
         result.Data.Should().NotBeNull();

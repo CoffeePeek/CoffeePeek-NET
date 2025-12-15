@@ -1,6 +1,6 @@
 using CoffeePeek.ModerationService.Configuration;
 using CoffeePeek.ModerationService.Services;
-using CoffeePeek.ModerationService.Services.Models;
+using CoffeePeek.ModerationService.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

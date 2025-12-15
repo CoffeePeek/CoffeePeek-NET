@@ -6,6 +6,7 @@ using CoffeePeek.Contract.Response.Auth;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Data.Interfaces;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -19,7 +20,8 @@ public class RefreshTokenHandlerTests
 
     public RefreshTokenHandlerTests()
     {
-        _sut = new RefreshTokenHandler(_jwtTokenServiceMock.Object, _unitOfWorkMock.Object);
+        var logger = new Mock<ILogger<RefreshTokenHandler>>();
+        _sut = new RefreshTokenHandler(_jwtTokenServiceMock.Object, _unitOfWorkMock.Object, logger.Object);
     }
 
     [Fact]
@@ -40,7 +42,7 @@ public class RefreshTokenHandlerTests
         };
 
         _jwtTokenServiceMock
-            .Setup(x => x.RefreshTokensAsync(request.RefreshToken, userId))
+            .Setup(x => x.RefreshTokensAsync(request.RefreshToken, userId, request.DeviceName, request.IpAddress))
             .ReturnsAsync(authResult);
 
         // Act
@@ -52,6 +54,8 @@ public class RefreshTokenHandlerTests
         result.Data.Should().NotBeNull();
         result.Data!.AccessToken.Should().Be(authResult.AccessToken);
         result.Data.RefreshToken.Should().Be(authResult.RefreshToken);
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -64,7 +68,7 @@ public class RefreshTokenHandlerTests
         };
 
         _jwtTokenServiceMock
-            .Setup(x => x.RefreshTokensAsync(request.RefreshToken, request.UserId))
+            .Setup(x => x.RefreshTokensAsync(request.RefreshToken, request.UserId, request.DeviceName, request.IpAddress))
             .ThrowsAsync(new UnauthorizedAccessException("invalid"));
 
         // Act
@@ -87,7 +91,7 @@ public class RefreshTokenHandlerTests
         };
 
         _jwtTokenServiceMock
-            .Setup(x => x.RefreshTokensAsync(request.RefreshToken, request.UserId))
+            .Setup(x => x.RefreshTokensAsync(request.RefreshToken, request.UserId, request.DeviceName, request.IpAddress))
             .ThrowsAsync(new Exception("boom"));
 
         // Act

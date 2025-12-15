@@ -1,7 +1,6 @@
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Events.Shops;
-using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.UserService.Configuration;
@@ -86,20 +85,13 @@ public class EventConsumerTests(UserServiceWebApplicationFactory factory) : ICla
         setupDbContext.Users.Add(user);
         await setupDbContext.SaveChangesAsync();
         
-        var @event = new CoffeeShopApprovedEvent(
-            ModerationShopId: Guid.NewGuid(),
-            Name: "Test Shop",
-            NotValidatedAddress: "Test Address",
-            UserId: userId,
-            address: "Test Address",
-            ShopContactId: null,
-            Status: ShopStatus.NotConfirmed,
-            ShopContact: null,
-            ShopPhotos: Array.Empty<string>(),
-            Schedules: Array.Empty<CoffeePeek.Contract.Dtos.Schedule.ScheduleDto>(),
-            Latitude: null,
-            Longitude: null
-        );
+        var shop = new CoffeePeek.Contract.Dtos.CoffeeShop.ShopDto
+        {
+            Id = Guid.NewGuid(),
+            CityId = Guid.NewGuid(),
+            Name = "Test Shop"
+        };
+        var @event = new CoffeeShopApprovedEvent(userId, shop);
 
         using var scope = factory.Services.CreateScope();
         var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
@@ -151,20 +143,13 @@ public class EventConsumerTests(UserServiceWebApplicationFactory factory) : ICla
         dbContext.UserStatistics.Add(existingStatistics);
         await dbContext.SaveChangesAsync();
 
-        var @event = new CoffeeShopApprovedEvent(
-            ModerationShopId: Guid.NewGuid(),
-            Name: "Test Shop",
-            NotValidatedAddress: "Test Address",
-            UserId: userId,
-            address: "Test Address",
-            ShopContactId: null,
-            Status: ShopStatus.NotConfirmed,
-            ShopContact: null,
-            ShopPhotos: Array.Empty<string>(),
-            Schedules: Array.Empty<CoffeePeek.Contract.Dtos.Schedule.ScheduleDto>(),
-            Latitude: null,
-            Longitude: null
-        );
+        var shop = new CoffeePeek.Contract.Dtos.CoffeeShop.ShopDto
+        {
+            Id = Guid.NewGuid(),
+            CityId = Guid.NewGuid(),
+            Name = "Test Shop"
+        };
+        var @event = new CoffeeShopApprovedEvent(userId, shop);
 
         var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
 

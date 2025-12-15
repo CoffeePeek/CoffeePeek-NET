@@ -72,7 +72,7 @@ public class LoginUserHandlerTests
             .Setup(x => x.CheckPasswordSignInAsync(user, command.Password))
             .ReturnsAsync(signInResult);
         _jwtTokenServiceMock
-            .Setup(x => x.GenerateTokensAsync(user))
+            .Setup(x => x.GenerateTokensAsync(user, command.DeviceName, command.IpAddress))
             .ReturnsAsync(authResult);
 
         // Act
@@ -84,6 +84,8 @@ public class LoginUserHandlerTests
         result.Data.Should().NotBeNull();
         result.Data!.AccessToken.Should().Be("access_token");
         result.Data.RefreshToken.Should().Be("refresh_token");
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -114,7 +116,7 @@ public class LoginUserHandlerTests
             .Setup(x => x.CheckPasswordSignInAsync(user, command.Password))
             .ReturnsAsync(signInResult);
         _jwtTokenServiceMock
-            .Setup(x => x.GenerateTokensAsync(user))
+            .Setup(x => x.GenerateTokensAsync(user, command.DeviceName, command.IpAddress))
             .ReturnsAsync(authResult);
 
         // Act
@@ -124,6 +126,7 @@ public class LoginUserHandlerTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().NotBeNull();
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -246,7 +249,7 @@ public class LoginUserHandlerTests
             .Setup(x => x.CheckPasswordSignInAsync(user, command.Password))
             .ReturnsAsync(signInResult);
         _jwtTokenServiceMock
-            .Setup(x => x.GenerateTokensAsync(user))
+            .Setup(x => x.GenerateTokensAsync(user, command.DeviceName, command.IpAddress))
             .ReturnsAsync(authResult);
 
         // Act

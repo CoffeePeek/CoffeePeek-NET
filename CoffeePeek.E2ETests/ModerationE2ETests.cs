@@ -3,7 +3,7 @@ using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Response.CoffeeShop;
+using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.ModerationService.Configuration;
 using CoffeePeek.ModerationService.Models;
 using CoffeePeek.ModerationService.Services.Interfaces;
@@ -87,11 +87,13 @@ public class ModerationE2ETests(GatewayWebApplicationFactory gatewayFactory)
             _moderationServiceFactory.PublishEndpointMock.Verify(
                 x => x.Publish(
                     It.Is<CoffeeShopApprovedEvent>(e =>
-                        e.ModerationShopId == moderationShop.Id &&
-                        e.Name == shopName &&
-                        e.NotValidatedAddress == address &&
-                        e.Latitude == latitude &&
-                        e.Longitude == longitude),
+                        e.CreatorId == createRequest.UserId &&
+                        e.Shop.Id == moderationShop.Id &&
+                        e.Shop.Name == shopName &&
+                        e.Shop.Location != null &&
+                        e.Shop.Location.Address == address &&
+                        e.Shop.Location.Latitude == latitude &&
+                        e.Shop.Location.Longitude == longitude),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
 
