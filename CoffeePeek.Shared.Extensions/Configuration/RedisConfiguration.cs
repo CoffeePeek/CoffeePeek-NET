@@ -1,4 +1,5 @@
 using System.Net;
+using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
@@ -8,7 +9,7 @@ public static class RedisConfiguration
 {
     public static void RedisConfigurationOptions(this IServiceCollection services)
     {
-        var options = services.AddValidateOptions<Options.RedisOptions>();
+        var options = services.AddValidateOptions<RedisOptions>();
 
         var redisConfig = new ConfigurationOptions
         {

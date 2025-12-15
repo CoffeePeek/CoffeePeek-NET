@@ -1,5 +1,7 @@
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Schedule;
+using CoffeePeek.Contract.Dtos.Shop;
+using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
 using FluentAssertions;
@@ -20,25 +22,31 @@ public class CoffeeShopApprovedEventContractTests
     public void CoffeeShopApprovedEvent_CanBeSerializedAndDeserialized()
     {
         // Arrange
-        var originalEvent = new CoffeeShopApprovedEvent(
-            ModerationShopId: Guid.NewGuid(),
-            Name: "Test Coffee Shop",
-            NotValidatedAddress: "123 Test Street",
-            UserId: Guid.NewGuid(),
-            address: "123 Test Street, Validated",
-            ShopContactId: Guid.NewGuid(),
-            Status: ShopStatus.NotConfirmed,
-            ShopContact: new ShopContactDto
+        var creatorId = Guid.NewGuid();
+
+        var shop = new ShopDto
+        {
+            Id = Guid.NewGuid(),
+            CityId = Guid.NewGuid(),
+            Name = "Test Coffee Shop",
+            Description = "Test description",
+            PriceRange = PriceRange.Cheap,
+            Location = new LocationDto
+            {
+                Address = "123 Test Street, Validated",
+                Latitude = 55.7558m,
+                Longitude = 37.6173m
+            },
+            ShopContact = new ShopContactDto
             {
                 PhoneNumber = "+7-999-123-4567",
                 InstagramLink = "https://instagram.com/testshop",
                 Email = "test@example.com",
                 SiteLink = "https://testshop.com"
             },
-            ShopPhotos: new List<string> { "https://example.com/photo1.jpg", "https://example.com/photo2.jpg" },
-            Schedules: new List<ScheduleDto>
+            Schedules = new List<ScheduleDto>
             {
-                new ScheduleDto
+                new()
                 {
                     DayOfWeek = DayOfWeek.Monday,
                     OpeningTime = TimeSpan.FromHours(9),
@@ -46,9 +54,10 @@ public class CoffeeShopApprovedEventContractTests
                     Intervals = new HashSet<ShopScheduleIntervalDto>()
                 }
             },
-            Latitude: 55.7558m,
-            Longitude: 37.6173m
-        );
+            ImageUrls = new[] { "https://example.com/photo1.jpg", "https://example.com/photo2.jpg" }
+        };
+
+        var originalEvent = new CoffeeShopApprovedEvent(creatorId, shop);
 
         // Act
         var json = JsonSerializer.Serialize(originalEvent, _jsonOptions);
@@ -56,28 +65,31 @@ public class CoffeeShopApprovedEventContractTests
 
         // Assert
         deserializedEvent.Should().NotBeNull();
-        deserializedEvent!.ModerationShopId.Should().Be(originalEvent.ModerationShopId);
-        deserializedEvent.Name.Should().Be(originalEvent.Name);
-        deserializedEvent.NotValidatedAddress.Should().Be(originalEvent.NotValidatedAddress);
-        deserializedEvent.UserId.Should().Be(originalEvent.UserId);
-        deserializedEvent.address.Should().Be(originalEvent.address);
-        deserializedEvent.ShopContactId.Should().Be(originalEvent.ShopContactId);
-        deserializedEvent.Status.Should().Be(originalEvent.Status);
-        deserializedEvent.Latitude.Should().Be(originalEvent.Latitude);
-        deserializedEvent.Longitude.Should().Be(originalEvent.Longitude);
-        
-        deserializedEvent.ShopContact.Should().NotBeNull();
-        deserializedEvent.ShopContact!.PhoneNumber.Should().Be(originalEvent.ShopContact.PhoneNumber);
-        deserializedEvent.ShopContact.InstagramLink.Should().Be(originalEvent.ShopContact.InstagramLink);
-        deserializedEvent.ShopContact.Email.Should().Be(originalEvent.ShopContact.Email);
-        deserializedEvent.ShopContact.SiteLink.Should().Be(originalEvent.ShopContact.SiteLink);
-        
-        deserializedEvent.ShopPhotos.Should().HaveCount(2);
-        deserializedEvent.ShopPhotos.Should().Contain("https://example.com/photo1.jpg");
-        deserializedEvent.ShopPhotos.Should().Contain("https://example.com/photo2.jpg");
-        
-        deserializedEvent.Schedules.Should().HaveCount(1);
-        var schedule = deserializedEvent.Schedules.First();
+        deserializedEvent!.CreatorId.Should().Be(originalEvent.CreatorId);
+        deserializedEvent.Shop.Should().NotBeNull();
+
+        deserializedEvent.Shop.Name.Should().Be(originalEvent.Shop.Name);
+        deserializedEvent.Shop.Description.Should().Be(originalEvent.Shop.Description);
+
+        deserializedEvent.Shop.Location.Should().NotBeNull();
+        deserializedEvent.Shop.Location!.Address.Should().Be(originalEvent.Shop.Location!.Address);
+        deserializedEvent.Shop.Location.Latitude.Should().Be(originalEvent.Shop.Location.Latitude);
+        deserializedEvent.Shop.Location.Longitude.Should().Be(originalEvent.Shop.Location.Longitude);
+
+        deserializedEvent.Shop.ShopContact.Should().NotBeNull();
+        deserializedEvent.Shop.ShopContact!.PhoneNumber.Should().Be(originalEvent.Shop.ShopContact!.PhoneNumber);
+        deserializedEvent.Shop.ShopContact.InstagramLink.Should().Be(originalEvent.Shop.ShopContact.InstagramLink);
+        deserializedEvent.Shop.ShopContact.Email.Should().Be(originalEvent.Shop.ShopContact.Email);
+        deserializedEvent.Shop.ShopContact.SiteLink.Should().Be(originalEvent.Shop.ShopContact.SiteLink);
+
+        deserializedEvent.Shop.ImageUrls.Should().NotBeNull();
+        deserializedEvent.Shop.ImageUrls!.Should().HaveCount(2);
+        deserializedEvent.Shop.ImageUrls.Should().Contain("https://example.com/photo1.jpg");
+        deserializedEvent.Shop.ImageUrls.Should().Contain("https://example.com/photo2.jpg");
+
+        deserializedEvent.Shop.Schedules.Should().NotBeNull();
+        deserializedEvent.Shop.Schedules!.Should().HaveCount(1);
+        var schedule = deserializedEvent.Shop.Schedules.First();
         schedule.DayOfWeek.Should().Be(DayOfWeek.Monday);
         schedule.OpeningTime.Should().Be(TimeSpan.FromHours(9));
         schedule.ClosingTime.Should().Be(TimeSpan.FromHours(18));
@@ -87,20 +99,22 @@ public class CoffeeShopApprovedEventContractTests
     public void CoffeeShopApprovedEvent_WithNullOptionalFields_CanBeSerializedAndDeserialized()
     {
         // Arrange
-        var originalEvent = new CoffeeShopApprovedEvent(
-            ModerationShopId: Guid.NewGuid(),
-            Name: "Test Coffee Shop",
-            NotValidatedAddress: "123 Test Street",
-            UserId: Guid.NewGuid(),
-            address: "123 Test Street",
-            ShopContactId: null,
-            Status: ShopStatus.NotConfirmed,
-            ShopContact: null,
-            ShopPhotos: new List<string>(),
-            Schedules: new List<ScheduleDto>(),
-            Latitude: null,
-            Longitude: null
-        );
+        var creatorId = Guid.NewGuid();
+
+        var shop = new ShopDto
+        {
+            Id = Guid.NewGuid(),
+            CityId = Guid.NewGuid(),
+            Name = "Test Coffee Shop",
+            Description = null,
+            PriceRange = PriceRange.Cheap,
+            Location = null,
+            ShopContact = null,
+            Schedules = null,
+            ImageUrls = null
+        };
+
+        var originalEvent = new CoffeeShopApprovedEvent(creatorId, shop);
 
         // Act
         var json = JsonSerializer.Serialize(originalEvent, _jsonOptions);
@@ -108,34 +122,30 @@ public class CoffeeShopApprovedEventContractTests
 
         // Assert
         deserializedEvent.Should().NotBeNull();
-        deserializedEvent!.ModerationShopId.Should().Be(originalEvent.ModerationShopId);
-        deserializedEvent.Name.Should().Be(originalEvent.Name);
-        deserializedEvent.ShopContactId.Should().BeNull();
-        deserializedEvent.ShopContact.Should().BeNull();
-        deserializedEvent.ShopPhotos.Should().BeEmpty();
-        deserializedEvent.Schedules.Should().BeEmpty();
-        deserializedEvent.Latitude.Should().BeNull();
-        deserializedEvent.Longitude.Should().BeNull();
+        deserializedEvent!.CreatorId.Should().Be(originalEvent.CreatorId);
+        deserializedEvent.Shop.Should().NotBeNull();
+        deserializedEvent.Shop.Name.Should().Be(originalEvent.Shop.Name);
+        deserializedEvent.Shop.Description.Should().BeNull();
+        deserializedEvent.Shop.Location.Should().BeNull();
+        deserializedEvent.Shop.ShopContact.Should().BeNull();
+        deserializedEvent.Shop.Schedules.Should().BeNull();
+        deserializedEvent.Shop.ImageUrls.Should().BeNull();
     }
 
     [Fact]
     public void CoffeeShopApprovedEvent_WithMinimalData_CanBeSerializedAndDeserialized()
     {
         // Arrange
-        var originalEvent = new CoffeeShopApprovedEvent(
-            ModerationShopId: Guid.NewGuid(),
-            Name: "Minimal Shop",
-            NotValidatedAddress: "Address",
-            UserId: Guid.NewGuid(),
-            address: "Address",
-            ShopContactId: null,
-            Status: ShopStatus.NotConfirmed,
-            ShopContact: null,
-            ShopPhotos: new List<string>(),
-            Schedules: new List<ScheduleDto>(),
-            Latitude: null,
-            Longitude: null
-        );
+        var creatorId = Guid.NewGuid();
+
+        var shop = new ShopDto
+        {
+            Id = Guid.NewGuid(),
+            CityId = Guid.NewGuid(),
+            Name = "Minimal Shop"
+        };
+
+        var originalEvent = new CoffeeShopApprovedEvent(creatorId, shop);
 
         // Act
         var json = JsonSerializer.Serialize(originalEvent, _jsonOptions);
@@ -143,81 +153,60 @@ public class CoffeeShopApprovedEventContractTests
 
         // Assert
         deserializedEvent.Should().NotBeNull();
-        deserializedEvent!.Name.Should().Be("Minimal Shop");
-        deserializedEvent.Status.Should().Be(ShopStatus.NotConfirmed);
+        deserializedEvent!.CreatorId.Should().Be(originalEvent.CreatorId);
+        deserializedEvent.Shop.Name.Should().Be("Minimal Shop");
     }
 
     [Fact]
     public void CoffeeShopApprovedEvent_JsonStructure_MatchesExpectedFormat()
     {
         // Arrange
-        var @event = new CoffeeShopApprovedEvent(
-            ModerationShopId: Guid.Parse("12345678-1234-1234-1234-123456789012"),
-            Name: "Test Shop",
-            NotValidatedAddress: "Test Address",
-            UserId: Guid.Parse("87654321-4321-4321-4321-210987654321"),
-            address: "Validated Address",
-            ShopContactId: Guid.Parse("11111111-1111-1111-1111-111111111111"),
-            Status: ShopStatus.NotConfirmed,
-            ShopContact: new ShopContactDto
+        var creatorId = Guid.Parse("87654321-4321-4321-4321-210987654321");
+
+        var shop = new ShopDto
+        {
+            Id = Guid.Parse("12345678-1234-1234-1234-123456789012"),
+            CityId = Guid.NewGuid(),
+            Name = "Test Shop",
+            Description = "Test Address",
+            PriceRange = PriceRange.Cheap,
+            Location = new LocationDto
+            {
+                Address = "Validated Address",
+                Latitude = 55.7558m,
+                Longitude = 37.6173m
+            },
+            ShopContact = new ShopContactDto
             {
                 PhoneNumber = "+7-999-123-4567"
             },
-            ShopPhotos: new List<string> { "photo1.jpg" },
-            Schedules: new List<ScheduleDto>(),
-            Latitude: 55.7558m,
-            Longitude: 37.6173m
-        );
+            ImageUrls = new[] { "photo1.jpg" },
+            Schedules = new List<ScheduleDto>()
+        };
+
+        var @event = new CoffeeShopApprovedEvent(creatorId, shop);
 
         // Act
         var json = JsonSerializer.Serialize(@event, _jsonOptions);
 
         // Assert
-        json.Should().Contain("moderationShopId");
+        json.Should().Contain("creatorId");
+        json.Should().Contain("shop");
+        json.Should().Contain("id");
         json.Should().Contain("name");
-        json.Should().Contain("notValidatedAddress");
-        json.Should().Contain("userId");
+        json.Should().Contain("description");
+        json.Should().Contain("priceRange");
+        json.Should().Contain("location");
         json.Should().Contain("address");
-        json.Should().Contain("shopContactId");
-        json.Should().Contain("status");
-        json.Should().Contain("shopContact");
-        json.Should().Contain("shopPhotos");
-        json.Should().Contain("schedules");
         json.Should().Contain("latitude");
         json.Should().Contain("longitude");
+        json.Should().Contain("shopContact");
+        json.Should().Contain("imageUrls");
+        json.Should().Contain("schedules");
         json.Should().Contain("12345678-1234-1234-1234-123456789012");
         json.Should().Contain("Test Shop");
         json.Should().Contain("55.7558");
         json.Should().Contain("37.6173");
-    }
-
-    [Fact]
-    public void CoffeeShopApprovedEvent_AllShopStatusValues_CanBeSerialized()
-    {
-        // Arrange & Act & Assert
-        foreach (ShopStatus status in Enum.GetValues<ShopStatus>())
-        {
-            var @event = new CoffeeShopApprovedEvent(
-                ModerationShopId: Guid.NewGuid(),
-                Name: "Test",
-                NotValidatedAddress: "Address",
-                UserId: Guid.NewGuid(),
-                address: "Address",
-                ShopContactId: null,
-                Status: status,
-                ShopContact: null,
-                ShopPhotos: new List<string>(),
-                Schedules: new List<ScheduleDto>(),
-                Latitude: null,
-                Longitude: null
-            );
-
-            var json = JsonSerializer.Serialize(@event, _jsonOptions);
-            var deserialized = JsonSerializer.Deserialize<CoffeeShopApprovedEvent>(json, _jsonOptions);
-
-            deserialized.Should().NotBeNull();
-            deserialized!.Status.Should().Be(status);
-        }
     }
 }
 

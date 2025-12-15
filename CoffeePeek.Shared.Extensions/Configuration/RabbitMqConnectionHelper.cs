@@ -1,4 +1,4 @@
-using CoffeePeek.Shared.Extensions.Options;
+using CoffeePeek.Shared.Infrastructure.Options;
 
 namespace CoffeePeek.Shared.Extensions.Configuration;
 

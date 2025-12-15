@@ -1,5 +1,4 @@
 using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Options;
 using CoffeePeek.Shared.Infrastructure.Options;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;

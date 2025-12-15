@@ -2,5 +2,5 @@
 
 public class PostgresCpOptions
 {
-    public string ConnectionString { get; set; }
+    public string ConnectionString { get; set; } = null!;
 }

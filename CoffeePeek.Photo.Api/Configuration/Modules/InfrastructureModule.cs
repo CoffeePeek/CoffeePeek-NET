@@ -3,7 +3,6 @@ using CoffeePeek.Photo.Infrastructure.Consumers;
 using CoffeePeek.Photo.Infrastructure.Options;
 using CoffeePeek.Photo.Infrastructure.Storage;
 using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Options;
 using MassTransit;
 
 namespace CoffeePeek.Photo.Api.Configuration;
