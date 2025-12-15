@@ -2,8 +2,11 @@ using CoffeePeek.Gateway;
 using CoffeePeek.Gateway.Extensions;
 using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
+using CoffeePeek.Shared.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddSerilogLogging();
 
 builder.ConfigureEnvironment();
 

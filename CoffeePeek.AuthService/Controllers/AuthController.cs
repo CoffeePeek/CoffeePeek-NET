@@ -1,8 +1,7 @@
 ﻿using CoffeePeek.AuthService.Commands;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.Auth;
-using CoffeePeek.Contract.Response.Login;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.Login;
 using CoffeePeek.Shared.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +22,10 @@ public class AuthController(IMediator mediator) : ControllerBase
     [HttpPost("login")]
     public Task<Response<LoginResponse>> Login([FromBody] LoginUserCommand command)
     {
-        return mediator.Send(command);
+        var deviceName = Request.Headers.UserAgent.ToString() ?? "unknown";
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var enriched = command with { DeviceName = deviceName, IpAddress = ipAddress };
+        return mediator.Send(enriched);
     }
 
     [HttpPost("register")]
@@ -33,9 +35,11 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
     
     [HttpGet("refresh")]
-    public Task<Response<GetRefreshTokenResponse>> RefreshToken([FromQuery]string refreshToken)
+    public Task<Response<GetRefreshTokenResponse>> RefreshToken([FromQuery] string refreshToken)
     {
-        var request = new RefreshTokenCommand(refreshToken)
+        var deviceName = Request.Headers.UserAgent.ToString() ?? "unknown";
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var request = new RefreshTokenCommand(refreshToken, deviceName, ipAddress)
         {
             UserId = User.GetUserIdOrThrow()
         };
@@ -46,7 +50,10 @@ public class AuthController(IMediator mediator) : ControllerBase
     [HttpPost("google/login")]
     public Task<Response<GoogleLoginResponse>> GoogleLogin([FromBody] GoogleLoginCommand command)
     {
-        return mediator.Send(command);
+        var deviceName = Request.Headers.UserAgent.ToString() ?? "unknown";
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var enriched = new GoogleLoginCommand(command.IdToken, deviceName, ipAddress);
+        return mediator.Send(enriched);
     }
     
     [HttpPost("logout")]

@@ -12,8 +12,11 @@ using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Infrastructure.Options;
 using Hangfire;
 using Hangfire.PostgreSql;
+using CoffeePeek.Shared.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddSerilogLogging();
 
 // Environment configuration
 builder.ConfigureEnvironment();

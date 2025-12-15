@@ -1,4 +1,5 @@
 using CoffeePeek.Photo.Api.Configuration;
+using CoffeePeek.Shared.Extensions.Logging;
 
 namespace CoffeePeek.Photo.Api;
 
@@ -7,6 +8,8 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        
+        builder.AddSerilogLogging();
         
         // Configure PORT from environment variable
         var port = Environment.GetEnvironmentVariable("PORT");

@@ -94,6 +94,18 @@ public record CacheKey(
             DefaultTtl: TimeSpan.FromDays(1),
             Description: "All beans list",
             Service: "ShopsService");
+        
+        public static CacheKey Roasters() => new(
+            Key: $"{nameof(Roasters)}:all",
+            DefaultTtl: TimeSpan.FromDays(1),
+            Description: "All roasters list",
+            Service: "ShopsService");
+        
+        public static CacheKey BrewMethods() => new(
+            Key: $"{nameof(BrewMethods)}:all",
+            DefaultTtl: TimeSpan.FromDays(1),
+            Description: "All brew methods list",
+            Service: "ShopsService");
             
         public static CacheKey Favorites(Guid userId) => new(
             Key: $"{nameof(Shop)}:favorites:{userId}",
@@ -102,6 +114,7 @@ public record CacheKey(
             Service: "ShopsService");
             
         public static string AllPattern() => $"{nameof(Shop)}:*";
+        
     }
     
     public static class Vacancies

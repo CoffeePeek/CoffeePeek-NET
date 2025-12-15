@@ -1,5 +1,6 @@
 using CoffeePeek.Data.Extensions;
 using CoffeePeek.ModerationService.Configuration;
+using CoffeePeek.ModerationService.Entities;
 using CoffeePeek.ModerationService.Models;
 using CoffeePeek.ModerationService.Repositories;
 using CoffeePeek.ModerationService.Repositories.Interfaces;
@@ -10,8 +11,11 @@ using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddSerilogLogging();
 
 // Environment configuration (PORT, AllowedHosts, etc.)
 builder.ConfigureEnvironment();
@@ -26,6 +30,12 @@ builder.Services.AddEfCoreData<ModerationDbContext>(dbOptions);
 builder.Services.AddGenericRepository<ModerationShop, ModerationDbContext>();
 
 builder.Services.AddScoped<IModerationShopRepository, ModerationShopRepository>();
+builder.Services.AddScoped<IModerationShopCreationService, ModerationShopCreationService>();
+builder.Services.AddScoped<IModerationScheduleService, ModerationScheduleService>();
+builder.Services.AddScoped<IModerationRelationsService, ModerationRelationsService>();
+
+// Mapster
+builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
 
 // Yandex Geocoding Service
 var yandexOptions = builder.Services.AddValidateOptions<YandexApiOptions>();
@@ -73,5 +83,3 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
-
-

@@ -5,14 +5,17 @@ using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.ShopsService.Configuration;
+using CoffeePeek.ShopsService.Consumers;
 using CoffeePeek.ShopsService.DB;
 using CoffeePeek.ShopsService.Entities;
-using CoffeePeek.ShopsService.Entities.CheckIn;
 using CoffeePeek.ShopsService.Extensions;
 using CoffeePeek.ShopsService.Services;
 using CoffeePeek.ShopsService.Services.Interfaces;
+using CoffeePeek.Shared.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddSerilogLogging();
 
 // Environment configuration
 builder.ConfigureEnvironment();
@@ -50,7 +53,10 @@ builder.Services.AddValidators();
 builder.Services.AddScoped<ICacheService, CacheService>();
 
 // Messaging for publishing events
-builder.Services.AddMessagingModule();
+builder.Services.AddMessagingModule(x =>
+{
+    x.AddConsumer<CoffeeShopApprovedEventConsumer>();
+});
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions();
@@ -63,6 +69,8 @@ builder.Services.AddGenericRepository<Review, ShopsDbContext>();
 builder.Services.AddGenericRepository<FavoriteShop, ShopsDbContext>();
 builder.Services.AddGenericRepository<CoffeeBean, ShopsDbContext>();
 builder.Services.AddGenericRepository<Equipment, ShopsDbContext>();
+builder.Services.AddGenericRepository<BrewMethod, ShopsDbContext>();
+builder.Services.AddGenericRepository<Roaster, ShopsDbContext>();
 builder.Services.AddGenericRepository<Location, ShopsDbContext>();
 
 // Database Seeder

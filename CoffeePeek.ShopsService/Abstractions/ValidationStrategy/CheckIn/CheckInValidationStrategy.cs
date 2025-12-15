@@ -74,3 +74,8 @@ public class CheckInValidationStrategy(ShopsDbContext dbContext) : IValidationSt
         return ValidationResult.Valid;
     }
 }
+
+
+
+
+

@@ -1,4 +1,5 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.ShopsService.Entities;
 using CoffeePeek.ShopsService.Entities.CheckIn;
 using Mapster;
@@ -37,7 +38,7 @@ public static class MapsterConfiguration
             .Map(dest => dest.Beans, src => src.CoffeeBeanShops)
             .Map(dest => dest.Roasters, src => src.RoasterShops)
             .Map(dest => dest.Equipments, src => src.ShopEquipments);
-
+        
         config.NewConfig<CheckIn, CheckInDto>()
             .Map(dest => dest.ShopName, src => src.Shop != null ? src.Shop.Name : string.Empty);
 

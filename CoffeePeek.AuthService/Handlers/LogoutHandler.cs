@@ -1,12 +1,14 @@
 using CoffeePeek.AuthService.Commands;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.Contract.Response;
+using CoffeePeek.Contract.Responses;
+using CoffeePeek.Shared.Extensions.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace CoffeePeek.AuthService.Handlers;
 
-public class LogoutHandler(IUserManager userManager) : IRequestHandler<LogoutCommand, Response>
+public class LogoutHandler(IUserManager userManager, ILogger<LogoutHandler> logger) : IRequestHandler<LogoutCommand, Response>
 {
     private const string RefreshTokenName = "RefreshToken";
 
@@ -15,11 +17,14 @@ public class LogoutHandler(IUserManager userManager) : IRequestHandler<LogoutCom
         try
         {
             var user = await userManager.FindByIdAsync(request.UserId);
+            logger.LogInformation("Attempting to log out user with ID: {UserId}", request.UserId);
             if (user == null)
             {
-                return Response.Error("User not found");
+                logger.LogWarning("Logout failed: User with ID {UserId} not found.", request.UserId);
+                throw new NotFoundException("User not found");
             }
 
+            logger.LogInformation("Removing refresh token for user with ID: {UserId}", request.UserId);
             await userManager.RemoveAuthenticationTokenAsync(
                 user,
                 TokenOptions.DefaultProvider,
@@ -30,8 +35,8 @@ public class LogoutHandler(IUserManager userManager) : IRequestHandler<LogoutCom
         }
         catch (Exception e)
         {
+            logger.LogError(e, "An error occurred during logout for user with ID: {UserId}", request.UserId);
             return Response.Error(message: "Error occurred during logout");
         }
     }
 }
-

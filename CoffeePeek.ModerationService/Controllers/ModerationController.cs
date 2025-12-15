@@ -3,10 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
-using CoffeePeek.Contract.Response;
-using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using MediatR;
@@ -77,3 +76,8 @@ public class ModerationController(IMediator mediator) : Controller
         return await mediator.Send(request);
     }
 }
+
+
+
+
+

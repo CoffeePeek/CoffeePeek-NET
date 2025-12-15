@@ -5,8 +5,12 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using OutboxBackgroundService;
 using OutboxBackgroundService.Configuration;
+using CoffeePeek.Shared.Extensions.Logging;
 
 var builder = Host.CreateApplicationBuilder(args);
+
+builder.AddSerilogLogging();
+
 builder.Services.AddHostedService<Worker>();
 var dbOptions = builder.Services.AddValidateOptions<PostgresCpOptions>();
 builder.Services.AddDbContext<AuthDbContext>(opt => { opt.UseNpgsql(dbOptions.ConnectionString); });

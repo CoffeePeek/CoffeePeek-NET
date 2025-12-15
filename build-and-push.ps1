@@ -1,13 +1,9 @@
-# PowerShell скрипт для сборки и пуша всех Docker образов
-# Использование: .\build-and-push.ps1
-
 $ErrorActionPreference = "Stop"
 
 Write-Host "=========================================" -ForegroundColor Cyan
 Write-Host "Building and pushing Docker images" -ForegroundColor Cyan
 Write-Host "=========================================" -ForegroundColor Cyan
 
-# Функция для выполнения команды с обработкой ошибок
 function Invoke-DockerCommand {
     param(
         [string]$Command,

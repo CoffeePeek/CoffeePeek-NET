@@ -4,4 +4,7 @@ using MediatR;
 
 namespace CoffeePeek.AuthService.Commands;
 
-public record GoogleLoginCommand(string IdToken) : IRequest<Response<GoogleLoginResponse>>;
+public record GoogleLoginCommand(
+    string IdToken,
+    string DeviceName = "unknown",
+    string IpAddress = "unknown") : IRequest<Response<GoogleLoginResponse>>;

@@ -1,4 +1,4 @@
-namespace CoffeePeek.Contract.Response.Login;
+namespace CoffeePeek.Contract.Responses.Login;
 
 public class LoginResponse(string accessToken, string refreshToken)
 {

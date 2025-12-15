@@ -1,20 +1,5 @@
-using CoffeePeek.Contract.Dtos.Contact;
-using CoffeePeek.Contract.Dtos.Schedule;
-using CoffeePeek.Contract.Enums;
+using CoffeePeek.Contract.Dtos.CoffeeShop;
 
 namespace CoffeePeek.Contract.Events.Moderation;
 
-public record CoffeeShopApprovedEvent(
-    Guid ModerationShopId,
-    string Name,
-    string NotValidatedAddress,
-    Guid UserId,
-    string address,
-    Guid? ShopContactId,
-    ShopStatus Status,
-    ShopContactDto? ShopContact,
-    ICollection<string> ShopPhotos,
-    ICollection<ScheduleDto> Schedules,
-    decimal? Latitude,
-    decimal? Longitude
-);
+public record CoffeeShopApprovedEvent(Guid CreatorId, ShopDto Shop);

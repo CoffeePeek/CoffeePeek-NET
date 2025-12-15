@@ -35,3 +35,8 @@ public class ReviewAddedEventConsumer(UserDbContext dbContext) : IConsumer<Revie
         await dbContext.SaveChangesAsync();
     }
 }
+
+
+
+
+

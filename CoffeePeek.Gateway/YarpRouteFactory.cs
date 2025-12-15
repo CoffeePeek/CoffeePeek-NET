@@ -5,14 +5,14 @@ namespace CoffeePeek.Gateway;
 public static class YarpRouteFactory
 {
     private record ServiceRoute(string Id, string PathPrefix, string ClusterId, string? TargetPath = null);
-
-    // Список всех микросервисов, которые нужно проксировать
+    
     private static readonly List<ServiceRoute> Services =
     [
         new("auth", "auth", "auth-cluster"),
         new("user", "user", "user-cluster"),
         new("shops", "shops", "shops-cluster", "/api/CoffeeShop/{**catch-all}"),
         new("checkin", "CheckIn", "shops-cluster"), 
+        new("internal", "internal", "shops-cluster"),
         new("moderation", "moderation", "moderation-cluster"),
         new("photo", "photo", "photo-cluster", "/api/{**catch-all}"),
         new("jobs", "vacancies", "jobs-cluster", "/api/vacancies/{**catch-all}")

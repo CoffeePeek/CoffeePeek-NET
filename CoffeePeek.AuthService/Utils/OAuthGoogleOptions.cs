@@ -1,4 +1,4 @@
-namespace CoffeePeek.BuildingBlocks.AuthOptions;
+namespace CoffeePeek.AuthService.Utils;
 
 public class OAuthGoogleOptions
 {

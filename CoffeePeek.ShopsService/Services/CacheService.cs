@@ -14,6 +14,8 @@ public class CacheService(
     IGenericRepository<City> cityRepository,
     IGenericRepository<CoffeeBean> coffeeBeanRepository,
     IGenericRepository<Equipment> equipmentRepository,
+    IGenericRepository<Roaster> roasterRepository,
+    IGenericRepository<BrewMethod> brewMethodRepository,
     IMapper mapper) : ICacheService
 {
     public async Task<CityDto[]> GetCities()
@@ -68,5 +70,41 @@ public class CacheService(
         await redisService.SetAsync(cacheKey, equipmentsDto, TimeSpan.FromDays(1));
 
         return equipmentsDto;
+    }
+
+    public async Task<RoasterDto[]> GetRoasters()
+    {
+        var cacheKey = CacheKey.Shop.Roasters();
+        var cachedRoasters = await redisService.GetAsync<RoasterDto[]>(cacheKey);
+        
+        if (cachedRoasters != null)
+        {
+            return cachedRoasters;
+        }
+        
+        var roasters = await roasterRepository.GetAllAsNoTrackingAsync();
+        var roasterDtos = mapper.Map<RoasterDto[]>(roasters);
+        
+        await redisService.SetAsync(cacheKey, roasterDtos, TimeSpan.FromDays(1));
+
+        return cachedRoasters;
+    }
+
+    public async Task<BrewMethodDto[]> GetBrewMethods()
+    {
+        var cacheKey = CacheKey.Shop.BrewMethods();
+        var cachedBrewMethods = await redisService.GetAsync<BrewMethodDto[]>(cacheKey);
+        
+        if (cachedBrewMethods != null)
+        {
+            return cachedBrewMethods;
+        }
+        
+        var brewMethods = await brewMethodRepository.GetAllAsNoTrackingAsync();
+        var brewMethodsDtos = mapper.Map<BrewMethodDto[]>(brewMethods);
+        
+        await redisService.SetAsync(cacheKey, brewMethodsDtos, TimeSpan.FromDays(1));
+
+        return cachedBrewMethods;
     }
 }

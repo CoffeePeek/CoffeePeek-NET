@@ -73,3 +73,8 @@ public class CheckInController(IMediator mediator) : Controller
         Response.Headers.TryAdd("X-Page-Size", pageSize.ToString());
     }
 }
+
+
+
+
+

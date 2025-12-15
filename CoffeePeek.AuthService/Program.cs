@@ -5,18 +5,20 @@ using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Repositories;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.AuthService.Services.Validation;
+using CoffeePeek.AuthService.Utils;
 using CoffeePeek.Data.Extensions;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
-using CoffeePeek.BuildingBlocks.AuthOptions;
 using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Extensions.Logging;
 using IJWTTokenService = CoffeePeek.AuthService.Services.IJWTTokenService;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
 using JWTTokenService = CoffeePeek.AuthService.Services.JWTTokenService;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddSerilogLogging();
 
 // Environment configuration
 builder.ConfigureEnvironment();

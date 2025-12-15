@@ -14,23 +14,25 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CoffeePeek.AuthService.Services;
 
-public class JWTTokenService(IOptions<JWTOptions> options, IUserManager userManager) : IJWTTokenService
+public class JWTTokenService(IUserManager userManager, IOptions<JWTOptions> options) : IJWTTokenService
 {
     private const string RefreshTokenName = "RefreshToken";
 
     private readonly JWTOptions _options = options.Value;
 
-    public async Task<AuthResult> GenerateTokensAsync(UserCredentials user)
+    public async Task<AuthResult> GenerateTokensAsync(UserCredentials user, string deviceName, string ipAddress)
     {
         var accessToken = GenerateJwtAsync(user);
 
         var refreshToken = GenerateRefreshToken();
 
-        await userManager.SetAuthenticationTokenAsync(
+        await userManager.SetAuthenticationToken(
             user,
             TokenOptions.DefaultProvider,
             RefreshTokenName,
-            refreshToken
+            refreshToken,
+            deviceName,
+            ipAddress
         );
 
         return new AuthResult
@@ -40,28 +42,31 @@ public class JWTTokenService(IOptions<JWTOptions> options, IUserManager userMana
         };
     }
 
-    public async Task<AuthResult> RefreshTokensAsync(string refreshToken, Guid userId)
+    public async Task<AuthResult> RefreshTokensAsync(string refreshToken, Guid userId, string deviceName, string ipAddress)
     {
         var user = await userManager.FindByIdAsync(userId);
         if (user == null)
             throw new UnauthorizedAccessException("Invalid user.");
 
-        var storedToken = userManager.GetAuthenticationTokenAsync(
-            user,
-            TokenOptions.DefaultProvider,
-            RefreshTokenName
-        );
+        var storedToken = userManager.GetAuthenticationToken(user, refreshToken);
 
-        if (storedToken == null || storedToken != refreshToken)
+        if (storedToken == null || storedToken.IsRevoked)
+        {
+            await userManager.RevokeAllUserTokensAsync(userId);
             throw new UnauthorizedAccessException("Invalid refresh token.");
+        }
 
-        await userManager.RemoveAuthenticationTokenAsync(
-            user,
-            TokenOptions.DefaultProvider,
-            RefreshTokenName
-        );
+        if (storedToken.ExpiryDate <= DateTime.UtcNow)
+        {
+            throw new UnauthorizedAccessException("Refresh token expired.");
+        }
 
-        return await GenerateTokensAsync(user);
+        storedToken.IsRevoked = true;
+
+        var newDeviceName = string.IsNullOrWhiteSpace(deviceName) ? storedToken.DeviceName : deviceName;
+        var newIp = string.IsNullOrWhiteSpace(ipAddress) ? storedToken.IpAddress : ipAddress;
+
+        return await GenerateTokensAsync(user, newDeviceName, newIp);
     }
 
     private string GenerateJwtAsync(UserCredentials user)

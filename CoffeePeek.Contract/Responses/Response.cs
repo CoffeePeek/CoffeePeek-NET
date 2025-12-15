@@ -1,6 +1,6 @@
-using CoffeePeek.Contract.Responses;
+using System.Text.Json.Serialization;
 
-namespace CoffeePeek.Contract.Response;
+namespace CoffeePeek.Contract.Responses;
 
 public class Response
 {
@@ -9,9 +9,13 @@ public class Response
     public string Message { get; init; }
     
     public object Data { get; set; }
-    
+#if PRODUCTION
+    [JsonIgnore]
+#endif
     public string ErrorCode { get; set; }
-    
+#if PRODUCTION
+    [JsonIgnore]
+#endif
     public string TraceId { get; set; }
     
     public Dictionary<string, string[]> Errors { get; set; }

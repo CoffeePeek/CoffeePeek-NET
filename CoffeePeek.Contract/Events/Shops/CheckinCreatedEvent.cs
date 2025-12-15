@@ -6,3 +6,8 @@ public record CheckinCreatedEvent
     public Guid ShopId { get; init; }
     public DateTime CreatedAt { get; init; }
 }
+
+
+
+
+

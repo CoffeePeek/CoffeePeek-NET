@@ -6,8 +6,11 @@ using CoffeePeek.UserService.Configuration;
 using CoffeePeek.UserService.EventConsumer;
 using CoffeePeek.UserService.Models;
 using CoffeePeek.UserService.Repositories;
+using CoffeePeek.Shared.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddSerilogLogging();
 
 // Environment configuration
 builder.ConfigureEnvironment();
@@ -25,6 +28,7 @@ builder.Services.AddMessagingModule(x =>
     x.AddConsumer<CheckinCreatedEventConsumer>();
     x.AddConsumer<ReviewAddedEventConsumer>();
     x.AddConsumer<CoffeeShopApprovedEventConsumer>();
+    x.AddConsumer<UserLoggedInEventConsumer>();
 });
 
 // Database

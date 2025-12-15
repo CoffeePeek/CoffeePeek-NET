@@ -20,3 +20,8 @@ public record CreateCheckInRequest : IRequest<Response<CreateCheckInResponse>>
     
     public CheckInReviewRequest? Review { get; init; }
 }
+
+
+
+
+

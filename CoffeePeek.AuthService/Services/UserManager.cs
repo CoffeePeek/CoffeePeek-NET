@@ -1,8 +1,5 @@
-﻿using CoffeePeek.AuthService.Configuration;
-using CoffeePeek.AuthService.Entities;
-using CoffeePeek.AuthService.Models;
+﻿﻿using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Repositories;
-using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
@@ -53,9 +50,20 @@ public class UserManager(
         return roles;
     }
 
-    public async Task SetAuthenticationTokenAsync(UserCredentials user, string defaultProvider, string refreshTokenName,
-        string token)
+    public async Task SetAuthenticationToken(UserCredentials user, string defaultProvider, string refreshTokenName,
+        string token, string deviceName, string ipAddress)
     {
+        // Задел на будущее: Ограничение количества активных устройств
+        const int maxActiveDevices = 5; // Этот параметр можно вынести в конфигурацию
+        var activeTokens = user.RefreshTokens.Where(rt => !rt.IsRevoked).ToList();
+
+        if (activeTokens.Count >= maxActiveDevices)
+        {
+            // Аннулируем самый старый токен
+            var oldestToken = activeTokens.OrderBy(rt => rt.CreatedDate).First();
+            oldestToken.IsRevoked = true;
+        }
+        
         var refreshToken = new RefreshToken
         {
             UserId = user.Id,
@@ -64,6 +72,9 @@ public class UserManager(
             Token = token,
             ExpiryDate = DateTime.UtcNow.AddDays(_options.RefreshTokenLifetimeDays),
             IsRevoked = false,
+            DeviceName = deviceName,
+            IpAddress = ipAddress,
+            CreatedDate = DateTime.UtcNow
         };
         user.RefreshTokens.Add(refreshToken);
 
@@ -93,11 +104,21 @@ public class UserManager(
         return userRepository.UpdateAsync(user);
     }
 
-    public string? GetAuthenticationTokenAsync(UserCredentials user, string defaultProvider, string refreshTokenName)
+    public RefreshToken? GetAuthenticationToken(UserCredentials user, string tokenValue)
     {
-        var token = user.RefreshTokens.FirstOrDefault(rt =>
-            rt.Name == refreshTokenName && rt.LoginProvider == defaultProvider);
-        return token?.Token;
+        return user.RefreshTokens.FirstOrDefault(rt => rt.Token == tokenValue);
+    }
+
+    public Task RevokeAllUserTokensAsync(Guid userId)
+    {
+        var user = userRepository.GetByIdAsync(userId).Result;
+        if (user == null) return Task.CompletedTask;
+
+        foreach (var token in user.RefreshTokens)
+        {
+            token.IsRevoked = true;
+        }
+        return userRepository.UpdateAsync(user);
     }
 
     public Task<bool> CheckPasswordAsync(UserCredentials user, string requestPassword)

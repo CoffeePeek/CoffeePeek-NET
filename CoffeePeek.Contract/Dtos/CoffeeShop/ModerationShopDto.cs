@@ -9,15 +9,18 @@ public class ModerationShopDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-    public string NotValidatedAddress { get; set; } 
-    public int? Address { get; set; }
-    [JsonIgnore] public Guid? ShopContactId { get; set; }
-    [JsonIgnore] public Guid UserId { get; set; }
-
+    public string NotValidatedAddress { get; set; }
+    public string? Description { get; set; }
+    public PriceRange? PriceRange { get; set; }
+    public Guid? CityId { get; set; }
+    public Guid UserId { get; set; }
     public ModerationStatus ModerationStatus { get; set; }
     public ShopStatus Status { get; set; }
-    public ShopContactDto ShopContact { get; set; }
-
-    public ICollection<string> ShopPhotos { get; set; }
-    public ICollection<ScheduleDto> Schedules { get; set; }
+    public ShopContactDto? ShopContact { get; set; }
+    public List<ScheduleDto>? Schedules { get; set; }
+    public List<Guid>? EquipmentIds { get; set; }
+    public List<Guid>? CoffeeBeanIds { get; set; }
+    public List<Guid>? RoasterIds { get; set; }
+    public List<Guid>? BrewMethodIds { get; set; }
+    public List<string>? ShopPhotos { get; set; }
 }

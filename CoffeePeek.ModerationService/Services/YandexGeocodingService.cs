@@ -1,6 +1,6 @@
 using CoffeePeek.ModerationService.Configuration;
+using CoffeePeek.ModerationService.Models;
 using CoffeePeek.ModerationService.Services.Interfaces;
-using CoffeePeek.ModerationService.Services.Models;
 using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.ModerationService.Services;

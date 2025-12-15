@@ -1,5 +1,5 @@
-using CoffeePeek.Contract.Response.Login;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.Login;
 using MediatR;
 
 namespace CoffeePeek.Contract.Requests.Auth;

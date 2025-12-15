@@ -44,3 +44,8 @@ public class GetUserCheckInsHandler(
         return Response<GetUserCheckInsResponse>.Success(response);
     }
 }
+
+
+
+
+

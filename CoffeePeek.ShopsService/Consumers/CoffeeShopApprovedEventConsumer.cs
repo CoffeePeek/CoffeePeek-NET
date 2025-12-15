@@ -1,81 +1,82 @@
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Data.Interfaces;
 using CoffeePeek.ShopsService.Entities;
+using MapsterMapper;
 using MassTransit;
 
 namespace CoffeePeek.ShopsService.Consumers;
 
 public class CoffeeShopApprovedEventConsumer(
+    IMapper mapper,
     IGenericRepository<Shop> shopRepository,
     IGenericRepository<ShopContact> shopContactsRepository,
     IGenericRepository<ShopPhoto> shopPhotoRepository,
     IGenericRepository<Location> locationRepository,
-    IUnitOfWork unitOfWork) : IConsumer<CoffeeShopApprovedEvent>
+    IUnitOfWork unitOfWork,
+    ILogger<CoffeeShopApprovedEventConsumer> logger) : IConsumer<CoffeeShopApprovedEvent>
 {
     public async Task Consume(ConsumeContext<CoffeeShopApprovedEvent> consumeContext)
     {
         var @event = consumeContext.Message;
         var cancellationToken = consumeContext.CancellationToken;
+        logger.LogInformation("Received CoffeeShopApprovedEvent for shop: {ShopName}", @event.Shop.Name);
 
-        // Создаем Shop
-        var shop = new Shop
-        {
-            Id = Guid.NewGuid(),
-            Name = @event.Name,
-            CityId = Guid.Empty // TODO: Get CityId from event or other source
-        };
+        var shop = mapper.Map<Shop>(@event.Shop);
 
         await shopRepository.AddAsync(shop, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        logger.LogInformation("Shop {ShopName} (ID: {ShopId}) added to repository.", shop.Name, shop.Id);
 
-        // Создаем Location с координатами, если они есть
-        if (@event.Latitude.HasValue && @event.Longitude.HasValue)
+        if (shop.Location != null)
         {
-            var location = new Location
-            {
-                Id = Guid.NewGuid(),
-                Address = @event.address ?? @event.NotValidatedAddress,
-                Latitude = @event.Latitude,
-                Longitude = @event.Longitude,
-                ShopId = shop.Id
-            };
+            shop.LocationId = Guid.NewGuid();
+            shop.Location.Id = shop.LocationId.Value;
+            shop.Location.ShopId = shop.Id;
 
-            await locationRepository.AddAsync(location, cancellationToken);
-            shop.LocationId = location.Id;
+            logger.LogInformation("Adding location for shop {ShopName} (ID: {ShopId}).", shop.Name, shop.Id);
+            
+            await locationRepository.AddAsync(shop.Location, cancellationToken);
+            shop.LocationId = shop.Location.Id;
             shopRepository.Update(shop);
+            logger.LogInformation("Location (ID: {LocationId}) added and linked to shop {ShopId}.", shop.Location.Id, shop.Id);
+        }
+        else
+        {
+            logger.LogWarning("No location provided for shop {ShopName} (ID: {ShopId}).", shop.Name, shop.Id);
         }
 
-        // Создаем ShopContacts если есть
-        if (@event.ShopContact != null)
+        if (shop.ShopContact != null)
         {
-            var shopContacts = new ShopContact
-            {
-                Id = Guid.NewGuid(),
-                ShopId = shop.Id,
-                PhoneNumber = @event.ShopContact.PhoneNumber,
-                InstagramLink = @event.ShopContact.InstagramLink
-            };
-            await shopContactsRepository.AddAsync(shopContacts, cancellationToken);
-            shop.ShopContactId = shopContacts.Id;
+            shop.ShopContact.Id = Guid.NewGuid();
+            shop.ShopContact.ShopId = shop.Id;
+            
+            logger.LogInformation("Adding shop contact for shop {ShopName} (ID: {ShopId}).", shop.Name, shop.Id);
+            await shopContactsRepository.AddAsync(shop.ShopContact, cancellationToken);
+            shop.ShopContactId = shop.ShopContact.Id;
             shopRepository.Update(shop);
+            logger.LogInformation("Shop contact (ID: {ShopContactId}) added and linked to shop {ShopId}.", shop.ShopContact.Id, shop.Id);
+        }
+        else
+        {
+            logger.LogWarning("No shop contact provided for shop {ShopName} (ID: {ShopId}).", shop.Name, shop.Id);
         }
 
         // Создаем ShopPhotos
-        if (@event.ShopPhotos != null && @event.ShopPhotos.Any())
-        {
-            var photos = @event.ShopPhotos.Select(url => new ShopPhoto
-            {
-                Id = Guid.NewGuid(),
-                ShopId = shop.Id,
-                Url = url,
-                UserId = @event.UserId
-            }).ToList();
-            
-            await shopPhotoRepository.AddRangeAsync(photos, cancellationToken);
-        }
-
+        //if (shop.ShopPhotos != null)
+        //{
+        //    var photos = @event.ShopPhotos.Select(url => new ShopPhoto
+        //    {
+        //        Id = Guid.NewGuid(),
+        //        ShopId = shop.Id,
+        //        Url = url,
+        //        UserId = @event.UserId
+        //    }).ToList();
+        //    
+        //    await shopPhotoRepository.AddRangeAsync(photos, cancellationToken);
+        //}
+        
         // Сохраняем все изменения одним вызовом
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        logger.LogInformation("All changes saved for shop {ShopName} (ID: {ShopId}).", shop.Name, shop.Id);
     }
 }
-

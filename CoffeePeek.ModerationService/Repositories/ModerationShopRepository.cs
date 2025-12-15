@@ -1,5 +1,6 @@
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Data.Interfaces;
+using CoffeePeek.ModerationService.Entities;
 using CoffeePeek.ModerationService.Models;
 using CoffeePeek.ModerationService.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +13,14 @@ public class ModerationShopRepository(IGenericRepository<ModerationShop> shopRep
     {
         return await shopRepository.Query()
             .Include(s => s.ShopContacts)
+            .Include(s => s.Location)
             .Include(s => s.ShopPhotos)
             .Include(s => s.Schedules)
-            .Include(s => s.ScheduleExceptions)
+                .ThenInclude(sch => sch.Intervals)
+            .Include(s => s.ModerationShopEquipments)
+            .Include(s => s.ModerationCoffeeBeanShops)
+            .Include(s => s.ModerationRoasterShops)
+            .Include(s => s.ModerationShopBrewMethods)
             .FirstOrDefaultAsync(s => s.Id == id);
     }
 
@@ -22,8 +28,14 @@ public class ModerationShopRepository(IGenericRepository<ModerationShop> shopRep
     {
         return await shopRepository.Query()
             .Include(s => s.ShopContacts)
+            .Include(s => s.Location)
             .Include(s => s.ShopPhotos)
             .Include(s => s.Schedules)
+                .ThenInclude(sch => sch.Intervals)
+            .Include(s => s.ModerationShopEquipments)
+            .Include(s => s.ModerationCoffeeBeanShops)
+            .Include(s => s.ModerationRoasterShops)
+            .Include(s => s.ModerationShopBrewMethods)
             .Where(s => s.UserId == userId)
             .ToListAsync();
     }
@@ -32,8 +44,14 @@ public class ModerationShopRepository(IGenericRepository<ModerationShop> shopRep
     {
         return await shopRepository.Query()
             .Include(s => s.ShopContacts)
+            .Include(s => s.Location)
             .Include(s => s.ShopPhotos)
             .Include(s => s.Schedules)
+                .ThenInclude(sch => sch.Intervals)
+            .Include(s => s.ModerationShopEquipments)
+            .Include(s => s.ModerationCoffeeBeanShops)
+            .Include(s => s.ModerationRoasterShops)
+            .Include(s => s.ModerationShopBrewMethods)
             .ToListAsync();
     }
 
@@ -41,8 +59,14 @@ public class ModerationShopRepository(IGenericRepository<ModerationShop> shopRep
     {
         return await shopRepository.Query()
             .Include(s => s.ShopContacts)
+            .Include(s => s.Location)
             .Include(s => s.ShopPhotos)
             .Include(s => s.Schedules)
+                .ThenInclude(sch => sch.Intervals)
+            .Include(s => s.ModerationShopEquipments)
+            .Include(s => s.ModerationCoffeeBeanShops)
+            .Include(s => s.ModerationRoasterShops)
+            .Include(s => s.ModerationShopBrewMethods)
             .Where(s => s.ModerationStatus == status)
             .ToListAsync();
     }

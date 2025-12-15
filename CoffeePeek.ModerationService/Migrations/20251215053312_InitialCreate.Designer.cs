@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoffeePeek.ModerationService.Migrations
 {
     [DbContext(typeof(ModerationDbContext))]
-    [Migration("20251211113908_InitialCreate")]
+    [Migration("20251215053312_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -27,11 +27,9 @@ namespace CoffeePeek.ModerationService.Migrations
 
             modelBuilder.Entity("CoffeePeek.ModerationService.Models.ModerationShop", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -62,11 +60,11 @@ namespace CoffeePeek.ModerationService.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
-                    b.Property<int?>("ShopContactId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("ShopContactId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int?>("ShopId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("ShopId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -87,11 +85,9 @@ namespace CoffeePeek.ModerationService.Migrations
 
             modelBuilder.Entity("CoffeePeek.ModerationService.Models.Schedule", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<TimeSpan?>("ClosingTime")
                         .HasColumnType("interval");
@@ -105,8 +101,8 @@ namespace CoffeePeek.ModerationService.Migrations
                     b.Property<TimeSpan?>("OpeningTime")
                         .HasColumnType("interval");
 
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -117,11 +113,9 @@ namespace CoffeePeek.ModerationService.Migrations
 
             modelBuilder.Entity("CoffeePeek.ModerationService.Models.ScheduleException", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<TimeSpan?>("ClosingTime")
                         .HasColumnType("interval");
@@ -135,8 +129,8 @@ namespace CoffeePeek.ModerationService.Migrations
                     b.Property<TimeSpan?>("OpeningTime")
                         .HasColumnType("interval");
 
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -147,11 +141,9 @@ namespace CoffeePeek.ModerationService.Migrations
 
             modelBuilder.Entity("CoffeePeek.ModerationService.Models.ShopContacts", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -166,8 +158,8 @@ namespace CoffeePeek.ModerationService.Migrations
                         .HasMaxLength(18)
                         .HasColumnType("character varying(18)");
 
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -176,17 +168,15 @@ namespace CoffeePeek.ModerationService.Migrations
 
             modelBuilder.Entity("CoffeePeek.ModerationService.Models.ShopPhoto", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ShopId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Url")
                         .IsRequired()

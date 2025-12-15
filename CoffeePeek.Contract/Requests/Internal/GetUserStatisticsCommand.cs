@@ -6,3 +6,8 @@ using MediatR;
 namespace CoffeePeek.Contract.Requests.Internal;
 
 public record GetUserStatisticsCommand(Guid UserId) : IRequest<Response<GetUserStatisticsResponse>>;
+
+
+
+
+

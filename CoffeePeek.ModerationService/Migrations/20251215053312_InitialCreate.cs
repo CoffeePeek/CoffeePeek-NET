@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -16,10 +15,9 @@ namespace CoffeePeek.ModerationService.Migrations
                 name: "ShopContacts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ShopId = table.Column<int>(type: "integer", nullable: false),
+                    ShopId = table.Column<Guid>(type: "uuid", nullable: false),
                     PhoneNumber = table.Column<string>(type: "character varying(18)", maxLength: 18, nullable: false),
                     InstagramLink = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
@@ -32,15 +30,14 @@ namespace CoffeePeek.ModerationService.Migrations
                 name: "ModerationShops",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     NotValidatedAddress = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     Address = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ShopContactId = table.Column<int>(type: "integer", nullable: true),
-                    ShopId = table.Column<int>(type: "integer", nullable: true),
+                    ShopContactId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ShopId = table.Column<Guid>(type: "uuid", nullable: true),
                     ModerationStatus = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     IsAddressValidated = table.Column<bool>(type: "boolean", nullable: false),
@@ -62,10 +59,9 @@ namespace CoffeePeek.ModerationService.Migrations
                 name: "ScheduleExceptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ShopId = table.Column<int>(type: "integer", nullable: false),
+                    ShopId = table.Column<Guid>(type: "uuid", nullable: false),
                     ExceptionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     OpeningTime = table.Column<TimeSpan>(type: "interval", nullable: true),
                     ClosingTime = table.Column<TimeSpan>(type: "interval", nullable: true)
@@ -85,10 +81,9 @@ namespace CoffeePeek.ModerationService.Migrations
                 name: "Schedules",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ShopId = table.Column<int>(type: "integer", nullable: false),
+                    ShopId = table.Column<Guid>(type: "uuid", nullable: false),
                     DayOfWeek = table.Column<int>(type: "integer", nullable: false),
                     OpeningTime = table.Column<TimeSpan>(type: "interval", nullable: true),
                     ClosingTime = table.Column<TimeSpan>(type: "interval", nullable: true)
@@ -108,11 +103,10 @@ namespace CoffeePeek.ModerationService.Migrations
                 name: "ShopPhotos",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Url = table.Column<string>(type: "character varying(70)", maxLength: 70, nullable: false),
-                    ShopId = table.Column<int>(type: "integer", nullable: false),
+                    ShopId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>

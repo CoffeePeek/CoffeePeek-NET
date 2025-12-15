@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
-[Route("api/")]
+[Route("api/[controller]")]
 public class InternalController(IMediator mediator) : Controller
 {
     [HttpGet("cities")]
@@ -30,6 +30,20 @@ public class InternalController(IMediator mediator) : Controller
     public Task<Response<GetAllEquipmentResponse>> GetAllEquipment()
     {
         var command = new GetAllEquipmentCommand();
+        return mediator.Send(command);
+    }
+    
+    [HttpGet("roasters")]
+    public Task<Response<GetAllRoastersResponse>> GetAllRoasters()
+    {
+        var command = new GetAllRoastersCommand();
+        return mediator.Send(command);
+    }
+    
+    [HttpGet("brew-methods")]
+    public Task<Response<GetAllBrewMethodsResponse>> GetBrewMethods()
+    {
+        var command = new GetAllBrewMethodsCommand();
         return mediator.Send(command);
     }
     
