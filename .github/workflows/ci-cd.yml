@@ -134,12 +134,54 @@ jobs:
       - name: Install Railway CLI
         run: |
           curl -fsSL https://railway.app/install.sh | sh
+          echo "$HOME/.railway/bin" >> $GITHUB_PATH
 
       - name: Deploy services on Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
         run: |
           SHORT_SHA=${GITHUB_SHA::7}
           echo "Images pushed with tag ${SHORT_SHA}."
-          echo "Configure Railway services to use Docker images:"
-          echo "docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.*:${SHORT_SHA}"
+          echo "Docker Hub username: ${DOCKER_HUB_USERNAME}"
+          
+          # Login to Railway
+          railway login --token $RAILWAY_TOKEN
+          
+          # Link to project if RAILWAY_PROJECT_ID is provided
+          if [ -n "$RAILWAY_PROJECT_ID" ]; then
+            railway link $RAILWAY_PROJECT_ID --non-interactive || echo "Project already linked or link failed"
+          fi
+          
+          # Function to update service Docker image via Railway CLI
+          update_service_image() {
+            local service_name=$1
+            local image_name=$2
+            local image_tag="docker.io/${DOCKER_HUB_USERNAME}/${image_name}:${SHORT_SHA}"
+            
+            echo "Updating service '${service_name}' to use image ${image_tag}"
+            
+            # Try to set DOCKER_IMAGE variable for the service
+            railway variables set DOCKER_IMAGE="${image_tag}" --service "${service_name}" 2>&1 || \
+            railway variables set IMAGE="${image_tag}" --service "${service_name}" 2>&1 || \
+            echo "Warning: Could not update service '${service_name}'. Service may not exist or name mismatch."
+          }
+          
+          # Update each service (service names should match Railway service names)
+          # If service names differ, update them to match your Railway project
+          update_service_image "coffeepeekauthservice.railway.internal" "coffeepeek.authservice"
+          update_service_image "authservice-outbox" "coffeepeek.authservice.outbox-bg"
+          update_service_image "coffeepeekuserservice.railway.internal" "coffeepeek.userservice"
+          update_service_image "coffeepeekshopsservice.railway.internal" "coffeepeek.shopsservice"
+          update_service_image "coffeepeekmoderationservice.railway.internal" "coffeepeek.moderationservice"
+          update_service_image "coffeepeekjobvacancies.railway.internal" "coffeepeek.jobvacancies"
+          update_service_image "gateway.railway.internal" "gateway"
+          
+          echo ""
+          echo "=== Deployment Summary ==="
+          echo "Images are available with tag: ${SHORT_SHA}"
+          echo "If Railway services are configured to use DOCKER_IMAGE variable, they will pull new images."
+          echo "Otherwise, update service settings manually in Railway dashboard:"
+          echo "  - Set DOCKER_IMAGE to: docker.io/${DOCKER_HUB_USERNAME}/<service>:${SHORT_SHA}"
+          echo "  - Or configure Railway to watch Docker Hub for image updates"
