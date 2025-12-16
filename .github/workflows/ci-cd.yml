@@ -278,7 +278,7 @@ jobs:
           
           # Update each service (service names should match Railway service names)
           # If service names differ, update them to match your Railway project
-          update_service_image "coffeepeekauthservice.railway.internal" "coffeepeek.authservice"
+          update_service_image "CoffeePeek.AuthService" "coffeepeek.authservice"
           update_service_image "authservice-outbox" "coffeepeek.authservice.outbox-bg"
           update_service_image "coffeepeekuserservice.railway.internal" "coffeepeek.userservice"
           update_service_image "coffeepeekshopsservice.railway.internal" "coffeepeek.shopsservice"
