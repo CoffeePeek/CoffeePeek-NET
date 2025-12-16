@@ -1,11 +1,10 @@
 ﻿using CoffeePeek.AuthService.Commands;
-using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Responses.Login;
 using CoffeePeek.Data.Interfaces;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Cache;
 using MassTransit;
 using MediatR;
 using SignInResult = CoffeePeek.AuthService.Models.SignInResult;
@@ -13,7 +12,7 @@ using SignInResult = CoffeePeek.AuthService.Models.SignInResult;
 namespace CoffeePeek.AuthService.Handlers;
 
 public class LoginUserHandler(
-    IRedisService redisService,
+    IHybridCache cache,
     IUserManager userManager,
     IJWTTokenService jwtTokenService,
     ISignInManager signInManager,
@@ -25,25 +24,17 @@ public class LoginUserHandler(
     public async Task<Contract.Responses.Response<LoginResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
         var credentialsByEmailKey = CacheKey.Auth.CredentialsByEmail(request.Email);
-        var user = await redisService.GetAsync<UserCredentials>(credentialsByEmailKey);
+        var user = await cache.GetOrSetAsync(
+            credentialsByEmailKey,
+            () => userManager.FindByEmailAsync(request.Email),
+            distributedTtl: credentialsByEmailKey.DefaultTtl,
+            cancellationToken: cancellationToken);
         logger.LogInformation("Attempting to log in user with email: {Email}", request.Email);
 
         if (user == null)
         {
-            try
-            {
-                user = await userManager.FindByEmailAsync(request.Email);
-                if (user == null)
-                {
-                    logger.LogWarning("Login failed: Account with email {Email} does not exist.", request.Email);
-                    return Contract.Responses.Response<LoginResponse>.Error("Account does not exist.");
-                }
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, "Error finding user by email {Email}", request.Email);
-                return Contract.Responses.Response<LoginResponse>.Error(e.Message);
-            }
+            logger.LogWarning("Login failed: Account with email {Email} does not exist.", request.Email);
+            return Contract.Responses.Response<LoginResponse>.Error("Account does not exist.");
         }
 
         var signInResult = await signInManager.CheckPasswordSignInAsync(user, request.Password);
@@ -63,8 +54,8 @@ public class LoginUserHandler(
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation("Caching user credentials for user {UserId} and email {Email}.", user.Id, request.Email);
-        await redisService.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
-        await redisService.SetAsync(credentialsByEmailKey, user, TimeSpan.FromMinutes(5));
+        await cache.SetAsync(CacheKey.Auth.Credentials(user.Id), user, cancellationToken: cancellationToken);
+        await cache.SetAsync(credentialsByEmailKey, user, distributedTtl: TimeSpan.FromMinutes(5), cancellationToken: cancellationToken);
         logger.LogInformation("User {UserId} logged in successfully. Publishing UserLoggedInEvent.", user.Id);
         
         _ = Task.Run(async () =>

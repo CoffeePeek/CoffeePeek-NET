@@ -5,13 +5,11 @@ using CoffeePeek.AuthService.Services;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Response.Auth;
 using CoffeePeek.Data.Interfaces;
-using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Constants;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Cache;
 using MassTransit;
 using MediatR;
-using Response = CoffeePeek.Contract.Responses.Response;
 using IJWTTokenService = CoffeePeek.AuthService.Services.IJWTTokenService;
 
 namespace CoffeePeek.AuthService.Handlers;
@@ -21,7 +19,7 @@ public class GoogleLoginHandler(
     IUserCredentialsRepository userRepository,
     IUserManager userManager,
     IJWTTokenService jwtTokenService,
-    IRedisService redisService,
+    IHybridCache cache,
     IUnitOfWork unitOfWork,
     IPublishEndpoint publishEndpoint, 
     ILogger<GoogleLoginHandler> logger)
@@ -115,7 +113,7 @@ public class GoogleLoginHandler(
     {
         user.PasswordHash = string.Empty;
         
-        await redisService.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
-        await redisService.SetAsync(CacheKey.Auth.CredentialsByEmail(user.Email), user);
+        await cache.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
+        await cache.SetAsync(CacheKey.Auth.CredentialsByEmail(user.Email), user);
     }
 }

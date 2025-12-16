@@ -6,7 +6,7 @@ using CoffeePeek.AuthService.Services;
 using CoffeePeek.Contract.Dtos.Auth;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Data.Interfaces;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Cache;
 using FluentAssertions;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -17,33 +17,32 @@ namespace CoffeePeek.AuthService.Tests.Handlers;
 
 public class LoginUserHandlerTests
 {
-    private readonly Mock<IRedisService> _redisServiceMock;
+    private readonly Mock<IHybridCache> _cacheMock;
     private readonly Mock<IUserManager> _userManagerMock;
     private readonly Mock<IJWTTokenService> _jwtTokenServiceMock;
     private readonly Mock<ISignInManager> _signInManagerMock;
     private readonly Mock<IPublishEndpoint> _publishEndpointMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-    private readonly Mock<ILogger<LoginUserHandler>> _loggerMock;
     private readonly LoginUserHandler _sut;
 
     public LoginUserHandlerTests()
     {
-        _redisServiceMock = new Mock<IRedisService>();
+        _cacheMock = new Mock<IHybridCache>();
         _userManagerMock = new Mock<IUserManager>();
         _jwtTokenServiceMock = new Mock<IJWTTokenService>();
         _signInManagerMock = new Mock<ISignInManager>();
         _publishEndpointMock = new Mock<IPublishEndpoint>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _loggerMock = new Mock<ILogger<LoginUserHandler>>();
+        var loggerMock = new Mock<ILogger<LoginUserHandler>>();
 
         _sut = new LoginUserHandler(
-            _redisServiceMock.Object,
+            _cacheMock.Object,
             _userManagerMock.Object,
             _jwtTokenServiceMock.Object,
             _signInManagerMock.Object,
             _publishEndpointMock.Object,
             _unitOfWorkMock.Object,
-            _loggerMock.Object
+            loggerMock.Object
         );
     }
 
@@ -65,9 +64,22 @@ public class LoginUserHandlerTests
             RefreshToken = "refresh_token"
         };
 
-        _redisServiceMock
-            .Setup(x => x.GetAsync<UserCredentials>(It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>()))
+        _cacheMock
+            .Setup(x => x.GetOrSetAsync(
+                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<Func<Task<UserCredentials?>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
+        _cacheMock
+            .Setup(x => x.SetAsync(
+                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<UserCredentials>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
         _signInManagerMock
             .Setup(x => x.CheckPasswordSignInAsync(user, command.Password))
             .ReturnsAsync(signInResult);
@@ -106,8 +118,13 @@ public class LoginUserHandlerTests
             RefreshToken = "refresh_token"
         };
 
-        _redisServiceMock
-            .Setup(x => x.GetAsync<UserCredentials>(It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>()))
+        _cacheMock
+            .Setup(x => x.GetOrSetAsync(
+                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<Func<Task<UserCredentials?>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserCredentials?)null);
         _userManagerMock
             .Setup(x => x.FindByEmailAsync(command.Email))
@@ -118,6 +135,14 @@ public class LoginUserHandlerTests
         _jwtTokenServiceMock
             .Setup(x => x.GenerateTokensAsync(user, command.DeviceName, command.IpAddress))
             .ReturnsAsync(authResult);
+        _cacheMock
+            .Setup(x => x.SetAsync(
+                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<UserCredentials>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -135,8 +160,13 @@ public class LoginUserHandlerTests
         // Arrange
         var command = new LoginUserCommand("nonexistent@example.com", "password");
 
-        _redisServiceMock
-            .Setup(x => x.GetAsync<UserCredentials>(It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>()))
+        _cacheMock
+            .Setup(x => x.GetOrSetAsync(
+                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<Func<Task<UserCredentials?>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserCredentials?)null);
         _userManagerMock
             .Setup(x => x.FindByEmailAsync(command.Email))
@@ -164,8 +194,13 @@ public class LoginUserHandlerTests
         };
         var signInResult = SignInResultWrapper.Failed;
 
-        _redisServiceMock
-            .Setup(x => x.GetAsync<UserCredentials>(It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>()))
+        _cacheMock
+            .Setup(x => x.GetOrSetAsync(
+                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<Func<Task<UserCredentials?>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
         _signInManagerMock
             .Setup(x => x.CheckPasswordSignInAsync(user, command.Password))
@@ -187,8 +222,13 @@ public class LoginUserHandlerTests
         var command = new LoginUserCommand("test@example.com", "password");
         var exceptionMessage = "Database connection failed";
 
-        _redisServiceMock
-            .Setup(x => x.GetAsync<UserCredentials>(It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>()))
+        _cacheMock
+            .Setup(x => x.GetOrSetAsync(
+                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<Func<Task<UserCredentials?>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserCredentials?)null);
         _userManagerMock
             .Setup(x => x.FindByEmailAsync(command.Email))
@@ -209,8 +249,13 @@ public class LoginUserHandlerTests
         // Arrange
         var command = new LoginUserCommand("", "password");
 
-        _redisServiceMock
-            .Setup(x => x.GetAsync<UserCredentials>(It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>()))
+        _cacheMock
+            .Setup(x => x.GetOrSetAsync(
+                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<Func<Task<UserCredentials?>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserCredentials?)null);
         _userManagerMock
             .Setup(x => x.FindByEmailAsync(command.Email))
@@ -248,8 +293,13 @@ public class LoginUserHandlerTests
             .Returns(Task.CompletedTask)
             .Callback(() => publishCalled.SetResult(true));
 
-        _redisServiceMock
-            .Setup(x => x.GetAsync<UserCredentials>(It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>()))
+        _cacheMock
+            .Setup(x => x.GetOrSetAsync(
+                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<Func<Task<UserCredentials?>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
         _signInManagerMock
             .Setup(x => x.CheckPasswordSignInAsync(user, command.Password))
@@ -257,6 +307,14 @@ public class LoginUserHandlerTests
         _jwtTokenServiceMock
             .Setup(x => x.GenerateTokensAsync(user, command.DeviceName, command.IpAddress))
             .ReturnsAsync(authResult);
+        _cacheMock
+            .Setup(x => x.SetAsync(
+                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<UserCredentials>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
         // Act
         await _sut.Handle(command, CancellationToken.None);

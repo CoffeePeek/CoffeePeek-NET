@@ -1,5 +1,4 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;

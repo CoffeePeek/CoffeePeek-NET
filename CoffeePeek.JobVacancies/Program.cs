@@ -7,6 +7,7 @@ using CoffeePeek.JobVacancies.Services;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
+using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Infrastructure.Options;
@@ -71,8 +72,10 @@ builder.Services.AddScoped<ICitySyncService, CitySyncService>();
 builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<IJobVacancyRepository, JobVacancyRepository>();
 
-builder.Services.AddHttpClient<IHhApiService, HhApiService>();
-builder.Services.AddHttpClient<IHhAuthService, HhAuthService>();
+builder.Services.AddHttpClient<IHhApiService, HhApiService>()
+    .AddResiliencePolicies(nameof(HhApiService));
+builder.Services.AddHttpClient<IHhAuthService, HhAuthService>()
+    .AddResiliencePolicies(nameof(HhAuthService));
 
 // Health Checks
 var dbOptionsForHealth = builder.Services.GetDatabaseOptions();

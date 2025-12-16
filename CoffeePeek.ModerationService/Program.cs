@@ -1,7 +1,6 @@
 using CoffeePeek.Data.Extensions;
 using CoffeePeek.ModerationService.Configuration;
 using CoffeePeek.ModerationService.Entities;
-using CoffeePeek.ModerationService.Models;
 using CoffeePeek.ModerationService.Repositories;
 using CoffeePeek.ModerationService.Repositories.Interfaces;
 using CoffeePeek.ModerationService.Services;
@@ -9,6 +8,7 @@ using CoffeePeek.ModerationService.Services.Interfaces;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
+using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
@@ -45,7 +45,7 @@ builder.Services.AddHttpClient<IYandexGeocodingService, YandexGeocodingService>(
 {
     client.BaseAddress = new Uri(yandexOptions.BaseUrl);
     client.Timeout = TimeSpan.FromSeconds(yandexOptions.TimeoutSeconds);
-});
+}).AddResiliencePolicies(nameof(YandexGeocodingService));
 
 // MediatR
 builder.Services.AddMediatRModule(typeof(Program));

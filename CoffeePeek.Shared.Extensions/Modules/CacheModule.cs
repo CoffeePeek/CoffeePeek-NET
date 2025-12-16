@@ -1,4 +1,5 @@
 using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Infrastructure.Interfaces.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.Shared.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,8 +10,10 @@ public static class CacheModule
 {
     public static IServiceCollection AddCacheModule(this IServiceCollection services)
     {
+        services.AddMemoryCache();
         services.RedisConfigurationOptions();
         services.AddSingleton<IRedisService, RedisService>();
+        services.AddSingleton<IHybridCache, HybridCache>();
         
         return services;
     }

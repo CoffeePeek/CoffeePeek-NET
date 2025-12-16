@@ -1,4 +1,4 @@
-﻿﻿using CoffeePeek.AuthService.Entities;
+﻿using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Repositories;
 using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.Extensions.Options;
@@ -109,16 +109,16 @@ public class UserManager(
         return user.RefreshTokens.FirstOrDefault(rt => rt.Token == tokenValue);
     }
 
-    public Task RevokeAllUserTokensAsync(Guid userId)
+    public async Task RevokeAllUserTokensAsync(Guid userId)
     {
-        var user = userRepository.GetByIdAsync(userId).Result;
-        if (user == null) return Task.CompletedTask;
+        var user = await userRepository.GetByIdAsync(userId);
+        if (user == null) return;
 
         foreach (var token in user.RefreshTokens)
         {
             token.IsRevoked = true;
         }
-        return userRepository.UpdateAsync(user);
+        await userRepository.UpdateAsync(user);
     }
 
     public Task<bool> CheckPasswordAsync(UserCredentials user, string requestPassword)
