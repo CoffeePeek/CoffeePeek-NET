@@ -66,6 +66,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Performance.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Tests.Shared", "CoffeePeek.Tests.Shared\CoffeePeek.Tests.Shared.csproj", "{E728194E-817E-4DB3-81B6-6451C074953C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Shared.Configuration", "CoffeePeek.Shared.Configuration\CoffeePeek.Shared.Configuration.csproj", "{198D081F-FA93-4A15-AB5D-C6293DCF1851}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -376,6 +378,18 @@ Global
 		{E728194E-817E-4DB3-81B6-6451C074953C}.Release|x64.Build.0 = Release|Any CPU
 		{E728194E-817E-4DB3-81B6-6451C074953C}.Release|x86.ActiveCfg = Release|Any CPU
 		{E728194E-817E-4DB3-81B6-6451C074953C}.Release|x86.Build.0 = Release|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Debug|x64.Build.0 = Debug|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Debug|x86.Build.0 = Debug|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Release|Any CPU.Build.0 = Release|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Release|x64.ActiveCfg = Release|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Release|x64.Build.0 = Release|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Release|x86.ActiveCfg = Release|Any CPU
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -410,5 +424,6 @@ Global
 		{61E7814F-DDA6-4C31-92CD-471F091B595B} = {384F5D08-513B-4F24-89A4-D648ABCC5513}
 		{E728194E-817E-4DB3-81B6-6451C074953C} = {384F5D08-513B-4F24-89A4-D648ABCC5513}
 		{1FCF5A5D-9618-44BD-92F8-B7A4337C3C15} = {7C5F0BD9-8F6C-414E-B528-5EC16ADFE571}
+		{198D081F-FA93-4A15-AB5D-C6293DCF1851} = {DFBC1184-60D4-4FB2-999A-441CD36F162D}
 	EndGlobalSection
 EndGlobal

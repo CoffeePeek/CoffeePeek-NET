@@ -1,4 +1,5 @@
 using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.Shared.Infrastructure.Services;
@@ -14,6 +15,7 @@ public static class CacheModule
         services.RedisConfigurationOptions();
         services.AddSingleton<IRedisService, RedisService>();
         services.AddSingleton<IHybridCache, HybridCache>();
+        services.AddSingleton<ICacheInvalidationStrategy, CacheInvalidationStrategy>();
         
         return services;
     }

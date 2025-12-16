@@ -1,6 +1,7 @@
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Data.Interfaces;
 using CoffeePeek.ShopsService.Entities;
+using CoffeePeek.ShopsService.Services.Interfaces;
 using MapsterMapper;
 using MassTransit;
 
@@ -13,6 +14,7 @@ public class CoffeeShopApprovedEventConsumer(
     IGenericRepository<ShopPhoto> shopPhotoRepository,
     IGenericRepository<Location> locationRepository,
     IUnitOfWork unitOfWork,
+    ICacheService cacheService,
     ILogger<CoffeeShopApprovedEventConsumer> logger) : IConsumer<CoffeeShopApprovedEvent>
 {
     public async Task Consume(ConsumeContext<CoffeeShopApprovedEvent> consumeContext)
@@ -78,5 +80,9 @@ public class CoffeeShopApprovedEventConsumer(
         // Сохраняем все изменения одним вызовом
         await unitOfWork.SaveChangesAsync(cancellationToken);
         logger.LogInformation("All changes saved for shop {ShopName} (ID: {ShopId}).", shop.Name, shop.Id);
+
+        // Invalidate cached shop dictionaries and lists to reflect new shop data
+        await cacheService.InvalidateShopDictionaries(cancellationToken);
+        await cacheService.InvalidateShopLists(cancellationToken);
     }
 }

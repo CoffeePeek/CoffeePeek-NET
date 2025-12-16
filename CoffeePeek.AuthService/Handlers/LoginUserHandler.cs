@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.AuthService.Commands;
+using CoffeePeek.AuthService.Entities;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Responses.Login;
@@ -24,11 +25,20 @@ public class LoginUserHandler(
     public async Task<Contract.Responses.Response<LoginResponse>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
         var credentialsByEmailKey = CacheKey.Auth.CredentialsByEmail(request.Email);
-        var user = await cache.GetOrSetAsync(
-            credentialsByEmailKey,
-            () => userManager.FindByEmailAsync(request.Email),
-            distributedTtl: credentialsByEmailKey.DefaultTtl,
-            cancellationToken: cancellationToken);
+        UserCredentials? user;
+        try
+        {
+            user = await cache.GetOrSetAsync(
+                credentialsByEmailKey,
+                () => userManager.FindByEmailAsync(request.Email),
+                distributedTtl: credentialsByEmailKey.DefaultTtl,
+                cancellationToken: cancellationToken);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error finding user by email {Email}", request.Email);
+            return Contract.Responses.Response<LoginResponse>.Error(e.Message);
+        }
         logger.LogInformation("Attempting to log in user with email: {Email}", request.Email);
 
         if (user == null)

@@ -6,6 +6,7 @@ using CoffeePeek.Data.Interfaces;
 using CoffeePeek.ShopsService.Consumers;
 using CoffeePeek.ShopsService.DB;
 using CoffeePeek.ShopsService.Entities;
+using CoffeePeek.ShopsService.Services.Interfaces;
 using MapsterMapper;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -18,13 +19,11 @@ namespace CoffeePeek.ShopsService.Tests.Consumers;
 public class CoffeeShopApprovedEventConsumerTests : IDisposable
 {
     private readonly ShopsDbContext _dbContext;
-    private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IGenericRepository<Shop>> _shopRepositoryMock;
     private readonly Mock<IGenericRepository<ShopContact>> _shopContactRepositoryMock;
     private readonly Mock<IGenericRepository<ShopPhoto>> _shopPhotoRepositoryMock;
     private readonly Mock<IGenericRepository<Location>> _locationRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-    private readonly Mock<ILogger<CoffeeShopApprovedEventConsumer>> _loggerMock;
     private readonly CoffeeShopApprovedEventConsumer _sut;
 
     public CoffeeShopApprovedEventConsumerTests()
@@ -34,16 +33,16 @@ public class CoffeeShopApprovedEventConsumerTests : IDisposable
             .Options;
 
         _dbContext = new ShopsDbContext(options);
-        _mapperMock = new Mock<IMapper>();
+        var mapperMock = new Mock<IMapper>();
         _shopRepositoryMock = new Mock<IGenericRepository<Shop>>();
         _shopContactRepositoryMock = new Mock<IGenericRepository<ShopContact>>();
         _shopPhotoRepositoryMock = new Mock<IGenericRepository<ShopPhoto>>();
         _locationRepositoryMock = new Mock<IGenericRepository<Location>>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _loggerMock = new Mock<ILogger<CoffeeShopApprovedEventConsumer>>();
+        var loggerMock = new Mock<ILogger<CoffeeShopApprovedEventConsumer>>();
+        var cacheServiceMock = new Mock<ICacheService>();
 
-        // Настраиваем маппер так, чтобы он маппил ShopDto -> Shop для тестов
-        _mapperMock
+        mapperMock
             .Setup(m => m.Map<Shop>(It.IsAny<object>()))
             .Returns((object src) =>
             {
@@ -79,13 +78,14 @@ public class CoffeeShopApprovedEventConsumerTests : IDisposable
             });
 
         _sut = new CoffeeShopApprovedEventConsumer(
-            _mapperMock.Object,
+            mapperMock.Object,
             _shopRepositoryMock.Object,
             _shopContactRepositoryMock.Object,
             _shopPhotoRepositoryMock.Object,
             _locationRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _loggerMock.Object);
+            cacheServiceMock.Object,
+            loggerMock.Object);
     }
 
     [Fact]

@@ -6,6 +6,7 @@ using CoffeePeek.AuthService.Services;
 using CoffeePeek.Contract.Dtos.Auth;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Cache;
 using FluentAssertions;
 using MassTransit;
@@ -120,12 +121,13 @@ public class LoginUserHandlerTests
 
         _cacheMock
             .Setup(x => x.GetOrSetAsync(
-                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<CacheKey>(),
                 It.IsAny<Func<Task<UserCredentials?>>>(),
                 It.IsAny<TimeSpan?>(),
                 It.IsAny<TimeSpan?>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((UserCredentials?)null);
+            .Returns((CacheKey _, Func<Task<UserCredentials?>> factory, TimeSpan? _, TimeSpan? __, CancellationToken ___)
+                => factory());
         _userManagerMock
             .Setup(x => x.FindByEmailAsync(command.Email))
             .ReturnsAsync(user);
@@ -137,7 +139,7 @@ public class LoginUserHandlerTests
             .ReturnsAsync(authResult);
         _cacheMock
             .Setup(x => x.SetAsync(
-                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<CacheKey>(),
                 It.IsAny<UserCredentials>(),
                 It.IsAny<TimeSpan?>(),
                 It.IsAny<TimeSpan?>(),
@@ -167,7 +169,8 @@ public class LoginUserHandlerTests
                 It.IsAny<TimeSpan?>(),
                 It.IsAny<TimeSpan?>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((UserCredentials?)null);
+            .Returns((CoffeePeek.Shared.Infrastructure.Cache.CacheKey _, Func<Task<UserCredentials?>> factory, TimeSpan? _, TimeSpan? __, CancellationToken ___)
+                => factory());
         _userManagerMock
             .Setup(x => x.FindByEmailAsync(command.Email))
             .ReturnsAsync((UserCredentials?)null);
@@ -229,9 +232,6 @@ public class LoginUserHandlerTests
                 It.IsAny<TimeSpan?>(),
                 It.IsAny<TimeSpan?>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((UserCredentials?)null);
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(command.Email))
             .ThrowsAsync(new Exception(exceptionMessage));
 
         // Act
@@ -251,7 +251,7 @@ public class LoginUserHandlerTests
 
         _cacheMock
             .Setup(x => x.GetOrSetAsync(
-                It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>(),
+                It.IsAny<Shared.Infrastructure.Cache.CacheKey>(),
                 It.IsAny<Func<Task<UserCredentials?>>>(),
                 It.IsAny<TimeSpan?>(),
                 It.IsAny<TimeSpan?>(),
