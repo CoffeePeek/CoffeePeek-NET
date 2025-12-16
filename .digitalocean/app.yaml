@@ -1,0 +1,170 @@
+name: coffeepeek
+region: nyc
+
+services:
+  # Gateway Service
+  - name: gateway
+    github:
+      repo: your-username/CoffeePeek-BackEnd
+      branch: main
+      deploy_on_push: false
+    dockerfile_path: CoffeePeek.Gateway/Gateway.Dockerfile
+    source_dir: /
+    image:
+      registry_type: DOCKER_HUB
+      registry: docker.io
+      repository: ${DOCKER_HUB_USERNAME}/gateway
+      tag: dev
+    http_port: 80
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /
+    envs:
+      - key: ASPNETCORE_URLS
+        value: http://+:80
+      - key: DOTNET_RUNNING_IN_CONTAINER
+        value: "true"
+
+  # Auth Service
+  - name: authservice
+    github:
+      repo: your-username/CoffeePeek-BackEnd
+      branch: main
+      deploy_on_push: false
+    dockerfile_path: CoffeePeek.AuthService/AuthService.Dockerfile
+    source_dir: /
+    image:
+      registry_type: DOCKER_HUB
+      registry: docker.io
+      repository: ${DOCKER_HUB_USERNAME}/coffeepeek.authservice
+      tag: dev
+    http_port: 80
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /api/auth
+    envs:
+      - key: ASPNETCORE_URLS
+        value: http://+:80
+      - key: DOTNET_RUNNING_IN_CONTAINER
+        value: "true"
+
+  # User Service
+  - name: userservice
+    github:
+      repo: your-username/CoffeePeek-BackEnd
+      branch: main
+      deploy_on_push: false
+    dockerfile_path: CoffeePeek.UserService/UserService.Dockerfile
+    source_dir: /
+    image:
+      registry_type: DOCKER_HUB
+      registry: docker.io
+      repository: ${DOCKER_HUB_USERNAME}/coffeepeek.userservice
+      tag: dev
+    http_port: 80
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /api/user
+    envs:
+      - key: ASPNETCORE_URLS
+        value: http://+:80
+      - key: DOTNET_RUNNING_IN_CONTAINER
+        value: "true"
+
+  # Shops Service
+  - name: shopsservice
+    github:
+      repo: your-username/CoffeePeek-BackEnd
+      branch: main
+      deploy_on_push: false
+    dockerfile_path: CoffeePeek.ShopsService/ShopsService.Dockerfile
+    source_dir: /
+    image:
+      registry_type: DOCKER_HUB
+      registry: docker.io
+      repository: ${DOCKER_HUB_USERNAME}/coffeepeek.shopsservice
+      tag: dev
+    http_port: 80
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /api/shops
+    envs:
+      - key: ASPNETCORE_URLS
+        value: http://+:80
+      - key: DOTNET_RUNNING_IN_CONTAINER
+        value: "true"
+
+  # Moderation Service
+  - name: moderationservice
+    github:
+      repo: your-username/CoffeePeek-BackEnd
+      branch: main
+      deploy_on_push: false
+    dockerfile_path: CoffeePeek.ModerationService/ModerationService.Dockerfile
+    source_dir: /
+    image:
+      registry_type: DOCKER_HUB
+      registry: docker.io
+      repository: ${DOCKER_HUB_USERNAME}/coffeepeek.moderationservice
+      tag: dev
+    http_port: 80
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /api/moderation
+    envs:
+      - key: ASPNETCORE_URLS
+        value: http://+:80
+      - key: DOTNET_RUNNING_IN_CONTAINER
+        value: "true"
+
+  # Job Vacancies Service
+  - name: jobvacancies
+    github:
+      repo: your-username/CoffeePeek-BackEnd
+      branch: main
+      deploy_on_push: false
+    dockerfile_path: CoffeePeek.JobVacancies/JobVacancies.Dockerfile
+    source_dir: /
+    image:
+      registry_type: DOCKER_HUB
+      registry: docker.io
+      repository: ${DOCKER_HUB_USERNAME}/coffeepeek.jobvacancies
+      tag: dev
+    http_port: 80
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /api/jobs
+    envs:
+      - key: ASPNETCORE_URLS
+        value: http://+:80
+      - key: DOTNET_RUNNING_IN_CONTAINER
+        value: "true"
+
+  # Auth Service Outbox Background Service
+  - name: authservice-outbox
+    github:
+      repo: your-username/CoffeePeek-BackEnd
+      branch: main
+      deploy_on_push: false
+    dockerfile_path: OutboxBackgroundService/OutboxBackgroundService.Dockerfile
+    source_dir: /
+    image:
+      registry_type: DOCKER_HUB
+      registry: docker.io
+      repository: ${DOCKER_HUB_USERNAME}/coffeepeek.authservice.outbox-bg
+      tag: dev
+    http_port: 80
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    envs:
+      - key: ASPNETCORE_URLS
+        value: http://+:80
+      - key: DOTNET_RUNNING_IN_CONTAINER
+        value: "true"
+

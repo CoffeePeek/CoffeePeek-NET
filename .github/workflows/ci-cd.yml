@@ -125,6 +125,105 @@ jobs:
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:dev
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:${{ steps.vars.outputs.TAG }}
 
+  deploy_digitalocean:
+    needs: build_and_push_images
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+
+    steps:
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Deploy services on DigitalOcean App Platform
+        env:
+          DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          DIGITALOCEAN_APP_ID: ${{ secrets.DIGITALOCEAN_APP_ID }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+        run: |
+          SHORT_SHA=${GITHUB_SHA::7}
+          echo "Images pushed with tag ${SHORT_SHA}."
+          echo "Docker Hub username: ${DOCKER_HUB_USERNAME}"
+          
+          if [ -z "$DIGITALOCEAN_APP_ID" ]; then
+            echo "Warning: DIGITALOCEAN_APP_ID not set. Skipping DigitalOcean deployment."
+            echo "Please set DIGITALOCEAN_APP_ID secret in GitHub repository settings."
+            exit 0
+          fi
+          
+          # Get current app spec
+          echo "Fetching current app spec..."
+          APP_SPEC=$(doctl apps spec get $DIGITALOCEAN_APP_ID -o json 2>/dev/null)
+          
+          if [ -z "$APP_SPEC" ]; then
+            echo "Warning: Could not fetch app spec. App ID may be incorrect."
+            echo "Available apps:"
+            doctl apps list --format ID,Spec.Name || true
+            exit 0
+          fi
+          
+          # Function to update image tag in app spec
+          # DigitalOcean App Platform uses app spec for configuration
+          # We'll update the spec and trigger a new deployment
+          echo ""
+          echo "=== Updating App Platform Components ==="
+          echo "New image tag: ${SHORT_SHA}"
+          echo ""
+          
+          # Map of component names to image names
+          declare -A COMPONENTS=(
+            ["gateway"]="gateway"
+            ["authservice"]="coffeepeek.authservice"
+            ["authservice-outbox"]="coffeepeek.authservice.outbox-bg"
+            ["userservice"]="coffeepeek.userservice"
+            ["shopsservice"]="coffeepeek.shopsservice"
+            ["moderationservice"]="coffeepeek.moderationservice"
+            ["jobvacancies"]="coffeepeek.jobvacancies"
+          )
+          
+          # Note: DigitalOcean App Platform doesn't support direct component update via API
+          # Instead, we need to update the app spec file and redeploy
+          # For now, we'll trigger a deployment which will use the latest 'dev' tag
+          # Or you can manually update component image tags in the dashboard
+          
+          echo "Components that should be updated:"
+          for component in "${!COMPONENTS[@]}"; do
+            image_name="${COMPONENTS[$component]}"
+            image_tag="docker.io/${DOCKER_HUB_USERNAME}/${image_name}:${SHORT_SHA}"
+            echo "  - ${component}: ${image_tag}"
+          done
+          
+          echo ""
+          echo "=== Deployment Options ==="
+          echo "Option 1: Update component image tags manually in DigitalOcean Dashboard"
+          echo "  - Go to App Platform → Your App → Components"
+          echo "  - For each component, update image tag to: ${SHORT_SHA}"
+          echo ""
+          echo "Option 2: Use 'dev' tag (updated automatically)"
+          echo "  - Components configured with 'dev' tag will automatically use latest image"
+          echo "  - Trigger deployment:"
+          
+          # Trigger deployment (this will use current component configuration)
+          echo "Triggering new deployment..."
+          if doctl apps create-deployment $DIGITALOCEAN_APP_ID --force-rebuild 2>&1; then
+            echo "✓ Deployment triggered successfully"
+            echo "Monitor deployment status:"
+            echo "  doctl apps get-deployment $DIGITALOCEAN_APP_ID <deployment-id>"
+          else
+            echo "Note: Deployment can be triggered manually via dashboard or doctl"
+            echo "  doctl apps create-deployment $DIGITALOCEAN_APP_ID --force-rebuild"
+          fi
+          
+          echo ""
+          echo "=== Summary ==="
+          echo "Images available with tags:"
+          echo "  - dev (latest, updated on each push)"
+          echo "  - ${SHORT_SHA} (specific commit)"
+          echo ""
+          echo "To use specific commit tag, update component image tag in DigitalOcean Dashboard"
+          echo "or configure components to use 'dev' tag for automatic updates."
+
   deploy_railway:
     needs: build_and_push_images
     runs-on: ubuntu-latest
@@ -146,12 +245,21 @@ jobs:
           echo "Images pushed with tag ${SHORT_SHA}."
           echo "Docker Hub username: ${DOCKER_HUB_USERNAME}"
           
-          # Login to Railway
-          railway login --token $RAILWAY_TOKEN
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "Warning: RAILWAY_TOKEN not set. Skipping Railway deployment."
+            exit 0
+          fi
+          
+          # Railway CLI uses RAILWAY_TOKEN environment variable for authentication
+          # No need to run 'railway login' when token is set as env var
+          export RAILWAY_TOKEN
           
           # Link to project if RAILWAY_PROJECT_ID is provided
           if [ -n "$RAILWAY_PROJECT_ID" ]; then
+            echo "Linking to Railway project: $RAILWAY_PROJECT_ID"
             railway link $RAILWAY_PROJECT_ID --non-interactive || echo "Project already linked or link failed"
+          else
+            echo "Warning: RAILWAY_PROJECT_ID not set. Skipping project link."
           fi
           
           # Function to update service Docker image via Railway CLI
