@@ -1,8 +1,6 @@
 using CoffeePeek.Contract.Dtos.Contact;
-using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Data.Interfaces;
 using CoffeePeek.ShopsService.Consumers;

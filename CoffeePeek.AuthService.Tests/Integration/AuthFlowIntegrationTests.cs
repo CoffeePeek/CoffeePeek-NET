@@ -9,13 +9,13 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
 using CoffeePeek.Contract.Response.Auth;
+using CoffeePeek.Shared.Infrastructure.Constants;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace CoffeePeek.AuthService.Tests.Integration;
 
-public class AuthFlowIntegrationTests(
-    AuthServiceWebApplicationFactory factory)
-    : IClassFixture<AuthServiceWebApplicationFactory>
+public class AuthFlowIntegrationTests(AuthServiceWebApplicationFactory factory) : IClassFixture<AuthServiceWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
 
@@ -26,8 +26,8 @@ public class AuthFlowIntegrationTests(
 
         // Arrange
         var email = $"user{Guid.NewGuid():N}@gmail.com";
-        var password = "StrongP@ssw0rd!";
-        var userName = "Test User";
+        const string password = "StrongP@ssw0rd!";
+        const string userName = "Test User";
 
         // Register
         var registerCommand = new RegisterUserCommand(userName, email, password);
@@ -54,9 +54,19 @@ public class AuthFlowIntegrationTests(
         loginResult.Data.Should().NotBeNull();
 
         var refreshToken = loginResult.Data!.RefreshToken;
+        refreshToken.Should().NotBeNullOrWhiteSpace("Refresh token should be returned from login");
+
+        // Verify the refresh token was saved to the database
+        using (var verifyScope = factory.Services.CreateScope())
+        {
+            var verifyDb = verifyScope.ServiceProvider.GetRequiredService<AuthDbContext>();
+            var savedToken = await verifyDb.RefreshTokens
+                .FirstOrDefaultAsync(rt => rt.Token == refreshToken && rt.UserId == userId);
+            savedToken.Should().NotBeNull("Refresh token should be saved to database after login");
+        }
 
         // Refresh (with test auth header - use the registered user's ID)
-        var refreshRequest = new HttpRequestMessage(HttpMethod.Get, $"/api/Auth/refresh?refreshToken={refreshToken}");
+        var refreshRequest = new HttpRequestMessage(HttpMethod.Get, $"/api/Auth/refresh?refreshToken={Uri.EscapeDataString(refreshToken)}");
         refreshRequest.Headers.Add("X-Test-UserId", userId.ToString());
         refreshRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Test");
 
@@ -92,12 +102,12 @@ public class AuthFlowIntegrationTests(
         await db.SaveChangesAsync();
 
         // Ensure required roles exist (create directly to avoid RoleExistsAsync issue with StringComparison)
-        var userRole = await roleRepository.GetRoleAsync(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.User);
+        var userRole = await roleRepository.GetRoleAsync(RoleConsts.User);
         if (userRole == null)
         {
             var role = new Role
             {
-                Name = CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.User
+                Name = RoleConsts.User
             };
             await roleRepository.CreateRoleAsync(role);
             await db.SaveChangesAsync();

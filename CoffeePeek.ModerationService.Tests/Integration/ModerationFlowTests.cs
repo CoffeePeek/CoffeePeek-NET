@@ -1,8 +1,6 @@
-using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
-using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.ModerationService.Configuration;
 using CoffeePeek.ModerationService.Services.Interfaces;
 using FluentAssertions;
@@ -14,7 +12,6 @@ using System.Net.Http.Json;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.ModerationService.Entities;
-using CoffeePeek.ModerationService.Models;
 using CoffeePeek.Tests.Shared;
 using Xunit;
 
