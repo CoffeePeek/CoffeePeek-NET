@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using CoffeePeek.Tests.Shared;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Xunit;
 using Testcontainers.PostgreSql;
 
