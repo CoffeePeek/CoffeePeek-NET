@@ -1,9 +1,3 @@
-using System.Text.Json;
-using CoffeePeek.Contract.Events;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using OutboxBackgroundService.Configuration;
-
 namespace OutboxBackgroundService;
 
 public class Worker(ILogger<Worker> logger, IServiceProvider serviceProvider) : BackgroundService
@@ -12,39 +6,26 @@ public class Worker(ILogger<Worker> logger, IServiceProvider serviceProvider) : 
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            using var scope = serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
-            var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
-
-            var events = await context.OutboxEvents
-                .Where(x => !x.Processed)
-                .OrderBy(x => x.CreatedAt)
-                .Take(20)
-                .ToListAsync(stoppingToken);
-
-            foreach (var e in events)
+            try
             {
-                try
-                {
-                    var fullTypeName = $"CoffeePeek.Contract.Events.{e.EventType}";
+                using var scope = serviceProvider.CreateScope();
+                var processors = scope.ServiceProvider.GetServices<IOutboxProcessor>();
 
-                    var contractAssembly = typeof(UserRegisteredEvent).Assembly; 
-                    var eventType = contractAssembly.GetType(fullTypeName, throwOnError: false, ignoreCase: true);
-                    
-                    var message = JsonSerializer.Deserialize(e.Payload, eventType!);
+                var tasks = processors.Select(processor => 
+                    processor.ProcessOutboxEventsAsync(stoppingToken).ContinueWith(task =>
+                    {
+                        if (task.IsFaulted)
+                        {
+                            logger.LogError(task.Exception, "Error processing outbox events");
+                        }
+                    }, stoppingToken));
 
-                    await publishEndpoint.Publish(message, stoppingToken);
-
-                    e.Processed = true;
-                    e.ProcessedAt = DateTime.UtcNow;
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Error processing outbox event {Id}", e.Id);
-                }
+                await Task.WhenAll(tasks);
             }
-
-            await context.SaveChangesAsync(stoppingToken);
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error in outbox processing cycle");
+            }
 
             await Task.Delay(1000, stoppingToken);
         }

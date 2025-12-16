@@ -12,6 +12,8 @@ using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
+using CoffeePeek.Shared.Extensions.Outbox;
+using CoffeePeek.Shared.Infrastructure.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +62,14 @@ builder.Services.AddAuthorization(options =>
 // RabbitMQ для публикации событий
 builder.Services.AddMessagingModule();
 
+// Outbox Event Publisher
+builder.Services.AddOutboxEventPublisher<OutboxEvent, ModerationDbContext>();
+
+// Health Checks
+var dbOptionsForHealth = builder.Services.GetDatabaseOptions();
+var rabbitMqOptionsForHealth = builder.Services.AddValidateOptions<RabbitMqOptions>();
+builder.Services.AddAllHealthChecks(dbOptionsForHealth, rabbitMqOptionsForHealth, null);
+
 // CORS
 builder.Services.AddCorsModule();
 
@@ -79,6 +89,17 @@ app.UseAuthorization();
 app.UseSwaggerDocumentation();
 
 app.UseHttpsRedirection();
+
+// Health Checks
+app.MapHealthChecks("/health");
+app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+});
+app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("self")
+});
 
 app.MapControllers();
 

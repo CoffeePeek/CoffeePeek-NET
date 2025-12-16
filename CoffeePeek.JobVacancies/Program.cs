@@ -74,6 +74,11 @@ builder.Services.AddScoped<IJobVacancyRepository, JobVacancyRepository>();
 builder.Services.AddHttpClient<IHhApiService, HhApiService>();
 builder.Services.AddHttpClient<IHhAuthService, HhAuthService>();
 
+// Health Checks
+var dbOptionsForHealth = builder.Services.GetDatabaseOptions();
+var redisOptionsForHealth = builder.Services.AddValidateOptions<RedisOptions>();
+builder.Services.AddAllHealthChecks(dbOptionsForHealth, null, redisOptionsForHealth);
+
 var app = builder.Build();
 
 // Middleware pipeline
@@ -89,6 +94,17 @@ app.UseSwaggerDocumentation();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Health Checks
+app.MapHealthChecks("/health");
+app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+});
+app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("self")
+});
 
 app.MapControllers();
 app.UseHangfireDashboard();

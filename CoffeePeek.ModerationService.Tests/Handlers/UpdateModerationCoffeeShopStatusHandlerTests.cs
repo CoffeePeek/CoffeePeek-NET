@@ -9,6 +9,7 @@ using CoffeePeek.ModerationService.Entities;
 using CoffeePeek.ModerationService.Handlers;
 using CoffeePeek.ModerationService.Repositories.Interfaces;
 using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Infrastructure.Outbox;
 using FluentAssertions;
 using MapsterMapper;
 using MassTransit;
@@ -21,26 +22,27 @@ namespace CoffeePeek.ModerationService.Tests.Handlers;
 public class UpdateModerationCoffeeShopStatusHandlerTests
 {
     private readonly Mock<IModerationShopRepository> _repositoryMock;
-    private readonly Mock<IPublishEndpoint> _publishEndpointMock;
+    private readonly Mock<IOutboxEventPublisher> _publishEndpointMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IMapper> _mapperMock;
-    private readonly Mock<ILogger<UpdateModerationCoffeeShopStatusHandler>> _loggerMock;
     private readonly UpdateModerationCoffeeShopStatusHandler _sut;
 
     public UpdateModerationCoffeeShopStatusHandlerTests()
     {
         _repositoryMock = new Mock<IModerationShopRepository>();
-        _publishEndpointMock = new Mock<IPublishEndpoint>();
+        _publishEndpointMock = new Mock<IOutboxEventPublisher>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _mapperMock = new Mock<IMapper>();
-        _loggerMock = new Mock<ILogger<UpdateModerationCoffeeShopStatusHandler>>();
+        var loggerMock = new Mock<ILogger<UpdateModerationCoffeeShopStatusHandler>>();
+        var publishEndpoint = new Mock<IPublishEndpoint>();
 
         _sut = new UpdateModerationCoffeeShopStatusHandler(
             _repositoryMock.Object,
             _publishEndpointMock.Object,
             _unitOfWorkMock.Object,
             _mapperMock.Object,
-            _loggerMock.Object
+            loggerMock.Object,
+            publishEndpoint.Object
         );
     }
 
@@ -62,7 +64,7 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
         await Assert.ThrowsAsync<NotFoundException>(() => _sut.Handle(request, CancellationToken.None));
 
         _publishEndpointMock.Verify(
-            x => x.Publish(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()),
+            x => x.PublishAsync(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -109,7 +111,7 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         _publishEndpointMock.Verify(
-            x => x.Publish(
+            x => x.PublishAsync(
                 It.Is<CoffeeShopApprovedEvent>(e =>
                     e.CreatorId == request.UserId &&
                     e.Shop == mappedShop),
@@ -167,7 +169,7 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
 
         CoffeeShopApprovedEvent? publishedEvent = null;
         _publishEndpointMock
-            .Setup(x => x.Publish(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.PublishAsync(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()))
             .Callback<CoffeeShopApprovedEvent, CancellationToken>((e, ct) => publishedEvent = e)
             .Returns(Task.CompletedTask);
 
@@ -228,7 +230,7 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
 
         CoffeeShopApprovedEvent? publishedEvent = null;
         _publishEndpointMock
-            .Setup(x => x.Publish(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.PublishAsync(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()))
             .Callback<CoffeeShopApprovedEvent, CancellationToken>((e, ct) => publishedEvent = e)
             .Returns(Task.CompletedTask);
 
@@ -284,7 +286,7 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
 
         CoffeeShopApprovedEvent? publishedEvent = null;
         _publishEndpointMock
-            .Setup(x => x.Publish(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.PublishAsync(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()))
             .Callback<CoffeeShopApprovedEvent, CancellationToken>((e, ct) => publishedEvent = e)
             .Returns(Task.CompletedTask);
 
@@ -349,7 +351,7 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
 
         CoffeeShopApprovedEvent? publishedEvent = null;
         _publishEndpointMock
-            .Setup(x => x.Publish(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.PublishAsync(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()))
             .Callback<CoffeeShopApprovedEvent, CancellationToken>((e, ct) => publishedEvent = e)
             .Returns(Task.CompletedTask);
 
@@ -397,7 +399,7 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         _publishEndpointMock.Verify(
-            x => x.Publish(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()),
+            x => x.PublishAsync(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()),
             Times.Never);
         _repositoryMock.Verify(x => x.UpdateAsync(shop), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -435,7 +437,7 @@ public class UpdateModerationCoffeeShopStatusHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         _publishEndpointMock.Verify(
-            x => x.Publish(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()),
+            x => x.PublishAsync(It.IsAny<CoffeeShopApprovedEvent>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 

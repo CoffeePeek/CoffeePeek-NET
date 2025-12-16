@@ -5,6 +5,7 @@ using CoffeePeek.AuthService.Repositories;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.AuthService.Services.Validation;
 using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Outbox;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -28,6 +29,7 @@ public class RegisterUserHandlerTests
         _validationStrategyMock = new Mock<IValidationStrategy<RegisterUserCommand>>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
         var logger =  new Mock<ILogger<RegisterUserHandler>>();
+        var publisher =  new Mock<IOutboxEventPublisher>();
 
         _sut = new RegisterUserHandler(
             _credentialsRepoMock.Object,
@@ -35,6 +37,7 @@ public class RegisterUserHandlerTests
             _userManagerMock.Object,
             _validationStrategyMock.Object,
             unitOfWorkMock.Object,
+            publisher.Object,
             logger.Object
         );
     }

@@ -16,6 +16,10 @@ builder.Services.AddResponseCaching();
 builder.Services.AddSwaggerModule("CoffeePeek Gateway API", "v1");
 builder.Services.AddCorsModule();
 
+// Health Checks
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy(), tags: new[] { "self" });
+
 var app = builder.Build();
 
 app.UseExceptionHandling();
@@ -31,8 +35,20 @@ app.ConfigureCustomCaching();
     
 app.ConfigureSwaggerEndpoints(app.Services.GetRequiredService<ILogger<Program>>());
 
-app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "Gateway", timestamp = DateTime.UtcNow }))
-    .WithName("HealthCheck")
+// Health Checks
+app.MapHealthChecks("/health");
+app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+});
+app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("self")
+});
+
+// Gateway self health check
+app.MapGet("/health/gateway", () => Results.Ok(new { status = "healthy", service = "Gateway", timestamp = DateTime.UtcNow }))
+    .WithName("GatewayHealthCheck")
     .WithTags("Health");
 
 app.MapReverseProxy();

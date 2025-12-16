@@ -1,5 +1,4 @@
-﻿using CoffeePeek.Contract.Dtos;
-using CoffeePeek.Contract.Dtos.Internal;
+﻿using CoffeePeek.Contract.Dtos.Internal;
 using CoffeePeek.Contract.Dtos.Shop;
 
 namespace CoffeePeek.ShopsService.Services.Interfaces;

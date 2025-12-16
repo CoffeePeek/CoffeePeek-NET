@@ -1,14 +1,13 @@
 using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.DB;
 using CoffeePeek.ShopsService.Handlers.CoffeeShop.CheckIn;
 using CoffeePeek.ShopsService.Services.Interfaces;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using CoffeePeek.Shared.Infrastructure.Outbox;
 using FluentAssertions;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
@@ -21,7 +20,7 @@ public class CreateCheckInHandlerTests : IDisposable
     private readonly ShopsDbContext _dbContext;
     private readonly Mock<IValidationStrategy<CreateCheckInRequest>> _validationMock = new();
     private readonly Mock<IRedisService> _redisMock = new();
-    private readonly Mock<IPublishEndpoint> _publishMock = new();
+    private readonly Mock<IOutboxEventPublisher> _publishMock = new();
     private readonly Mock<ICacheService> _cacheServiceMock = new();
     private readonly CreateCheckInHandler _sut;
 
@@ -60,7 +59,7 @@ public class CreateCheckInHandlerTests : IDisposable
         result.IsSuccess.Should().BeFalse();
         result.Message.Should().Contain("invalid");
         _dbContext.CheckIns.Should().BeEmpty();
-        _publishMock.Verify(x => x.Publish(It.IsAny<CheckinCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Never);
+        _publishMock.Verify(x => x.PublishAsync(It.IsAny<CheckinCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -86,8 +85,8 @@ public class CreateCheckInHandlerTests : IDisposable
         result.Data.ReviewId.Should().BeNull();
 
         _dbContext.CheckIns.Count().Should().Be(1);
-        _publishMock.Verify(x => x.Publish(It.IsAny<CheckinCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-        _publishMock.Verify(x => x.Publish(It.IsAny<ReviewAddedEvent>(), It.IsAny<CancellationToken>()), Times.Never);
+        _publishMock.Verify(x => x.PublishAsync(It.IsAny<CheckinCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+        _publishMock.Verify(x => x.PublishAsync(It.IsAny<ReviewAddedEvent>(), It.IsAny<CancellationToken>()), Times.Never);
         _redisMock.Verify(x => x.RemoveAsync(It.IsAny<CacheKey>()), Times.Never);
     }
 
@@ -132,8 +131,8 @@ public class CreateCheckInHandlerTests : IDisposable
         _dbContext.CheckIns.Count().Should().Be(1);
         _dbContext.Reviews.Count().Should().Be(1);
 
-        _publishMock.Verify(x => x.Publish(It.IsAny<CheckinCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
-        _publishMock.Verify(x => x.Publish(It.IsAny<ReviewAddedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+        _publishMock.Verify(x => x.PublishAsync(It.IsAny<CheckinCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+        _publishMock.Verify(x => x.PublishAsync(It.IsAny<ReviewAddedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
 
         _redisMock.Verify(x => x.RemoveAsync(CacheKey.Shop.ById(shopId)), Times.Exactly(2));
         _redisMock.Verify(x => x.RemoveByPatternAsync(CacheKey.Shop.ByCityPattern(shopId)), Times.Exactly(2));

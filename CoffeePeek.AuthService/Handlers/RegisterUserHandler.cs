@@ -4,11 +4,10 @@ using CoffeePeek.AuthService.Repositories;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.AuthService.Services.Validation;
 using CoffeePeek.Contract.Events;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Data.Interfaces;
-using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Infrastructure.Outbox;
 using MediatR;
 
 namespace CoffeePeek.AuthService.Handlers;
@@ -19,6 +18,7 @@ public class RegisterUserHandler(
     IUserManager userManager,
     IValidationStrategy<RegisterUserCommand> validationStrategy,
     IUnitOfWork unitOfWork,
+    IOutboxEventPublisher outboxEventPublisher,
     ILogger<RegisterUserHandler> logger)
     : IRequestHandler<RegisterUserCommand, CreateEntityResponse<Guid>>
 {
@@ -61,17 +61,11 @@ public class RegisterUserHandler(
             
             var userRegisteredEvent = new UserRegisteredEvent(userAuth.Id, request.Email, request.UserName);
 
-            var outboxEvent = new OutboxEvent
-            {
-                EventType = nameof(UserRegisteredEvent),
-                Payload = System.Text.Json.JsonSerializer.Serialize(userRegisteredEvent),
-            };
-
             logger.LogDebug("Adding UserRegisteredEvent to outbox for user ID: {UserId}", userAuth.Id);
-            await credentialsRepo.AddOutboxEventAsync(outboxEvent, ct); 
+            await outboxEventPublisher.PublishAsync(userRegisteredEvent, ct);
         
             await unitOfWork.SaveChangesAsync(ct); 
-            logger.LogInformation("Outbox event for user {Email} saved successfully.", request.Email);
+            logger.LogInformation("User and outbox event for {Email} saved successfully in transaction.", request.Email);
 
             return CreateEntityResponse<Guid>.Success(userAuth.Id);
         }

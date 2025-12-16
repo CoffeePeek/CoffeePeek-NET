@@ -1,7 +1,6 @@
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Infrastructure.Options;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using OutboxBackgroundService;
 using OutboxBackgroundService.Configuration;
 using CoffeePeek.Shared.Extensions.Logging;
@@ -11,8 +10,9 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.AddSerilogLogging();
 
 builder.Services.AddHostedService<Worker>();
-var dbOptions = builder.Services.AddValidateOptions<PostgresCpOptions>();
-builder.Services.AddDbContext<AuthDbContext>(opt => { opt.UseNpgsql(dbOptions.ConnectionString); });
+
+// Register all outbox DbContexts and processors
+builder.Services.RegisterOutboxDbContexts(builder.Configuration);
 
 var rabbitMqOptions = builder.Services.AddValidateOptions<RabbitMqOptions>();
 var railwayRabbitMqOptions = RabbitMqConnectionHelper.GetRabbitMqOptions();
@@ -37,7 +37,6 @@ builder.Services.AddMassTransit(x =>
         cfg.ConfigureEndpoints(context);
     });
 });
-
 
 var host = builder.Build();
 host.Run();

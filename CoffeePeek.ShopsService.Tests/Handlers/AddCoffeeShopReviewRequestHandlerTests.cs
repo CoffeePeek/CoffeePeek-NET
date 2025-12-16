@@ -4,9 +4,9 @@ using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.DB;
 using CoffeePeek.ShopsService.Handlers.CoffeeShop.Review;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using CoffeePeek.Shared.Infrastructure.Outbox;
 using CoffeePeek.ShopsService.Entities;
 using FluentAssertions;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
@@ -19,7 +19,7 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
     private readonly ShopsDbContext _dbContext;
     private readonly Mock<IValidationStrategy<AddCoffeeShopReviewRequest>> _validationStrategyMock;
     private readonly Mock<IRedisService> _redisServiceMock;
-    private readonly Mock<IPublishEndpoint> _publishEndpointMock;
+    private readonly Mock<IOutboxEventPublisher> _publishEndpointMock;
     private readonly AddCoffeeShopReviewRequestHandler _sut;
     private readonly Guid _testShopId;
     private readonly Guid _testCityId;
@@ -33,7 +33,7 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
         _dbContext = new ShopsDbContext(options);
         _validationStrategyMock = new Mock<IValidationStrategy<AddCoffeeShopReviewRequest>>();
         _redisServiceMock = new Mock<IRedisService>();
-        _publishEndpointMock = new Mock<IPublishEndpoint>();
+        _publishEndpointMock = new Mock<IOutboxEventPublisher>();
 
         // Seed test data
         _testCityId = Guid.NewGuid();
@@ -175,7 +175,7 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 
         // Assert
         _publishEndpointMock.Verify(
-            x => x.Publish(It.IsAny<ReviewAddedEvent>(), It.IsAny<CancellationToken>()),
+            x => x.PublishAsync(It.IsAny<ReviewAddedEvent>(), It.IsAny<CancellationToken>()),
             Times.Once
         );
     }

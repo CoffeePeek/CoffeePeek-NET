@@ -1,5 +1,4 @@
 using CoffeePeek.ModerationService.Entities;
-using CoffeePeek.ModerationService.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.ModerationService.Configuration;
@@ -16,6 +15,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
     public DbSet<ModerationCoffeeBeanShop> ModerationCoffeeBeanShops { get; set; }
     public DbSet<ModerationRoasterShop> ModerationRoasterShops { get; set; }
     public DbSet<ModerationShopBrewMethod> ModerationShopBrewMethods { get; set; }
+    public DbSet<OutboxEvent> OutboxEvents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

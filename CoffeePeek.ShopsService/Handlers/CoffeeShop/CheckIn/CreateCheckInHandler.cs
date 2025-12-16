@@ -5,8 +5,8 @@ using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.DB;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using CoffeePeek.Shared.Infrastructure.Outbox;
 using CoffeePeek.ShopsService.Services.Interfaces;
-using MassTransit;
 using MediatR;
 
 namespace CoffeePeek.ShopsService.Handlers.CoffeeShop.CheckIn;
@@ -15,7 +15,7 @@ public class CreateCheckInHandler(
     ShopsDbContext dbContext,
     IValidationStrategy<CreateCheckInRequest> validationStrategy,
     IRedisService redisService,
-    IPublishEndpoint publishEndpoint,
+    IOutboxEventPublisher outboxEventPublisher,
     ICacheService cacheService)
     : IRequestHandler<CreateCheckInRequest, Contract.Responses.Response<CreateCheckInResponse>>
 {
@@ -66,9 +66,7 @@ public class CreateCheckInHandler(
             await InvalidateShopCacheAsync(request.ShopId);
         }
         
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        await publishEndpoint.Publish(new CheckinCreatedEvent
+        await outboxEventPublisher.PublishAsync(new CheckinCreatedEvent
         {
             UserId = request.UserId,
             ShopId = request.ShopId,
@@ -77,7 +75,7 @@ public class CreateCheckInHandler(
 
         if (reviewId.HasValue)
         {
-            await publishEndpoint.Publish(new ReviewAddedEvent
+            await outboxEventPublisher.PublishAsync(new ReviewAddedEvent
             {
                 UserId = request.UserId,
                 ShopId = request.ShopId,
@@ -85,6 +83,8 @@ public class CreateCheckInHandler(
                 CreatedAt = DateTime.UtcNow
             }, cancellationToken);
         }
+        
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return Contract.Responses.Response<CreateCheckInResponse>.Success(new CreateCheckInResponse(checkIn.Id, reviewId));
     }

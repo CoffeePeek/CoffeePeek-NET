@@ -5,7 +5,7 @@ using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
 using CoffeePeek.ShopsService.DB;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
-using MassTransit;
+using CoffeePeek.Shared.Infrastructure.Outbox;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +15,7 @@ public class AddCoffeeShopReviewRequestHandler(
     ShopsDbContext dbContext,
     IValidationStrategy<AddCoffeeShopReviewRequest> validationStrategy,
     IRedisService redisService,
-    IPublishEndpoint publishEndpoint) 
+    IOutboxEventPublisher outboxEventPublisher) 
     : IRequestHandler<AddCoffeeShopReviewRequest, Contract.Responses.Response<AddCoffeeShopReviewResponse>>
 {
     public async Task<Contract.Responses.Response<AddCoffeeShopReviewResponse>> Handle(AddCoffeeShopReviewRequest request, CancellationToken cancellationToken)
@@ -39,18 +39,19 @@ public class AddCoffeeShopReviewRequestHandler(
         };
         
         dbContext.Reviews.Add(review);
-        await dbContext.SaveChangesAsync(cancellationToken);
 
         // invalidate caches: shop details and city listing
         await InvalidateShopCacheAsync(request.ShopId, cancellationToken);
         
-        await publishEndpoint.Publish(new ReviewAddedEvent
+        await outboxEventPublisher.PublishAsync(new ReviewAddedEvent
         {
             UserId = request.UserId,
             ShopId = request.ShopId,
             ReviewId = review.Id,
             CreatedAt = review.ReviewDate
         }, cancellationToken);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return Contract.Responses.Response<AddCoffeeShopReviewResponse>.Success(new AddCoffeeShopReviewResponse(review.Id));
     }
