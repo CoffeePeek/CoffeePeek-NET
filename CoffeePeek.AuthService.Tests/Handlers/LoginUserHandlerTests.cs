@@ -242,6 +242,12 @@ public class LoginUserHandlerTests
             RefreshToken = "refresh_token"
         };
 
+        var publishCalled = new TaskCompletionSource<bool>();
+        _publishEndpointMock
+            .Setup(x => x.Publish(It.IsAny<UserLoggedInEvent>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask)
+            .Callback(() => publishCalled.SetResult(true));
+
         _redisServiceMock
             .Setup(x => x.GetAsync<UserCredentials>(It.IsAny<CoffeePeek.Shared.Infrastructure.Cache.CacheKey>()))
             .ReturnsAsync(user);
@@ -254,6 +260,9 @@ public class LoginUserHandlerTests
 
         // Act
         await _sut.Handle(command, CancellationToken.None);
+
+        // Wait for the background Task.Run to complete (with timeout)
+        await Task.WhenAny(publishCalled.Task, Task.Delay(TimeSpan.FromSeconds(2)));
 
         // Assert
         _publishEndpointMock.Verify(
