@@ -9,5 +9,5 @@ public class OutboxEvent : IOutboxEventEntity
     public string Payload { get; set; } = null!;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool Processed { get; set; } = false;
-    public DateTime? ProcessedAt { get; set; }
+    public DateTime? ProcessedAt { get; set; } = DateTime.UtcNow;
 }

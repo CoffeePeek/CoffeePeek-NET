@@ -49,14 +49,6 @@ public static class YarpRouteFactory
             Order = 4
         });
 
-        routes.Add(new RouteConfig
-        {
-            RouteId = "web-route",
-            ClusterId = "web-cluster",
-            Match = new RouteMatch { Path = "/{**catch-all}" },
-            Order = 1000
-        });
-
         return routes.ToArray();
     }
 

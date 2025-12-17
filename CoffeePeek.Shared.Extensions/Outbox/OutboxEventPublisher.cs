@@ -18,7 +18,6 @@ public class OutboxEventPublisher<TOutboxEvent, TDbContext> : IOutboxEventPublis
 {
     private readonly TDbContext _dbContext;
     private readonly JsonSerializerOptions _jsonOptions;
-    private const string AgentLogPath = @"c:\Users\User\RiderProjects\CoffeePeek-BackEnd\.cursor\debug.log";
 
     public OutboxEventPublisher(TDbContext dbContext)
     {
@@ -30,43 +29,12 @@ public class OutboxEventPublisher<TOutboxEvent, TDbContext> : IOutboxEventPublis
         };
     }
 
-    private static void WriteAgentLog(object payload)
-    {
-        try
-        {
-            var directory = Path.GetDirectoryName(AgentLogPath);
-            if (!string.IsNullOrWhiteSpace(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            File.AppendAllText(AgentLogPath, JsonSerializer.Serialize(payload) + Environment.NewLine);
-        }
-        catch
-        {
-            // swallow logging errors to avoid impacting runtime flow
-        }
-    }
-
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : class
     {
         ArgumentNullException.ThrowIfNull(@event);
 
         var eventTypeName = typeof(TEvent).Name;
         var payload = JsonSerializer.Serialize(@event, _jsonOptions);
-
-        // #region agent log
-        WriteAgentLog(new
-        {
-            sessionId = "debug-session",
-            runId = "pre-fix",
-            hypothesisId = "H1",
-            location = "OutboxEventPublisher.PublishAsync",
-            message = "outbox publish called",
-            data = new { eventTypeName, payloadLength = payload?.Length },
-            timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        });
-        // #endregion
 
         var outboxEvent = new TOutboxEvent
         {
@@ -79,9 +47,6 @@ public class OutboxEventPublisher<TOutboxEvent, TDbContext> : IOutboxEventPublis
 
         var dbSet = _dbContext.Set<TOutboxEvent>();
         await dbSet.AddAsync(outboxEvent, cancellationToken);
-
-        // Note: SaveChanges should be called by the caller (handler) as part of the same transaction
-        // This ensures the event is saved together with business data
     }
 }
 

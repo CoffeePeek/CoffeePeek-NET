@@ -2,54 +2,26 @@ using CoffeePeek.Shared.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var postgres = builder
-    .AddPostgres(AppResources.Postgres)
-    .WithDataVolume();
+var authService = builder.AddProject<Projects.CoffeePeek_AuthService>(AppResources.AuthService);
 
-var authDb = postgres.AddDatabase(AppResources.AuthDb);
-var usersDb = postgres.AddDatabase(AppResources.UserDb);
-var jobsDb = postgres.AddDatabase(AppResources.JobVacanciesDb);
-var shopsDb = postgres.AddDatabase(AppResources.ShopsDb);
-var moderationDb = postgres.AddDatabase(AppResources.ModerationDb);
+var userService = builder.AddProject<Projects.CoffeePeek_UserService>(AppResources.UserService);
 
-var redis = builder
-    .AddRedis(AppResources.RedisCache)
-    .WithDataVolume();
+var jobVacanciesService = builder.AddProject<Projects.CoffeePeek_JobVacancies>(AppResources.JobVacanciesService);
 
-var rabbit = builder
-    .AddRabbitMQ(AppResources.RabbitMq)
-    .WithManagementPlugin();
+var shopsService = builder.AddProject<Projects.CoffeePeek_ShopsService>(AppResources.ShopsService);
 
-builder.AddProject<Projects.CoffeePeek_AuthService>(AppResources.AuthService)
-    .WithReference(authDb)
-    .WithReference(redis)
-    .WithReference(rabbit);
+var moderationService = builder.AddProject<Projects.CoffeePeek_ModerationService>(AppResources.ModerationService);
 
-builder.AddProject<Projects.CoffeePeek_UserService>(AppResources.UserService)
-    .WithReference(usersDb)
-    .WithReference(redis)
-    .WithReference(rabbit);
-
-builder.AddProject<Projects.CoffeePeek_JobVacancies>(AppResources.JobVacanciesService)
-    .WithReference(jobsDb)
-    .WithReference(redis)
-    .WithReference(rabbit);
-
-builder.AddProject<Projects.CoffeePeek_ShopsService>(AppResources.ShopsService)
-    .WithReference(shopsDb)
-    .WithReference(redis)
-    .WithReference(rabbit);
-
-builder.AddProject<Projects.CoffeePeek_ModerationService>(AppResources.ModerationService)
-    .WithReference(moderationDb)
-    .WithReference(redis)
-    .WithReference(rabbit);
-
-builder.AddProject<Projects.OutboxBackgroundService>(AppResources.OutboxBackgroundService)
-    .WithReference(rabbit)
-    .WithReference(redis);
+var outboxService = builder.AddProject<Projects.OutboxBackgroundService>(AppResources.OutboxBackgroundService);
 
 builder.AddProject<Projects.CoffeePeek_Gateway>(AppResources.Gateway)
-    .WithReference(redis);
+    .WithReference(authService)
+    .WithReference(userService)
+    .WithReference(jobVacanciesService)
+    .WithReference(shopsService)
+    .WithReference(moderationService)
+    .WithReference(outboxService)
+    .WithEnvironment("DOTNET_ASPIRE", "true")
+    .WithEnvironment("DOTNET_ASPIRE_RUNNING", "true");
 
 builder.Build().Run();

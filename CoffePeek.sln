@@ -57,11 +57,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.ShopsService.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.JobVacancies", "CoffeePeek.JobVacancies\CoffeePeek.JobVacancies.csproj", "{131AA69D-0328-4198-8FA2-01E879DD32ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.E2ETests", "CoffeePeek.E2ETests\CoffeePeek.E2ETests.csproj", "{F6186943-79D7-46C4-89E6-EF6EB970DC17}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Contract.Tests", "CoffeePeek.Contract.Tests\CoffeePeek.Contract.Tests.csproj", "{61850411-6D7C-4E18-93A2-8DB0CFE4AE38}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Performance.Tests", "CoffeePeek.Performance.Tests\CoffeePeek.Performance.Tests.csproj", "{61E7814F-DDA6-4C31-92CD-471F091B595B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Tests.Shared", "CoffeePeek.Tests.Shared\CoffeePeek.Tests.Shared.csproj", "{E728194E-817E-4DB3-81B6-6451C074953C}"
 EndProject
