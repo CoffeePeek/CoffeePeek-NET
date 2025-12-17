@@ -23,7 +23,13 @@
       <ProjectReference Include="..\CoffeePeek.AuthService\CoffeePeek.AuthService.csproj" />
       <ProjectReference Include="..\CoffeePeek.ShopsService\CoffeePeek.ShopsService.csproj" />
       <ProjectReference Include="..\CoffeePeek.ModerationService\CoffeePeek.ModerationService.csproj" />
+      <ProjectReference Include="..\CoffePeek.ServiceDefaults\CoffePeek.ServiceDefaults.csproj" />
     </ItemGroup>
+
+  <ItemGroup>
+    <!-- Needed to host minimal endpoints (/health) from a worker service -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
     <ItemGroup>
       <Content Include="..\.dockerignore">

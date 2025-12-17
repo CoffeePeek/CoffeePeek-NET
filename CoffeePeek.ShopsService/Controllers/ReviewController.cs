@@ -1,6 +1,5 @@
 ﻿using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Requests.CoffeeShop.Review;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;

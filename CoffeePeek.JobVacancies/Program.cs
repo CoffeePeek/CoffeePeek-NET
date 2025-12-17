@@ -14,8 +14,11 @@ using CoffeePeek.Shared.Infrastructure.Options;
 using Hangfire;
 using Hangfire.PostgreSql;
 using CoffeePeek.Shared.Extensions.Logging;
+using CoffePeek.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 builder.AddSerilogLogging();
 
@@ -38,7 +41,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 // Database
-var dbOptions = builder.Services.GetDatabaseOptions();
+var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.JobVacanciesDb);
 builder.Services.AddEfCoreData<JobVacanciesDbContext>(dbOptions);
 
 // Config
@@ -77,12 +80,9 @@ builder.Services.AddHttpClient<IHhApiService, HhApiService>()
 builder.Services.AddHttpClient<IHhAuthService, HhAuthService>()
     .AddResiliencePolicies(nameof(HhAuthService));
 
-// Health Checks
-var dbOptionsForHealth = builder.Services.GetDatabaseOptions();
-var redisOptionsForHealth = builder.Services.AddValidateOptions<RedisOptions>();
-builder.Services.AddAllHealthChecks(dbOptionsForHealth, null, redisOptionsForHealth);
-
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 // Middleware pipeline
 app.UseExceptionHandling();
@@ -97,17 +97,6 @@ app.UseSwaggerDocumentation();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-// Health Checks
-app.MapHealthChecks("/health");
-app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-{
-    Predicate = check => check.Tags.Contains("ready")
-});
-app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-{
-    Predicate = check => check.Tags.Contains("self")
-});
 
 app.MapControllers();
 app.UseHangfireDashboard();

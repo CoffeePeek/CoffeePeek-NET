@@ -14,8 +14,11 @@ using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
 using CoffeePeek.Shared.Infrastructure.Options;
+using CoffePeek.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 builder.AddSerilogLogging();
 
@@ -27,7 +30,7 @@ builder.Services.AddControllersModule();
 builder.Services.AddSwaggerModule("Coffee Peek ModerationService", "v1");
 
 // Database
-var dbOptions = builder.Services.GetDatabaseOptions();
+var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ModerationDb);
 builder.Services.AddEfCoreData<ModerationDbContext>(dbOptions);
 builder.Services.AddGenericRepository<ModerationShop, ModerationDbContext>();
 
@@ -65,15 +68,12 @@ builder.Services.AddMessagingModule();
 // Outbox Event Publisher
 builder.Services.AddOutboxEventPublisher<OutboxEvent, ModerationDbContext>();
 
-// Health Checks
-var dbOptionsForHealth = builder.Services.GetDatabaseOptions();
-var rabbitMqOptionsForHealth = builder.Services.AddValidateOptions<RabbitMqOptions>();
-builder.Services.AddAllHealthChecks(dbOptionsForHealth, rabbitMqOptionsForHealth, null);
-
 // CORS
 builder.Services.AddCorsModule();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.UseExceptionHandling();
 
@@ -89,17 +89,6 @@ app.UseAuthorization();
 app.UseSwaggerDocumentation();
 
 app.UseHttpsRedirection();
-
-// Health Checks
-app.MapHealthChecks("/health");
-app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-{
-    Predicate = check => check.Tags.Contains("ready")
-});
-app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-{
-    Predicate = check => check.Tags.Contains("self")
-});
 
 app.MapControllers();
 

@@ -1,0 +1,29 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.0.2">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UserSecretsId>fff4531b-3f02-4112-ab5d-cd8192f0f9fd</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.0.2" />
+      <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="13.0.2" />
+      <PackageReference Include="Aspire.Hosting.Redis" Version="13.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CoffeePeek.AuthService\CoffeePeek.AuthService.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Gateway\CoffeePeek.Gateway.csproj" />
+      <ProjectReference Include="..\CoffeePeek.JobVacancies\CoffeePeek.JobVacancies.csproj" />
+      <ProjectReference Include="..\CoffeePeek.ModerationService\CoffeePeek.ModerationService.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj"
+                        IsAspireProjectResource="false" />
+      <ProjectReference Include="..\CoffeePeek.ShopsService\CoffeePeek.ShopsService.csproj" />
+      <ProjectReference Include="..\CoffeePeek.UserService\CoffeePeek.UserService.csproj" />
+      <ProjectReference Include="..\OutboxBackgroundService\OutboxBackgroundService.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -4,8 +4,12 @@ using MassTransit;
 using OutboxBackgroundService;
 using OutboxBackgroundService.Configuration;
 using CoffeePeek.Shared.Extensions.Logging;
+using CoffePeek.ServiceDefaults;
+using Microsoft.AspNetCore.Builder;
 
-var builder = Host.CreateApplicationBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 builder.AddSerilogLogging();
 
@@ -38,5 +42,9 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-var host = builder.Build();
-host.Run();
+var app = builder.Build();
+
+// Expose /health and /alive like other services
+app.MapDefaultEndpoints();
+
+app.Run();

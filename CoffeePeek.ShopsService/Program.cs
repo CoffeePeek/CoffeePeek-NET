@@ -13,9 +13,11 @@ using CoffeePeek.ShopsService.Services;
 using CoffeePeek.ShopsService.Services.Interfaces;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
-using CoffeePeek.Shared.Infrastructure.Options;
+using CoffePeek.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 builder.AddSerilogLogging();
 
@@ -64,8 +66,8 @@ builder.Services.AddMessagingModule(x =>
 builder.Services.AddOutboxEventPublisher<OutboxEvent, ShopsDbContext>();
 
 // Database
-var dbOptions = builder.Services.GetDatabaseOptions();
-builder.Services.AddEfCoreData<ShopsDbContext>(dbOptions.ConnectionString ?? DatabaseConnectionHelper.GetDatabaseConnectionString());
+var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ShopsDb);
+builder.Services.AddEfCoreData<ShopsDbContext>(dbOptions.ConnectionString);
 builder.Services.AddGenericRepository<Shop, ShopsDbContext>();
 builder.Services.AddGenericRepository<ShopContact, ShopsDbContext>();
 builder.Services.AddGenericRepository<ShopPhoto, ShopsDbContext>();
@@ -81,16 +83,12 @@ builder.Services.AddGenericRepository<Location, ShopsDbContext>();
 // Database Seeder
 builder.Services.AddScoped<DatabaseSeederService>();
 
-// Health Checks
-var dbOptionsForHealth = builder.Services.GetDatabaseOptions();
-var rabbitMqOptionsForHealth = builder.Services.AddValidateOptions<RabbitMqOptions>();
-var redisOptionsForHealth = builder.Services.AddValidateOptions<RedisOptions>();
-builder.Services.AddAllHealthChecks(dbOptionsForHealth, rabbitMqOptionsForHealth, redisOptionsForHealth);
-
 // CORS
 builder.Services.AddCorsModule();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 // Middleware pipeline
 app.UseExceptionHandling();
@@ -107,17 +105,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-// Health Checks
-app.MapHealthChecks("/health");
-app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-{
-    Predicate = check => check.Tags.Contains("ready")
-});
-app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-{
-    Predicate = check => check.Tags.Contains("self")
-});
 
 app.MapControllers();
 

@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
+    <ProjectReference Include="..\CoffePeek.ServiceDefaults\CoffePeek.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>

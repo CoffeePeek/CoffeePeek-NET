@@ -26,6 +26,7 @@
       <ProjectReference Include="..\CoffeePeek.Data\CoffeePeek.Data.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shared.Infrastructure\CoffeePeek.Shared.Infrastructure.csproj" />
+      <ProjectReference Include="..\CoffePeek.ServiceDefaults\CoffePeek.ServiceDefaults.csproj" />
     </ItemGroup>
 
     <ItemGroup>
