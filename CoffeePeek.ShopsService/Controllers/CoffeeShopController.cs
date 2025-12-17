@@ -4,7 +4,10 @@ using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
+using CoffeePeek.Contract.Responses.CoffeeShop.Favorite;
+using CoffeePeek.Shared.Infrastructure;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeePeek.ShopsService.Controllers;
@@ -52,18 +55,32 @@ public class CoffeeShopController(IMediator mediator) : Controller
         return mediator.Send(new GetCoffeeShopCommand(id));
     }
     
+    [HttpPost("/favorite")]
+    [Authorize]
+    [ProducesResponseType(typeof(Response<GetAllFavoritesResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    public Task<Response<GetAllFavoritesResponse>> GetAllFavorites()
+    {
+        return mediator.Send(new GetAllFavoritesCommand(User.GetUserIdOrThrow()));
+    }
+    
     [HttpPost("/favorite{id:guid}")]
+    [Authorize]
     [ProducesResponseType(typeof(Response<GetCoffeeShopResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    public Task<CreateEntityResponse<Guid>> AddToFavorite([FromBody]Guid id, Guid userId)
+    public Task<CreateEntityResponse<Guid>> AddToFavorite([FromQuery]Guid id)
     {
-        return mediator.Send(new AddToFavoriteCommand(id, userId));
+        return mediator.Send(new AddToFavoriteCommand(id, User.GetUserIdOrThrow()));
     }
     
     [HttpDelete("/favorite{id:guid}")]
+    [Authorize]
     [ProducesResponseType(typeof(Response<GetCoffeeShopResponse>), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
