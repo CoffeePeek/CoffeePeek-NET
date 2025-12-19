@@ -1,8 +1,10 @@
-using CoffeePeek.Data.Extensions;
-using CoffeePeek.ModerationService.Configuration;
-using CoffeePeek.ModerationService.Entities;
-using CoffeePeek.ModerationService.Repositories;
-using CoffeePeek.ModerationService.Repositories.Interfaces;
+using Coffeepeek.Moderation.Application.Mapper;
+using Coffeepeek.Moderation.Application.Repositories;
+using CoffeePeek.Moderation.Domain;
+using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Moderation.Domain.Repositories;
+using CoffeePeek.Moderation.Infrastructure;
+using CoffeePeek.Moderation.Infrastructure.Services;
 using CoffeePeek.ModerationService.Services;
 using CoffeePeek.ModerationService.Services.Interfaces;
 using CoffeePeek.Shared.Extensions.Configuration;
@@ -13,7 +15,6 @@ using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
-using CoffeePeek.Shared.Infrastructure.Options;
 using CoffePeek.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,7 +33,15 @@ builder.Services.AddSwaggerModule("Coffee Peek ModerationService", "v1");
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ModerationDb);
 builder.Services.AddEfCoreData<ModerationDbContext>(dbOptions);
+
 builder.Services.AddGenericRepository<ModerationShop, ModerationDbContext>();
+builder.Services.AddGenericRepository<ShopContacts, ModerationDbContext>();
+builder.Services.AddGenericRepository<Location, ModerationDbContext>();
+builder.Services.AddGenericRepository<ModerationShopSchedule, ModerationDbContext>();
+builder.Services.AddGenericRepository<ModerationShopEquipment, ModerationDbContext>();
+builder.Services.AddGenericRepository<ModerationCoffeeBeanShop, ModerationDbContext>();
+builder.Services.AddGenericRepository<ModerationRoasterShop, ModerationDbContext>();
+builder.Services.AddGenericRepository<ModerationShopBrewMethod, ModerationDbContext>();
 
 builder.Services.AddScoped<IModerationShopRepository, ModerationShopRepository>();
 builder.Services.AddScoped<IModerationShopCreationService, ModerationShopCreationService>();

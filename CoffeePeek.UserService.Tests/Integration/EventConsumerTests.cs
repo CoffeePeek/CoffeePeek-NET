@@ -1,9 +1,9 @@
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Events.Shops;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
-using CoffeePeek.UserService.Configuration;
+using CoffeePeek.User.Domain.Configuration;
 using CoffeePeek.UserService.Models;
 using FluentAssertions;
 using MassTransit;
@@ -19,7 +19,6 @@ public class EventConsumerTests(UserServiceWebApplicationFactory factory) : ICla
     {
         using var scope = factory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
-        var redisService = scope.ServiceProvider.GetRequiredService<IRedisService>();
         
         // Clear database
         dbContext.UserStatistics.RemoveRange(dbContext.UserStatistics);
@@ -60,7 +59,7 @@ public class EventConsumerTests(UserServiceWebApplicationFactory factory) : ICla
         user.Username.Should().Be("testuser");
         
         // Verify cache (if Redis is not mocked, this might fail)
-        var cachedUser = await redisService.GetAsync<Models.User>(CacheKey.User.ById(userId));
+        var cachedUser = await redisService.GetAsync<User.Domain.Entities.User>(CacheKey.User.ById(userId));
         cachedUser.Should().NotBeNull();
     }
 
@@ -73,7 +72,7 @@ public class EventConsumerTests(UserServiceWebApplicationFactory factory) : ICla
         var userId = Guid.NewGuid();
         
         // Create User first (required for foreign key)
-        var user = new Models.User
+        var user = new User.Domain.Entities.User
         {
             Id = userId,
             Email = "test@example.com",
@@ -121,7 +120,7 @@ public class EventConsumerTests(UserServiceWebApplicationFactory factory) : ICla
         var userId = Guid.NewGuid();
         
         // Create User first (required for foreign key)
-        var user = new Models.User
+        var user = new User.Domain.Entities.User
         {
             Id = userId,
             Email = "test@example.com",
@@ -178,7 +177,7 @@ public class EventConsumerTests(UserServiceWebApplicationFactory factory) : ICla
         var userId = Guid.NewGuid();
         
         // Create User first (required for foreign key)
-        var user = new Models.User
+        var user = new User.Domain.Entities.User
         {
             Id = userId,
             Email = "test@example.com",
@@ -226,7 +225,7 @@ public class EventConsumerTests(UserServiceWebApplicationFactory factory) : ICla
         var userId = Guid.NewGuid();
         
         // Create User first (required for foreign key)
-        var user = new Models.User
+        var user = new User.Domain.Entities.User
         {
             Id = userId,
             Email = "test@example.com",
@@ -283,7 +282,7 @@ public class EventConsumerTests(UserServiceWebApplicationFactory factory) : ICla
         var userId = Guid.NewGuid();
         
         // Create User first (required for foreign key)
-        var user = new Models.User
+        var user = new User.Domain.Entities.User
         {
             Id = userId,
             Email = "test@example.com",
@@ -330,7 +329,7 @@ public class EventConsumerTests(UserServiceWebApplicationFactory factory) : ICla
         var userId = Guid.NewGuid();
         
         // Create User first (required for foreign key)
-        var user = new Models.User
+        var user = new User.Domain.Entities.User
         {
             Id = userId,
             Email = "test@example.com",

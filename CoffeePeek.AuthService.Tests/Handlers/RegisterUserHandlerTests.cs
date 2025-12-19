@@ -1,10 +1,13 @@
+using CoffeePeek.Auth.Application.Handlers;
+using CoffeePeek.Auth.Application.Services.Interfaces;
+using CoffeePeek.Auth.Application.Services.Validation;
+using CoffeePeek.Auth.Domain.Entities;
+using CoffeePeek.Auth.Domain.Repositories;
 using CoffeePeek.AuthService.Commands;
 using CoffeePeek.AuthService.Entities;
-using CoffeePeek.AuthService.Handlers;
-using CoffeePeek.AuthService.Repositories;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.AuthService.Services.Validation;
-using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Outbox;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;

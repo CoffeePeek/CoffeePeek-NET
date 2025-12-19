@@ -1,13 +1,14 @@
-using CoffeePeek.Data.Extensions;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
-using CoffeePeek.UserService.Configuration;
-using CoffeePeek.UserService.EventConsumer;
-using CoffeePeek.UserService.Models;
-using CoffeePeek.UserService.Repositories;
 using CoffeePeek.Shared.Extensions.Logging;
+using CoffeePeek.User.Application.Mapper;
+using CoffeePeek.User.Application.Repositories;
+using CoffeePeek.User.Domain.Configuration;
+using CoffeePeek.User.Domain.Entities;
+using CoffeePeek.User.Domain.Repositories;
+using CoffeePeek.User.Infrastructure.EventConsumer;
 using CoffePeek.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);

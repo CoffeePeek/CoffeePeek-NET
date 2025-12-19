@@ -1,10 +1,8 @@
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
-using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
-using CoffeePeek.UserService.Handlers;
-using CoffeePeek.UserService.Models;
+using CoffeePeek.User.Application.Handlers;
 using FluentAssertions;
 using Mapster;
 using MapsterMapper;
@@ -14,26 +12,27 @@ using Xunit;
 
 namespace CoffeePeek.UserService.Tests.Handlers;
 
+using User = User.Domain.Entities.User;
+
 public class GetProfileHandlerTests
 {
     private readonly Mock<IGenericRepository<User>> _userRepositoryMock;
     private readonly Mock<IRedisService> _redisServiceMock;
-    private readonly Mock<IMapper> _mapperMock;
     private readonly GetProfileHandler _sut;
 
     public GetProfileHandlerTests()
     {
         _userRepositoryMock = new Mock<IGenericRepository<User>>();
         _redisServiceMock = new Mock<IRedisService>();
-        _mapperMock = new Mock<IMapper>();
+        var mapperMock = new Mock<IMapper>();
 
         var config = new TypeAdapterConfig();
-        _mapperMock.Setup(x => x.Config).Returns(config);
+        mapperMock.Setup(x => x.Config).Returns(config);
 
         _sut = new GetProfileHandler(
             _userRepositoryMock.Object,
             _redisServiceMock.Object,
-            _mapperMock.Object
+            mapperMock.Object
         );
     }
 

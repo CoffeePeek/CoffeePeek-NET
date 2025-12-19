@@ -1,30 +1,27 @@
 using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response.CoffeeShop;
-using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
-using CoffeePeek.ShopsService.DB;
-using CoffeePeek.ShopsService.Entities;
-using CoffeePeek.ShopsService.Tests.Integration;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using CoffeePeek.Contract.Responses.CoffeeShop.Review;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Infrastructure.Configuration;
 using CoffeePeek.Tests.Shared;
 using Xunit;
-using City = CoffeePeek.ShopsService.Entities.City;
+using City = CoffeePeek.Shops.Domain.Entities.City;
 
 namespace CoffeePeek.ShopsService.Tests.Integration;
 
 public class ShopsCrudIntegrationTests(ShopsServiceWebApplicationFactory factory)
     : IClassFixture<ShopsServiceWebApplicationFactory>, IAsyncLifetime
 {
-    private readonly ShopsServiceWebApplicationFactory _factory = factory;
     private readonly HttpClient _client = factory.CreateClient();
     private Guid _cityId;
     private Guid _shopId;
@@ -41,9 +38,9 @@ public class ShopsCrudIntegrationTests(ShopsServiceWebApplicationFactory factory
 
     private async Task ClearDatabaseAsync()
     {
-        using var scope = _factory.Services.CreateScope();
+        using var scope = factory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ShopsDbContext>();
-        var redisService = scope.ServiceProvider.GetRequiredService<CoffeePeek.Shared.Infrastructure.Interfaces.Redis.IRedisService>();
+        var redisService = scope.ServiceProvider.GetRequiredService<IRedisService>();
 
         dbContext.CheckIns.RemoveRange(dbContext.CheckIns);
         dbContext.Reviews.RemoveRange(dbContext.Reviews);
@@ -62,12 +59,12 @@ public class ShopsCrudIntegrationTests(ShopsServiceWebApplicationFactory factory
         await dbContext.SaveChangesAsync();
 
         // Clear Redis cache to prevent stale data
-        await redisService.RemoveByPatternAsync(CacheKey.Shop.ByCityPattern(BusinessConstants.DefaultUnAuthorizedCityId));
+        await redisService.RemoveByPatternAsync(CacheKey.CachedShop.ByCityPattern(BusinessConstants.DefaultUnAuthorizedCityId));
     }
 
     private async Task SeedShopAsync()
     {
-        using var scope = _factory.Services.CreateScope();
+        using var scope = factory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ShopsDbContext>();
 
         // Use DefaultUnAuthorizedCityId so the shop is returned when querying without cityId parameter
@@ -194,7 +191,7 @@ public class ShopsCrudIntegrationTests(ShopsServiceWebApplicationFactory factory
         result.Data.Should().NotBeNull();
         result.Data!.CheckInId.Should().NotBeEmpty();
 
-        using var scope = _factory.Services.CreateScope();
+        using var scope = factory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ShopsDbContext>();
         (await dbContext.CheckIns.CountAsync()).Should().Be(1);
     }

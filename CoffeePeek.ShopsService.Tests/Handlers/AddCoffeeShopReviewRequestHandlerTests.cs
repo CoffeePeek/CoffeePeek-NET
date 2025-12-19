@@ -1,28 +1,30 @@
 using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
-using CoffeePeek.ShopsService.DB;
-using CoffeePeek.ShopsService.Handlers.CoffeeShop.Review;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Outbox;
-using CoffeePeek.ShopsService.Entities;
+using CoffeePeek.Shops.Application.Handlers.CoffeeShop.Review;
+using CoffeePeek.Shops.Application.Services;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Infrastructure.Configuration;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
-using ValidationResult = CoffeePeek.ShopsService.Abstractions.ValidationStrategy.ValidationResult;
+using ValidationResult = CoffeePeek.Shops.Application.ValidationResult;
 
 namespace CoffeePeek.ShopsService.Tests.Handlers;
 
 public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 {
     private readonly ShopsDbContext _dbContext;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<IValidationStrategy<AddCoffeeShopReviewRequest>> _validationStrategyMock;
     private readonly Mock<IRedisService> _redisServiceMock;
     private readonly Mock<IOutboxEventPublisher> _publishEndpointMock;
+    private readonly Mock<IGenericRepository<Shop>> _shopRepositoryMock = new();
+    private readonly Mock<IGenericRepository<Review>> _reviewRepositoryMock = new();
     private readonly AddCoffeeShopReviewRequestHandler _sut;
     private readonly Guid _testShopId;
-    private readonly Guid _testCityId;
 
     public AddCoffeeShopReviewRequestHandlerTests()
     {
@@ -36,18 +38,20 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
         _publishEndpointMock = new Mock<IOutboxEventPublisher>();
 
         // Seed test data
-        _testCityId = Guid.NewGuid();
+        var testCityId = Guid.NewGuid();
         _testShopId = Guid.NewGuid();
         _dbContext.Shops.Add(new Shop
         {
             Id = _testShopId,
             Name = "Test Coffee Shop",
-            CityId = _testCityId
+            CityId = testCityId
         });
         _dbContext.SaveChanges();
 
         _sut = new AddCoffeeShopReviewRequestHandler(
-            _dbContext,
+            _reviewRepositoryMock.Object,
+            _shopRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _validationStrategyMock.Object,
             _redisServiceMock.Object,
             _publishEndpointMock.Object

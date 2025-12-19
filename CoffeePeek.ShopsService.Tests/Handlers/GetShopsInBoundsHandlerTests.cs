@@ -1,9 +1,12 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.ShopsService.DB;
-using CoffeePeek.ShopsService.Entities;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Application.Handlers.CoffeeShop;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Infrastructure.Configuration;
 using CoffeePeek.ShopsService.Handlers.CoffeeShop;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
 
 namespace CoffeePeek.ShopsService.Tests.Handlers;
@@ -12,6 +15,7 @@ public class GetShopsInBoundsHandlerTests : IDisposable
 {
     private readonly ShopsDbContext _dbContext;
     private readonly GetShopsInBoundsHandler _sut;
+    private readonly Mock<IGenericRepository<Shop>> _shopRepositoryMock = new();
 
     public GetShopsInBoundsHandlerTests()
     {
@@ -20,7 +24,7 @@ public class GetShopsInBoundsHandlerTests : IDisposable
             .Options;
 
         _dbContext = new ShopsDbContext(options);
-        _sut = new GetShopsInBoundsHandler(_dbContext);
+        _sut = new GetShopsInBoundsHandler(_shopRepositoryMock.Object);
     }
 
     [Fact]

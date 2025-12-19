@@ -1,17 +1,16 @@
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response.User;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
-using CoffeePeek.UserService.Handlers;
-using CoffeePeek.UserService.Models;
-using CoffeePeek.UserService.Repositories;
+using CoffeePeek.User.Application.Handlers;
+using CoffeePeek.User.Domain.Repositories;
 using FluentAssertions;
 using Moq;
 using Xunit;
 
 namespace CoffeePeek.UserService.Tests.Handlers;
+
+using User = User.Domain.Entities.User;
 
 public class UpdateProfileHandlerTests
 {

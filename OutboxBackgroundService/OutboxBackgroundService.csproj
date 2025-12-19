@@ -17,12 +17,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Shared.Infrastructure\CoffeePeek.Shared.Infrastructure.csproj" />
-      <ProjectReference Include="..\CoffeePeek.AuthService\CoffeePeek.AuthService.csproj" />
-      <ProjectReference Include="..\CoffeePeek.ShopsService\CoffeePeek.ShopsService.csproj" />
-      <ProjectReference Include="..\CoffeePeek.ModerationService\CoffeePeek.ModerationService.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Moderation.Infrastructure\CoffeePeek.Moderation.Infrastructure.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Auth.Infrastructure\CoffeePeek.Auth.Infrastructure.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shops.Infrastructure\CoffeePeek.Shops.Infrastructure.csproj" />
       <ProjectReference Include="..\CoffePeek.ServiceDefaults\CoffePeek.ServiceDefaults.csproj" />
     </ItemGroup>
 

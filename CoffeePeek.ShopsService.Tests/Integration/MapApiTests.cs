@@ -1,14 +1,13 @@
-using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
-using CoffeePeek.ShopsService.DB;
-using CoffeePeek.ShopsService.Entities;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Infrastructure.Configuration;
 using Xunit;
-using City = CoffeePeek.ShopsService.Entities.City;
+using City = CoffeePeek.Shops.Domain.Entities.City;
 
 namespace CoffeePeek.ShopsService.Tests.Integration;
 

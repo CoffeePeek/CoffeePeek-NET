@@ -1,11 +1,10 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Contract.Enums;
-using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
+using Coffeepeek.Moderation.Application.Commands;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using MediatR;
@@ -34,7 +33,7 @@ public class ModerationController(IMediator mediator) : Controller
     [Description("Get all coffee shop reviews for moderation")]
     public async Task<Response<GetCoffeeShopsInModerationByIdResponse>> GetAllModerationShops()
     {
-        var request = new GetAllModerationShopsRequest();
+        var request = new GetAllModerationShopsCommand();
         return await mediator.Send(request);
     }
     

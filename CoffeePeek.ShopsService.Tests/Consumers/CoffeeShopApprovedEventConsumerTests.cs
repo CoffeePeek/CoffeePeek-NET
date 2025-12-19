@@ -2,11 +2,11 @@ using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Events.Moderation;
-using CoffeePeek.Data.Interfaces;
-using CoffeePeek.ShopsService.Consumers;
-using CoffeePeek.ShopsService.DB;
-using CoffeePeek.ShopsService.Entities;
-using CoffeePeek.ShopsService.Services.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Application.Services;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Infrastructure.Configuration;
+using CoffeePeek.Shops.Infrastructure.Consumers;
 using MapsterMapper;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -81,7 +81,6 @@ public class CoffeeShopApprovedEventConsumerTests : IDisposable
             mapperMock.Object,
             _shopRepositoryMock.Object,
             _shopContactRepositoryMock.Object,
-            _shopPhotoRepositoryMock.Object,
             _locationRepositoryMock.Object,
             _unitOfWorkMock.Object,
             cacheServiceMock.Object,

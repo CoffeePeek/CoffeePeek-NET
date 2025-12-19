@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.JobVacancies.Commands;
-using CoffeePeek.JobVacancies.Entities;
+using CoffeePeek.JobVacancies.Application.Commands;
+using CoffeePeek.JobVacancies.Application.Models.Responses;
+using CoffeePeek.JobVacancies.Domain.Entities;
 using CoffeePeek.JobVacancies.Models.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

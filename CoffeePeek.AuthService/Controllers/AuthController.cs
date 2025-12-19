@@ -1,6 +1,7 @@
-﻿using CoffeePeek.AuthService.Commands;
-using CoffeePeek.Contract.Response.Auth;
+﻿using CoffeePeek.Auth.Application.Commands;
+using CoffeePeek.AuthService.Commands;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.Auth;
 using CoffeePeek.Contract.Responses.Login;
 using CoffeePeek.Shared.Infrastructure;
 using MediatR;

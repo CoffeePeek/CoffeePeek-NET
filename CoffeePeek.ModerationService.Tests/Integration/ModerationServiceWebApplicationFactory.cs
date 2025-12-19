@@ -1,4 +1,3 @@
-using CoffeePeek.ModerationService.Configuration;
 using CoffeePeek.ModerationService.Services.Interfaces;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication;
@@ -13,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using CoffeePeek.Moderation.Domain;
 using CoffeePeek.Tests.Shared;
 using Testcontainers.PostgreSql;
 using Xunit;

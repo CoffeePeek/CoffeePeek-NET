@@ -1,10 +1,8 @@
-using CoffeePeek.AuthService.Commands;
-using CoffeePeek.AuthService.Handlers;
-using CoffeePeek.AuthService.Services;
+using CoffeePeek.Auth.Application.Commands;
+using CoffeePeek.Auth.Application.Handlers;
+using CoffeePeek.Auth.Application.Services;
 using CoffeePeek.Contract.Dtos.Auth;
-using CoffeePeek.Contract.Response.Auth;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;

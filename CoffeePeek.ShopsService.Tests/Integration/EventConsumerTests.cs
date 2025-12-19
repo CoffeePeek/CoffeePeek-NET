@@ -1,14 +1,14 @@
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Events.Moderation;
-using CoffeePeek.ShopsService.DB;
 using FluentAssertions;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Dtos.Shop;
+using CoffeePeek.Shops.Infrastructure.Configuration;
 using Xunit;
-using City = CoffeePeek.ShopsService.Entities.City;
+using City = CoffeePeek.Shops.Domain.Entities.City;
 
 namespace CoffeePeek.ShopsService.Tests.Integration;
 

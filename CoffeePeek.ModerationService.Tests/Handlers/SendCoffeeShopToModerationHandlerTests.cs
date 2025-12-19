@@ -1,8 +1,8 @@
-using CoffeePeek.Contract.Requests.CoffeeShop.Review;
-using CoffeePeek.ModerationService.Entities;
-using CoffeePeek.ModerationService.Handlers;
+using Coffeepeek.Moderation.Application.Commands;
+using Coffeepeek.Moderation.Application.Handlers;
+using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.ModerationService.Models;
-using CoffeePeek.ModerationService.Repositories.Interfaces;
 using CoffeePeek.ModerationService.Services.Interfaces;
 using FluentAssertions;
 using Moq;

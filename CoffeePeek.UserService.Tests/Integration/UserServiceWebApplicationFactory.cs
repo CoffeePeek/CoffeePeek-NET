@@ -1,5 +1,3 @@
-using CoffeePeek.UserService.Configuration;
-using CoffeePeek.UserService.EventConsumer;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +11,8 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using CoffeePeek.Tests.Shared;
+using CoffeePeek.User.Domain.Configuration;
+using CoffeePeek.User.Infrastructure.EventConsumer;
 using Testcontainers.PostgreSql;
 using Xunit;
 

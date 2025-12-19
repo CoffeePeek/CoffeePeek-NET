@@ -1,12 +1,16 @@
 using System.Reflection;
+using CoffeePeek.Auth.Application.Services;
+using CoffeePeek.Auth.Application.Services.Interfaces;
+using CoffeePeek.Auth.Application.Services.Validation;
+using CoffeePeek.Auth.Domain.Entities;
+using CoffeePeek.Auth.Domain.Repositories;
+using CoffeePeek.Auth.Infrastructure;
+using CoffeePeek.Auth.Infrastructure.Configuration;
+using CoffeePeek.Auth.Infrastructure.Repositories;
+using CoffeePeek.Auth.Infrastructure.Services;
 using CoffeePeek.AuthService.Commands;
-using CoffeePeek.AuthService.Configuration;
-using CoffeePeek.AuthService.Entities;
-using CoffeePeek.AuthService.Repositories;
 using CoffeePeek.AuthService.Services;
 using CoffeePeek.AuthService.Services.Validation;
-using CoffeePeek.AuthService.Utils;
-using CoffeePeek.Data.Extensions;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
@@ -15,9 +19,11 @@ using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
 using CoffePeek.ServiceDefaults;
-using IJWTTokenService = CoffeePeek.AuthService.Services.IJWTTokenService;
+using IJWTTokenService = CoffeePeek.Auth.Application.Services.IJWTTokenService;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
-using JWTTokenService = CoffeePeek.AuthService.Services.JWTTokenService;
+using JWTTokenService = CoffeePeek.Auth.Infrastructure.Services.JWTTokenService;
+using OutboxEvent = CoffeePeek.AuthService.Entities.OutboxEvent;
+using Role = CoffeePeek.Auth.Domain.Entities.Role;
 
 var builder = WebApplication.CreateBuilder(args);
 

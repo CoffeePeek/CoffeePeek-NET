@@ -2,7 +2,7 @@ using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response.User;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.UserService.Extensions;
+using CoffeePeek.Shared.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

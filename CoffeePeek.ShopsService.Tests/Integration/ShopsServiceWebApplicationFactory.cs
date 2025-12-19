@@ -1,5 +1,3 @@
-using CoffeePeek.ShopsService.Consumers;
-using CoffeePeek.ShopsService.DB;
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.AspNetCore.Authentication;
@@ -13,6 +11,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Persistence.Data;
+using CoffeePeek.Shops.Infrastructure.Configuration;
+using CoffeePeek.Shops.Infrastructure.Consumers;
 using CoffeePeek.Tests.Shared;
 using Testcontainers.PostgreSql;
 using Xunit;
@@ -37,13 +39,13 @@ public class ShopsServiceWebApplicationFactory : WebApplicationFactory<Program>,
         {
             // Replace database with test container
             services.RemoveAll(typeof(DbContextOptions<ShopsDbContext>));
-            services.RemoveAll(typeof(CoffeePeek.Data.Interfaces.IUnitOfWork));
+            services.RemoveAll(typeof(IUnitOfWork));
             services.AddDbContext<ShopsDbContext>(options =>
             {
                 options.UseNpgsql(_postgresContainer.GetConnectionString());
             });
             // Ensure IUnitOfWork is registered (needed by consumer)
-            services.AddScoped<CoffeePeek.Data.Interfaces.IUnitOfWork, CoffeePeek.Data.Repositories.UnitOfWork<ShopsDbContext>>();
+            services.AddScoped<IUnitOfWork, UnitOfWork<ShopsDbContext>>();
 
             // Remove existing MassTransit configuration completely
             // Remove all MassTransit-related service descriptors
