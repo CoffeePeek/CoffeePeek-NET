@@ -11,3 +11,4 @@ public class CheckInDto
     public string ShopName { get; set; } = string.Empty;
 }
 
+
