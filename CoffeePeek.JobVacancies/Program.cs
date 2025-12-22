@@ -1,8 +1,12 @@
 using System.Reflection;
-using CoffeePeek.Data.Extensions;
+using CoffeePeek.JobVacancies.Application.Repositories;
+using CoffeePeek.JobVacancies.Application.Services;
 using CoffeePeek.JobVacancies.Configuration;
+using CoffeePeek.JobVacancies.Domain.Entities;
+using CoffeePeek.JobVacancies.Domain.Repositories;
+using CoffeePeek.JobVacancies.Infrastructure.Configuration;
+using CoffeePeek.JobVacancies.Infrastructure.Services;
 using CoffeePeek.JobVacancies.Jobs;
-using CoffeePeek.JobVacancies.Repository;
 using CoffeePeek.JobVacancies.Services;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Middleware;
@@ -43,6 +47,8 @@ builder.Services.AddAuthorization(options =>
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.JobVacanciesDb);
 builder.Services.AddEfCoreData<JobVacanciesDbContext>(dbOptions);
+builder.Services.AddGenericRepository<JobVacancy, JobVacanciesDbContext>();
+builder.Services.AddGenericRepository<CityMap, JobVacanciesDbContext>();
 
 // Config
 builder.Services.Configure<HhApiOptions>(builder.Configuration.GetSection("HhApi"));

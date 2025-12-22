@@ -1,13 +1,3 @@
-namespace CoffeePeek.Contract.Response.Auth;
+namespace CoffeePeek.Contract.Responses.Auth;
 
-public class GetRefreshTokenResponse
-{
-    public GetRefreshTokenResponse(string accessToken, string refreshToken)
-    {
-        AccessToken = accessToken;
-        RefreshToken = refreshToken;
-    }
-
-    public string AccessToken { get; }
-    public string RefreshToken { get; }
-}
+public record GetRefreshTokenResponse(string AccessToken, string RefreshToken);

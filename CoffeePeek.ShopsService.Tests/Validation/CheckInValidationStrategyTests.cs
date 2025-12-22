@@ -1,7 +1,7 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.ShopsService.Abstractions.ValidationStrategy.CheckIn;
-using CoffeePeek.ShopsService.DB;
-using CoffeePeek.ShopsService.Entities;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Infrastructure.Configuration;
+using CoffeePeek.Shops.Infrastructure.ValidationStrategy.CheckIn;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;

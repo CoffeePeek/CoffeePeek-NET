@@ -1,9 +1,13 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.ShopsService.DB;
-using CoffeePeek.ShopsService.Entities;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Persistence.Data;
+using CoffeePeek.Shops.Application.Handlers.CoffeeShop;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Infrastructure.Configuration;
 using CoffeePeek.ShopsService.Handlers.CoffeeShop;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
 
 namespace CoffeePeek.ShopsService.Tests.Handlers;
@@ -12,6 +16,7 @@ public class GetShopsInBoundsHandlerTests : IDisposable
 {
     private readonly ShopsDbContext _dbContext;
     private readonly GetShopsInBoundsHandler _sut;
+    private readonly IGenericRepository<Shop> _shopRepository;
 
     public GetShopsInBoundsHandlerTests()
     {
@@ -20,7 +25,11 @@ public class GetShopsInBoundsHandlerTests : IDisposable
             .Options;
 
         _dbContext = new ShopsDbContext(options);
-        _sut = new GetShopsInBoundsHandler(_dbContext);
+        
+        // Use real repository with InMemory DB instead of mock to support EF async operations
+        _shopRepository = new GenericRepository<Shop, ShopsDbContext>(_dbContext);
+        
+        _sut = new GetShopsInBoundsHandler(_shopRepository);
     }
 
     [Fact]

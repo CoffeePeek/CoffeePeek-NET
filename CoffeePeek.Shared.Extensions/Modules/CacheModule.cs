@@ -1,8 +1,7 @@
 using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Cache;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
-using CoffeePeek.Shared.Infrastructure.Services;
+using CoffeePeek.Shared.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CoffeePeek.Shared.Extensions.Modules;

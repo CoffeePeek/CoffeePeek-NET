@@ -1,6 +1,6 @@
 using CoffeePeek.Contract.Dtos.Auth;
 
-namespace CoffeePeek.Contract.Response.Auth;
+namespace CoffeePeek.Contract.Responses.Auth;
 
 public class GoogleLoginResponse
 {

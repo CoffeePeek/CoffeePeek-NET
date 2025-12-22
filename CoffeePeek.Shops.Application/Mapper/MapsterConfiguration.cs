@@ -1,0 +1,53 @@
+using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Shops.Domain.Entities;
+using Mapster;
+using MapsterMapper;
+
+namespace CoffeePeek.Shops.Application.Mapper;
+
+public static class MapsterConfiguration
+{
+    public static IMapper CreateMapper()
+    {
+        var config = Configure();
+        return new MapsterMapper.Mapper(config);
+    }
+
+    private static TypeAdapterConfig Configure()
+    {
+        var config = new TypeAdapterConfig();
+
+        config.NewConfig<Shop, ShortShopDto>()
+            .Map(dest => dest.ImageUrls, src => src.ShopPhotos.Select(x => x.Url))
+            .Map(dest => dest.Rating, src => src.Reviews.Any()
+                ? src.Reviews.Average(r => (r.RatingCoffee + r.RatingPlace + r.RatingService) / 3m)
+                : 0m)
+            .Map(dest => dest.ReviewCount, src => src.Reviews.Count)
+            .Map(dest => dest.IsOpen, src => true) //TODO fix
+            .Map(dest => dest.Equipments, src => src.ShopEquipments.Select(x => x.Equipment));
+
+        config.NewConfig<Shop, ShopDto>()
+            .Map(dest => dest.ImageUrls, src => src.ShopPhotos.Select(x => x.Url))
+            .Map(dest => dest.Rating, src => src.Reviews.Any()
+                ? src.Reviews.Average(r => (r.RatingCoffee + r.RatingPlace + r.RatingService) / 3m)
+                : 0m)
+            .Map(dest => dest.ReviewCount, src => src.Reviews.Count)
+            .Map(dest => dest.IsOpen, src => true) //TODO fix
+            .Map(dest => dest.Beans, src => src.CoffeeBeanShops)
+            .Map(dest => dest.Roasters, src => src.RoasterShops)
+            .Map(dest => dest.Equipments, src => src.ShopEquipments);
+        
+        config.NewConfig<CheckIn, CheckInDto>()
+            .Map(dest => dest.ShopName, src => src.Shop != null ? src.Shop.Name : string.Empty);
+
+        config.NewConfig<Review, CoffeeShopReviewDto>()
+            .Map(dest => dest.Id, src => src.Id.GetHashCode()) // Convert Guid to int hash
+            .Map(dest => dest.ShopId, src => src.ShopId.GetHashCode()) // Convert Guid to int hash
+            .Map(dest => dest.UserId, src => src.UserId.GetHashCode()) // Convert Guid to int hash
+            .Map(dest => dest.CreatedAt, src => src.ReviewDate)
+            .Map(dest => dest.ShopName, src => src.Shop != null ? src.Shop.Name : string.Empty);
+
+        return config;
+    }
+}
+

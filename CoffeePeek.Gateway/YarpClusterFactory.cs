@@ -5,8 +5,6 @@ namespace CoffeePeek.Gateway;
 
 public static class YarpClusterFactory
 {
-    private const string DefaultPort = "80";
-    
     private static readonly bool IsAspire =
         string.Equals(Environment.GetEnvironmentVariable("DOTNET_ASPIRE_RUNNING"), "true", StringComparison.OrdinalIgnoreCase)
         || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_ASPIRE_RESOURCE_NAME"))
@@ -21,8 +19,7 @@ public static class YarpClusterFactory
 
     private static readonly List<ClusterInfo> Clusters =
     [
-        new("auth-cluster", "AUTH", "coffeepeekauthservice.railway.internal", AppResources.AuthService),
-        new("user-cluster", "USER", "coffeepeekuserservice.railway.internal", AppResources.UserService),
+        new("account-cluster", "ACCOUNT", "coffeepeekaccountservice.railway.internal", AppResources.AccountService),
         new("shops-cluster", "SHOPS", "coffeepeekshopsservice.railway.internal", AppResources.ShopsService),
         new("moderation-cluster", "MODERATION", "coffeepeekmoderationservice.railway.internal", AppResources.ModerationService),
         new("jobs-cluster", "JOBS", "coffeepeekjobvacancies.railway.internal", AppResources.JobVacanciesService)

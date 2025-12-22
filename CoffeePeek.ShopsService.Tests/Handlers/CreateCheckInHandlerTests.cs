@@ -1,23 +1,27 @@
 using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
-using CoffeePeek.ShopsService.DB;
-using CoffeePeek.ShopsService.Handlers.CoffeeShop.CheckIn;
-using CoffeePeek.ShopsService.Services.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
 using CoffeePeek.Shared.Infrastructure.Outbox;
+using CoffeePeek.Shared.Infrastructure.Persistence.Data;
+using CoffeePeek.Shops.Application.Handlers.CoffeeShop.CheckIn;
+using CoffeePeek.Shops.Application.Services;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Infrastructure.Configuration;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
-using ValidationResult = CoffeePeek.ShopsService.Abstractions.ValidationStrategy.ValidationResult;
+using ValidationResult = CoffeePeek.Shops.Application.ValidationResult;
 
 namespace CoffeePeek.ShopsService.Tests.Handlers;
 
 public class CreateCheckInHandlerTests : IDisposable
 {
     private readonly ShopsDbContext _dbContext;
+    private readonly IGenericRepository<CheckIn> _checkInRepository;
+    private readonly IGenericRepository<Review> _reviewRepository;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<IValidationStrategy<CreateCheckInRequest>> _validationMock = new();
     private readonly Mock<IRedisService> _redisMock = new();
     private readonly Mock<IOutboxEventPublisher> _publishMock = new();
@@ -31,8 +35,23 @@ public class CreateCheckInHandlerTests : IDisposable
             .Options;
 
         _dbContext = new ShopsDbContext(options);
+        
+        // Use real repositories with InMemory DB instead of mocks to support EF async operations
+        _checkInRepository = new GenericRepository<CheckIn, ShopsDbContext>(_dbContext);
+        _reviewRepository = new GenericRepository<Review, ShopsDbContext>(_dbContext);
+        
+        // Setup UnitOfWork mock to actually save changes to InMemory DB
+        _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .Returns(async (CancellationToken ct) => 
+            {
+                await _dbContext.SaveChangesAsync(ct);
+                return 1;
+            });
+        
         _sut = new CreateCheckInHandler(
-            _dbContext,
+            _checkInRepository,
+            _reviewRepository,
+            _unitOfWorkMock.Object,
             _validationMock.Object,
             _redisMock.Object,
             _publishMock.Object,
@@ -114,10 +133,9 @@ public class CreateCheckInHandlerTests : IDisposable
 
         _cacheServiceMock
             .Setup(c => c.GetCities())
-            .ReturnsAsync(new[]
-            {
+            .ReturnsAsync([
                 new Contract.Dtos.Internal.CityDto { Id = shopId, Name = "City" }
-            });
+            ]);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -134,8 +152,8 @@ public class CreateCheckInHandlerTests : IDisposable
         _publishMock.Verify(x => x.PublishAsync(It.IsAny<CheckinCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
         _publishMock.Verify(x => x.PublishAsync(It.IsAny<ReviewAddedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
 
-        _redisMock.Verify(x => x.RemoveAsync(CacheKey.Shop.ById(shopId)), Times.Exactly(2));
-        _redisMock.Verify(x => x.RemoveByPatternAsync(CacheKey.Shop.ByCityPattern(shopId)), Times.Exactly(2));
+        _redisMock.Verify(x => x.RemoveAsync(CacheKey.CachedShop.ById(shopId)), Times.Exactly(2));
+        _redisMock.Verify(x => x.RemoveByPatternAsync(CacheKey.CachedShop.ByCityPattern(shopId)), Times.Exactly(2));
     }
 
     public void Dispose()

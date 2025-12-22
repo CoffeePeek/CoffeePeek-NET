@@ -1,4 +1,4 @@
-﻿using CoffeePeek.JobVacancies.Entities;
+﻿using CoffeePeek.JobVacancies.Domain.Entities;
 using CoffeePeek.JobVacancies.Models;
 using Mapster;
 using MapsterMapper;

@@ -2,12 +2,11 @@ using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Data.Interfaces;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
-using CoffeePeek.ShopsService.Configuration;
-using CoffeePeek.ShopsService.Entities;
-using CoffeePeek.ShopsService.Handlers.CoffeeShop;
+using CoffeePeek.Shops.Application.Handlers.CoffeeShop;
+using CoffeePeek.Shops.Application.Mapper;
+using CoffeePeek.Shops.Domain.Entities;
 using FluentAssertions;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore.Query;
@@ -40,7 +39,7 @@ public class GetCoffeeShopHandlerTests
             new GetCoffeeShopResponse(new ShopDto { Id = shopId, Name = "Cached" }));
 
         _redisServiceMock
-            .Setup(r => r.GetAsync<Response<GetCoffeeShopResponse>>(CacheKey.Shop.ById(shopId)))
+            .Setup(r => r.GetAsync<Response<GetCoffeeShopResponse>>(CacheKey.CachedShop.ById(shopId)))
             .ReturnsAsync(cachedResponse);
 
         var request = new GetCoffeeShopCommand(shopId);
@@ -95,7 +94,7 @@ public class GetCoffeeShopHandlerTests
         result.Data!.Shop.Should().NotBeNull();
         result.Data.Shop.Id.Should().Be(shopId);
 
-        _redisServiceMock.Verify(r => r.SetAsync(CacheKey.Shop.ById(shopId), It.IsAny<Response<GetCoffeeShopResponse>>(), null), Times.Once);
+        _redisServiceMock.Verify(r => r.SetAsync(CacheKey.CachedShop.ById(shopId), It.IsAny<Response<GetCoffeeShopResponse>>(), null), Times.Once);
     }
 
     [Fact]

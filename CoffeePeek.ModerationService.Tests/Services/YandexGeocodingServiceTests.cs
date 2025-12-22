@@ -1,4 +1,3 @@
-using CoffeePeek.ModerationService.Configuration;
 using CoffeePeek.ModerationService.Services;
 using CoffeePeek.ModerationService.Models;
 using FluentAssertions;
@@ -8,6 +7,8 @@ using Moq;
 using Moq.Protected;
 using System.Net;
 using System.Text.Json;
+using CoffeePeek.Moderation.Infrastructure;
+using CoffeePeek.Moderation.Infrastructure.Services;
 using Xunit;
 
 namespace CoffeePeek.ModerationService.Tests.Services;

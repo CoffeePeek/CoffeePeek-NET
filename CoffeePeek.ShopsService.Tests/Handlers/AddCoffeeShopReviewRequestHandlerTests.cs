@@ -1,28 +1,31 @@
 using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.ShopsService.Abstractions.ValidationStrategy;
-using CoffeePeek.ShopsService.DB;
-using CoffeePeek.ShopsService.Handlers.CoffeeShop.Review;
-using CoffeePeek.Shared.Infrastructure.Interfaces.Redis;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Outbox;
-using CoffeePeek.ShopsService.Entities;
+using CoffeePeek.Shared.Infrastructure.Persistence.Data;
+using CoffeePeek.Shops.Application.Handlers.CoffeeShop.Review;
+using CoffeePeek.Shops.Application.Services;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Infrastructure.Configuration;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
-using ValidationResult = CoffeePeek.ShopsService.Abstractions.ValidationStrategy.ValidationResult;
+using ValidationResult = CoffeePeek.Shops.Application.ValidationResult;
 
 namespace CoffeePeek.ShopsService.Tests.Handlers;
 
 public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
 {
     private readonly ShopsDbContext _dbContext;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<IValidationStrategy<AddCoffeeShopReviewRequest>> _validationStrategyMock;
     private readonly Mock<IRedisService> _redisServiceMock;
     private readonly Mock<IOutboxEventPublisher> _publishEndpointMock;
+    private readonly IGenericRepository<Shop> _shopRepository;
+    private readonly IGenericRepository<Review> _reviewRepository;
     private readonly AddCoffeeShopReviewRequestHandler _sut;
     private readonly Guid _testShopId;
-    private readonly Guid _testCityId;
 
     public AddCoffeeShopReviewRequestHandlerTests()
     {
@@ -35,19 +38,33 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
         _redisServiceMock = new Mock<IRedisService>();
         _publishEndpointMock = new Mock<IOutboxEventPublisher>();
 
+        // Use real repositories with InMemory DB instead of mocks to support EF async operations
+        _shopRepository = new GenericRepository<Shop, ShopsDbContext>(_dbContext);
+        _reviewRepository = new GenericRepository<Review, ShopsDbContext>(_dbContext);
+        
+        // Setup UnitOfWork mock to actually save changes to InMemory DB
+        _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .Returns(async (CancellationToken ct) => 
+            {
+                await _dbContext.SaveChangesAsync(ct);
+                return 1;
+            });
+
         // Seed test data
-        _testCityId = Guid.NewGuid();
+        var testCityId = Guid.NewGuid();
         _testShopId = Guid.NewGuid();
         _dbContext.Shops.Add(new Shop
         {
             Id = _testShopId,
             Name = "Test Coffee Shop",
-            CityId = _testCityId
+            CityId = testCityId
         });
         _dbContext.SaveChanges();
 
         _sut = new AddCoffeeShopReviewRequestHandler(
-            _dbContext,
+            _reviewRepository,
+            _shopRepository,
+            _unitOfWorkMock.Object,
             _validationStrategyMock.Object,
             _redisServiceMock.Object,
             _publishEndpointMock.Object

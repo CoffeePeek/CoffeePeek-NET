@@ -10,8 +10,6 @@
     <ItemGroup>
         <PackageReference Include="MassTransit" Version="8.5.7" />
         <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.7" />
-        <PackageReference Include="MediatR" Version="14.0.0" />
-        <PackageReference Include="Mapster" Version="7.4.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
@@ -21,10 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Data\CoffeePeek.Data.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Shared.Infrastructure\CoffeePeek.Shared.Infrastructure.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Moderation.Infrastructure\CoffeePeek.Moderation.Infrastructure.csproj" />
       <ProjectReference Include="..\CoffePeek.ServiceDefaults\CoffePeek.ServiceDefaults.csproj" />
     </ItemGroup>
 

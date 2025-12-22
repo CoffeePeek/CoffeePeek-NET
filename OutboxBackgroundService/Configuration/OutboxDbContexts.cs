@@ -1,6 +1,7 @@
-using CoffeePeek.AuthService.Configuration;
-using CoffeePeek.ModerationService.Configuration;
-using CoffeePeek.ShopsService.DB;
+using CoffeePeek.Auth.Infrastructure.Configuration;
+using CoffeePeek.Moderation.Domain;
+using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Shops.Infrastructure.Configuration;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,18 +14,18 @@ public static class OutboxDbContexts
         IConfiguration configuration)
     {
         // Auth Service Outbox
-        var authConnectionString = GetConnectionString(configuration, "AuthService");
+        var authConnectionString = GetConnectionString(configuration, "AccountService");
         if (!string.IsNullOrEmpty(authConnectionString))
         {
-            services.AddDbContext<AuthDbContext>(opt => 
+            services.AddDbContext<AccountDbContext>(opt => 
                 opt.UseNpgsql(authConnectionString));
             
             services.AddScoped<IOutboxProcessor>(provider =>
             {
-                var dbContext = provider.GetRequiredService<AuthDbContext>();
+                var dbContext = provider.GetRequiredService<AccountDbContext>();
                 var publishEndpoint = provider.GetRequiredService<IPublishEndpoint>();
-                var logger = provider.GetRequiredService<ILogger<OutboxProcessor<CoffeePeek.AuthService.Entities.OutboxEvent, AuthDbContext>>>();
-                return new OutboxProcessor<CoffeePeek.AuthService.Entities.OutboxEvent, AuthDbContext>(dbContext, publishEndpoint, logger);
+                var logger = provider.GetRequiredService<ILogger<OutboxProcessor<CoffeePeek.Account.Domain.Entities.OutboxEvent, AccountDbContext>>>();
+                return new OutboxProcessor<CoffeePeek.Account.Domain.Entities.OutboxEvent, AccountDbContext>(dbContext, publishEndpoint, logger);
             });
         }
 
@@ -39,8 +40,8 @@ public static class OutboxDbContexts
             {
                 var dbContext = provider.GetRequiredService<ShopsDbContext>();
                 var publishEndpoint = provider.GetRequiredService<IPublishEndpoint>();
-                var logger = provider.GetRequiredService<ILogger<OutboxProcessor<CoffeePeek.ModerationService.Entities.OutboxEvent, ShopsDbContext>>>();
-                return new OutboxProcessor<CoffeePeek.ModerationService.Entities.OutboxEvent, ShopsDbContext>(dbContext, publishEndpoint, logger);
+                var logger = provider.GetRequiredService<ILogger<OutboxProcessor<OutboxEvent, ShopsDbContext>>>();
+                return new OutboxProcessor<OutboxEvent, ShopsDbContext>(dbContext, publishEndpoint, logger);
             });
         }
 
@@ -55,8 +56,8 @@ public static class OutboxDbContexts
             {
                 var dbContext = provider.GetRequiredService<ModerationDbContext>();
                 var publishEndpoint = provider.GetRequiredService<IPublishEndpoint>();
-                var logger = provider.GetRequiredService<ILogger<OutboxProcessor<CoffeePeek.ShopsService.Entities.OutboxEvent, ModerationDbContext>>>();
-                return new OutboxProcessor<CoffeePeek.ShopsService.Entities.OutboxEvent, ModerationDbContext>(dbContext, publishEndpoint, logger);
+                var logger = provider.GetRequiredService<ILogger<OutboxProcessor<CoffeePeek.Shops.Domain.Entities.OutboxEvent, ModerationDbContext>>>();
+                return new OutboxProcessor<CoffeePeek.Shops.Domain.Entities.OutboxEvent, ModerationDbContext>(dbContext, publishEndpoint, logger);
             });
         }
     }
