@@ -21,8 +21,7 @@ public static class YarpClusterFactory
 
     private static readonly List<ClusterInfo> Clusters =
     [
-        new("auth-cluster", "AUTH", "coffeepeekauthservice.railway.internal", AppResources.AuthService),
-        new("user-cluster", "USER", "coffeepeekuserservice.railway.internal", AppResources.UserService),
+        new("account-cluster", "ACCOUNT", "coffeepeekaccountservice.railway.internal", AppResources.AccountService),
         new("shops-cluster", "SHOPS", "coffeepeekshopsservice.railway.internal", AppResources.ShopsService),
         new("moderation-cluster", "MODERATION", "coffeepeekmoderationservice.railway.internal", AppResources.ModerationService),
         new("jobs-cluster", "JOBS", "coffeepeekjobvacancies.railway.internal", AppResources.JobVacanciesService)

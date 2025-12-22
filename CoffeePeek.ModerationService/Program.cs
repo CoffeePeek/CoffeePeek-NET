@@ -16,6 +16,7 @@ using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
 using CoffePeek.ServiceDefaults;
+using OutboxEvent = CoffeePeek.Moderation.Domain.Entities.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
 

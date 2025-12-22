@@ -1,6 +1,6 @@
 ﻿using CoffeePeek.Shops.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using OutboxEvent = CoffeePeek.Shared.Infrastructure.Outbox.OutboxEvent;
+using OutboxEvent = CoffeePeek.Shops.Domain.Entities.OutboxEvent;
 
 namespace CoffeePeek.Shops.Infrastructure.Configuration;
 

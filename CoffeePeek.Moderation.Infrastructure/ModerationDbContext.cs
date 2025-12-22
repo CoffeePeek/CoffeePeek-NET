@@ -1,5 +1,6 @@
 using CoffeePeek.Moderation.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using OutboxEvent = CoffeePeek.Moderation.Domain.Entities.OutboxEvent;
 
 namespace CoffeePeek.Moderation.Domain;
 

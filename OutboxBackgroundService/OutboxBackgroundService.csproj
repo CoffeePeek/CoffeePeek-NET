@@ -18,7 +18,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Moderation.Infrastructure\CoffeePeek.Moderation.Infrastructure.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Auth.Infrastructure\CoffeePeek.Auth.Infrastructure.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Account.Infrastructure\CoffeePeek.Account.Infrastructure.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shops.Infrastructure\CoffeePeek.Shops.Infrastructure.csproj" />
       <ProjectReference Include="..\CoffePeek.ServiceDefaults\CoffePeek.ServiceDefaults.csproj" />
     </ItemGroup>

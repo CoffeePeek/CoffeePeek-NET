@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Outbox;
+using CoffeePeek.Shared.Infrastructure.Persistence.Data;
 using CoffeePeek.Shops.Application.Handlers.CoffeeShop.Review;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
@@ -21,8 +22,8 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
     private readonly Mock<IValidationStrategy<AddCoffeeShopReviewRequest>> _validationStrategyMock;
     private readonly Mock<IRedisService> _redisServiceMock;
     private readonly Mock<IOutboxEventPublisher> _publishEndpointMock;
-    private readonly Mock<IGenericRepository<Shop>> _shopRepositoryMock = new();
-    private readonly Mock<IGenericRepository<Review>> _reviewRepositoryMock = new();
+    private readonly IGenericRepository<Shop> _shopRepository;
+    private readonly IGenericRepository<Review> _reviewRepository;
     private readonly AddCoffeeShopReviewRequestHandler _sut;
     private readonly Guid _testShopId;
 
@@ -37,6 +38,18 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
         _redisServiceMock = new Mock<IRedisService>();
         _publishEndpointMock = new Mock<IOutboxEventPublisher>();
 
+        // Use real repositories with InMemory DB instead of mocks to support EF async operations
+        _shopRepository = new GenericRepository<Shop, ShopsDbContext>(_dbContext);
+        _reviewRepository = new GenericRepository<Review, ShopsDbContext>(_dbContext);
+        
+        // Setup UnitOfWork mock to actually save changes to InMemory DB
+        _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .Returns(async (CancellationToken ct) => 
+            {
+                await _dbContext.SaveChangesAsync(ct);
+                return 1;
+            });
+
         // Seed test data
         var testCityId = Guid.NewGuid();
         _testShopId = Guid.NewGuid();
@@ -49,8 +62,8 @@ public class AddCoffeeShopReviewRequestHandlerTests : IDisposable
         _dbContext.SaveChanges();
 
         _sut = new AddCoffeeShopReviewRequestHandler(
-            _reviewRepositoryMock.Object,
-            _shopRepositoryMock.Object,
+            _reviewRepository,
+            _shopRepository,
             _unitOfWorkMock.Object,
             _validationStrategyMock.Object,
             _redisServiceMock.Object,

@@ -10,3 +10,4 @@ public class CheckInDto
     public Guid? ReviewId { get; set; }
     public string ShopName { get; set; } = string.Empty;
 }
+

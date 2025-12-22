@@ -13,6 +13,7 @@ using CoffeePeek.Shops.Infrastructure.Consumers;
 using CoffeePeek.Shops.Infrastructure.Extensions;
 using CoffeePeek.Shops.Infrastructure.Services;
 using CoffePeek.ServiceDefaults;
+using OutboxEvent = CoffeePeek.Shops.Domain.Entities.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
 

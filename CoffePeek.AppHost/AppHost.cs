@@ -2,9 +2,8 @@ using CoffeePeek.Shared.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var authService = builder.AddProject<Projects.CoffeePeek_AuthService>(AppResources.AuthService);
+var accountService = builder.AddProject<Projects.CoffeePeek_AccountService>(AppResources.AccountService);
 
-var userService = builder.AddProject<Projects.CoffeePeek_UserService>(AppResources.UserService);
 
 var jobVacanciesService = builder.AddProject<Projects.CoffeePeek_JobVacancies>(AppResources.JobVacanciesService);
 
@@ -15,8 +14,7 @@ var moderationService = builder.AddProject<Projects.CoffeePeek_ModerationService
 var outboxService = builder.AddProject<Projects.OutboxBackgroundService>(AppResources.OutboxBackgroundService);
 
 builder.AddProject<Projects.CoffeePeek_Gateway>(AppResources.Gateway)
-    .WithReference(authService)
-    .WithReference(userService)
+    .WithReference(accountService)
     .WithReference(jobVacanciesService)
     .WithReference(shopsService)
     .WithReference(moderationService)
