@@ -5,6 +5,8 @@ namespace CoffeePeek.Gateway;
 
 public static class YarpClusterFactory
 {
+    private const string DefaultPort = "80";
+    
     private static readonly bool IsAspire =
         string.Equals(Environment.GetEnvironmentVariable("DOTNET_ASPIRE_RUNNING"), "true", StringComparison.OrdinalIgnoreCase)
         || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_ASPIRE_RESOURCE_NAME"))
@@ -56,10 +58,7 @@ public static class YarpClusterFactory
         if (IsAspire)
             return $"http://{host}";
 
-        if (string.IsNullOrWhiteSpace(port))
-            throw new InvalidOperationException($"Port is missing for host {host}");
-
-        return $"http://{host}:{port}";
+        return string.IsNullOrWhiteSpace(port) ? DefaultPort : $"http://{host}:{port}";
     }
 
     
@@ -72,8 +71,7 @@ public static class YarpClusterFactory
         if (!string.IsNullOrWhiteSpace(port))
             return port;
 
-        throw new InvalidOperationException(
-            $"{cluster.EnvPrefix}_PORT is not set. Provide a port when running outside Aspire.");
+        return DefaultPort;
     }
     
     private static string ResolveHost(ClusterInfo cluster)

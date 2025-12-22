@@ -37,8 +37,7 @@ public static class ApplicationExtensions
                 var swaggerEndpoints = new List<(string Name, string Path)>
                 {
                     ("Gateway API", "/swagger/v1/swagger.json"),
-                    ("Auth Service", "/swagger/auth/v1/swagger.json"),
-                    ("User Service", "/swagger/user/v1/swagger.json"),
+                    ("Account Service", "/swagger/account/v1/swagger.json"),
                     ("Shops Service", "/swagger/shops/v1/swagger.json"),
                     ("Moderation Service", "/swagger/moderation/v1/swagger.json"),
                     ("Photo Service", "/swagger/photo/v1/swagger.json"),
