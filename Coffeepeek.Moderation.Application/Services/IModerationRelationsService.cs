@@ -1,4 +1,4 @@
-namespace CoffeePeek.ModerationService.Services.Interfaces;
+namespace Coffeepeek.Moderation.Application.Services;
 
 public interface IModerationRelationsService
 {

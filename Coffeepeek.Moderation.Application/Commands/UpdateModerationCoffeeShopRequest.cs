@@ -7,7 +7,7 @@ using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
 using MediatR;
 
-namespace Coffeepeek.Moderation.Application.Commands;
+namespace CoffeePeek.Moderation.Application.Commands;
 
 public class UpdateModerationCoffeeShopRequest : IRequest<Response<UpdateModerationCoffeeShopResponse>>
 {

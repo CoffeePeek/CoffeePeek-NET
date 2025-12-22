@@ -1,11 +1,12 @@
-using Coffeepeek.Moderation.Application.Commands;
+using CoffeePeek.Moderation.Application.Commands;
+using CoffeePeek.ModerationService.Services.Interfaces;
 
-namespace CoffeePeek.ModerationService.Services.Interfaces;
+namespace Coffeepeek.Moderation.Application.Services;
 
 public interface IModerationShopCreationService
 {
     Task<Guid> CreateAsync(
-        SendCoffeeShopToModerationRequest request,
+        SendCoffeeShopToModerationCommand command,
         GeocodingResult? geocodingResult,
         CancellationToken cancellationToken);
 }

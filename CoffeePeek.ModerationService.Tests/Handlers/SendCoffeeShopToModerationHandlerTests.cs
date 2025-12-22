@@ -1,5 +1,6 @@
-using Coffeepeek.Moderation.Application.Commands;
-using Coffeepeek.Moderation.Application.Handlers;
+using CoffeePeek.Moderation.Application.Commands;
+using CoffeePeek.Moderation.Application.Handlers;
+using Coffeepeek.Moderation.Application.Services;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.ModerationService.Models;
@@ -35,7 +36,7 @@ public class SendCoffeeShopToModerationHandlerTests
     public async Task Handle_WithValidRequest_CreatesModerationShopAndReturnsSuccess()
     {
         // Arrange
-        var request = new SendCoffeeShopToModerationRequest
+        var request = new SendCoffeeShopToModerationCommand
         {
             Name = "New Coffee Shop",
             NotValidatedAddress = "123 Main St, City",
@@ -73,7 +74,7 @@ public class SendCoffeeShopToModerationHandlerTests
     public async Task Handle_WithExistingModeration_ReturnsError()
     {
         // Arrange
-        var request = new SendCoffeeShopToModerationRequest
+        var request = new SendCoffeeShopToModerationCommand
         {
             Name = "Existing Shop",
             NotValidatedAddress = "123 Main St",
@@ -100,14 +101,14 @@ public class SendCoffeeShopToModerationHandlerTests
         result.IsSuccess.Should().BeFalse();
         result.Message.Should().Contain("already exists");
 
-        _creationServiceMock.Verify(x => x.CreateAsync(It.IsAny<SendCoffeeShopToModerationRequest>(), It.IsAny<GeocodingResult?>(), It.IsAny<CancellationToken>()), Times.Never);
+        _creationServiceMock.Verify(x => x.CreateAsync(It.IsAny<SendCoffeeShopToModerationCommand>(), It.IsAny<GeocodingResult?>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
     public async Task Handle_WithGeocodingFailure_CreatesShopWithoutCoordinates()
     {
         // Arrange
-        var request = new SendCoffeeShopToModerationRequest
+        var request = new SendCoffeeShopToModerationCommand
         {
             Name = "New Shop",
             NotValidatedAddress = "Invalid Address",
@@ -142,7 +143,7 @@ public class SendCoffeeShopToModerationHandlerTests
     public async Task Handle_WithValidRequest_SetsPendingStatus()
     {
         // Arrange
-        var request = new SendCoffeeShopToModerationRequest
+        var request = new SendCoffeeShopToModerationCommand
         {
             Name = "New Shop",
             NotValidatedAddress = "123 Test St",
@@ -158,7 +159,7 @@ public class SendCoffeeShopToModerationHandlerTests
             .ReturnsAsync((GeocodingResult?)null);
 
         _creationServiceMock
-            .Setup(x => x.CreateAsync(It.IsAny<SendCoffeeShopToModerationRequest>(), null, It.IsAny<CancellationToken>()))
+            .Setup(x => x.CreateAsync(It.IsAny<SendCoffeeShopToModerationCommand>(), null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Guid.NewGuid());
 
         // Act
@@ -166,7 +167,7 @@ public class SendCoffeeShopToModerationHandlerTests
 
         // Assert
         _creationServiceMock.Verify(
-            x => x.CreateAsync(It.IsAny<SendCoffeeShopToModerationRequest>(), null, It.IsAny<CancellationToken>()),
+            x => x.CreateAsync(It.IsAny<SendCoffeeShopToModerationCommand>(), null, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -174,7 +175,7 @@ public class SendCoffeeShopToModerationHandlerTests
     public async Task Handle_WithValidRequest_SetsNotConfirmedShopStatus()
     {
         // Arrange
-        var request = new SendCoffeeShopToModerationRequest
+        var request = new SendCoffeeShopToModerationCommand
         {
             Name = "New Shop",
             NotValidatedAddress = "123 Test St",
@@ -190,7 +191,7 @@ public class SendCoffeeShopToModerationHandlerTests
             .ReturnsAsync((GeocodingResult?)null);
 
         _creationServiceMock
-            .Setup(x => x.CreateAsync(It.IsAny<SendCoffeeShopToModerationRequest>(), null, It.IsAny<CancellationToken>()))
+            .Setup(x => x.CreateAsync(It.IsAny<SendCoffeeShopToModerationCommand>(), null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Guid.NewGuid());
 
         // Act
@@ -198,7 +199,7 @@ public class SendCoffeeShopToModerationHandlerTests
 
         // Assert
         _creationServiceMock.Verify(
-            x => x.CreateAsync(It.IsAny<SendCoffeeShopToModerationRequest>(), null, It.IsAny<CancellationToken>()),
+            x => x.CreateAsync(It.IsAny<SendCoffeeShopToModerationCommand>(), null, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

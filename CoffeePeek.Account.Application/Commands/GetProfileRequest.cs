@@ -1,9 +1,8 @@
 using CoffeePeek.Contract.Dtos.User;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Responses;
 using MediatR;
 
-namespace CoffeePeek.Contract.Requests.User;
+namespace CoffeePeek.Account.Application.Commands;
 
 public class GetProfileRequest(Guid userId) : IRequest<Response<UserDto>>
 {

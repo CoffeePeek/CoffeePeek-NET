@@ -11,8 +11,4 @@
       <ProjectReference Include="..\CoffeePeek.Shared.Infrastructure\CoffeePeek.Shared.Infrastructure.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Enums\" />
-    </ItemGroup>
-
 </Project>

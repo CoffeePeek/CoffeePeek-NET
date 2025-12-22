@@ -1,3 +1,4 @@
+using CoffeePeek.Account.Application.Commands;
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Responses;
@@ -8,7 +9,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.User.Application.Handlers;
+namespace CoffeePeek.Account.Application.Handlers;
 
 public class GetProfileHandler(
     IGenericRepository<Account.Domain.Entities.User> userRepository, 
@@ -28,7 +29,7 @@ public class GetProfileHandler(
         var userDto = await userRepository
             .QueryAsNoTracking()
             .ProjectToType<UserDto>(mapper.Config)
-            .SingleOrDefaultAsync(x => x.Id == request.UserId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.UserCredentialId == request.UserId, cancellationToken);
         
         if (userDto == null)
         {

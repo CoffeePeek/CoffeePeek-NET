@@ -1,4 +1,6 @@
-using Coffeepeek.Moderation.Application.Commands;
+using CoffeePeek.Moderation.Application.Commands;
+using Coffeepeek.Moderation.Application.Services;
+using CoffeePeek.Moderation.Application.Services;
 using CoffeePeek.Moderation.Domain;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;
@@ -14,21 +16,23 @@ public class ModerationShopCreationService(
     IModerationShopRepository shopRepository,
     IModerationScheduleService scheduleService,
     IModerationRelationsService relationsService,
+    IGenericRepository<PhotoMetadata> photoRepository,
+    IStorageService storageService,
     IUnitOfWork unitOfWork,
     IMapper mapper,
     ILogger<ModerationShopCreationService> logger)
     : IModerationShopCreationService
 {
     public async Task<Guid> CreateAsync(
-        SendCoffeeShopToModerationRequest request,
+        SendCoffeeShopToModerationCommand command,
         GeocodingResult? geocodingResult,
         CancellationToken cancellationToken)
     {
-        var moderationShop = mapper.Map<ModerationShop>(request);
+        var moderationShop = mapper.Map<ModerationShop>(command);
 
-            // Always persist the not validated address as the main address so it is never null,
-            // even if geocoding fails.
-            moderationShop.Address = request.NotValidatedAddress;
+        // Always persist the not validated address as the main address so it is never null,
+        // even if geocoding fails.
+        moderationShop.Address = command.NotValidatedAddress;
 
         if (geocodingResult != null)
         {
@@ -37,70 +41,88 @@ public class ModerationShopCreationService(
             moderationShop.Longitude = geocodingResult.Longitude;
         }
 
-        AddShopContactsIfNeeded(request, moderationShop);
-        AddLocationIfNeeded(request, moderationShop, geocodingResult);
+        AddShopContactsIfNeeded(command, moderationShop);
+        AddLocationIfNeeded(command, moderationShop, geocodingResult);
 
         await shopRepository.AddAsync(moderationShop);
 
         await scheduleService.AddSchedulesAsync(
             moderationShop.Id,
-            request.Schedules,
+            command.Schedules,
             cancellationToken);
 
         await relationsService.AddEquipmentsAsync(
             moderationShop.Id,
-            request.EquipmentIds,
+            command.EquipmentIds,
             cancellationToken);
 
         await relationsService.AddCoffeeBeansAsync(
             moderationShop.Id,
-            request.CoffeeBeanIds,
+            command.CoffeeBeanIds,
             cancellationToken);
 
         await relationsService.AddRoastersAsync(
             moderationShop.Id,
-            request.RoasterIds,
+            command.RoasterIds,
             cancellationToken);
 
         await relationsService.AddBrewMethodsAsync(
             moderationShop.Id,
-            request.BrewMethodIds,
+            command.BrewMethodIds,
             cancellationToken);
 
-        // TODO: обработка ShopPhotos после внедрения файлового стораджа
+        foreach (var photoDto in command.ShopPhotos)
+        {
+            using var stream = new MemoryStream(photoDto.Data);
+        
+            var storageKey = await storageService.UploadFileAsync(
+                stream, 
+                photoDto.ContentType, 
+                cancellationToken);
+            
+            var photo = new PhotoMetadata(
+                photoDto.FileName,
+                photoDto.ContentType,
+                storageKey,
+                photoDto.Data.Length,
+                command.UserId,
+                moderationShop.Id);
+
+            await photoRepository.AddAsync(photo, cancellationToken);
+        }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation(
             "ModerationShop '{ModerationShopId}' successfully created for user '{UserId}'.",
             moderationShop.Id,
-            request.UserId);
+            command.UserId);
 
         return moderationShop.Id;
     }
 
     private void AddShopContactsIfNeeded(
-        SendCoffeeShopToModerationRequest request,
+        SendCoffeeShopToModerationCommand command,
         ModerationShop moderationShop)
     {
-        if (request.ShopContact == null)
+        if (command.ShopContact == null)
             return;
 
         var shopContact = new ShopContacts
         {
             Id = Guid.NewGuid(),
-            PhoneNumber = request.ShopContact.PhoneNumber,
-            InstagramLink = request.ShopContact.InstagramLink,
-            Email = request.ShopContact.Email,
-            SiteLink = request.ShopContact.SiteLink
+            PhoneNumber = command.ShopContact.PhoneNumber,
+            InstagramLink = command.ShopContact.InstagramLink,
+            Email = command.ShopContact.Email,
+            SiteLink = command.ShopContact.SiteLink
         };
 
         dbContext.ShopContacts.Add(shopContact);
         moderationShop.ShopContactId = shopContact.Id;
     }
 
-        private void AddLocationIfNeeded(
-        SendCoffeeShopToModerationRequest request,
+    private void AddLocationIfNeeded(
+        SendCoffeeShopToModerationCommand command,
         ModerationShop moderationShop,
         GeocodingResult? geocodingResult)
     {
@@ -111,13 +133,13 @@ public class ModerationShopCreationService(
         {
             Id = Guid.NewGuid(),
             ShopId = moderationShop.Id,
-            Address = request.NotValidatedAddress,
+            Address = command.NotValidatedAddress,
             Latitude = geocodingResult.Latitude,
             Longitude = geocodingResult.Longitude
         };
 
         dbContext.ModerationLocations.Add(location);
         moderationShop.LocationId = location.Id;
-        moderationShop.Address = request.NotValidatedAddress;
+        moderationShop.Address = command.NotValidatedAddress;
     }
 }

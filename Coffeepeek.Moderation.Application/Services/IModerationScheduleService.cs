@@ -1,6 +1,6 @@
 using CoffeePeek.Contract.Dtos.Schedule;
 
-namespace CoffeePeek.ModerationService.Services.Interfaces;
+namespace Coffeepeek.Moderation.Application.Services;
 
 public interface IModerationScheduleService
 {

@@ -1,15 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Enums;
-using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.CoffeeShop.Review;
 using MediatR;
 
-namespace Coffeepeek.Moderation.Application.Commands;
+namespace CoffeePeek.Moderation.Application.Commands;
 
-public class SendCoffeeShopToModerationRequest : IRequest<Response<SendCoffeeShopToModerationResponse>>
+public class SendCoffeeShopToModerationCommand : IRequest<Response<SendCoffeeShopToModerationResponse>>
 {
     [Required]
     public string Name { get; set; }
@@ -28,5 +29,5 @@ public class SendCoffeeShopToModerationRequest : IRequest<Response<SendCoffeeSho
     public List<Guid>? CoffeeBeanIds { get; set; }
     public List<Guid>? RoasterIds { get; set; }
     public List<Guid>? BrewMethodIds { get; set; }
-    public List<byte[]>? ShopPhotos { get; set; }
+    public List<PhotoMetadataDto>? ShopPhotos { get; set; }
 }

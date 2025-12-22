@@ -8,20 +8,17 @@ public static class MediatRModule
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddMediatRModule(Assembly assembly)
+        public IServiceCollection AddMediatRModule(params Assembly[] assemblies)
         {
-            services.AddMediatR(cfg =>
-            {
-                cfg.RegisterServicesFromAssembly(assembly);
-            });
+            services.AddMediatR(cfg => { cfg.RegisterServicesFromAssemblies(assemblies); });
 
             return services;
         }
 
-        public IServiceCollection AddMediatRModule(Type typeFromAssembly)
+        public IServiceCollection AddMediatRModule(params Type[] typesFromAssemblies)
         {
-            return services.AddMediatRModule(typeFromAssembly.Assembly);
+            var assemblies = typesFromAssemblies.Select(t => t.Assembly).ToArray();
+            return services.AddMediatRModule(assemblies);
         }
     }
 }
-

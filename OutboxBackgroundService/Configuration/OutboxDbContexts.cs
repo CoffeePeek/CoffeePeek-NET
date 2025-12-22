@@ -1,6 +1,7 @@
 using CoffeePeek.Auth.Infrastructure.Configuration;
 using CoffeePeek.Moderation.Domain;
 using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Shops.Infrastructure.Configuration;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;

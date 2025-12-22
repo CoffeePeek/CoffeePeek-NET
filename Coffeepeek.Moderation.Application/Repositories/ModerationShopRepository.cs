@@ -4,7 +4,7 @@ using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using Microsoft.EntityFrameworkCore;
 
-namespace Coffeepeek.Moderation.Application.Repositories;
+namespace CoffeePeek.Moderation.Application.Repositories;
 
 public class ModerationShopRepository(IGenericRepository<ModerationShop> shopRepository) : IModerationShopRepository
 {

@@ -44,7 +44,6 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
-// Expose /health and /alive like other services
 app.MapDefaultEndpoints();
 
 app.Run();

@@ -44,24 +44,32 @@ public class RegisterUserHandler(
             }
             logger.LogInformation("User with email {Email} does not exist. Proceeding with registration.", request.Email);
 
+            var userCredentialsId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            
             var userAuth = new UserCredential
             {
-                Id = Guid.NewGuid(),
+                Id = userCredentialsId,
                 Email = request.Email,
                 PasswordHash = passwordHasher.HashPassword(request.Password),
+                UserId = userId
             };
 
             logger.LogDebug("Adding new user credentials to the repository for email: {Email}", request.Email);
             await credentialsRepo.AddAsync(userAuth, ct);
+                
+            await unitOfWork.SaveChangesAsync(ct);
+            logger.LogInformation("User credentials saved for email: {Email}", request.Email);
             
             await userManager.AddToRoleAsync(userAuth, RoleConsts.User, ct);
             logger.LogInformation("User {Email} successfully added to role {Role}", request.Email, RoleConsts.User);
             
             var user = new Domain.Entities.User
             {
-                Id = userAuth.Id,
+                Id = userId,
                 Email = request.Email,
-                Username = request.UserName
+                Username = request.UserName,
+                UserCredentialId = userCredentialsId
             };
             
             logger.LogDebug("Creating User entity for user ID: {UserId}", userAuth.Id);

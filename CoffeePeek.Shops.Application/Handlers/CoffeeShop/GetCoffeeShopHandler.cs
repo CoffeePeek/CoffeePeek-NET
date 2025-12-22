@@ -31,7 +31,7 @@ public class GetCoffeeShopHandler(
         var shopDto = await shopRepository
             .QueryAsNoTracking()
             .ProjectToType<ShopDto>(mapper.Config)
-            .SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         var result = shopDto == null
             ? Response<GetCoffeeShopResponse>.Error($"Coffee shop with ID {request.Id} not found.")

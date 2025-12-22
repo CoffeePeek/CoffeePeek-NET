@@ -5,6 +5,7 @@ namespace CoffeePeek.Contract.Dtos.User;
 public class UserDto
 {
     public Guid? Id { get; set; }
+    public Guid UserCredentialId { get; set; }
     [Required] public string UserName { get; set; }
     [Required] public string Email { get; set; }
     [Required] public string Password { get; set; }
@@ -15,7 +16,7 @@ public class UserDto
     public string About { get; set; }
     public DateTime CreatedAt { get; set; }
     public string PhotoUrl { get; set; }
-    public int ReviewCount { get; set; }
-    public int CheckInCount { get; set; }
-    public int AddedShopsCount { get; set; }
+    public int? ReviewCount { get; set; } = 0;
+    public int? CheckInCount { get; set; } = 0;
+    public int? AddedShopsCount { get; set; } = 0;
 }

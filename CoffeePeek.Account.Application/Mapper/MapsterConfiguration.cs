@@ -2,7 +2,7 @@
 using Mapster;
 using MapsterMapper;
 
-namespace CoffeePeek.User.Application.Mapper;
+namespace CoffeePeek.Account.Application.Mapper;
 
 public static class MapsterConfiguration
 {

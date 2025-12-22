@@ -61,7 +61,6 @@ public class UserManager(
 
         if (activeTokens.Count >= maxActiveDevices)
         {
-            // Аннулируем самый старый токен
             var oldestToken = activeTokens.OrderBy(rt => rt.CreatedDate).First();
             oldestToken.IsRevoked = true;
         }

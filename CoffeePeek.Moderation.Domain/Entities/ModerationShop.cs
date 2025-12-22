@@ -31,7 +31,7 @@ public class ModerationShop
     
     public virtual ShopContacts? ShopContacts { get; set; }
     public virtual Location? Location { get; set; }
-    public ICollection<ShopPhoto> ShopPhotos { get; set; } = new HashSet<ShopPhoto>();
+    public ICollection<PhotoMetadata> ShopPhotos { get; set; } = new HashSet<PhotoMetadata>();
     public ICollection<ModerationShopSchedule> Schedules { get; set; } = new HashSet<ModerationShopSchedule>();
     public ICollection<ModerationShopEquipment> ModerationShopEquipments { get; set; } = new HashSet<ModerationShopEquipment>();
     public ICollection<ModerationCoffeeBeanShop> ModerationCoffeeBeanShops { get; set; } = new HashSet<ModerationCoffeeBeanShop>();

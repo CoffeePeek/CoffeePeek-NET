@@ -83,14 +83,11 @@ public static class YarpClusterFactory
         if (IsAspire)
             return cluster.AspireServiceName;
 
-        // Local/dev fallback when not running under Aspire: assume localhost and require an explicit port.
-        return "localhost";
+        return cluster.RailwayHost;
     }
 
     private static string? TryGetServiceUri(string serviceName)
     {
-        // Aspire publishes service endpoints into configuration/environment:
-        // services__{serviceName}__https__0, services__{serviceName}__http__0, etc.
         var keys = new[]
         {
             $"services__{serviceName}__https__0",

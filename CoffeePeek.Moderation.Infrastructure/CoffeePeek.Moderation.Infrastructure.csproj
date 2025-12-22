@@ -10,4 +10,8 @@
       <ProjectReference Include="..\Coffeepeek.Moderation.Application\Coffeepeek.Moderation.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="AWSSDK.S3" Version="4.0.15.2" />
+    </ItemGroup>
+
 </Project>

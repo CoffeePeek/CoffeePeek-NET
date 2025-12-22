@@ -1,3 +1,4 @@
+using CoffeePeek.Account.Application.Commands;
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response.User;
@@ -7,7 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CoffeePeek.UserService.Controllers;
+namespace CoffeePeek.AccountService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

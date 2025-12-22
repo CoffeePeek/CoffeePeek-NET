@@ -4,7 +4,8 @@ using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
-using Coffeepeek.Moderation.Application.Commands;
+using CoffeePeek.Contract.Responses.CoffeeShop.Review;
+using CoffeePeek.Moderation.Application.Commands;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using MediatR;
@@ -41,12 +42,12 @@ public class ModerationController(IMediator mediator) : Controller
     [Authorize]
     [Description("Adds a new coffee shop to moderation")]
     public async Task<Response<SendCoffeeShopToModerationResponse>> SendCoffeeShopToModeration(
-        [FromBody] SendCoffeeShopToModerationRequest request)
+        [FromForm] SendCoffeeShopToModerationCommand command)
     {
         var userId = User.GetUserIdOrThrow();
-        request.UserId = userId;
+        command.UserId = userId;
 
-        return await mediator.Send(request);
+        return await mediator.Send(command);
     }
 
     [HttpPut]

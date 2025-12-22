@@ -2,13 +2,13 @@ using CoffeePeek.Moderation.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using OutboxEvent = CoffeePeek.Moderation.Domain.Entities.OutboxEvent;
 
-namespace CoffeePeek.Moderation.Domain;
+namespace CoffeePeek.Moderation.Infrastructure;
 
 public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) : DbContext(options)
 {
     public DbSet<ModerationShop> ModerationShops { get; set; }
     public DbSet<ShopContacts> ShopContacts { get; set; }
-    public DbSet<ShopPhoto> ShopPhotos { get; set; }
+    public DbSet<PhotoMetadata> ShopPhotos { get; set; }
     public DbSet<ModerationShopSchedule> ModerationShopSchedules { get; set; }
     public DbSet<ModerationShopScheduleInterval> ModerationShopScheduleIntervals { get; set; }
     public DbSet<Location> ModerationLocations { get; set; }
@@ -72,7 +72,6 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         
         modelBuilder.Entity<ShopContacts>(entity =>
         {
-            entity.ToTable("ShopContacts");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.PhoneNumber).HasMaxLength(18);
             entity.Property(e => e.InstagramLink).HasMaxLength(50);
@@ -80,23 +79,18 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
             entity.Property(e => e.SiteLink).HasMaxLength(200);
         });
         
-        modelBuilder.Entity<ShopPhoto>(entity =>
+        modelBuilder.Entity<PhotoMetadata>(entity =>
         {
-            entity.ToTable("ShopPhotos");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Url).HasMaxLength(500);
         });
         
         modelBuilder.Entity<Location>(entity =>
         {
-            entity.ToTable("ModerationLocations");
-            entity.HasKey(e => e.Id);
             entity.Property(e => e.Address).HasMaxLength(200);
         });
         
         modelBuilder.Entity<ModerationShopEquipment>(entity =>
         {
-            entity.ToTable("ModerationShopEquipments");
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.ShopId);
             entity.HasIndex(e => e.EquipmentId);
@@ -104,7 +98,6 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         
         modelBuilder.Entity<ModerationCoffeeBeanShop>(entity =>
         {
-            entity.ToTable("ModerationCoffeeBeanShops");
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.ShopId);
             entity.HasIndex(e => e.CoffeeBeanId);
@@ -112,7 +105,6 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         
         modelBuilder.Entity<ModerationRoasterShop>(entity =>
         {
-            entity.ToTable("ModerationRoasterShops");
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.ShopId);
             entity.HasIndex(e => e.RoasterId);
@@ -120,7 +112,6 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         
         modelBuilder.Entity<ModerationShopBrewMethod>(entity =>
         {
-            entity.ToTable("ModerationShopBrewMethods");
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.ShopId);
             entity.HasIndex(e => e.BrewMethodId);

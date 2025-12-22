@@ -3,7 +3,7 @@ using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Responses;
 using MediatR;
 
-namespace Coffeepeek.Moderation.Application.Commands;
+namespace CoffeePeek.Moderation.Application.Commands;
 
 public record UpdateModerationCoffeeShopStatusRequest(Guid Id, ModerationStatus ModerationStatus, Guid UserId)
     : IRequest<Response>

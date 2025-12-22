@@ -1,5 +1,6 @@
-using System.Reflection;
 using CoffeePeek.Account.Application.Commands;
+using CoffeePeek.Account.Application.Mapper;
+using CoffeePeek.Account.Application.Repositories;
 using CoffeePeek.Account.Application.Services;
 using CoffeePeek.Account.Application.Services.Interfaces;
 using CoffeePeek.Account.Application.Services.Validation;
@@ -18,6 +19,7 @@ using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
+using CoffeePeek.User.Domain.Repositories;
 using CoffeePeek.UserService.Models;
 using CoffePeek.ServiceDefaults;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
@@ -54,6 +56,7 @@ builder.Services.AddGenericRepository<UserCredential, AccountDbContext>();
 builder.Services.AddGenericRepository<OutboxEvent, AccountDbContext>();
 builder.Services.AddGenericRepository<Role, AccountDbContext>();
 builder.Services.AddGenericRepository<UserStatistics, AccountDbContext>();
+builder.Services.AddGenericRepository<User, AccountDbContext>();
 
 // Messaging - only consumers for external service events (Shops)
 builder.Services.AddMessagingModule(x =>
@@ -62,6 +65,9 @@ builder.Services.AddMessagingModule(x =>
     x.AddConsumer<ReviewAddedEventConsumer>();
     x.AddConsumer<CoffeeShopApprovedEventConsumer>();
 });
+
+// Mapster
+builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
 
 // Application Services
 builder.Services.AddScoped<IJWTTokenService, JWTTokenService>();
@@ -72,6 +78,7 @@ builder.Services.AddScoped<ISessionManager, SessionManager>();
 builder.Services.AddScoped<ISignInManager, SignInManager>();
 builder.Services.AddScoped<IUserCredentialsRepository, UserCredentialsRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // OAuth
 builder.Services.AddValidateOptions<OAuthGoogleOptions>();
@@ -87,7 +94,9 @@ builder.Services.AddCacheModule();
 builder.Services.AddTransient<IValidationStrategy<RegisterUserCommand>, UserCreateValidationStrategy>();
 
 // MediatR
-builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
+builder.Services.AddMediatRModule(
+    typeof(CoffeePeek.Account.Application.Handlers.LoginUserHandler)
+);
 
 // Outbox Event Publisher
 builder.Services.AddOutboxEventPublisher<OutboxEvent, AccountDbContext>();

@@ -26,7 +26,7 @@ public class UserCredentialsRepository(
             .Include(u => u.RefreshTokens)
             .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
-            .SingleOrDefaultAsync(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
     }
 
     public async Task<UserCredential?> GetByEmailAsync(string email, CancellationToken ct = default)

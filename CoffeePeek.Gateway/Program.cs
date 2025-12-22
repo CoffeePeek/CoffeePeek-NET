@@ -34,12 +34,24 @@ app.UseResponseCaching();
 app.ConfigureCustomCaching();
 
     
-app.ConfigureSwaggerEndpoints(app.Services.GetRequiredService<ILogger<Program>>());
-
 // Gateway self health check
 app.MapGet("/health/gateway", () => Results.Ok(new { status = "healthy", service = "Gateway", timestamp = DateTime.UtcNow }))
     .WithName("GatewayHealthCheck")
     .WithTags("Health");
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Gateway API");
+
+    foreach (var service in YarpRouteFactory.Servicess)
+    {
+        options.SwaggerEndpoint(
+            $"/swagger/{service.Id}/v1/swagger.json", 
+            $"{service.Id.ToUpper()} Service"
+        );
+    }
+});
 
 app.MapReverseProxy();
 

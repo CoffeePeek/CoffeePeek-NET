@@ -1,6 +1,6 @@
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
-using Coffeepeek.Moderation.Application.Commands;
+using CoffeePeek.Moderation.Application.Commands;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.ModerationService.Services.Interfaces;
@@ -8,7 +8,7 @@ using CoffeePeek.Shared.Infrastructure.Abstract;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Coffeepeek.Moderation.Application.Handlers;
+namespace CoffeePeek.Moderation.Application.Handlers;
 
 public class UpdateModerationCoffeeShopHandler(
     IModerationShopRepository repository,

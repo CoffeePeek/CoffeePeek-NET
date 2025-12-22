@@ -1,6 +1,3 @@
-namespace CoffeePeek.Contract.Response.CoffeeShop.Review;
+namespace CoffeePeek.Contract.Responses.CoffeeShop.Review;
 
-public class SendCoffeeShopToModerationResponse
-{
-    
-}
+public class SendCoffeeShopToModerationResponse;

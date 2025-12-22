@@ -1,4 +1,5 @@
 using System.Reflection;
+using CoffeePeek.JobVacancies.Application.Handlers;
 using CoffeePeek.JobVacancies.Application.Repositories;
 using CoffeePeek.JobVacancies.Application.Services;
 using CoffeePeek.JobVacancies.Configuration;
@@ -71,7 +72,7 @@ builder.Services.AddHangfire((sp, config) =>
 builder.Services.AddHangfireServer();
 
 // MediatR
-builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
+builder.Services.AddMediatRModule(typeof(GetVacanciesHandler));
 
 // Services
 

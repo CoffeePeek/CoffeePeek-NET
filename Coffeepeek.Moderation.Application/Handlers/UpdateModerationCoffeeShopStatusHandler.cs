@@ -2,7 +2,7 @@ using System.Text.Json;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
-using Coffeepeek.Moderation.Application.Commands;
+using CoffeePeek.Moderation.Application.Commands;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
@@ -13,7 +13,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Response = CoffeePeek.Contract.Responses.Response;
 
-namespace Coffeepeek.Moderation.Application.Handlers;
+namespace CoffeePeek.Moderation.Application.Handlers;
 
 public class UpdateModerationCoffeeShopStatusHandler(
     IModerationShopRepository repository,

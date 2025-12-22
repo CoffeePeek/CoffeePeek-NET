@@ -5,6 +5,7 @@ using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
+using CoffeePeek.Shops.Application.Handlers.CoffeeShop;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
@@ -32,6 +33,9 @@ builder.Services.AddSwaggerModule("CoffeePeek.ShopsService Service", "v1");
 
 // MediatR
 builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
+
+// MediatR
+builder.Services.AddMediatRModule(typeof(GetCoffeeShopHandler));
 
 // JWT Authentication
 builder.Services.AddJwtAuthModule();

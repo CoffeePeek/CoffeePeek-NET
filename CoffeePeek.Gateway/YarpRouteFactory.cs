@@ -1,21 +1,21 @@
-﻿using Yarp.ReverseProxy.Configuration;
+﻿using System.Collections.ObjectModel;
+using Yarp.ReverseProxy.Configuration;
 
 namespace CoffeePeek.Gateway;
 
 public static class YarpRouteFactory
 {
-    private record ServiceRoute(string Id, string PathPrefix, string ClusterId, string? TargetPath = null);
+    public record ServiceRoute(string Id, string[] Controllers, string ClusterId);
     
     private static readonly List<ServiceRoute> Services =
     [
-        new("account", "account", "account-cluster"),
-        new("shops", "shops", "shops-cluster", "/api/CoffeeShop/{**catch-all}"),
-        new("checkin", "CheckIn", "shops-cluster"), 
-        new("internal", "internal", "shops-cluster"),
-        new("moderation", "moderation", "moderation-cluster"),
-        new("photo", "photo", "photo-cluster", "/api/{**catch-all}"),
-        new("jobs", "vacancies", "jobs-cluster", "/api/vacancies/{**catch-all}")
+        new("account", ["Auth", "User"], "account-cluster"),
+        new("shops", ["CheckIn", "CoffeeShop", "Internal", "Review"], "shops-cluster"),
+        new("moderation", ["Moderation"], "moderation-cluster"),
+        new("jobs", ["Vacancies"], "jobs-cluster")
     ];
+
+    public static ReadOnlyCollection<ServiceRoute> Servicess => Services.AsReadOnly();
 
     public static RouteConfig[] CreateRoutes()
     {
@@ -23,45 +23,22 @@ public static class YarpRouteFactory
 
         foreach (var service in Services)
         {
-            routes.Add(CreateApiRoute(service));
+            routes.AddRange(service.Controllers.Select(controller => CreateApiRoute(service, controller)));
 
             routes.Add(CreateSwaggerRoute(service));
         }
-
-        routes.Add(new RouteConfig
-        {
-            RouteId = "gateway-swagger-ui",
-            Match = new RouteMatch
-            {
-                Path = "/swagger/{**catch-all}"
-            },
-            Order = 5 
-        });
     
-        routes.Add(new RouteConfig
-        {
-            RouteId = "gateway-swagger-json",
-            Match = new RouteMatch
-            {
-                Path = "/swagger/v1/swagger.json"
-            },
-            Order = 4
-        });
-
         return routes.ToArray();
     }
 
-    private static RouteConfig CreateApiRoute(ServiceRoute service)
+    private static RouteConfig CreateApiRoute(ServiceRoute service, string controller)
     {
-        var route = new RouteConfig
+        return new RouteConfig
         {
-            RouteId = $"{service.Id}-route",
+            RouteId = $"{service.Id}-{controller}-api-route", 
             ClusterId = service.ClusterId,
-            Match = new RouteMatch { Path = $"/api/{service.PathPrefix}/{{**catch-all}}" },
-            Transforms = service.TargetPath == null ? null : new List<Dictionary<string, string>> { new() { { "PathPattern", service.TargetPath } } }
+            Match = new RouteMatch { Path = $"/api/{controller}/{{**catch-all}}" },
         };
-
-        return route;
     }
     
     private static RouteConfig CreateSwaggerRoute(ServiceRoute service) => new()

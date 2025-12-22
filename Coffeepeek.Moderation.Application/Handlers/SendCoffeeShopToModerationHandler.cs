@@ -1,54 +1,56 @@
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
-using Coffeepeek.Moderation.Application.Commands;
+using CoffeePeek.Contract.Responses.CoffeeShop.Review;
+using CoffeePeek.Moderation.Application.Commands;
+using Coffeepeek.Moderation.Application.Services;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.ModerationService.Services.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Coffeepeek.Moderation.Application.Handlers;
+namespace CoffeePeek.Moderation.Application.Handlers;
 
 public class SendCoffeeShopToModerationHandler(
     IModerationShopRepository repository,
     IModerationShopCreationService creationService,
     IYandexGeocodingService geocodingService,
     ILogger<SendCoffeeShopToModerationHandler> logger)
-    : IRequestHandler<SendCoffeeShopToModerationRequest, Response<SendCoffeeShopToModerationResponse>>
+    : IRequestHandler<SendCoffeeShopToModerationCommand, Response<SendCoffeeShopToModerationResponse>>
 {
-    public async Task<Response<SendCoffeeShopToModerationResponse>> Handle(SendCoffeeShopToModerationRequest request,
+    public async Task<Response<SendCoffeeShopToModerationResponse>> Handle(SendCoffeeShopToModerationCommand command,
         CancellationToken cancellationToken)
     {
         logger.LogInformation(
             "Attempting to send coffee shop '{CoffeeShopName}' to moderation for user '{UserId}'.",
-            request.Name,
-            request.UserId);
+            command.Name,
+            command.UserId);
 
         var existingShop = await repository.GetByNameAndAddressAsync(
-            request.Name,
-            request.NotValidatedAddress,
-            request.UserId);
+            command.Name,
+            command.NotValidatedAddress,
+            command.UserId);
 
         if (existingShop != null)
         {
             logger.LogWarning(
                 "Moderation submission for coffee shop '{CoffeeShopName}' by user '{UserId}' already exists.",
-                request.Name,
-                request.UserId);
+                command.Name,
+                command.UserId);
 
             return Response<SendCoffeeShopToModerationResponse>.Error(
                 "A moderation submission with this name and address already exists.");
         }
 
-        var geocodingResult = await TryGeocodeAsync(request.NotValidatedAddress, cancellationToken);
+        var geocodingResult = await TryGeocodeAsync(command.NotValidatedAddress, cancellationToken);
 
-        var shopId = await creationService.CreateAsync(request, geocodingResult, cancellationToken);
+        var shopId = await creationService.CreateAsync(command, geocodingResult, cancellationToken);
 
         logger.LogInformation(
             "ModerationShop '{ModerationShopId}' successfully submitted for moderation.",
             shopId);
 
         return Response<SendCoffeeShopToModerationResponse>.Success(
-            null,
+            null!,
             "CoffeeShop added to moderation.");
     }
 

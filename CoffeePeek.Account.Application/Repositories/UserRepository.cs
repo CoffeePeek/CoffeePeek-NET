@@ -2,9 +2,9 @@
 using CoffeePeek.User.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.User.Application.Repositories;
+namespace CoffeePeek.Account.Application.Repositories;
 
-using User = Account.Domain.Entities.User;
+using User = Domain.Entities.User;
 
 public class UserRepository(IGenericRepository<User> userRepository) : IUserRepository
 {

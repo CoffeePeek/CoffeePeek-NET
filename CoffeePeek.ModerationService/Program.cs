@@ -1,5 +1,9 @@
-using Coffeepeek.Moderation.Application.Mapper;
-using Coffeepeek.Moderation.Application.Repositories;
+using Amazon.S3;
+using CoffeePeek.Moderation.Application.Handlers;
+using CoffeePeek.Moderation.Application.Mapper;
+using CoffeePeek.Moderation.Application.Repositories;
+using Coffeepeek.Moderation.Application.Services;
+using CoffeePeek.Moderation.Application.Services;
 using CoffeePeek.Moderation.Domain;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;
@@ -43,11 +47,14 @@ builder.Services.AddGenericRepository<ModerationShopEquipment, ModerationDbConte
 builder.Services.AddGenericRepository<ModerationCoffeeBeanShop, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationRoasterShop, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopBrewMethod, ModerationDbContext>();
+builder.Services.AddGenericRepository<PhotoMetadata, ModerationDbContext>();
 
 builder.Services.AddScoped<IModerationShopRepository, ModerationShopRepository>();
 builder.Services.AddScoped<IModerationShopCreationService, ModerationShopCreationService>();
 builder.Services.AddScoped<IModerationScheduleService, ModerationScheduleService>();
 builder.Services.AddScoped<IModerationRelationsService, ModerationRelationsService>();
+
+builder.Services.AddScoped<IStorageService, MinIOStorageService>();
 
 // Mapster
 builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
@@ -60,8 +67,23 @@ builder.Services.AddHttpClient<IYandexGeocodingService, YandexGeocodingService>(
     client.Timeout = TimeSpan.FromSeconds(yandexOptions.TimeoutSeconds);
 }).AddResiliencePolicies(nameof(YandexGeocodingService));
 
+var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
+builder.Services.AddSingleton<IAmazonS3>(sp =>
+{
+    var s3Config = new AmazonS3Config
+    {
+        ServiceURL = minIoOptions.Endpoint,
+        ForcePathStyle = true
+    };
+
+    return new AmazonS3Client(
+        minIoOptions.AccessKey,
+        minIoOptions.SecretKey,
+        s3Config);
+});
+
 // MediatR
-builder.Services.AddMediatRModule(typeof(Program));
+builder.Services.AddMediatRModule(typeof(GetAllModerationShopsHandler));
 
 // JWT Authentication
 builder.Services.AddJwtAuthModule();
