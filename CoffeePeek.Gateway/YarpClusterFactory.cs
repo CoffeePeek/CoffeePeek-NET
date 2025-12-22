@@ -5,8 +5,6 @@ namespace CoffeePeek.Gateway;
 
 public static class YarpClusterFactory
 {
-    private const string DefaultPort = "80";
-    
     private static readonly bool IsAspire =
         string.Equals(Environment.GetEnvironmentVariable("DOTNET_ASPIRE_RUNNING"), "true", StringComparison.OrdinalIgnoreCase)
         || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_ASPIRE_RESOURCE_NAME"))
