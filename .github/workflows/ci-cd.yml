@@ -55,15 +55,15 @@ jobs:
         id: vars
         run: echo "TAG=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
 
-      - name: Build and push AuthService image
+      - name: Build and push AccountService image
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: CoffeePeek.AuthService/AuthService.Dockerfile
+          file: CoffeePeek.AuthService/AccountService.Dockerfile
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.authservice:dev
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.authservice:${{ steps.vars.outputs.TAG }}
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.accountservice:dev
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.accountservice:${{ steps.vars.outputs.TAG }}
 
       - name: Build and push AuthService OutboxBackgroundService image
         uses: docker/build-push-action@v6
@@ -74,16 +74,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.authservice.outbox-bg:dev
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.authservice.outbox-bg:${{ steps.vars.outputs.TAG }}
-
-      - name: Build and push UserService image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: CoffeePeek.UserService/UserService.Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.userservice:dev
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.userservice:${{ steps.vars.outputs.TAG }}
 
       - name: Build and push ShopsService image
         uses: docker/build-push-action@v6
@@ -167,31 +157,3 @@ jobs:
             echo "Warning: RAILWAY_PROJECT_ID not set. Skipping project link."
             echo "Note: Railway services should be configured manually in Railway dashboard."
           fi
-          
-          echo ""
-          echo "=== Railway Deployment Information ==="
-          echo "New images are available with tag: ${SHORT_SHA}"
-          echo ""
-          echo "Railway services should be configured in one of the following ways:"
-          echo ""
-          echo "Option 1: Use DOCKER_IMAGE environment variable (recommended)"
-          echo "  In Railway Dashboard → Service → Variables, set:"
-          echo "  - DOCKER_IMAGE = docker.io/${DOCKER_HUB_USERNAME}/<service-name>:${SHORT_SHA}"
-          echo ""
-          echo "Option 2: Configure Railway to watch Docker Hub"
-          echo "  - In Railway Dashboard → Service → Settings"
-          echo "  - Enable 'Watch Docker Hub' and set repository: ${DOCKER_HUB_USERNAME}/<service-name>"
-          echo "  - Railway will automatically deploy when 'dev' tag is updated"
-          echo ""
-          echo "Services that need to be updated:"
-          echo "  - CoffeePeek.AuthService → docker.io/${DOCKER_HUB_USERNAME}/coffeepeek.authservice:${SHORT_SHA}"
-          echo "  - authservice-outbox → docker.io/${DOCKER_HUB_USERNAME}/coffeepeek.authservice.outbox-bg:${SHORT_SHA}"
-          echo "  - coffeepeekuserservice.railway.internal → docker.io/${DOCKER_HUB_USERNAME}/coffeepeek.userservice:${SHORT_SHA}"
-          echo "  - coffeepeekshopsservice.railway.internal → docker.io/${DOCKER_HUB_USERNAME}/coffeepeek.shopsservice:${SHORT_SHA}"
-          echo "  - coffeepeekmoderationservice.railway.internal → docker.io/${DOCKER_HUB_USERNAME}/coffeepeek.moderationservice:${SHORT_SHA}"
-          echo "  - coffeepeekjobvacancies.railway.internal → docker.io/${DOCKER_HUB_USERNAME}/coffeepeek.jobvacancies:${SHORT_SHA}"
-          echo "  - gateway.railway.internal → docker.io/${DOCKER_HUB_USERNAME}/gateway:${SHORT_SHA}"
-          echo ""
-          echo "Note: Railway CLI doesn't support programmatic variable updates."
-          echo "      Please update service configurations manually in Railway Dashboard,"
-          echo "      or configure services to watch Docker Hub for automatic deployments."
