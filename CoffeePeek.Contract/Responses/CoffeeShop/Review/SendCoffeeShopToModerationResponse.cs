@@ -1,3 +1,3 @@
 namespace CoffeePeek.Contract.Responses.CoffeeShop.Review;
 
-public class SendCoffeeShopToModerationResponse;
+public record SendCoffeeShopToModerationResponse(Guid ShopId, string Status);

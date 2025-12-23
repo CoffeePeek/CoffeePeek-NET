@@ -11,7 +11,7 @@ public class ModerationShopDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;
-    public string NotValidatedAddress { get; set; } = null!;
+    public string? NotValidatedAddress { get; set; } = null!;
     public string? Description { get; set; }
     public PriceRange? PriceRange { get; set; }
     public Guid? CityId { get; set; }

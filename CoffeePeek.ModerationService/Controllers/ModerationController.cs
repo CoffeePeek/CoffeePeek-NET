@@ -1,11 +1,16 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
-using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Contract.Responses.CoffeeShop.Review;
-using CoffeePeek.Moderation.Application.Commands;
+using CoffeePeek.Moderation.Application.CreateShop;
+using Coffeepeek.Moderation.Application.Features.CreateShop;
+using CoffeePeek.Moderation.Application.Features.GenerateUploadUrl;
+using Coffeepeek.Moderation.Application.Features.GetAllModerationShops;
+using Coffeepeek.Moderation.Application.UpdateModerationShopStatus;
+using Coffeepeek.Moderation.Application.UpdateShop;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using MediatR;
@@ -19,17 +24,6 @@ namespace CoffeePeek.ModerationService.Controllers;
 public class ModerationController(IMediator mediator) : Controller
 {
     [HttpGet]
-    [Authorize]
-    [Description("Get all user coffee shop moderations")]
-    public async Task<Response<GetCoffeeShopsInModerationByIdResponse>> GetCoffeeShopsInModerationByUserId()
-    {
-        var userId = User.GetUserIdOrThrow();
-        var request = new GetCoffeeShopsInModerationByIdRequest(userId);
-        
-        return await mediator.Send(request);
-    }
-
-    [HttpGet("all")]
     [Authorize(Policy = RoleConsts.Admin)]
     [Description("Get all coffee shop reviews for moderation")]
     public async Task<Response<GetCoffeeShopsInModerationByIdResponse>> GetAllModerationShops()
@@ -38,11 +32,19 @@ public class ModerationController(IMediator mediator) : Controller
         return await mediator.Send(request);
     }
     
+    [HttpPost("upload-urls")]
+    [Authorize]
+    public async Task<Response<List<GenerateUploadUrlResponse>>> GenerateUploadUrls([FromBody] List<UploadUrlRequest> requests)
+    {
+        var command = new GenerateUploadUrlsCommand(requests);
+        return await mediator.Send(command);
+    }
+    
     [HttpPost]
     [Authorize]
     [Description("Adds a new coffee shop to moderation")]
     public async Task<Response<SendCoffeeShopToModerationResponse>> SendCoffeeShopToModeration(
-        [FromForm] SendCoffeeShopToModerationCommand command)
+        [FromBody] SendCoffeeShopToModerationCommand command)
     {
         var userId = User.GetUserIdOrThrow();
         command.UserId = userId;
@@ -53,13 +55,13 @@ public class ModerationController(IMediator mediator) : Controller
     [HttpPut]
     [Authorize]
     [Description("Updates a coffee shop to moderation")]
-    public async Task<Response<UpdateModerationCoffeeShopResponse>> UpdateModerationCoffeeShop(
-        [FromForm] UpdateModerationCoffeeShopRequest request)
+    public async Task<UpdateEntityResponse<ModerationShopDto>> UpdateModerationCoffeeShop(
+        [FromForm] ModerationShopDto dto)
     {
         var userId = User.GetUserIdOrThrow();
-        request.UserId = userId;
+        var command = new UpdateModerationCoffeeShopCommand(dto, userId);
 
-        return await mediator.Send(request);
+        return await mediator.Send(command);
     }
 
     [HttpPut("status")]
@@ -71,7 +73,7 @@ public class ModerationController(IMediator mediator) : Controller
     {
         var userId = User.GetUserIdOrThrow();
         
-        var request = new UpdateModerationCoffeeShopStatusRequest(id, status, userId);
+        var request = new UpdateModerationCoffeeShopStatusCommand(id, status, userId);
         
         return await mediator.Send(request);
     }

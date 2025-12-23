@@ -1,3 +1,5 @@
+using CoffeePeek.Contract.Dtos.Schedule;
+
 namespace CoffeePeek.Moderation.Domain.Entities;
 
 public class ModerationShopSchedule
@@ -9,4 +11,9 @@ public class ModerationShopSchedule
 
     public virtual ModerationShop ModerationShop { get; set; }
     public virtual ICollection<ModerationShopScheduleInterval> Intervals { get; set; }
+
+    public static ModerationShopSchedule Create(Guid id, ScheduleDto dto)
+    {
+        throw new NotImplementedException();
+    }
 }

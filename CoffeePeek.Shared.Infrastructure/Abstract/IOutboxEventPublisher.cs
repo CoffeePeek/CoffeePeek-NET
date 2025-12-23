@@ -1,4 +1,4 @@
-namespace CoffeePeek.Shared.Infrastructure.Outbox;
+namespace CoffeePeek.Shared.Infrastructure.Abstract;
 
 /// <summary>
 /// Interface for publishing events to outbox pattern.

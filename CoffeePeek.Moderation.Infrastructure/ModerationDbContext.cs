@@ -1,13 +1,12 @@
 using CoffeePeek.Moderation.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using OutboxEvent = CoffeePeek.Moderation.Domain.Entities.OutboxEvent;
 
 namespace CoffeePeek.Moderation.Infrastructure;
 
 public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) : DbContext(options)
 {
     public DbSet<ModerationShop> ModerationShops { get; set; }
-    public DbSet<ShopContacts> ShopContacts { get; set; }
+    public DbSet<ModerationShopContact> ModerationShopContacts { get; set; }
     public DbSet<PhotoMetadata> ShopPhotos { get; set; }
     public DbSet<ModerationShopSchedule> ModerationShopSchedules { get; set; }
     public DbSet<ModerationShopScheduleInterval> ModerationShopScheduleIntervals { get; set; }
@@ -24,18 +23,19 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         
         modelBuilder.Entity<ModerationShop>(entity =>
         {
-            entity.ToTable("ModerationShops");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.NotValidatedAddress).HasMaxLength(150);
+            entity.Property(e => e.Address).HasMaxLength(150);
             entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.RejectedReason).HasMaxLength(200);
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => e.ModerationStatus);
             entity.HasIndex(e => e.CityId);
             
-            entity.HasOne(e => e.ShopContacts)
+            entity.HasOne(e => e.ModerationShopContact)
                 .WithMany()
-                .HasForeignKey(e => e.ShopContactId)
+                .HasForeignKey(e => e.ModerationShopContactId)
                 .OnDelete(DeleteBehavior.SetNull);
                 
             entity.HasOne(e => e.Location)
@@ -45,7 +45,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
                 
             entity.HasMany(e => e.ShopPhotos)
                 .WithOne()
-                .HasForeignKey("ShopId")
+                .HasForeignKey(x => x.ModerationShopId)
                 .OnDelete(DeleteBehavior.Cascade);
                 
             entity.HasMany(e => e.ModerationShopEquipments)
@@ -70,7 +70,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         });
         
         
-        modelBuilder.Entity<ShopContacts>(entity =>
+        modelBuilder.Entity<ModerationShopContact>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.PhoneNumber).HasMaxLength(18);

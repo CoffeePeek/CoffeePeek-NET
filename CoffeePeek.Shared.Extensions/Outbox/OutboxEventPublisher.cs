@@ -3,6 +3,7 @@ using CoffeePeek.Shared.Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System.Text.Json;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 
 namespace CoffeePeek.Shared.Extensions.Outbox;
 

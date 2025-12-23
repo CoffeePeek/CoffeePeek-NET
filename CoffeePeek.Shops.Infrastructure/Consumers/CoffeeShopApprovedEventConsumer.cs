@@ -15,9 +15,9 @@ public class CoffeeShopApprovedEventConsumer(
     IGenericRepository<Location> locationRepository,
     IUnitOfWork unitOfWork,
     ICacheService cacheService,
-    ILogger<CoffeeShopApprovedEventConsumer> logger) : IConsumer<CoffeeShopApprovedEvent>
+    ILogger<CoffeeShopApprovedEventConsumer> logger) : IConsumer<CoffeeShopApprovedIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<CoffeeShopApprovedEvent> consumeContext)
+    public async Task Consume(ConsumeContext<CoffeeShopApprovedIntegrationEvent> consumeContext)
     {
         var @event = consumeContext.Message;
         var cancellationToken = consumeContext.CancellationToken;
@@ -63,6 +63,7 @@ public class CoffeeShopApprovedEventConsumer(
             logger.LogWarning("No shop contact provided for shop {ShopName} (ID: {ShopId}).", shop.Name, shop.Id);
         }
 
+        //TODO add implementation
         // Создаем ShopPhotos
         //if (shop.ShopPhotos != null)
         //{

@@ -1,6 +1,3 @@
 namespace CoffeePeek.Contract.Response.CoffeeShop.Review;
 
-public class UpdateModerationCoffeeShopResponse
-{
-    
-}
+public record UpdateModerationCoffeeShopResponse(Guid Id);

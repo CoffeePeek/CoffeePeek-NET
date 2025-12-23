@@ -1,16 +1,12 @@
-using Amazon.S3;
-using CoffeePeek.Moderation.Application.Handlers;
+using Coffeepeek.Moderation.Application.Abstractions;
+using Coffeepeek.Moderation.Application.Features.CreateShop;
+using CoffeePeek.Moderation.Application.Features.CreateShop;
+using Coffeepeek.Moderation.Application.GetAllModerationShops;
 using CoffeePeek.Moderation.Application.Mapper;
-using CoffeePeek.Moderation.Application.Repositories;
-using Coffeepeek.Moderation.Application.Services;
-using CoffeePeek.Moderation.Application.Services;
-using CoffeePeek.Moderation.Domain;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Moderation.Infrastructure.Services;
-using CoffeePeek.ModerationService.Services;
-using CoffeePeek.ModerationService.Services.Interfaces;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
@@ -20,6 +16,7 @@ using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
 using CoffePeek.ServiceDefaults;
+using Minio;
 using OutboxEvent = CoffeePeek.Moderation.Domain.Entities.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,7 +37,7 @@ var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, datab
 builder.Services.AddEfCoreData<ModerationDbContext>(dbOptions);
 
 builder.Services.AddGenericRepository<ModerationShop, ModerationDbContext>();
-builder.Services.AddGenericRepository<ShopContacts, ModerationDbContext>();
+builder.Services.AddGenericRepository<ModerationShopContact, ModerationDbContext>();
 builder.Services.AddGenericRepository<Location, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopSchedule, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopEquipment, ModerationDbContext>();
@@ -51,8 +48,6 @@ builder.Services.AddGenericRepository<PhotoMetadata, ModerationDbContext>();
 
 builder.Services.AddScoped<IModerationShopRepository, ModerationShopRepository>();
 builder.Services.AddScoped<IModerationShopCreationService, ModerationShopCreationService>();
-builder.Services.AddScoped<IModerationScheduleService, ModerationScheduleService>();
-builder.Services.AddScoped<IModerationRelationsService, ModerationRelationsService>();
 
 builder.Services.AddScoped<IStorageService, MinIOStorageService>();
 
@@ -68,19 +63,13 @@ builder.Services.AddHttpClient<IYandexGeocodingService, YandexGeocodingService>(
 }).AddResiliencePolicies(nameof(YandexGeocodingService));
 
 var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
-builder.Services.AddSingleton<IAmazonS3>(sp =>
-{
-    var s3Config = new AmazonS3Config
-    {
-        ServiceURL = minIoOptions.Endpoint,
-        ForcePathStyle = true
-    };
-
-    return new AmazonS3Client(
-        minIoOptions.AccessKey,
-        minIoOptions.SecretKey,
-        s3Config);
-});
+builder.Services
+    .AddMinio(configureClient => 
+        configureClient
+            .WithEndpoint(minIoOptions.Endpoint)
+            .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
+            .Build()
+        );
 
 // MediatR
 builder.Services.AddMediatRModule(typeof(GetAllModerationShopsHandler));

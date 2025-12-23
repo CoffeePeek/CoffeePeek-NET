@@ -1,0 +1,66 @@
+using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Responses;
+using Coffeepeek.Moderation.Application.Abstractions;
+using Coffeepeek.Moderation.Application.UpdateShop;
+using CoffeePeek.Moderation.Domain.Repositories;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using MapsterMapper;
+using MediatR;
+using Microsoft.Extensions.Logging;
+
+namespace Coffeepeek.Moderation.Application.Features.UpdateShop;
+
+public class UpdateModerationCoffeeShopHandler(
+    IModerationShopRepository repository,
+    IUnitOfWork unitOfWork,
+    IYandexGeocodingService geocodingService,
+    IMapper mapper,
+    ILogger<UpdateModerationCoffeeShopHandler> logger) 
+    : IRequestHandler<UpdateModerationCoffeeShopCommand, UpdateEntityResponse<ModerationShopDto>>
+{
+    public async Task<UpdateEntityResponse<ModerationShopDto>> Handle(
+        UpdateModerationCoffeeShopCommand command,
+        CancellationToken ct)
+    {
+        var moderationShopDto = command.ModerationShopDto;
+        var shop = await repository.GetByIdWithDetails(command.ModerationShopDto.Id, ct);
+
+        if (shop == null || shop.UserId != command.UserId)
+        {
+            return UpdateEntityResponse<ModerationShopDto>.Error("Shop not found or access denied");
+        }
+
+        shop.UpdateInfo(moderationShopDto.Name, moderationShopDto.Description, moderationShopDto.PriceRange, moderationShopDto.CityId);
+
+        if (moderationShopDto.NotValidatedAddress != null && moderationShopDto.NotValidatedAddress != shop.NotValidatedAddress)
+        {
+            var geo = await geocodingService.GeocodeAsync(moderationShopDto.NotValidatedAddress, ct);
+            if (geo != null) shop.SetLocation(geo.Latitude, geo.Longitude, moderationShopDto.NotValidatedAddress);
+        }
+
+        if (moderationShopDto.ShopContact != null)
+        {
+            shop.UpdateContacts(
+                moderationShopDto.ShopContact.PhoneNumber, 
+                moderationShopDto.ShopContact.InstagramLink, 
+                moderationShopDto.ShopContact.Email, 
+                moderationShopDto.ShopContact.SiteLink);
+        }
+
+        if (moderationShopDto.Schedules != null) shop.UpdateSchedules(moderationShopDto.Schedules);
+        
+        shop.UpdateRelations(
+            moderationShopDto.EquipmentIds, 
+            moderationShopDto.CoffeeBeanIds, 
+            moderationShopDto.RoasterIds, 
+            moderationShopDto.BrewMethodIds);
+
+        await unitOfWork.SaveChangesAsync(ct);
+
+        var result = mapper.Map<ModerationShopDto>(shop);
+
+        logger.LogInformation("Shop {ShopId} updated by user {UserId}", shop.Id, command.UserId);
+
+        return UpdateEntityResponse<ModerationShopDto>.Success(result, "Shop updated successfully");
+    }
+}

@@ -3,5 +3,6 @@
 public enum ModerationStatus
 {
     Pending,
-    Approved
+    Approved,
+    Rejected
 }

@@ -1,35 +1,43 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using CoffeePeek.Moderation.Application.Services;
+﻿using Coffeepeek.Moderation.Application.Abstractions;
 using Microsoft.Extensions.Options;
+using Minio;
+using Minio.DataModel.Args;
+using Minio.DataModel.Tags;
 
 namespace CoffeePeek.Moderation.Infrastructure.Services;
 
-public class MinIOStorageService(IAmazonS3 s3Client, IOptions<MinIOOptions> options) : IStorageService
+public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions> options) : IStorageService
 {
     private readonly string _bucketName = options.Value.BucketName;
-    
-    public async Task<string> UploadFileAsync(Stream stream, string contentType, CancellationToken ct)
-    {
-        var storageKey = Guid.NewGuid().ToString();
-        
-        var request = new PutObjectRequest
-        {
-            BucketName = _bucketName,
-            Key = storageKey,
-            InputStream = stream,
-            ContentType = contentType,
-            DisablePayloadSigning = true
-        };
 
-        await s3Client.PutObjectAsync(request, ct);
-        return storageKey;
+    public async Task<(string UploadUrl, string StorageKey)> GetPresignedUploadUrlAsync(string fileName,
+        string contentType)
+    {
+        var storageKey = $"{Guid.NewGuid()}{Path.GetExtension(fileName)}";
+
+        const string tagging = "is_permanent=false";
+
+        var args = new PresignedPutObjectArgs()
+            .WithBucket("coffee.shops")
+            .WithObject(storageKey)
+            .WithHeaders(new Dictionary<string, string> {
+                { "Content-Type", contentType },
+                { "x-amz-tagging", tagging }
+            })
+            .WithExpiry(600);
+
+        var url = await minioClient.PresignedPutObjectAsync(args);
+
+        return (url, storageKey);
     }
 
-    public string GetFileUrl(string fileKey) => $"/{_bucketName}/{fileKey}";
-    
-    public async Task DeleteFileAsync(string fileKey, CancellationToken ct)
+    public async Task MarkAsPermanentAsync(string storageKey)
     {
-        await s3Client.DeleteObjectAsync(_bucketName, fileKey, ct);
+        var tags = new Dictionary<string, string> { { "is_permanent", "true" } };
+
+        await minioClient.SetObjectTagsAsync(new SetObjectTagsArgs()
+            .WithBucket(_bucketName)
+            .WithObject(storageKey)
+            .WithTagging(Tagging.GetObjectTags(tags)));
     }
 }

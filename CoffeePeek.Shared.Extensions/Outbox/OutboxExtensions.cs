@@ -1,3 +1,4 @@
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

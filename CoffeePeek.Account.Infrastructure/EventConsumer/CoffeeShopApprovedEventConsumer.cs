@@ -10,9 +10,9 @@ public class CoffeeShopApprovedEventConsumer(
     IGenericRepository<UserStatistics> userStatisticRepository, 
     IUnitOfWork unitOfWork,
     ILogger<CoffeeShopApprovedEventConsumer> logger) 
-    : IConsumer<CoffeeShopApprovedEvent>
+    : IConsumer<CoffeeShopApprovedIntegrationEvent>
 {
-    public async Task Consume(ConsumeContext<CoffeeShopApprovedEvent> context)
+    public async Task Consume(ConsumeContext<CoffeeShopApprovedIntegrationEvent> context)
     {
         var @event = context.Message;
         
