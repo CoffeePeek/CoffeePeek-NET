@@ -1,28 +1,82 @@
 ﻿
+using CoffeePeek.Contract.Enums;
+
 namespace CoffeePeek.Shops.Domain.Entities;
 
-public class Shop
+public class Shop : Entity<Guid>
 {
-    public Guid Id { get; set; }
-    public required string Name { get; set; }
-    public string? Description { get; set; }
+    public string Name { get; private set; } = null!;
+    public string? Description { get; private set; }
+    public PriceRange PriceRange { get; private set; }
+    public Guid CityId { get; private set; }
 
-    public int PriceRange { get; set; }
+    public Guid? ShopContactId { get; private set; }
+    public Guid? LocationId { get; private set; }
+
+    public virtual ShopContact? ShopContact { get; private set; }
+    public virtual Location? Location { get; private set; }
+
+    private readonly List<ShopSchedule> _schedules = [];
+    public virtual IReadOnlyCollection<ShopSchedule> Schedules => _schedules.AsReadOnly();
+
+    private readonly List<ShopPhoto> _shopPhotos = [];
+    public virtual IReadOnlyCollection<ShopPhoto> ShopPhotos => _shopPhotos.AsReadOnly();
+
+    private readonly List<ShopEquipment> _shopEquipments = [];
+    public virtual IReadOnlyCollection<ShopEquipment> ShopEquipments => _shopEquipments.AsReadOnly();
+
+    private readonly List<CoffeeBeanShop> _coffeeBeanShops = [];
+    public virtual IReadOnlyCollection<CoffeeBeanShop> CoffeeBeanShops => _coffeeBeanShops.AsReadOnly();
+
+    private readonly List<RoasterShop> _roasterShops = [];
+    public virtual IReadOnlyCollection<RoasterShop> RoasterShops => _roasterShops.AsReadOnly();
+
+    private readonly List<ShopBrewMethod> _shopBrewMethods = [];
+    public virtual IReadOnlyCollection<ShopBrewMethod> ShopBrewMethods => _shopBrewMethods.AsReadOnly();
+
+    public virtual ICollection<Review> Reviews { get; private set; } = new HashSet<Review>();
+    public virtual ICollection<CheckIn> CheckIns { get; private set; } = new HashSet<CheckIn>();
+
+    private Shop()
+    {
+    }
     
-    public Guid CityId { get; set; }
-    public Guid? ShopContactId { get; set; }
-    public Guid? LocationId { get; set; }
+    public Shop(Guid id, string name, Guid cityId, PriceRange priceRange)
+    {
+        Id = id;
+        Name = name;
+        CityId = cityId;
+        PriceRange = priceRange;
+    }
+
+    #region Domain Logic
+
+    public void UpdateDetails(string name, string? description, PriceRange priceRange)
+    {
+        Name = name;
+        Description = description;
+        PriceRange = priceRange;
+    }
+
+    public void SetLocation(Location? location)
+    {
+        if (location == null) return;
+        location.ShopId = this.Id;
+        Location = location;
+        LocationId = location.Id;
+    }
+
+    public void SetContact(ShopContact? contact)
+    {
+        if (contact == null) return;
+        contact.ShopId = this.Id;
+        ShopContact = contact;
+        ShopContactId = contact.Id;
+    }
     
-    public virtual ShopContact? ShopContact { get; set; }
-    public virtual City? City { get; set; }
-    public virtual Location? Location { get; set; }
-    
-    public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
-    public virtual ICollection<CheckIn> CheckIns { get; set; } = new HashSet<CheckIn>();
-    public virtual ICollection<CoffeeBeanShop> CoffeeBeanShops { get; set; } = new HashSet<CoffeeBeanShop>();
-    public virtual ICollection<RoasterShop> RoasterShops { get; set; } = new HashSet<RoasterShop>();
-    public virtual ICollection<ShopBrewMethod> ShopBrewMethods { get; set; } = new HashSet<ShopBrewMethod>();
-    public virtual ICollection<ShopEquipment> ShopEquipments { get; set; } = new HashSet<ShopEquipment>();
-    public virtual ICollection<ShopSchedule> Schedules { get; set; } = new HashSet<ShopSchedule>();
-    public virtual ICollection<ShopPhoto> ShopPhotos { get; set; } = new HashSet<ShopPhoto>();
+    public void AddPhotos(IEnumerable<ShopPhoto> photos)
+    {
+        _shopPhotos.AddRange(photos);
+    }
+    #endregion
 }

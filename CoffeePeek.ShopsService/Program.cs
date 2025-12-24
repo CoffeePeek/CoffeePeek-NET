@@ -63,7 +63,7 @@ builder.Services.AddScoped<ICacheService, CacheService>();
 // Messaging for publishing events
 builder.Services.AddMessagingModule(x =>
 {
-    x.AddConsumer<CoffeeShopApprovedEventConsumer>();
+    x.AddConsumer<CoffeeShopApprovedShopsConsumer>();
 });
 
 // Outbox Event Publisher

@@ -15,7 +15,6 @@ public partial class ModerationShop : Entity<Guid>
     public Guid? ModerationShopContactId { get; private set; }
     public ModerationStatus ModerationStatus { get; private set; }
     public string? RejectedReason { get; private set; }
-    public ShopStatus Status { get; private set; }
     public bool IsAddressValidated { get; private set; }
     public decimal? Latitude { get; private set; }
     public decimal? Longitude { get; private set; }

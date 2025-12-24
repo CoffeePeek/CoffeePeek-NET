@@ -259,9 +259,6 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.Property<Guid>("ModerationShopId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ModerationShopId");
@@ -278,15 +275,15 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.Property<TimeSpan>("CloseTime")
                         .HasColumnType("interval");
 
+                    b.Property<Guid>("ModerationShopScheduleId")
+                        .HasColumnType("uuid");
+
                     b.Property<TimeSpan>("OpenTime")
                         .HasColumnType("interval");
 
-                    b.Property<Guid>("ScheduleId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ScheduleId");
+                    b.HasIndex("ModerationShopScheduleId");
 
                     b.ToTable("ModerationShopScheduleIntervals");
                 });
@@ -445,7 +442,7 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                 {
                     b.HasOne("CoffeePeek.Moderation.Domain.Entities.ModerationShopSchedule", "Schedule")
                         .WithMany("Intervals")
-                        .HasForeignKey("ScheduleId")
+                        .HasForeignKey("ModerationShopScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

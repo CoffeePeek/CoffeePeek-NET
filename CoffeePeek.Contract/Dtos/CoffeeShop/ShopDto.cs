@@ -10,6 +10,7 @@ public class ShopDto
     public Guid Id { get; set; }
     public Guid CityId { get; set; }
     public string Name { get; set; }
+    public string? Description { get; set; }
     public string[]? ImageUrls { get; set; }
     
     public decimal Rating { get; set; }
@@ -17,8 +18,6 @@ public class ShopDto
 
     public bool IsOpen { get; set; }
     public PriceRange PriceRange { get; set; }
-    
-    public string? Description { get; set; }
     
     
     public LocationDto? Location { get; set; }

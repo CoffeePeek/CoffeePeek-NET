@@ -55,17 +55,12 @@ public class OutboxProcessor<TOutboxEvent, TDbContext>(
                 }
 
                 var contractAssembly = typeof(UserRegisteredEvent).Assembly;
-                var eventType = contractAssembly.GetType(fullTypeName, throwOnError: false, ignoreCase: true);
+                var eventType = contractAssembly.GetTypes()
+                    .FirstOrDefault(t => t.Name.Equals(e.EventType, StringComparison.OrdinalIgnoreCase));
 
                 if (eventType == null)
                 {
-                    // Try without namespace prefix
-                    eventType = contractAssembly.GetType(e.EventType, throwOnError: false, ignoreCase: true);
-                }
-
-                if (eventType == null)
-                {
-                    _logger.LogError("Could not find event type {EventType} for outbox event {Id}", e.EventType, e.Id);
+                    _logger.LogError("Could not find event type {EventType} in assembly {Assembly} for outbox event {Id}", e.EventType, contractAssembly.FullName, e.Id);
                     e.Processed = true;
                     e.ProcessedAt = DateTime.UtcNow;
                     continue;

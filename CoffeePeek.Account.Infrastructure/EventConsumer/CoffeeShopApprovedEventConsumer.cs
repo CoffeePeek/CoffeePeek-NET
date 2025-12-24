@@ -6,10 +6,10 @@ using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Auth.Infrastructure.EventConsumer;
 
-public class CoffeeShopApprovedEventConsumer(
+public class CoffeeShopApprovedAccountConsumer(
     IGenericRepository<UserStatistics> userStatisticRepository, 
     IUnitOfWork unitOfWork,
-    ILogger<CoffeeShopApprovedEventConsumer> logger) 
+    ILogger<CoffeeShopApprovedAccountConsumer> logger) 
     : IConsumer<CoffeeShopApprovedIntegrationEvent>
 {
     public async Task Consume(ConsumeContext<CoffeeShopApprovedIntegrationEvent> context)

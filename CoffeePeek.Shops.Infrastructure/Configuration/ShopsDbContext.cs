@@ -48,11 +48,6 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<Shop>(entity =>
-        {
-            entity.HasIndex(s => s.ShopContactId);
-        });
-        
         modelBuilder.Entity<Location>(entity =>
         {
             entity.HasOne(sc => sc.Shop)
@@ -64,9 +59,17 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
             entity.HasIndex(l => new { l.Latitude, l.Longitude });
         });
 
-        modelBuilder.Entity<Shop>(entity =>
+        modelBuilder.Entity<Shop>(orb =>
         {
-            entity.HasIndex(s => s.LocationId);
+            orb.HasIndex(s => s.LocationId);
+            orb.HasIndex(s => s.ShopContactId);
+            orb.HasKey(s => s.Id);
+    
+            var navigationPhotos = orb.Metadata.FindNavigation(nameof(Shop.ShopPhotos));
+            navigationPhotos?.SetPropertyAccessMode(PropertyAccessMode.Field);
+
+            var navigationSchedules = orb.Metadata.FindNavigation(nameof(Shop.Schedules));
+            navigationSchedules?.SetPropertyAccessMode(PropertyAccessMode.Field);
         });
         
         modelBuilder.Entity<CheckIn>(entity =>

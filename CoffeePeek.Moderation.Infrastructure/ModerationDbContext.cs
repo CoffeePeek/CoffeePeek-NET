@@ -125,6 +125,27 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
             entity.HasIndex(e => e.ShopId);
             entity.HasIndex(e => e.BrewMethodId);
         });
+        
+        modelBuilder.Entity<ModerationShopSchedule>(entity =>
+        {
+            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ModerationShopId);
+            entity.HasOne(e => e.ModerationShop)
+                .WithMany(s => s.Schedules)
+                .HasForeignKey(e => e.ModerationShopId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<ModerationShopScheduleInterval>(entity =>
+        {
+            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
+            entity.HasKey(e => e.Id);
+            entity.HasOne(e => e.Schedule)
+                .WithMany(s => s.Intervals)
+                .HasForeignKey(e => e.ModerationShopScheduleId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }
 

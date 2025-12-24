@@ -1,12 +1,24 @@
-﻿namespace CoffeePeek.Moderation.Domain.Entities;
+﻿using CoffeePeek.Shared.Extensions.Exceptions;
 
-public class ModerationShopScheduleInterval
+namespace CoffeePeek.Moderation.Domain.Entities;
+
+public sealed class ModerationShopScheduleInterval : Entity<Guid>
 {
-    public Guid Id { get; set; }
-    public Guid ScheduleId { get; set; }
+    public Guid ModerationShopScheduleId { get; private set; }
+    public TimeSpan OpenTime { get; private set; }
+    public TimeSpan CloseTime { get; private set; }
 
-    public TimeSpan OpenTime { get; set; }
-    public TimeSpan CloseTime { get; set; }
+    public ModerationShopSchedule Schedule { get; private set; }
 
-    public virtual ModerationShopSchedule Schedule { get; set; }
+    private ModerationShopScheduleInterval() { }
+
+    internal ModerationShopScheduleInterval(TimeSpan openTime, TimeSpan closeTime)
+    {
+        if (openTime >= closeTime)
+            throw new DomainException("Время открытия должно быть раньше времени закрытия.");
+
+        Id = Guid.NewGuid();
+        OpenTime = openTime;
+        CloseTime = closeTime;
+    }
 }

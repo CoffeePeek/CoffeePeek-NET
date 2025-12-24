@@ -6,7 +6,7 @@ using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Coffeepeek.Moderation.Application.UpdateShop;
+namespace Coffeepeek.Moderation.Application.Features.UpdateShop;
 
 public class ModerationShopApprovedEventHandler(
     IPublishEndpoint publishEndpoint,

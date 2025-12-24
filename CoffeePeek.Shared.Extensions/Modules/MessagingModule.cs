@@ -24,6 +24,8 @@ public static class MessagingModule
 
         services.AddMassTransit(x =>
         {
+            x.SetKebabCaseEndpointNameFormatter();
+
             configureConsumers?.Invoke(x);
             
             x.UsingRabbitMq((context, cfg) =>

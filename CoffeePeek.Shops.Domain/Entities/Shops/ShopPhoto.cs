@@ -1,16 +1,47 @@
 ﻿namespace CoffeePeek.Shops.Domain.Entities;
 
-public class ShopPhoto
+public class ShopPhoto : Entity<Guid>
 {
-    public Guid Id { get; set; }
-    
-    public Guid UserId { get; set; }
-    public Guid ShopId { get; set; }
-    
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    
-    public required string Url { get; set; }
+    private ShopPhoto() { }
 
-    public virtual Shop Shop { get; set; }
+    public ShopPhoto(Guid id, Guid userId, string url)
+    {
+        Id = id;
+        UserId = userId;
+        Url = url;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public Guid UserId { get; private set; }
+    public Guid ShopId { get; private set; }
+    
+    public DateTime CreatedAt { get; private set; }
+    public DateTime UpdatedAt { get; private set; }
+    
+    public string Url { get; private set; } = null!;
+
+    public virtual Shop Shop { get; private set; } = null!;
+
+    #region Domain Methods
+
+    internal void SetShop(Guid shopId)
+    {
+        if (shopId == Guid.Empty)
+            throw new ArgumentException("ShopId cannot be empty", nameof(shopId));
+
+        ShopId = shopId;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateUrl(string newUrl)
+    {
+        if (string.IsNullOrWhiteSpace(newUrl))
+            throw new ArgumentException("URL cannot be empty", nameof(newUrl));
+
+        Url = newUrl;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    #endregion
 }

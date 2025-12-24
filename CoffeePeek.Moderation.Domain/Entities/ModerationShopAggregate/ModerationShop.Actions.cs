@@ -29,7 +29,6 @@ public sealed partial class ModerationShop
             PriceRange = priceRange,
             Description = description,
             ModerationStatus = ModerationStatus.Pending,
-            Status = ShopStatus.NotConfirmed,
             IsAddressValidated = false
         };
     }
@@ -76,7 +75,7 @@ public sealed partial class ModerationShop
         _schedules.Clear();
         foreach (var dto in dtos)
         {
-            _schedules.Add(ModerationShopSchedule.Create(Id, dto));
+            _schedules.Add(new ModerationShopSchedule(dto.DayOfWeek, dto.Intervals));
         }
     }
 

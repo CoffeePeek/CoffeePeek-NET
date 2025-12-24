@@ -54,42 +54,6 @@ public class CoffeeShopController(IMediator mediator) : Controller
     {
         return mediator.Send(new GetCoffeeShopCommand(id));
     }
-    
-    [HttpPost("/favorite")]
-    [Authorize]
-    [ProducesResponseType(typeof(Response<GetAllFavoritesResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    public Task<Response<GetAllFavoritesResponse>> GetAllFavorites()
-    {
-        return mediator.Send(new GetAllFavoritesCommand(User.GetUserIdOrThrow()));
-    }
-    
-    [HttpPost("/favorite{id:guid}")]
-    [Authorize]
-    [ProducesResponseType(typeof(Response<GetCoffeeShopResponse>), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    public Task<CreateEntityResponse<Guid>> AddToFavorite([FromQuery]Guid id)
-    {
-        return mediator.Send(new AddToFavoriteCommand(id, User.GetUserIdOrThrow()));
-    }
-    
-    [HttpDelete("/favorite{id:guid}")]
-    [Authorize]
-    [ProducesResponseType(typeof(Response<GetCoffeeShopResponse>), StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    public Task<UpdateEntityResponse<Guid>> RemoveFromFavorite([FromBody]Guid id, Guid userId)
-    {
-        return mediator.Send(new RemoveFromFavoriteCommand(id, userId));
-    }
 
     [HttpGet("search")]
     [ProducesResponseType(typeof(Response<GetCoffeeShopsResponse>), StatusCodes.Status200OK)]
