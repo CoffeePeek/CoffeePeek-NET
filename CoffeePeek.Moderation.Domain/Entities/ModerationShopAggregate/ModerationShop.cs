@@ -29,15 +29,15 @@ public partial class ModerationShop : Entity<Guid>
     private readonly List<ModerationShopSchedule> _schedules = [];
     public IReadOnlyCollection<ModerationShopSchedule> Schedules => _schedules.AsReadOnly();
 
-    private readonly List<ModerationShopEquipment> _equipments = [];
-    public IReadOnlyCollection<ModerationShopEquipment> ModerationShopEquipments => _equipments.AsReadOnly();
+    private readonly List<ModerationShopEquipment> _moderationShopEquipments = [];
+    public IReadOnlyCollection<ModerationShopEquipment> ModerationShopEquipments => _moderationShopEquipments.AsReadOnly();
 
-    private readonly List<ModerationCoffeeBeanShop> _coffeeBeans = [];
-    public IReadOnlyCollection<ModerationCoffeeBeanShop> ModerationCoffeeBeanShops => _coffeeBeans.AsReadOnly();
-    private readonly List<ModerationRoasterShop> _roasters = [];
-    public IReadOnlyCollection<ModerationRoasterShop> ModerationRoasterShops => _roasters.AsReadOnly();
-    private readonly List<ModerationShopBrewMethod> _brewMethods = [];
-    public IReadOnlyCollection<ModerationShopBrewMethod> ModerationShopBrewMethods => _brewMethods.AsReadOnly();
+    private readonly List<ModerationCoffeeBeanShop> _moderationCoffeeBeanShops = [];
+    public IReadOnlyCollection<ModerationCoffeeBeanShop> ModerationCoffeeBeanShops => _moderationCoffeeBeanShops.AsReadOnly();
+    private readonly List<ModerationRoasterShop> _moderationRoasterShops = [];
+    public IReadOnlyCollection<ModerationRoasterShop> ModerationRoasterShops => _moderationRoasterShops.AsReadOnly();
+    private readonly List<ModerationShopBrewMethod> _moderationShopBrewMethods = [];
+    public IReadOnlyCollection<ModerationShopBrewMethod> ModerationShopBrewMethods => _moderationShopBrewMethods.AsReadOnly();
 
     private ModerationShop() { }
 }

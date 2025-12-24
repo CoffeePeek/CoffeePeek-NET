@@ -1,4 +1,5 @@
 using CoffeePeek.Contract.Enums;
+using Coffeepeek.Moderation.Application.Features.UpdateModerationShopStatus;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MediatR;

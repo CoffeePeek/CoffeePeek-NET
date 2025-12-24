@@ -8,6 +8,7 @@ using CoffeePeek.Contract.Responses.CoffeeShop.Review;
 using Coffeepeek.Moderation.Application.Features.CreateShop;
 using CoffeePeek.Moderation.Application.Features.GenerateUploadUrl;
 using Coffeepeek.Moderation.Application.Features.GetAllModerationShops;
+using Coffeepeek.Moderation.Application.Features.UpdateModerationShopStatus;
 using Coffeepeek.Moderation.Application.UpdateModerationShopStatus;
 using Coffeepeek.Moderation.Application.UpdateShop;
 using CoffeePeek.Shared.Infrastructure;

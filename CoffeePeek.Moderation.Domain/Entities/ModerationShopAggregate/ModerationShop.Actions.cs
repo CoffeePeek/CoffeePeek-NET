@@ -86,19 +86,19 @@ public sealed partial class ModerationShop
         List<Guid>? roasterIds,
         List<Guid>? brewMethodIds)
     {
-        UpdateCollection(_equipments, equipmentIds, 
+        UpdateCollection(_moderationShopEquipments, equipmentIds,
             id => new ModerationShopEquipment { EquipmentId = id },
             e => e.EquipmentId);
         
-        UpdateCollection(_coffeeBeans, coffeeBeanIds, 
+        UpdateCollection(_moderationCoffeeBeanShops, coffeeBeanIds, 
             id => new ModerationCoffeeBeanShop { CoffeeBeanId = id },
             e => e.CoffeeBeanId);
         
-        UpdateCollection(_roasters, roasterIds, 
+        UpdateCollection(_moderationRoasterShops, roasterIds, 
             id => new ModerationRoasterShop { RoasterId = id },
             e => e.RoasterId);
         
-        UpdateCollection(_brewMethods, brewMethodIds, 
+        UpdateCollection(_moderationShopBrewMethods, brewMethodIds, 
             id => new ModerationShopBrewMethod { BrewMethodId = id },
             e => e.BrewMethodId);
     }

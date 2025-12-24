@@ -1,7 +1,7 @@
 using Coffeepeek.Moderation.Application.Abstractions;
 using Coffeepeek.Moderation.Application.Features.CreateShop;
 using CoffeePeek.Moderation.Application.Features.CreateShop;
-using Coffeepeek.Moderation.Application.GetAllModerationShops;
+using Coffeepeek.Moderation.Application.Features.GetAllModerationShops;
 using CoffeePeek.Moderation.Application.Mapper;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;

@@ -17,6 +17,7 @@ public static class MapsterConfiguration
         var config = new TypeAdapterConfig();
 
         config.NewConfig<Account.Domain.Entities.User, UserDto>()
+            .Map(dest => dest.Roles, src => src.UserCredential.UserRoles.Select(x => x.Role.Name))
             .Map(dest => dest.PhotoUrl, src => src.AvatarUrl)
             .Map(dest => dest.ReviewCount, src => src.UserStatistics.ReviewCount)
             .Map(dest => dest.CheckInCount, src => src.UserStatistics.CheckInCount)

@@ -23,6 +23,8 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         
         modelBuilder.Entity<ModerationShop>(entity =>
         {
+            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
+            
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.NotValidatedAddress).HasMaxLength(150);
@@ -72,6 +74,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         
         modelBuilder.Entity<ModerationShopContact>(entity =>
         {
+            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.HasKey(e => e.Id);
             entity.Property(e => e.PhoneNumber).HasMaxLength(18);
             entity.Property(e => e.InstagramLink).HasMaxLength(50);
@@ -81,16 +84,19 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         
         modelBuilder.Entity<PhotoMetadata>(entity =>
         {
+            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.HasKey(e => e.Id);
         });
         
         modelBuilder.Entity<Location>(entity =>
         {
+            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.Property(e => e.Address).HasMaxLength(200);
         });
         
         modelBuilder.Entity<ModerationShopEquipment>(entity =>
         {
+            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.ShopId);
             entity.HasIndex(e => e.EquipmentId);
@@ -98,6 +104,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         
         modelBuilder.Entity<ModerationCoffeeBeanShop>(entity =>
         {
+            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.ShopId);
             entity.HasIndex(e => e.CoffeeBeanId);
@@ -105,6 +112,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         
         modelBuilder.Entity<ModerationRoasterShop>(entity =>
         {
+            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.ShopId);
             entity.HasIndex(e => e.RoasterId);
@@ -112,6 +120,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         
         modelBuilder.Entity<ModerationShopBrewMethod>(entity =>
         {
+            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.ShopId);
             entity.HasIndex(e => e.BrewMethodId);
