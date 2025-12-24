@@ -5,7 +5,6 @@ using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Contract.Responses.CoffeeShop.Review;
-using CoffeePeek.Moderation.Application.CreateShop;
 using Coffeepeek.Moderation.Application.Features.CreateShop;
 using CoffeePeek.Moderation.Application.Features.GenerateUploadUrl;
 using Coffeepeek.Moderation.Application.Features.GetAllModerationShops;
@@ -34,6 +33,7 @@ public class ModerationController(IMediator mediator) : Controller
     
     [HttpPost("upload-urls")]
     [Authorize]
+    [Description("Get urls for presigned upload photos")]
     public async Task<Response<List<GenerateUploadUrlResponse>>> GenerateUploadUrls([FromBody] List<UploadUrlRequest> requests)
     {
         var command = new GenerateUploadUrlsCommand(requests);

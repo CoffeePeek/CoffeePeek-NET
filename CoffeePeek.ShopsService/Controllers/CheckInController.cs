@@ -35,7 +35,7 @@ public class CheckInController(IMediator mediator) : Controller
         var userId = User.GetUserIdOrThrow();
         var result = await mediator.Send(new GetUserCheckInsCommand(userId, pageNumber, pageSize));
 
-        if (result.IsSuccess && result.Data is not null)
+        if (result is { IsSuccess: true, Data: not null })
         {
             AddPaginationHeaders(result.Data.TotalItems, result.Data.TotalPages, result.Data.CurrentPage, result.Data.PageSize);
         }
