@@ -1,17 +1,18 @@
 using CoffeePeek.Account.Application.Commands;
+using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Application.Features.Login;
+using CoffeePeek.Account.Application.Features.OAuthLogin;
 using CoffeePeek.Account.Application.Mapper;
-using CoffeePeek.Account.Application.Repositories;
-using CoffeePeek.Account.Application.Services;
-using CoffeePeek.Account.Application.Services.Interfaces;
-using CoffeePeek.Account.Application.Services.Validation;
+using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Repositories;
+using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Auth.Infrastructure;
-using CoffeePeek.Auth.Infrastructure.Configuration;
 using CoffeePeek.Auth.Infrastructure.EventConsumer;
-using CoffeePeek.Auth.Infrastructure.Repositories;
-using CoffeePeek.Auth.Infrastructure.Services;
-using CoffeePeek.Auth.Infrastructure.Services.Validation;
+using CoffeePeek.Auth.Infrastructure.ExternalServices;
+using CoffeePeek.Auth.Infrastructure.Identity;
+using CoffeePeek.Auth.Infrastructure.Persistent;
+using CoffeePeek.Auth.Infrastructure.Persistent.Repositories;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Middleware;
 using CoffeePeek.Shared.Extensions.Modules;
@@ -19,11 +20,11 @@ using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
-using CoffeePeek.User.Domain.Repositories;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.UserService.Models;
 using CoffePeek.ServiceDefaults;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
-using JWTTokenService = CoffeePeek.Auth.Infrastructure.Services.JWTTokenService;
+using JWTTokenService = CoffeePeek.Auth.Infrastructure.Identity.JWTTokenService;
 using OutboxEvent = CoffeePeek.Account.Domain.Entities.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -72,14 +73,28 @@ builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
 // Application Services
 builder.Services.AddScoped<IJWTTokenService, JWTTokenService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
-builder.Services.AddScoped<IRoleManager, RoleManager>();
-builder.Services.AddScoped<IUserManager, UserManager>();
-builder.Services.AddScoped<ISessionManager, SessionManager>();
-builder.Services.AddScoped<ISignInManager, SignInManager>();
 builder.Services.AddScoped<IUserCredentialsRepository, UserCredentialsRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
+builder.Services.AddScoped<UserQueries>();
+builder.Services.AddScoped<IUserQueries>(provider =>
+{
+    var baseService = provider.GetRequiredService<UserQueries>();
+    var redis = provider.GetRequiredService<IRedisService>();
+    return new CachedUserQueries(baseService, redis);
+});
+
+builder.Services.AddScoped<UserRepository>(); 
+
+builder.Services.AddScoped<IUserRepository>(provider => 
+{
+    var baseRepo = provider.GetRequiredService<UserRepository>();
+    var cache = provider.GetRequiredService<IRedisService>(); 
+    
+    return new CachedUserRepository(baseRepo, cache);
+});
 // OAuth
 builder.Services.AddValidateOptions<OAuthGoogleOptions>();
 builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
@@ -90,12 +105,9 @@ builder.Services.AddHttpContextAccessor();
 // Cache
 builder.Services.AddCacheModule();
 
-// Validation
-builder.Services.AddTransient<IValidationStrategy<RegisterUserCommand>, UserCreateValidationStrategy>();
-
 // MediatR
 builder.Services.AddMediatRModule(
-    typeof(CoffeePeek.Account.Application.Handlers.LoginUserHandler)
+    typeof(LoginUserHandler)
 );
 
 // Outbox Event Publisher

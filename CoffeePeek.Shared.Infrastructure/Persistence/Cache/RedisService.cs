@@ -22,13 +22,43 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
         }
         catch (RedisConnectionException)
         {
-            // Redis недоступен, возвращаем null для использования fallback (БД)
             return default;
         }
         catch (Exception)
         {
-            // Другие ошибки Redis, возвращаем null
             return default;
+        }
+    }
+
+    public async Task<T?> GetAsync<T>(
+        CacheKey cacheKey, 
+        Func<Task<T>> factory, 
+        TimeSpan? expiration = null)
+    {
+        try
+        {
+            string? cachedValue = await _db.StringGetAsync(cacheKey.Key);
+        
+            if (!string.IsNullOrEmpty(cachedValue))
+            {
+                return JsonSerializer.Deserialize<T>(cachedValue);
+            }
+
+            var result = await factory();
+
+            if (result != null)
+            {
+                await _db.StringSetAsync(
+                    cacheKey.Key, 
+                    JsonSerializer.Serialize(result), 
+                    expiration ?? TimeSpan.FromMinutes(10));
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            return await factory();
         }
     }
 

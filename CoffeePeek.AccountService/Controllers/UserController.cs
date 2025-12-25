@@ -1,6 +1,7 @@
-using CoffeePeek.Account.Application.Commands;
+using CoffeePeek.Account.Application.Features.DeleteUser;
+using CoffeePeek.Account.Application.Features.GetProfile;
+using CoffeePeek.Account.Application.Features.UpdateProfile;
 using CoffeePeek.Contract.Dtos.User;
-using CoffeePeek.Contract.Requests.User;
 using CoffeePeek.Contract.Response.User;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure;
@@ -21,28 +22,20 @@ public class UserController(IMediator mediator) : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<Response<UserDto>> GetProfile(CancellationToken cancellationToken)
     {
-        var request = new GetProfileRequest(User.GetUserIdOrThrow());
-        
+        var request = new GetProfileCommand(User.GetUserIdOrThrow());
+
         return mediator.Send(request, cancellationToken);
     }
-    
+
     [HttpPut]
     [Authorize]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Task<Response<UpdateProfileResponse>> UpdateProfile([FromBody]UpdateProfileRequest request, CancellationToken cancellationToken)
+    public Task<Response<UpdateProfileResponse>> UpdateProfile([FromBody] UpdateProfileCommand command,
+        CancellationToken cancellationToken)
     {
-        var authenticatedRequest = request with { UserId = HttpContext.User.GetUserIdOrThrow() };
+        var authenticatedRequest = command with { UserId = HttpContext.User.GetUserIdOrThrow() };
         return mediator.Send(authenticatedRequest, cancellationToken);
-    }
-    
-    [HttpGet("Users")]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Task<Response<UserDto[]>> GetAllUsers(CancellationToken cancellationToken)
-    {
-        var request = new GetAllUsersRequest();
-        return mediator.Send(request, cancellationToken);
     }
 
     [HttpDelete("{id:guid}")]
@@ -51,7 +44,7 @@ public class UserController(IMediator mediator) : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<Response<bool>> DeleteUser(Guid id, CancellationToken cancellationToken)
     {
-        var request = new DeleteUserRequest(id);
+        var request = new DeleteUserCommand(id);
         return mediator.Send(request, cancellationToken);
     }
 }

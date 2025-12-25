@@ -1,4 +1,4 @@
-using CoffeePeek.Auth.Infrastructure.Configuration;
+using CoffeePeek.Auth.Infrastructure.Persistent;
 using CoffeePeek.Contract.Events.Shops;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
