@@ -1,9 +1,8 @@
-using System.Security.Authentication;
 using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Contract.Dtos.Auth;
+using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.Extensions.Options;
@@ -18,10 +17,10 @@ public class AuthService(
 {
     public async Task<AuthResult> LoginAsync(string email, string password, string device, string ip)
     {
-        var userCredential = await userCredentialRepository.FirstOrDefaultAsNoTrackingAsync(x => x.Email == email);
+        var userCredential = await userCredentialRepository.FirstOrDefaultAsync(x => x.Email == email);
         if (userCredential == null || !userCredential.ValidatePassword(password, passwordHasher))
         {
-            throw new AuthenticationException("Invalid credentials");
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         userCredential.RevokeAllSessions();

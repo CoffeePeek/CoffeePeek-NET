@@ -122,8 +122,6 @@ builder.Services.AddMediatRModule(
 // Outbox Event Publisher
 builder.Services.AddOutboxEventPublisher<OutboxEvent, AccountDbContext>();
 
-// CORS
-builder.Services.AddCorsModule();
 
 var app = builder.Build();
 
@@ -131,11 +129,6 @@ app.MapDefaultEndpoints();
 
 // Middleware pipeline
 app.UseExceptionHandling();
-
-if (CorsModule.IsCorsEnabled())
-{
-    app.UseCors();
-}
 
 // Swagger documentation
 app.UseSwaggerDocumentation();

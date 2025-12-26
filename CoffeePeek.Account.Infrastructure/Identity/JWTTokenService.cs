@@ -44,7 +44,7 @@ public class JWTTokenService(IOptions<JWTOptions> options) : IJWTTokenService
             _options.Issuer,
             _options.Audience,
             claims,
-            expires: DateTime.UtcNow.AddMinutes(lifetimeMinutes),
+            expires: DateTime.UtcNow.AddHours(lifetimeMinutes),
             signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
         );
         return new JwtSecurityTokenHandler().WriteToken(token);

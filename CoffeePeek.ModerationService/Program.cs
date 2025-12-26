@@ -89,20 +89,11 @@ builder.Services.AddMessagingModule();
 // Outbox Event Publisher
 builder.Services.AddOutboxEventPublisher<OutboxEvent, ModerationDbContext>();
 
-// CORS
-builder.Services.AddCorsModule();
-
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
 app.UseExceptionHandling();
-
-// Use CORS if configured
-if (CorsModule.IsCorsEnabled())
-{
-    app.UseCors();
-}
 
 app.UseAuthentication();
 app.UseAuthorization();

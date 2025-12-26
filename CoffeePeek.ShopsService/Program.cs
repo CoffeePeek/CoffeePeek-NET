@@ -85,20 +85,12 @@ builder.Services.AddGenericRepository<Roaster, ShopsDbContext>();
 builder.Services.AddGenericRepository<Location, ShopsDbContext>();
 builder.Services.AddGenericRepository<CheckIn, ShopsDbContext>();
 
-// CORS
-builder.Services.AddCorsModule();
-
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
 // Middleware pipeline
 app.UseExceptionHandling();
-
-if (CorsModule.IsCorsEnabled())
-{
-    app.UseCors();
-}
 
 // Swagger documentation
 app.UseSwaggerDocumentation();

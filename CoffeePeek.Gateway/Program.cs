@@ -25,10 +25,7 @@ app.MapDefaultEndpoints();
 
 app.UseExceptionHandling();
 
-if (CorsModule.IsCorsEnabled())
-{
-    app.UseCors();
-}
+app.UseCors();
 
 app.UseResponseCaching();
 app.ConfigureCustomCaching();
