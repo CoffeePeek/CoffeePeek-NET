@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Account.Application.Commands;
+﻿using CoffeePeek.Account.Application.Common;
+using CoffeePeek.Account.Application.Features.CheckUserExistsByEmail;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 using CoffeePeek.Account.Domain.Repositories;
 using CoffeePeek.Account.Domain.Services;
@@ -16,6 +17,7 @@ public class RegisterUserHandler(
     IRoleRepository roleRepository,
     IPasswordHasherService passwordHasher,
     IUnitOfWork unitOfWork,
+    EmailExistenceFilter emailExistenceFilter,
     ILogger<RegisterUserHandler> logger)
     : IRequestHandler<RegisterUserCommand, CreateEntityResponse<Guid>>
 {
@@ -23,7 +25,7 @@ public class RegisterUserHandler(
     {
         try
         {
-            if (!await userRepository.IsEmailUnique(request.Email, ct))
+            if (emailExistenceFilter.MightExist(request.Email) || !await userRepository.IsEmailUnique(request.Email, ct))
             {
                 return CreateEntityResponse<Guid>.Error("Email already exists");
             }
@@ -38,6 +40,8 @@ public class RegisterUserHandler(
 
             await userRepository.Add(user, ct);
             await unitOfWork.SaveChangesAsync(ct);
+
+            emailExistenceFilter.Add(request.Email);
 
             logger.LogInformation("User {Email} registered with ID {UserId}", user.Email, user.Id);
             return CreateEntityResponse<Guid>.Success(user.Id);

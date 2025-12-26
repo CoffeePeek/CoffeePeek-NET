@@ -1,5 +1,6 @@
-using CoffeePeek.Account.Application.Commands;
+using CoffeePeek.Account.Application.Common;
 using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Application.Features.CheckUserExistsByEmail;
 using CoffeePeek.Account.Application.Features.Login;
 using CoffeePeek.Account.Application.Features.OAuthLogin;
 using CoffeePeek.Account.Application.Mapper;
@@ -77,6 +78,14 @@ builder.Services.AddScoped<IUserCredentialsRepository, UserCredentialsRepository
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddSingleton<EmailExistenceFilter>(sp => 
+{
+    const int expectedCount = 1000000; 
+    const double errorRate = 0.01;
+    
+    return new EmailExistenceFilter(expectedCount, errorRate);
+});
 
 builder.Services.AddScoped<UserQueries>();
 builder.Services.AddScoped<IUserQueries>(provider =>
