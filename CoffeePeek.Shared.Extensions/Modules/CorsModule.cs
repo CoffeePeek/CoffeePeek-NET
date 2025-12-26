@@ -29,10 +29,9 @@ public static class CorsModule
                     throw new InvalidOperationException("CORS enabled but ALLOWED_ORIGINS is empty");
 
                 policy
-                    .WithOrigins(origins)
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials();
+                    .AllowAnyMethod();
 #endif
             });
         });

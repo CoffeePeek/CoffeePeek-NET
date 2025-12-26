@@ -1,4 +1,4 @@
-namespace CoffeePeek.Account.Application.Commands;
+namespace CoffeePeek.Account.Application.Features.Login;
 
 public class LoginRequest(string email, string password)
 {
