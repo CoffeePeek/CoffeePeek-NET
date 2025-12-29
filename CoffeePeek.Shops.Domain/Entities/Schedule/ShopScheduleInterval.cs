@@ -1,6 +1,6 @@
 ﻿namespace CoffeePeek.Shops.Domain.Entities;
 
-public class ShopScheduleInterval
+public class ShopScheduleInterval : Entity<Guid>
 {
     public Guid Id { get; set; }
     public Guid ScheduleId { get; set; }

@@ -95,10 +95,7 @@ app.UseExceptionHandler();
 
 app.MapDefaultEndpoints();
 
-if (CorsModule.IsCorsEnabled())
-{
-    app.UseCors();
-}
+app.UseCors();
 
 // Swagger documentation
 app.UseSwaggerDocumentation();

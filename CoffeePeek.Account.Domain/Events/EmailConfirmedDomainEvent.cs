@@ -2,5 +2,5 @@
 
 public record EmailConfirmedDomainEvent() : IDomainEvent
 {
-    public DateTime OccurredOn { get; }
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
 }

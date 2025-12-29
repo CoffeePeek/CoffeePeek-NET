@@ -34,6 +34,33 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
                 .OnDelete(DeleteBehavior.SetNull);
         });
 
+        modelBuilder.Entity<UserCredential>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Email)
+                .IsRequired()
+                .HasMaxLength(255);
+            
+            entity.HasIndex(x => x.Email).IsUnique();
+            entity.HasIndex(x => x.EmailConfirmationToken).IsUnique();
+            
+            entity.HasOne(x => x.User)
+                .WithOne()
+                .HasForeignKey<UserCredential>(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasMany(x => x.RefreshTokens)
+                .WithOne()
+                .HasForeignKey(x => x.UserCredentialId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(x => x.UserRoles)
+                .WithOne()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
         modelBuilder.Entity<PhotoMetadata>(entity =>
         {
             entity.HasKey(e => e.Id);

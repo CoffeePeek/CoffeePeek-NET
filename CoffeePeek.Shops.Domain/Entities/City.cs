@@ -1,7 +1,6 @@
 ﻿namespace CoffeePeek.Shops.Domain.Entities;
 
-public class City
+public class City : Entity<Guid>
 {
-    public Guid Id { get; set; }
     public required string Name { get; set; }
 }

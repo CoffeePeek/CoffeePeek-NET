@@ -39,11 +39,4 @@ public static class CorsModule
         return services;
     }
 
-    public static bool IsCorsEnabled()
-    {
-#if DEBUG
-        return true;
-#endif
-        return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ALLOWED_ORIGINS"));
-    }
 }
