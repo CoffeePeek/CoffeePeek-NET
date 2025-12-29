@@ -3,7 +3,9 @@ using CoffeePeek.Account.Domain.Repositories;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Shared.Infrastructure.Constants;
 
-namespace CoffeePeek.Account.Application.Features.OAuthLogin;
+namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
+
+using User = Domain.Aggregates.UserAggregate.User;
 
 public class ExternalAuthService(
     IUserRepository userRepository,
