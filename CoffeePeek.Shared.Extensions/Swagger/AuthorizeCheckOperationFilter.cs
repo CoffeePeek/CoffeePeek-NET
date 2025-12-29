@@ -19,7 +19,10 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
         }
 
         operation.Responses ??= new OpenApiResponses();
-        operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
+        if (!operation.Responses.ContainsKey("401"))
+        {
+            operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
+        }
 
         var schemeReference = new OpenApiSecuritySchemeReference("Bearer", context.Document);
 

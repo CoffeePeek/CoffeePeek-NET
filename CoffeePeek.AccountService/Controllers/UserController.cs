@@ -1,9 +1,17 @@
+using System.ComponentModel;
 using CoffeePeek.Account.Application.Features.DeleteUser;
+using CoffeePeek.Account.Application.Features.GenerateUploadAvatarUrl;
 using CoffeePeek.Account.Application.Features.GetProfile;
+using CoffeePeek.Account.Application.Features.UpdateEmail;
 using CoffeePeek.Account.Application.Features.UpdateProfile;
+using CoffeePeek.Account.Application.Features.UpdateUserAvatar;
+using CoffeePeek.Account.Domain.Aggregates;
+using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.User;
-using CoffeePeek.Contract.Response.User;
+using CoffeePeek.Contract.Requests;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.CoffeeShop;
+using CoffeePeek.Contract.Responses.User;
 using CoffeePeek.Shared.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -27,6 +35,28 @@ public class UserController(IMediator mediator) : Controller
         return mediator.Send(request, cancellationToken);
     }
 
+    [HttpPost("upload-url")]
+    [Authorize]
+    [ProducesResponseType(typeof(Response<GenerateUploadUrlResponse>), StatusCodes.Status200OK)]
+    [Description("Get url for presigned upload avatar photo")]
+    public async Task<Response<GenerateUploadUrlResponse>> GenerateUploadUrl([FromBody] UploadUrlRequest request)
+    {
+        var command = new GenerateUploadAvatarUrlCommand(request);
+        return await mediator.Send(command);
+    }
+    
+    [HttpPut("avatar")]
+    [Authorize]
+    [ProducesResponseType(typeof(PhotoMetadata), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<UpdateEntityResponse<PhotoMetadata>> UpdateAvatar([FromBody] UploadedPhotoDto dto)
+    {
+        var command = new UpdateUserAvatarCommand(User.GetUserIdOrThrow(), dto);
+        return await mediator.Send(command);
+    }
+    
     [HttpPut]
     [Authorize]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
@@ -36,6 +66,17 @@ public class UserController(IMediator mediator) : Controller
     {
         var authenticatedRequest = command with { UserId = HttpContext.User.GetUserIdOrThrow() };
         return mediator.Send(authenticatedRequest, cancellationToken);
+    }
+    
+    [HttpPut("email")]
+    [Authorize]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public Task<UpdateEntityResponse<string>> UpdateEmail([FromBody] UpdateEmailCommand command,
+        CancellationToken cancellationToken)
+    {
+        var updateEmailCommand = command with { UserId = HttpContext.User.GetUserIdOrThrow() };
+        return mediator.Send(updateEmailCommand, cancellationToken);
     }
 
     [HttpDelete("{id:guid}")]

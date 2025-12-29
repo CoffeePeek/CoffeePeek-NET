@@ -6,7 +6,7 @@ public class UpdateEntityResponse<T> : Response<T>
 
     public UpdateEntityResponse() { }
 
-    public UpdateEntityResponse(bool success, string message, T data, T oldEntity = default(T))
+    public UpdateEntityResponse(bool success, string message, T data, T oldEntity = default)
         : base(success, message, data)
     {
         OldEntity = oldEntity;
@@ -15,7 +15,7 @@ public class UpdateEntityResponse<T> : Response<T>
     /// <summary>
     /// Creates a successful response for entity update.
     /// </summary>
-    public static UpdateEntityResponse<T> Success(T data, string message = null, T oldEntity = default(T))
+    public static UpdateEntityResponse<T> Success(T data, string message = null, T oldEntity = default)
     {
         return new UpdateEntityResponse<T>
         {
@@ -29,15 +29,13 @@ public class UpdateEntityResponse<T> : Response<T>
     /// <summary>
     /// Creates an error response for entity update.
     /// </summary>
-    public static UpdateEntityResponse<T> Error(string message, Dictionary<string, string[]> errors = null, string errorCode = null)
+    public static UpdateEntityResponse<T> Error(string message)
     {
         return new UpdateEntityResponse<T>
         {
             IsSuccess = false,
             Message = message,
-            Data = default,
-            Errors = errors,
-            ErrorCode = errorCode
+            Data = default
         };
     }
 }

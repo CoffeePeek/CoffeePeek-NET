@@ -19,10 +19,12 @@ public static class MapsterConfiguration
 
         config.NewConfig<User, UserDto>()
             .Map(dest => dest.Roles, src => src.UserCredential.UserRoles.Select(x => x.Role.Name))
-            .Map(dest => dest.PhotoUrl, src => src.AvatarUrl)
             .Map(dest => dest.ReviewCount, src => src.UserStatistics.ReviewCount)
             .Map(dest => dest.CheckInCount, src => src.UserStatistics.CheckInCount)
-            .Map(dest => dest.AddedShopsCount, src => src.UserStatistics.AddedShopsCount);
+            .Map(dest => dest.AddedShopsCount, src => src.UserStatistics.AddedShopsCount)
+            .Map(dest => dest.AvatarUrl, src => src.PhotoMetadata != null 
+                ? $"https://bucket-dev-771f.up.railway.app/coffee.shops/{src.PhotoMetadata.StorageKey}" 
+                : null);
             
         return config;
     }

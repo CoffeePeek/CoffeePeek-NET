@@ -1,4 +1,3 @@
-using System.Reflection;
 using CoffeePeek.JobVacancies.Application.Handlers;
 using CoffeePeek.JobVacancies.Application.Repositories;
 using CoffeePeek.JobVacancies.Application.Services;
@@ -10,7 +9,7 @@ using CoffeePeek.JobVacancies.Infrastructure.Services;
 using CoffeePeek.JobVacancies.Jobs;
 using CoffeePeek.JobVacancies.Services;
 using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Middleware;
+using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
@@ -37,7 +36,7 @@ builder.Services.AddControllersModule();
 builder.Services.AddSwaggerModule("CoffeePeek Job vacancies API", "v1");
 
 // Authentication & Authorization
-builder.Services.AddCookieAuthModule();
+builder.Services.AddJwtAuthModule();
 builder.Services.AddValidateOptions<JWTOptions>();
 builder.Services.AddAuthorization(options =>
 {
@@ -87,12 +86,14 @@ builder.Services.AddHttpClient<IHhApiService, HhApiService>()
 builder.Services.AddHttpClient<IHhAuthService, HhAuthService>()
     .AddResiliencePolicies(nameof(HhAuthService));
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
+app.UseExceptionHandler();
 
-// Middleware pipeline
-app.UseExceptionHandling();
+app.MapDefaultEndpoints();
 
 if (CorsModule.IsCorsEnabled())
 {

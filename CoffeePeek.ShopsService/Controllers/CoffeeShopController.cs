@@ -103,7 +103,7 @@ public class CoffeeShopController(IMediator mediator) : Controller
     [ProducesResponseType(typeof(Response<GetShopsInBoundsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Task<Response<GetShopsInBoundsResponse>> GetShopsInBounds(
+    public async Task<Response<GetShopsInBoundsResponse>> GetShopsInBounds(
         [FromQuery] [Range(-90, 90)] decimal minLat,
         [FromQuery] [Range(-180, 180)] decimal minLon,
         [FromQuery] [Range(-90, 90)] decimal maxLat,
@@ -111,12 +111,10 @@ public class CoffeeShopController(IMediator mediator) : Controller
     {
         if (minLat > maxLat || minLon > maxLon)
         {
-            return Task.FromResult(
-                Response<GetShopsInBoundsResponse>.Error(
-                    "Invalid bounds: min values must be less than or equal to max values"));
+            return Response<GetShopsInBoundsResponse>.Error("Invalid bounds: min values must be less than or equal to max values");
         }
 
         var request = new GetShopsInBoundsRequest(minLat, minLon, maxLat, maxLon);
-        return mediator.Send(request);
+        return await mediator.Send(request);
     }
 }

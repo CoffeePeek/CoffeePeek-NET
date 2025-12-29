@@ -10,8 +10,4 @@
       <ProjectReference Include="..\Coffeepeek.Moderation.Application\Coffeepeek.Moderation.Application.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Minio" Version="7.0.0" />
-    </ItemGroup>
-
 </Project>

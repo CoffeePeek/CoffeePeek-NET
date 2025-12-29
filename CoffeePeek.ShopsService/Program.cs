@@ -1,6 +1,6 @@
 using System.Reflection;
 using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Middleware;
+using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Extensions.Logging;
@@ -85,12 +85,14 @@ builder.Services.AddGenericRepository<Roaster, ShopsDbContext>();
 builder.Services.AddGenericRepository<Location, ShopsDbContext>();
 builder.Services.AddGenericRepository<CheckIn, ShopsDbContext>();
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
+app.UseExceptionHandler();
 
-// Middleware pipeline
-app.UseExceptionHandling();
+app.MapDefaultEndpoints();
 
 // Swagger documentation
 app.UseSwaggerDocumentation();

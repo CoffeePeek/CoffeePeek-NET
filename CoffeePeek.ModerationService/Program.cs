@@ -8,13 +8,14 @@ using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Moderation.Infrastructure.Services;
 using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Middleware;
+using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
+using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using CoffePeek.ServiceDefaults;
 using Minio;
 using OutboxEvent = CoffeePeek.Moderation.Domain.Entities.OutboxEvent;
@@ -89,11 +90,14 @@ builder.Services.AddMessagingModule();
 // Outbox Event Publisher
 builder.Services.AddOutboxEventPublisher<OutboxEvent, ModerationDbContext>();
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
+app.UseExceptionHandler();
 
-app.UseExceptionHandling();
+app.MapDefaultEndpoints();
 
 app.UseAuthentication();
 app.UseAuthorization();

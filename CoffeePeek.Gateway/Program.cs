@@ -1,6 +1,6 @@
 using CoffeePeek.Gateway;
 using CoffeePeek.Gateway.Extensions;
-using CoffeePeek.Shared.Extensions.Middleware;
+using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffePeek.ServiceDefaults;
@@ -19,11 +19,14 @@ builder.Services.AddResponseCaching();
 builder.Services.AddSwaggerModule("CoffeePeek Gateway API", "v1");
 builder.Services.AddCorsModule();
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-app.UseExceptionHandling();
+app.UseExceptionHandler();
 
 app.UseCors();
 

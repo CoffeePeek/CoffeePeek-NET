@@ -1,4 +1,4 @@
-﻿namespace Coffeepeek.Moderation.Application.Abstractions;
+﻿namespace CoffeePeek.Shared.Infrastructure.Abstract.S3;
 
 public interface IStorageService
 {
@@ -7,4 +7,6 @@ public interface IStorageService
         string contentType);
     
     Task MarkAsPermanentAsync(string storageKey);
+    Task<bool> ExistsAsync(string uploadedPhotoStorageKey);
+    Task DeleteAsync(string oldStorageKey);
 }

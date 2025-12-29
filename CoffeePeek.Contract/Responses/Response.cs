@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace CoffeePeek.Contract.Responses;
 
 public class Response
@@ -9,16 +7,6 @@ public class Response
     public string Message { get; init; }
     
     public object Data { get; set; }
-#if PRODUCTION
-    [JsonIgnore]
-#endif
-    public string ErrorCode { get; set; }
-#if PRODUCTION
-    [JsonIgnore]
-#endif
-    public string TraceId { get; set; }
-    
-    public Dictionary<string, string[]> Errors { get; set; }
 
     public Response() { }
 
@@ -58,46 +46,39 @@ public class Response
     /// <summary>
     /// Creates an error response with message and optional validation errors.
     /// </summary>
-    public static Response Error(string message, Dictionary<string, string[]> errors = null, string errorCode = null)
+    public static Response Error(string message)
     {
         return new Response
         {
             IsSuccess = false,
             Message = message,
             Data = null,
-            Errors = errors,
-            ErrorCode = errorCode
         };
     }
     
     /// <summary>
     /// Creates an error response with message and optional validation errors.
     /// </summary>
-    public static Response<T> Error<T>(string message, Dictionary<string, string[]> errors = null, string errorCode = null)
+    public static Response<T> Error<T>(string message)
     {
         return new Response<T>
         {
             IsSuccess = false,
             Message = message,
             Data = default,
-            Errors = errors,
-            ErrorCode = errorCode
         };
     }
 
     /// <summary>
     /// Creates a response from an exception.
     /// </summary>
-    public static Response<T> FromException<T>(Exception ex, string traceId = null, string errorCode = null, Dictionary<string, string[]> errors = null)
+    public static Response<T> FromException<T>(Exception ex)
     {
         return new Response<T>
         {
             IsSuccess = false,
             Message = ex.Message,
-            TraceId = traceId,
-            Data = default,
-            ErrorCode = errorCode,
-            Errors = errors
+            Data = default
         };
     }
 }

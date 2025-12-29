@@ -1,8 +1,9 @@
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 using CoffeePeek.Account.Domain.Repositories;
-using CoffeePeek.Contract.Response.User;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.User;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -24,8 +25,8 @@ public class UpdateProfileHandler(
             return Response<UpdateProfileResponse>.Error("User not found");
         }
 
-        user.UpdateProfile(command.UserName, command.About, command.Email);
-
+        user.UpdateProfile(command.UserName, command.About);
+        
         await userRepository.Update(user);
         await unitOfWork.SaveChangesAsync(ct);
 

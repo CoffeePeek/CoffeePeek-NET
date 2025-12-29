@@ -4,8 +4,8 @@ public class Response<TData> : Response
 {
     public new TData Data
     {
-        get => base.Data is TData data ? data : default(TData);
-        set => base.Data = value;
+        get => base.Data is TData data ? data : default;
+        init => base.Data = value;
     }
 
     public Response() { }
@@ -31,31 +31,26 @@ public class Response<TData> : Response
     /// <summary>
     /// Creates an error response with message and optional validation errors.
     /// </summary>
-    public static Response<TData> Error(string message, Dictionary<string, string[]> errors = null, string errorCode = null)
+    public static Response<TData> Error(string message)
     {
         return new Response<TData>
         {
             IsSuccess = false,
             Message = message,
-            Data = default,
-            Errors = errors,
-            ErrorCode = errorCode
+            Data = default
         };
     }
 
     /// <summary>
     /// Creates a response from an exception.
     /// </summary>
-    public static Response<TData> FromException(Exception ex, string traceId = null, string errorCode = null, Dictionary<string, string[]> errors = null)
+    public static Response<TData> FromException(Exception ex)
     {
         return new Response<TData>
         {
             IsSuccess = false,
             Message = ex.Message,
-            TraceId = traceId,
             Data = default,
-            ErrorCode = errorCode,
-            Errors = errors
         };
     }
 }

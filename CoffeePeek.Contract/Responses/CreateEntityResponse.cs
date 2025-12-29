@@ -36,8 +36,6 @@ public class CreateEntityResponse<T> : Response<T>
             IsSuccess = false,
             Message = message,
             Data = default,
-            Errors = errors,
-            ErrorCode = errorCode
         };
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CoffeePeek.Contract.Response.User;
+﻿namespace CoffeePeek.Contract.Responses.User;
 
 public class UpdateProfileResponse
 {

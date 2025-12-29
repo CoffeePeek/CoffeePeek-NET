@@ -4,7 +4,6 @@ using CoffeePeek.Account.Application.Features.Login;
 using CoffeePeek.Account.Application.Features.Logout;
 using CoffeePeek.Account.Application.Features.RefreshToken;
 using CoffeePeek.Account.Application.Features.RegisterUser;
-using CoffeePeek.AccountService.Extensions;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.Auth;
 using CoffeePeek.Contract.Responses.Login;
@@ -32,21 +31,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         var deviceName = Request.Headers.UserAgent.ToString();
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         var enriched = new LoginUserCommand(request.Email, request.Password, deviceName, ipAddress);
-        var result = await mediator.Send(enriched);
-        
-        Response.Cookies.Append(
-            CookiesExtension.RefreshToken,
-            result.Data.RefreshToken,
-            new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Path = "/",
-                IsEssential = true
-            });
-
-        return result;
+        return await mediator.Send(enriched);
     }
 
     [HttpPost("register")]
@@ -56,10 +41,8 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("refresh")]
-    public Task<Response<GetRefreshTokenResponse>> RefreshToken()
+    public Task<Response<GetRefreshTokenResponse>> RefreshToken([FromQuery] string refreshToken)
     {
-        var refreshToken = Request.Cookies.GetRefreshToken();
-        
         if (string.IsNullOrEmpty(refreshToken))
             throw new UnauthorizedException("Refresh token missing");
         

@@ -1,9 +1,9 @@
 using CoffeePeek.Account.Application.Common;
 using CoffeePeek.Account.Application.Common.Interfaces;
-using CoffeePeek.Account.Application.Features.CheckUserExistsByEmail;
 using CoffeePeek.Account.Application.Features.Login;
 using CoffeePeek.Account.Application.Features.OAuthLogin;
 using CoffeePeek.Account.Application.Mapper;
+using CoffeePeek.Account.Domain.Aggregates;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Repositories;
@@ -14,16 +14,19 @@ using CoffeePeek.Auth.Infrastructure.ExternalServices;
 using CoffeePeek.Auth.Infrastructure.Identity;
 using CoffeePeek.Auth.Infrastructure.Persistent;
 using CoffeePeek.Auth.Infrastructure.Persistent.Repositories;
+using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Middleware;
+using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using CoffeePeek.UserService.Models;
 using CoffePeek.ServiceDefaults;
+using Minio;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
 using JWTTokenService = CoffeePeek.Auth.Infrastructure.Identity.JWTTokenService;
 using OutboxEvent = CoffeePeek.Account.Domain.Entities.OutboxEvent;
@@ -43,7 +46,7 @@ builder.Services.AddControllersModule();
 builder.Services.AddSwaggerModule("CoffeePeek.AccountService", "v1");
 
 // Authentication & Authorization
-builder.Services.AddCookieAuthModule();
+builder.Services.AddJwtAuthModule();
 builder.Services.AddValidateOptions<JWTOptions>();
 builder.Services.AddAuthorization(options =>
 {
@@ -59,6 +62,7 @@ builder.Services.AddGenericRepository<OutboxEvent, AccountDbContext>();
 builder.Services.AddGenericRepository<Role, AccountDbContext>();
 builder.Services.AddGenericRepository<UserStatistics, AccountDbContext>();
 builder.Services.AddGenericRepository<User, AccountDbContext>();
+builder.Services.AddGenericRepository<PhotoMetadata, AccountDbContext>();
 
 // Messaging - only consumers for external service events (Shops)
 builder.Services.AddMessagingModule(x =>
@@ -104,6 +108,18 @@ builder.Services.AddScoped<IUserRepository>(provider =>
     
     return new CachedUserRepository(baseRepo, cache);
 });
+
+builder.Services.AddScoped<IStorageService, MinIOStorageService>();
+var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
+builder.Services
+    .AddMinio(configureClient => 
+        configureClient
+            .WithEndpoint(minIoOptions.Endpoint)
+            .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
+            .Build()
+    );
+
+
 // OAuth
 builder.Services.AddValidateOptions<OAuthGoogleOptions>();
 builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
@@ -123,12 +139,15 @@ builder.Services.AddMediatRModule(
 builder.Services.AddOutboxEventPublisher<OutboxEvent, AccountDbContext>();
 
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
-
 // Middleware pipeline
-app.UseExceptionHandling();
+app.UseExceptionHandler();
+
+app.MapDefaultEndpoints();
 
 // Swagger documentation
 app.UseSwaggerDocumentation();

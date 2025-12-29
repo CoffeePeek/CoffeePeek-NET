@@ -1,6 +1,6 @@
 ﻿using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
-using Coffeepeek.Moderation.Application.Abstractions;
+using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using MediatR;
 
 namespace CoffeePeek.Moderation.Application.Features.GenerateUploadUrl;

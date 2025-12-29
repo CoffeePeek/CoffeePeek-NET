@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+﻿using CoffeePeek.Account.Domain.Aggregates;
+using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.UserService.Models;
 using Microsoft.EntityFrameworkCore;
@@ -16,15 +17,29 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
     
     public DbSet<User> Users { get; set; }
     public DbSet<UserStatistics> UserStatistics { get; set; }
+    public DbSet<PhotoMetadata> Photos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>()
-            .HasOne(u => u.UserCredential)
-            .WithOne(uc => uc.User)
-            .HasForeignKey<User>(u => u.UserCredentialId)
-            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasOne(u => u.UserCredential)
+                .WithOne(uc => uc.User)
+                .HasForeignKey<User>(u => u.UserCredentialId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(u => u.PhotoMetadata)
+                .WithMany() 
+                .HasForeignKey(u => u.PhotoMetadataId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
 
+        modelBuilder.Entity<PhotoMetadata>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.StorageKey).IsRequired();
+        });
+        
         modelBuilder.Entity<RefreshToken>()
             .HasOne(x => x.UserCredential)
             .WithMany(uc => uc.RefreshTokens)
@@ -42,18 +57,18 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
                 .HasForeignKey<UserStatistics>(us => us.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        
-        modelBuilder.Entity<UserRole>()
-            .HasKey(ur => new { ur.UserId, ur.RoleId });
 
-        modelBuilder.Entity<UserRole>()
-            .HasOne(ur => ur.User)
-            .WithMany(u => u.UserRoles)
-            .HasForeignKey(ur => ur.UserId);
+        modelBuilder.Entity<UserRole>(entity =>
+        {
+            entity.HasKey(ur => new { ur.UserId, ur.RoleId });
 
-        modelBuilder.Entity<UserRole>()
-            .HasOne(ur => ur.Role)
-            .WithMany(r => r.UserRoles)
-            .HasForeignKey(ur => ur.RoleId);
+            entity.HasOne(ur => ur.User)
+                .WithMany(u => u.UserRoles)
+                .HasForeignKey(ur => ur.UserId);
+
+            entity.HasOne(ur => ur.Role)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.RoleId);
+        });
     }
 }
