@@ -23,6 +23,7 @@ public class JWTTokenService(IOptions<JWTOptions> options) : IJWTTokenService
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Locale, device),
             new(JwtRegisteredClaimNames.Address, ipAddress),
+            new(JwtRegisteredClaimNames.EmailVerified, user.Email),
         };
         claims.AddRange(user.UserRoles.Select(ur => new Claim(ClaimTypes.Role, ur.Role.Name)));
 

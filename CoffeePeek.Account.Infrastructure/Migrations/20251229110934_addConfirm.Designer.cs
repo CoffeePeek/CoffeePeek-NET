@@ -3,6 +3,7 @@ using System;
 using CoffeePeek.Auth.Infrastructure.Persistent;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoffeePeek.Auth.Infrastructure.Migrations
 {
     [DbContext(typeof(AccountDbContext))]
-    partial class AccountDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251229110934_addConfirm")]
+    partial class addConfirm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,6 +100,16 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.Property<string>("About")
                         .HasColumnType("text");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EmailConfirmationToken")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsSoftDelete")
                         .HasColumnType("boolean");
 
@@ -135,15 +148,6 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("EmailConfirmationExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("EmailConfirmationToken")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("OAuthProvider")
                         .HasColumnType("text");

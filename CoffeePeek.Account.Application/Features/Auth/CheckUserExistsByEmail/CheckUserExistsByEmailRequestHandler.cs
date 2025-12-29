@@ -3,7 +3,7 @@ using CoffeePeek.Account.Domain.Repositories;
 using CoffeePeek.Contract.Responses;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.CheckUserExistsByEmail;
+namespace CoffeePeek.Account.Application.Features.Auth.CheckUserExistsByEmail;
 
 public class CheckUserExistsByEmailRequestHandler(IUserCredentialsRepository userCredentialsRepository, EmailExistenceFilter emailExistenceFilter)
     : IRequestHandler<CheckUserExistsByEmailCommand, Response<bool>>

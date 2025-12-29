@@ -5,6 +5,8 @@ using CoffeePeek.Account.Application.Features.GetProfile;
 using CoffeePeek.Account.Application.Features.UpdateEmail;
 using CoffeePeek.Account.Application.Features.UpdateProfile;
 using CoffeePeek.Account.Application.Features.UpdateUserAvatar;
+using CoffeePeek.Account.Application.Features.User.Email.ConfirmEmail;
+using CoffeePeek.Account.Application.Features.User.Email.ResendEmailConfirmation;
 using CoffeePeek.Account.Domain.Aggregates;
 using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.User;
@@ -44,7 +46,7 @@ public class UserController(IMediator mediator) : Controller
         var command = new GenerateUploadAvatarUrlCommand(request);
         return await mediator.Send(command);
     }
-    
+
     [HttpPut("avatar")]
     [Authorize]
     [ProducesResponseType(typeof(PhotoMetadata), StatusCodes.Status200OK)]
@@ -56,7 +58,7 @@ public class UserController(IMediator mediator) : Controller
         var command = new UpdateUserAvatarCommand(User.GetUserIdOrThrow(), dto);
         return await mediator.Send(command);
     }
-    
+
     [HttpPut]
     [Authorize]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
@@ -67,7 +69,7 @@ public class UserController(IMediator mediator) : Controller
         var authenticatedRequest = command with { UserId = HttpContext.User.GetUserIdOrThrow() };
         return mediator.Send(authenticatedRequest, cancellationToken);
     }
-    
+
     [HttpPut("email")]
     [Authorize]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
@@ -87,5 +89,17 @@ public class UserController(IMediator mediator) : Controller
     {
         var request = new DeleteUserCommand(id);
         return mediator.Send(request, cancellationToken);
+    }
+
+    [HttpPost("resend-email-confirm")]
+    public Task<Response> ResendEmailConfirm()
+    {
+        return mediator.Send(new ResendEmailConfirmationCommand(User.GetUserIdOrThrow()));
+    }
+    
+    [HttpPost("confirm-email")]
+    public Task<Response> ConfirmEmail([FromQuery] string token)
+    {
+        return mediator.Send(new ConfirmEmailCommand(token));
     }
 }

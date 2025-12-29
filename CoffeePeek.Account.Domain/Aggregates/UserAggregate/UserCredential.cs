@@ -1,12 +1,17 @@
 ﻿using CoffeePeek.Account.Domain.Entities;
+using CoffeePeek.Account.Domain.Events;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Shared.Extensions.Exceptions;
+using Microsoft.AspNetCore.Http;
 
 namespace CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 
 public class UserCredential : Entity<Guid>
 {
     public string Email { get; private set; }
+    public bool EmailConfirmed { get; private set; }
+    public string? EmailConfirmationToken { get; private set; }
+    public DateTime? EmailConfirmationExpiresAt { get; private set; }
     public string PasswordHash { get; private set; }
     public string? OAuthProvider { get; private set; }
     public string? ProviderId { get; private set; }
@@ -22,11 +27,38 @@ public class UserCredential : Entity<Guid>
     
     private UserCredential(){}
 
-    internal UserCredential(string email, string passwordHash, Guid userId)
+    internal UserCredential(string email, string passwordHash, Guid userId, string emailConfirmationToken)
     {
         Email = email;
         PasswordHash = passwordHash;
         UserId = userId;
+        
+        EmailConfirmationToken = emailConfirmationToken;
+        EmailConfirmationExpiresAt = DateTime.UtcNow.AddMinutes(10);
+    }
+    
+    public void ConfirmEmail(string requestToken)
+    {
+        if (requestToken != EmailConfirmationToken)
+            throw new DomainException("Email confirmation token is not valid.");
+        
+        if (DateTime.UtcNow > EmailConfirmationExpiresAt)
+            throw new DomainException("Confirmation link has expired. Please request a new one.", statusCode: StatusCodes.Status410Gone);
+        
+        EmailConfirmed = true;
+        EmailConfirmationToken = null;
+        EmailConfirmationExpiresAt = null;
+        
+        AddDomainEvent(new EmailConfirmedDomainEvent());
+    }
+    
+    public void UpdateEmail(string email)
+    {
+        if (!string.IsNullOrWhiteSpace(email) && !email.Equals(Email, StringComparison.OrdinalIgnoreCase))
+        {
+            Email = email.Trim();
+            EmailConfirmed = false;
+        }
     }
     
     public void LinkExternalProvider(string provider, string providerId)

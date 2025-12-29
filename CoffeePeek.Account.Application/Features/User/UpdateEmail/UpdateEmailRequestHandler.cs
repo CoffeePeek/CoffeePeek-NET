@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+﻿using CoffeePeek.Account.Domain.Repositories;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
@@ -7,14 +7,14 @@ using MediatR;
 namespace CoffeePeek.Account.Application.Features.UpdateEmail;
 
 public class UpdateEmailRequestHandler(
-    IUserRepository userRepository, 
+    IUserCredentialsRepository userRepository, 
     IUnitOfWork unitOfWork)
     : IRequestHandler<UpdateEmailCommand, UpdateEntityResponse<string>>
 {
     public async Task<UpdateEntityResponse<string>> Handle(UpdateEmailCommand request,
         CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetById(request.UserId);
+        var user = await userRepository.GetById(request.UserId, cancellationToken);
 
         if (user == null)
         {

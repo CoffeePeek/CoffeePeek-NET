@@ -27,12 +27,12 @@ public class UserRepository(IGenericRepository<User> userRepository) : IUserRepo
 
     public async Task<bool> IsEmailUnique(string email, CancellationToken ct)
     {
-        return !await userRepository.AnyAsync(c => c.Email == email, ct);
+        return !await userRepository.AnyAsync(c => c.UserCredential.Email == email, ct);
     }
 
     public Task<User?> GetByEmail(string email, CancellationToken ct)
     {
-        return userRepository.FirstOrDefaultAsNoTrackingAsync(c => c.Email == email, ct);
+        return userRepository.FirstOrDefaultAsNoTrackingAsync(c => c.UserCredential.Email == email, ct);
     }
 
     public Task<User?> GetByProvider(string provider, string providerId, CancellationToken ct)

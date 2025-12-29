@@ -18,7 +18,7 @@ public class RefreshTokenHandler(
 {
     public async Task<Response<GetRefreshTokenResponse>> Handle(RefreshTokenCommand request, CancellationToken ct)
     {
-        var user = await repository.GetByIdWithTokens(request.UserId, ct);
+        var user = await repository.GetById(request.UserId, ct);
         if (user == null) return Response<GetRefreshTokenResponse>.Error("User not found");
 
         try 

@@ -2,6 +2,7 @@ using CoffeePeek.Account.Application.Common;
 using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Application.Features.Login;
 using CoffeePeek.Account.Application.Features.OAuthLogin;
+using CoffeePeek.Account.Application.Features.RegisterUser;
 using CoffeePeek.Account.Application.Mapper;
 using CoffeePeek.Account.Domain.Aggregates;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
@@ -27,6 +28,7 @@ using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using CoffeePeek.UserService.Models;
 using CoffePeek.ServiceDefaults;
 using Minio;
+using Resend;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
 using JWTTokenService = CoffeePeek.Auth.Infrastructure.Identity.JWTTokenService;
 using OutboxEvent = CoffeePeek.Account.Domain.Entities.OutboxEvent;
@@ -64,9 +66,17 @@ builder.Services.AddGenericRepository<UserStatistics, AccountDbContext>();
 builder.Services.AddGenericRepository<User, AccountDbContext>();
 builder.Services.AddGenericRepository<PhotoMetadata, AccountDbContext>();
 
+// Resend
+builder.Services.AddHttpClient<ResendClient>();
+builder.Services.Configure<ResendClientOptions>( o =>
+{
+    o.ApiToken = builder.Configuration["ResendApi"]!;
+} );
+builder.Services.AddTransient<IResend, ResendClient>();
+
 // Messaging - only consumers for external service events (Shops)
 builder.Services.AddMessagingModule(x =>
-{
+{   
     x.AddConsumer<CheckinCreatedEventConsumer>();
     x.AddConsumer<ReviewAddedEventConsumer>();
     x.AddConsumer<CoffeeShopApprovedAccountConsumer>();
@@ -90,6 +100,8 @@ builder.Services.AddSingleton<EmailExistenceFilter>(sp =>
     
     return new EmailExistenceFilter(expectedCount, errorRate);
 });
+
+builder.Services.AddSingleton<IEmailTemplateService, EmailTemplateService>();
 
 builder.Services.AddScoped<UserQueries>();
 builder.Services.AddScoped<IUserQueries>(provider =>

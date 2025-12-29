@@ -1,5 +1,4 @@
 ﻿using CoffeePeek.Account.Application.Common;
-using CoffeePeek.Account.Application.Features.CheckUserExistsByEmail;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 using CoffeePeek.Account.Domain.Repositories;
 using CoffeePeek.Account.Domain.Services;
@@ -31,7 +30,7 @@ public class RegisterUserHandler(
             }
 
             var passwordHash = passwordHasher.HashPassword(request.Password);
-            var user = User.Create(request.Email, request.UserName, passwordHash);
+            var user = User.Register(request.Email, request.UserName, passwordHash);
 
             var defaultRole = await roleRepository.GetRoleAsync(RoleConsts.User)
                               ?? throw new DomainException("Default role not found");
@@ -43,7 +42,7 @@ public class RegisterUserHandler(
 
             emailExistenceFilter.Add(request.Email);
 
-            logger.LogInformation("User {Email} registered with ID {UserId}", user.Email, user.Id);
+            logger.LogInformation("User {Email} registered with ID {UserId}", request.Email, user.Id);
             return CreateEntityResponse<Guid>.Success(user.Id);
         }
         catch (Exception ex)

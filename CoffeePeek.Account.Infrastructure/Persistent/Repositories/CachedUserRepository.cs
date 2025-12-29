@@ -14,11 +14,7 @@ public class CachedUserRepository(
 
         await redis.RemoveAsync(CacheKey.User.Profile(user.Id));
         await redis.RemoveAsync(CacheKey.User.ById(user.Id));
-        await redis.RemoveAsync(CacheKey.User.ByEmail(user.Email));
     }
-
-    public Task<User?> GetByIdAsync(Guid id) =>
-        redis.GetAsync(CacheKey.User.ById(id), () => decorated.GetById(id));
 
     public Task Add(User user, CancellationToken ct = default) => decorated.Add(user, ct);
 

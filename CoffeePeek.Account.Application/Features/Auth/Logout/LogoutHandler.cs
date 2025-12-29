@@ -17,7 +17,7 @@ public class LogoutHandler(
         {
             logger.LogInformation("Attempting to log out user with ID: {UserId}", request.UserId);
 
-            var user = await userRepository.GetByIdWithTokens(request.UserId, ct);
+            var user = await userRepository.GetById(request.UserId, ct);
             
             if (user == null)
             {

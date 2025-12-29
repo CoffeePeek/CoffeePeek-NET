@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.Account.Domain.Entities;
+using CoffeePeek.Account.Domain.Events;
 using CoffeePeek.UserService.Models;
 
 namespace CoffeePeek.Account.Domain.Aggregates.UserAggregate;
@@ -12,9 +13,6 @@ public class User : Entity<Guid>
     
     public string? About { get; private set; }
     
-    public string Email { get; private set; }
-    public bool EmailConfirmed { get; private set; }
-
     public bool IsSoftDelete { get; set; }
     
     public Guid UserCredentialId { get; private set; }
@@ -24,18 +22,20 @@ public class User : Entity<Guid>
     public UserStatistics UserStatistics { get; private set; }
     private User() { }
 
-    public static User Create(string email, string username, string passwordHash)
+    public static User Register(string email, string username, string passwordHash)
     {
         var userId = Guid.NewGuid();
+        var confirmationToken = Guid.NewGuid().ToString("N");
         
         var user = new User
         {
             Id = userId,
-            Email = email,
             Username = username,
-            UserCredential = new UserCredential(email, passwordHash, userId)
+            UserCredential = new UserCredential(email, passwordHash, userId, confirmationToken),
         };
-
+        
+        user.AddDomainEvent(new UserRegisteredDomainEvent(userId, email, username, confirmationToken));
+        
         return user;
     }
     
@@ -44,7 +44,6 @@ public class User : Entity<Guid>
         var userId = Guid.NewGuid();
         var user = new User {
             Id = userId,
-            Email = email,
             Username = email,
             UserCredential = UserCredential.CreateForOAuth(email, provider, providerId, userId)
         };
@@ -69,15 +68,6 @@ public class User : Entity<Guid>
     public void UpdatePhoto(PhotoMetadata photoMetadata)
     {
         PhotoMetadata = photoMetadata;
-    }
-    
-    public void UpdateEmail(string email)
-    {
-        if (!string.IsNullOrWhiteSpace(email) && !email.Equals(Email, StringComparison.OrdinalIgnoreCase))
-        {
-            Email = email.Trim();
-            EmailConfirmed = false;
-        }
     }
     
     public void AssignRole(Role role)
