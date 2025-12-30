@@ -92,12 +92,16 @@ public class UserController(IMediator mediator) : Controller
     }
 
     [HttpPost("resend-email-confirm")]
+    [Authorize]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     public Task<Response> ResendEmailConfirm()
     {
         return mediator.Send(new ResendEmailConfirmationCommand(User.GetUserIdOrThrow()));
     }
     
     [HttpPost("confirm-email")]
+    [Authorize]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     public Task<Response> ConfirmEmail([FromQuery] string token)
     {
         return mediator.Send(new ConfirmEmailCommand(token));

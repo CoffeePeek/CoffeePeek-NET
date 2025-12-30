@@ -10,6 +10,7 @@ public class PhotoMetadata : Entity<Guid>
     public long SizeBytes { get; private set; }
     public DateTime UploadedAt { get; private set; }
 
+    // ReSharper disable once UnusedMember.Local
     private PhotoMetadata() { }
 
     private PhotoMetadata(string fileName, string contentType, string storageKey, long length)

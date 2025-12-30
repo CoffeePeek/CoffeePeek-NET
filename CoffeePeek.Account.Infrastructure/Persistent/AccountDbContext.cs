@@ -1,9 +1,8 @@
 ﻿using CoffeePeek.Account.Domain.Aggregates;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.UserService.Models;
 using Microsoft.EntityFrameworkCore;
-using OutboxEvent = CoffeePeek.Account.Domain.Entities.OutboxEvent;
+using OutboxEvent = CoffeePeek.Account.Domain.Events.OutboxEvent;
 
 namespace CoffeePeek.Auth.Infrastructure.Persistent;
 
@@ -44,11 +43,6 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
             
             entity.HasIndex(x => x.Email).IsUnique();
             entity.HasIndex(x => x.EmailConfirmationToken).IsUnique();
-            
-            entity.HasOne(x => x.User)
-                .WithOne()
-                .HasForeignKey<UserCredential>(x => x.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
             
             entity.HasMany(x => x.RefreshTokens)
                 .WithOne()

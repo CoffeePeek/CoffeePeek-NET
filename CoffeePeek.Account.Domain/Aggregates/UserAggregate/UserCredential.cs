@@ -1,5 +1,4 @@
-﻿using CoffeePeek.Account.Domain.Entities;
-using CoffeePeek.Account.Domain.Events;
+﻿using CoffeePeek.Account.Domain.Events;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using Microsoft.AspNetCore.Http;
@@ -114,9 +113,7 @@ public class UserCredential : Entity<Guid>
     {
         if (_userRoles.Any(ur => ur.RoleId == role.Id)) return;
         
-        _userRoles.Add(new UserRole { 
-            UserId = Id, 
-            RoleId = role.Id, 
+        _userRoles.Add(new UserRole(Id, role.Id) { 
             Role = role 
         });
     }

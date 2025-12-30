@@ -2,6 +2,17 @@
 
 public class ShopPhoto : Entity<Guid>
 {
+    public Guid UserId { get; private set; }
+    public Guid ShopId { get; private set; }
+    
+    public DateTime CreatedAt { get; private set; }
+    public DateTime UpdatedAt { get; private set; }
+    
+    public string Url { get; private set; } = null!;
+
+    public virtual Shop Shop { get; private set; } = null!;
+    
+    // ReSharper disable once UnusedMember.Local
     private ShopPhoto() { }
 
     public ShopPhoto(Guid id, Guid userId, string url)
@@ -12,16 +23,6 @@ public class ShopPhoto : Entity<Guid>
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
-
-    public Guid UserId { get; private set; }
-    public Guid ShopId { get; private set; }
-    
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
-    
-    public string Url { get; private set; } = null!;
-
-    public virtual Shop Shop { get; private set; } = null!;
 
     #region Domain Methods
 

@@ -7,4 +7,12 @@ public class UserRole : Entity<Guid>
 
     public virtual UserCredential User { get; set; }
     public virtual Role Role { get; set; }
+    
+    private UserRole(){}
+    
+    internal UserRole(Guid userId, Guid roleId)
+    {
+        UserId = userId;
+        RoleId = roleId;
+    }
 }

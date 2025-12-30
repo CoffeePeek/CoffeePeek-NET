@@ -3,7 +3,7 @@ using CoffeePeek.Moderation.Domain.Entities;
 using Mapster;
 using MapsterMapper;
 
-namespace CoffeePeek.Moderation.Application.Mapper;
+namespace CoffeePeek.Moderation.Infrastructure.Mapper;
 
 public class MapsterConfiguration
 {
@@ -14,12 +14,13 @@ public class MapsterConfiguration
     }
 
     private static TypeAdapterConfig Configure()
-    {
+    {   
         var config = new TypeAdapterConfig();
 
         config.NewConfig<ModerationShop, ModerationShopDto>()
             .Map(dest => dest.ShopContact, src => src.ModerationShopContact)
-            .Map(dest => dest.ShopPhotos, src => src.ShopPhotos.Select(p => p.StorageKey).ToList())
+            .Map(dest => dest.ShopPhotos, src => src.ShopPhotos
+                .Select(p => $"https://bucket-dev-771f.up.railway.app/coffee.shops/{p.StorageKey}").ToList())
             .Map(d => d.EquipmentIds, s => s.ModerationShopEquipments.Select(x => x.Id))
             .Map(d => d.CoffeeBeanIds, s => s.ModerationCoffeeBeanShops.Select(x => x.Id))
             .Map(d => d.RoasterIds, s => s.ModerationRoasterShops.Select(x => x.Id))
