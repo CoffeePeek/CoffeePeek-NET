@@ -25,8 +25,8 @@ public static class OutboxDbContexts
             {
                 var dbContext = provider.GetRequiredService<AccountDbContext>();
                 var publishEndpoint = provider.GetRequiredService<IPublishEndpoint>();
-                var logger = provider.GetRequiredService<ILogger<OutboxProcessor<CoffeePeek.Account.Domain.Entities.OutboxEvent, AccountDbContext>>>();
-                return new OutboxProcessor<CoffeePeek.Account.Domain.Entities.OutboxEvent, AccountDbContext>(dbContext, publishEndpoint, logger);
+                var logger = provider.GetRequiredService<ILogger<OutboxProcessor<CoffeePeek.Account.Domain.Events.OutboxEvent, AccountDbContext>>>();
+                return new OutboxProcessor<CoffeePeek.Account.Domain.Events.OutboxEvent, AccountDbContext>(dbContext, publishEndpoint, logger);
             });
         }
 

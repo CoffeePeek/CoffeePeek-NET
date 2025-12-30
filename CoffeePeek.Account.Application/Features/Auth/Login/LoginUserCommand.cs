@@ -2,7 +2,7 @@
 using CoffeePeek.Contract.Responses.Login;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.Login;
+namespace CoffeePeek.Account.Application.Features.Auth.Login;
 
 public record LoginUserCommand(
     string Email,

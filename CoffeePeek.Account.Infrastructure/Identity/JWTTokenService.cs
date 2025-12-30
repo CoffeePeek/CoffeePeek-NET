@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using System.Text;
 using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

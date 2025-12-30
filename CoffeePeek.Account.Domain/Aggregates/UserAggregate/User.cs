@@ -1,5 +1,4 @@
-﻿using CoffeePeek.Account.Domain.Entities;
-using CoffeePeek.Account.Domain.Events;
+﻿using CoffeePeek.Account.Domain.Events;
 using CoffeePeek.UserService.Models;
 
 namespace CoffeePeek.Account.Domain.Aggregates.UserAggregate;
@@ -12,6 +11,7 @@ public class User : Entity<Guid>
     public bool PhoneNumberConfirmed { get; private set; }
     
     public string? About { get; private set; }
+    public DateTime DateTime { get; private set; } = DateTime.UtcNow;
     
     public bool IsSoftDelete { get; set; }
     

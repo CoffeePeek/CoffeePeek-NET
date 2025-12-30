@@ -9,6 +9,7 @@ public class Role : Entity<Guid>
     
     private readonly List<UserRole> _userRoles = [];
     public IReadOnlyCollection<UserRole> UserRoles => _userRoles.AsReadOnly();
+    // ReSharper disable once UnusedMember.Local
     private Role(){}
 
     internal Role(string name)

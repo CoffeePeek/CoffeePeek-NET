@@ -18,12 +18,13 @@ public static class MapsterConfiguration
         var config = new TypeAdapterConfig();
 
         config.NewConfig<User, UserDto>()
+            .Map(d => d.Email, s => s.UserCredential.Email)
             .Map(dest => dest.Roles, src => src.UserCredential.UserRoles.Select(x => x.Role.Name))
             .Map(dest => dest.ReviewCount, src => src.UserStatistics.ReviewCount)
             .Map(dest => dest.CheckInCount, src => src.UserStatistics.CheckInCount)
             .Map(dest => dest.AddedShopsCount, src => src.UserStatistics.AddedShopsCount)
             .Map(dest => dest.AvatarUrl, src => src.PhotoMetadata != null 
-                ? $"https://bucket-dev-771f.up.railway.app/coffee.shops/{src.PhotoMetadata.StorageKey}" 
+                ? $"https://bucket-dev-771f.up.railway.app/coffee.avatars/{src.PhotoMetadata.StorageKey}" 
                 : null);
             
         return config;

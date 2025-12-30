@@ -1,18 +1,5 @@
 ﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
 
-namespace CoffeePeek.Contract.Response.CoffeeShop;
+namespace CoffeePeek.Contract.Responses.CoffeeShop;
 
-public class GetCoffeeShopResponse
-{
-    public ShopDto Shop { get; init; }
-
-    public GetCoffeeShopResponse()
-    {
-        Shop = new ShopDto();
-    }
-
-    public GetCoffeeShopResponse(ShopDto shopDto)
-    {
-        Shop = shopDto;
-    }
-}
+public sealed record GetCoffeeShopResponse(ShopDto ShopDto);

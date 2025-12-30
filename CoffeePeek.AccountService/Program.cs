@@ -1,5 +1,6 @@
 using CoffeePeek.Account.Application.Common;
 using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Application.Features.Auth.Login;
 using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 using CoffeePeek.Account.Application.Features.Login;
 using CoffeePeek.Account.Application.Features.OAuthLogin;
@@ -7,7 +8,6 @@ using CoffeePeek.Account.Application.Features.RegisterUser;
 using CoffeePeek.Account.Application.Mapper;
 using CoffeePeek.Account.Domain.Aggregates;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Repositories;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Auth.Infrastructure;
@@ -32,7 +32,7 @@ using Minio;
 using Resend;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
 using JWTTokenService = CoffeePeek.Auth.Infrastructure.Identity.JWTTokenService;
-using OutboxEvent = CoffeePeek.Account.Domain.Entities.OutboxEvent;
+using OutboxEvent = CoffeePeek.Account.Domain.Events.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
 
