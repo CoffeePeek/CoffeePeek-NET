@@ -1,5 +1,0 @@
-configs:
-  - id: coffeepeek-core-rules
-    name: "CoffeePeek Core Analysis Rules"
-    profile:
-      name: qodana.recommended
