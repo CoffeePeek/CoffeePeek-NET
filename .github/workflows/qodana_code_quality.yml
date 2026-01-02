@@ -21,7 +21,7 @@ jobs:
                   QODANA_ENDPOINT: 'https://qodana.cloud'
               run: |
                   docker run --rm \
-                    -v $(pwd):/workspace \
+                    -v "${{ github.workspace }}:/workspace" \
                     -w /workspace \
                     -e QODANA_CONFIGURATIONS_TOKEN=$QODANA_CONFIGURATIONS_TOKEN \
                     jetbrains/qodana-configuration-uploader:latest \
