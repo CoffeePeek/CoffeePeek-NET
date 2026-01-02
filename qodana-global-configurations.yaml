@@ -1,0 +1,5 @@
+configs:
+  - id: coffee-peek-rules
+    name: "CoffeePeek Global Rules"
+    profile:
+      name: qodana.recommended
