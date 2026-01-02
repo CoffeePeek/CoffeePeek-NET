@@ -38,6 +38,7 @@ public class ResendEmailConfirmationHandler(
             HtmlBody = templateService.GetConfirmationHtml(user.User.Username, confirmationUrl)
         };
 
+        
         await resend.EmailSendAsync(message, cancellationToken);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
