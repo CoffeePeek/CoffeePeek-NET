@@ -8,21 +8,21 @@ on:
     workflow_dispatch:
 
 jobs:
-    qodana:
+    upload-qodana-config:
         runs-on: ubuntu-latest
-        permissions:
-            contents: write
-            pull-requests: write
-            checks: write
+
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
 
-            - name: 'Qodana Scan'
-              uses: JetBrains/qodana-action@v2024.3
+            - name: Run Qodana Configuration Uploader
               env:
-                  QODANA_TOKEN: ${{ secrets.QODANA_CONFIGURATIONS_TOKEN }}
-              with:
-                  args: --linter,jetbrains/qodana-dotnet:latest
+                  QODANA_CONFIGURATIONS_TOKEN: ${{ secrets.QODANA_CONFIGURATIONS_TOKEN }}
+                  QODANA_ENDPOINT: 'https://qodana.cloud'
+              run: |
+                  docker run --rm \
+                    -v $(pwd):/workspace \
+                    -w /workspace \
+                    -e QODANA_CONFIGURATIONS_TOKEN=$QODANA_CONFIGURATIONS_TOKEN \
+                    jetbrains/qodana-configuration-uploader:latest \
+                    --global-configs-file qodana-global-configurations.yaml
