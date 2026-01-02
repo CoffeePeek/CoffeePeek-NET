@@ -1,11 +1,10 @@
 using System.Text.Json.Serialization;
 using CoffeePeek.Contract.Dtos.Schedule;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using MediatR;
 
-namespace CoffeePeek.Contract.Requests.CoffeeShop;
+namespace CoffeePeek.Shops.Application.Commands.CoffeeShop;
 
 public class UpdateCoffeeShopRequest : IRequest<Response<UpdateCoffeeShopResponse>>
 {

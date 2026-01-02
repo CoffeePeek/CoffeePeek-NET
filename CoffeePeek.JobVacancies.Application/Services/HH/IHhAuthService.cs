@@ -1,4 +1,4 @@
-﻿namespace CoffeePeek.JobVacancies.Services;
+﻿namespace CoffeePeek.JobVacancies.Application.Services;
 
 public interface IHhAuthService
 {

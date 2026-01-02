@@ -1,5 +1,4 @@
 using CoffeePeek.Auth.Infrastructure.Persistent;
-using CoffeePeek.Moderation.Domain;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Shops.Infrastructure.Configuration;

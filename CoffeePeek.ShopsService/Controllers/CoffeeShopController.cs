@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop;
@@ -79,7 +77,7 @@ public class CoffeeShopController(IMediator mediator) : Controller
 
         var response = await mediator.Send(command);
 
-        if (response.IsSuccess && response.Data != null)
+        if (response is { IsSuccess: true, Data: not null })
         {
             AddPaginationHeaders(response.Data);
         }

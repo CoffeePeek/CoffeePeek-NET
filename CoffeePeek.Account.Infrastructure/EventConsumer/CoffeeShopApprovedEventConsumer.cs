@@ -1,6 +1,6 @@
+using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.UserService.Models;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 

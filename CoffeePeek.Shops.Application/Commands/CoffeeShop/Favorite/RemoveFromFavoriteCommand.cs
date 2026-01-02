@@ -1,7 +1,6 @@
-﻿using CoffeePeek.Contract.Response;
-using CoffeePeek.Contract.Responses;
+﻿using CoffeePeek.Contract.Responses;
 using MediatR;
 
-namespace CoffeePeek.Contract.Requests.CoffeeShop;
+namespace CoffeePeek.Shops.Application.Commands.CoffeeShop.Favorite;
 
 public record RemoveFromFavoriteCommand(Guid CoffeeShopId, Guid UserId) : IRequest<UpdateEntityResponse<Guid>>;

@@ -1,3 +1,4 @@
+using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 using CoffeePeek.Auth.Infrastructure.Persistent;
 using CoffeePeek.Contract.Events.Shops;
 using MassTransit;
@@ -16,7 +17,7 @@ public class ReviewAddedEventConsumer(AccountDbContext dbContext) : IConsumer<Re
 
         if (statistics == null)
         {
-            statistics = new UserService.Models.UserStatistics
+            statistics = new UserStatistics
             {
                 UserId = @event.UserId,
                 CheckInCount = 0,

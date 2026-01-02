@@ -1,7 +1,7 @@
-﻿using CoffeePeek.JobVacancies.Application.Services;
+﻿using CoffeePeek.JobVacancies.Application.Models.HH;
+using CoffeePeek.JobVacancies.Application.Services;
 using CoffeePeek.JobVacancies.Domain.Entities;
 using CoffeePeek.JobVacancies.Domain.Repositories;
-using CoffeePeek.JobVacancies.Models;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using MapsterMapper;

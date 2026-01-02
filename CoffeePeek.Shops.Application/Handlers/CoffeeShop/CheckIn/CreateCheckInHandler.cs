@@ -1,9 +1,9 @@
+using CoffeePeek.Contract.Dtos.Internal;
 using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shared.Infrastructure.Outbox;
 using CoffeePeek.Shops.Application.Services;
 using MediatR;
 
@@ -91,7 +91,7 @@ public class CreateCheckInHandler(
 
     private async Task InvalidateShopCacheAsync(Guid shopId)
     {
-        var cityId = (await cacheService.GetCities()).FirstOrDefault(s => s.Id == shopId)!.Id;
+        var cityId = (await cacheService.GetCities() ?? []).FirstOrDefault(s => s.Id == shopId)!.Id;
 
         await redisService.RemoveAsync(CacheKey.CachedShop.ById(shopId));
         if (cityId != Guid.Empty)

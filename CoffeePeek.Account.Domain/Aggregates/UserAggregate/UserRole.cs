@@ -8,6 +8,7 @@ public class UserRole : Entity<Guid>
     public virtual UserCredential User { get; set; }
     public virtual Role Role { get; set; }
     
+    // ReSharper disable once UnusedMember.Local
     private UserRole(){}
     
     internal UserRole(Guid userId, Guid roleId)

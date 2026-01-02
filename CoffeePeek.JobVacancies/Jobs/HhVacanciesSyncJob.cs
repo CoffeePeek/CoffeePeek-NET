@@ -1,6 +1,5 @@
 ﻿using CoffeePeek.JobVacancies.Application.Services;
 using CoffeePeek.JobVacancies.Domain.Repositories;
-using CoffeePeek.JobVacancies.Services;
 using Hangfire;
 
 namespace CoffeePeek.JobVacancies.Jobs;

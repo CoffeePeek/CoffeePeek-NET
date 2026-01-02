@@ -2,9 +2,6 @@ using CoffeePeek.Account.Application.Common;
 using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Application.Features.Auth.Login;
 using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
-using CoffeePeek.Account.Application.Features.Login;
-using CoffeePeek.Account.Application.Features.OAuthLogin;
-using CoffeePeek.Account.Application.Features.RegisterUser;
 using CoffeePeek.Account.Application.Mapper;
 using CoffeePeek.Account.Domain.Aggregates;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
@@ -26,7 +23,6 @@ using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
-using CoffeePeek.UserService.Models;
 using CoffePeek.ServiceDefaults;
 using Minio;
 using Resend;
@@ -46,7 +42,7 @@ builder.ConfigureEnvironment();
 builder.Services.AddControllersModule();
 
 // Swagger
-builder.Services.AddSwaggerModule("CoffeePeek.AccountService", "v1");
+builder.Services.AddSwaggerModule("CoffeePeek.AccountService");
 
 // Authentication & Authorization
 builder.Services.AddJwtAuthModule();
@@ -94,7 +90,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-builder.Services.AddSingleton<EmailExistenceFilter>(sp => 
+builder.Services.AddSingleton<EmailExistenceFilter>(_ => 
 {
     const int expectedCount = 1000000; 
     const double errorRate = 0.01;

@@ -1,5 +1,4 @@
 ﻿using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Account.Domain.Repositories;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using Microsoft.EntityFrameworkCore;
 

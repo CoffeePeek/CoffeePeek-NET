@@ -1,4 +1,4 @@
-﻿namespace CoffeePeek.JobVacancies.Models;
+﻿namespace CoffeePeek.JobVacancies.Application.Models.HH;
 
 public class HhExperience
 {

@@ -1,4 +1,4 @@
-﻿using CoffeePeek.JobVacancies.Models;
+﻿using CoffeePeek.JobVacancies.Application.Models.HH;
 
 namespace CoffeePeek.JobVacancies.Application.Services;
 

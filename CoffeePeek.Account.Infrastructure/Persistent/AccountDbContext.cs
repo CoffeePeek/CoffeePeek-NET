@@ -1,6 +1,5 @@
 ﻿using CoffeePeek.Account.Domain.Aggregates;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.UserService.Models;
 using Microsoft.EntityFrameworkCore;
 using OutboxEvent = CoffeePeek.Account.Domain.Events.OutboxEvent;
 

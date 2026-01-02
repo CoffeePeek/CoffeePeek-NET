@@ -1,11 +1,15 @@
-﻿using CoffeePeek.Shared.Extensions.Exceptions;
+﻿using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Shared.Extensions.Exceptions;
 
 namespace CoffeePeek.Account.Domain.Aggregates;
 
 public class PhotoMetadata : Entity<Guid>
 {
+    [MaxLength(255)]
     public string FileName { get; private set; } = null!;
+    [MaxLength(50)]
     public string ContentType { get; private set; } = null!;
+    [MaxLength(255)]
     public string StorageKey { get; private set; } = null!;
     public long SizeBytes { get; private set; }
     public DateTime UploadedAt { get; private set; }

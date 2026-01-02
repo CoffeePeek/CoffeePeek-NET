@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Account.Domain.Events;
+﻿using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Account.Domain.Events;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using Microsoft.AspNetCore.Http;
@@ -9,10 +10,14 @@ public class UserCredential : Entity<Guid>
 {
     public string Email { get; private set; }
     public bool EmailConfirmed { get; private set; }
+    [MaxLength(100)]
     public string? EmailConfirmationToken { get; private set; }
     public DateTime? EmailConfirmationExpiresAt { get; private set; }
+    [MaxLength(255)]
     public string PasswordHash { get; private set; }
+    [MaxLength(55)]
     public string? OAuthProvider { get; private set; }
+    [MaxLength(255)]
     public string? ProviderId { get; private set; }
     public Guid UserId { get; private set; }
     

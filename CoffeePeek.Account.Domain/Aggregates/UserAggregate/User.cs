@@ -1,15 +1,17 @@
-﻿using CoffeePeek.Account.Domain.Events;
-using CoffeePeek.UserService.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Account.Domain.Events;
 
 namespace CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 
 public class User : Entity<Guid>
 {
+    [MaxLength(30)]
     public string Username { get; private set; }
+    [MaxLength(30)]
 
     public string? PhoneNumber { get; private set; }
     public bool PhoneNumberConfirmed { get; private set; }
-    
+    [MaxLength(255)]
     public string? About { get; private set; }
     public DateTime DateTime { get; private set; } = DateTime.UtcNow;
     
@@ -17,7 +19,7 @@ public class User : Entity<Guid>
     
     public Guid UserCredentialId { get; private set; }
     public Guid? PhotoMetadataId { get; set; }
-    public PhotoMetadata PhotoMetadata { get; private set; }
+    public PhotoMetadata? PhotoMetadata { get; private set; }
     public UserCredential UserCredential { get; private set; }
     public UserStatistics UserStatistics { get; private set; }
     private User() { }

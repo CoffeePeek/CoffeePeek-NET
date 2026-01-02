@@ -1,4 +1,4 @@
-using CoffeePeek.JobVacancies.Models.Dtos;
+using CoffeePeek.JobVacancies.Application.Models.Dtos;
 
 namespace CoffeePeek.JobVacancies.Application.Models.Responses;
 

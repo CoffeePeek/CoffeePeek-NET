@@ -35,7 +35,7 @@ public class ResendEmailConfirmationHandler(
             From = "CoffeePeek <hello@resend.dev>",
             To = user.Email,
             Subject = "Perfectly roasted beans are waiting for you! ☕",
-            HtmlBody = templateService.GetConfirmationHtml(user.User.Username, confirmationUrl)
+            HtmlBody = templateService.GetConfirmationHtml(user.User!.Username, confirmationUrl)
         };
 
         

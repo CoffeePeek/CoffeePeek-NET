@@ -1,13 +1,11 @@
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Account.Domain.Repositories;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.User;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeePeek.Account.Application.Features.UpdateProfile;
+namespace CoffeePeek.Account.Application.Features.User.UpdateProfile;
 
 public class UpdateProfileHandler(
     IUserRepository userRepository,

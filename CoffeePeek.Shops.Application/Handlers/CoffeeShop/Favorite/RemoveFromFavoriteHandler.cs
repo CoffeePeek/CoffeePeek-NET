@@ -2,6 +2,7 @@
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shops.Application.Commands.CoffeeShop.Favorite;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
 using MediatR;

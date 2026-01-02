@@ -1,4 +1,4 @@
-﻿namespace CoffeePeek.JobVacancies.Models.Dtos;
+﻿namespace CoffeePeek.JobVacancies.Application.Models.Dtos;
 
 public record JobVacancyDto(
     string ExternalId,
