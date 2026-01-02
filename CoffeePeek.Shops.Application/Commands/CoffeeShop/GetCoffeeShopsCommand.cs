@@ -1,8 +1,8 @@
-using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.CoffeeShop;
 using MediatR;
 
-namespace CoffeePeek.Contract.Requests.CoffeeShop;
+namespace CoffeePeek.Shops.Application.Commands.CoffeeShop;
 
 public record GetCoffeeShopsCommand(Guid CityId, int PageNumber, int PageSize)
     : IRequest<Response<GetCoffeeShopsResponse>>

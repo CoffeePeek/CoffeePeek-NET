@@ -12,7 +12,7 @@ namespace Coffeepeek.Moderation.Application.Features.CreateShop;
 
 public class SendCoffeeShopToModerationCommand : IRequest<Response<SendCoffeeShopToModerationResponse>>
 {
-    [Required]
+    [Required, MaxLength(55)]
     public string Name { get; set; }
     [Required]
     public string NotValidatedAddress { get; set; }

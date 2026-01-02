@@ -37,6 +37,7 @@ public class Shop : Entity<Guid>
     public virtual ICollection<Review> Reviews { get; private set; } = new HashSet<Review>();
     public virtual ICollection<CheckIn> CheckIns { get; private set; } = new HashSet<CheckIn>();
 
+    // ReSharper disable once UnusedMember.Local
     private Shop()
     {
     }

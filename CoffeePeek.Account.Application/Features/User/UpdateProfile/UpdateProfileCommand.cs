@@ -3,7 +3,7 @@ using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.User;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.UpdateProfile;
+namespace CoffeePeek.Account.Application.Features.User.UpdateProfile;
 
 public record UpdateProfileCommand : IRequest<Response<UpdateProfileResponse>>
 {

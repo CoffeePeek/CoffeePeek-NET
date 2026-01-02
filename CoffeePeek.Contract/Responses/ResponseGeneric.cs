@@ -31,7 +31,7 @@ public class Response<TData> : Response
     /// <summary>
     /// Creates an error response with message and optional validation errors.
     /// </summary>
-    public static Response<TData> Error(string message)
+    public new static Response<TData> Error(string message)
     {
         return new Response<TData>
         {

@@ -3,6 +3,7 @@ using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop.Review;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Application.Commands.CoffeeShop.Review;
 using MapsterMapper;
 using MediatR;
 

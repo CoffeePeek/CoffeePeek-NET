@@ -1,6 +1,6 @@
-﻿using CoffeePeek.JobVacancies.Models.Responses;
+﻿using CoffeePeek.JobVacancies.Application.Models.HH.Responses;
 
-namespace CoffeePeek.JobVacancies.Services;
+namespace CoffeePeek.JobVacancies.Application.Services;
 
 public interface ICitySyncService
 {

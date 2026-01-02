@@ -2,10 +2,10 @@ using Coffeepeek.Moderation.Application.Abstractions;
 using Coffeepeek.Moderation.Application.Features.CreateShop;
 using CoffeePeek.Moderation.Application.Features.CreateShop;
 using Coffeepeek.Moderation.Application.Features.GetAllModerationShops;
-using CoffeePeek.Moderation.Application.Mapper;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Moderation.Infrastructure;
+using CoffeePeek.Moderation.Infrastructure.Mapper;
 using CoffeePeek.Moderation.Infrastructure.Services;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
@@ -31,7 +31,7 @@ builder.ConfigureEnvironment();
 
 // Controllers and Swagger
 builder.Services.AddControllersModule();
-builder.Services.AddSwaggerModule("Coffee Peek ModerationService", "v1");
+builder.Services.AddSwaggerModule("Coffee Peek ModerationService");
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ModerationDb);

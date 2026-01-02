@@ -26,6 +26,12 @@ public class ExternalAuthService(
         var newUser = User.CreateExternal(email, provider, providerId);
 
         var role = await roleRepository.GetRoleAsync(RoleConsts.User);
+
+        if (role == null)
+        {
+            throw new ApplicationException($"Role {RoleConsts.User} not found");
+        }
+        
         newUser.AssignRole(role);
 
         await userRepository.Add(newUser, ct);

@@ -29,6 +29,7 @@ public static class CorsModule
                     throw new InvalidOperationException("CORS enabled but ALLOWED_ORIGINS is empty");
 
                 policy
+                    .WithOrigins(origins)
                     .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
@@ -39,11 +40,4 @@ public static class CorsModule
         return services;
     }
 
-    public static bool IsCorsEnabled()
-    {
-#if DEBUG
-        return true;
-#endif
-        return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ALLOWED_ORIGINS"));
-    }
 }

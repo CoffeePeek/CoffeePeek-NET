@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Account.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Account.Domain.Events;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Shared.Extensions.Exceptions;
@@ -10,10 +10,14 @@ public class UserCredential : Entity<Guid>
 {
     public string Email { get; private set; }
     public bool EmailConfirmed { get; private set; }
+    [MaxLength(100)]
     public string? EmailConfirmationToken { get; private set; }
     public DateTime? EmailConfirmationExpiresAt { get; private set; }
+    [MaxLength(255)]
     public string PasswordHash { get; private set; }
+    [MaxLength(55)]
     public string? OAuthProvider { get; private set; }
+    [MaxLength(255)]
     public string? ProviderId { get; private set; }
     public Guid UserId { get; private set; }
     
@@ -114,9 +118,7 @@ public class UserCredential : Entity<Guid>
     {
         if (_userRoles.Any(ur => ur.RoleId == role.Id)) return;
         
-        _userRoles.Add(new UserRole { 
-            UserId = Id, 
-            RoleId = role.Id, 
+        _userRoles.Add(new UserRole(Id, role.Id) { 
             Role = role 
         });
     }

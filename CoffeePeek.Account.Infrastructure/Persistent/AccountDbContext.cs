@@ -1,9 +1,7 @@
 ﻿using CoffeePeek.Account.Domain.Aggregates;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Account.Domain.Entities;
-using CoffeePeek.UserService.Models;
 using Microsoft.EntityFrameworkCore;
-using OutboxEvent = CoffeePeek.Account.Domain.Entities.OutboxEvent;
+using OutboxEvent = CoffeePeek.Account.Domain.Events.OutboxEvent;
 
 namespace CoffeePeek.Auth.Infrastructure.Persistent;
 
@@ -32,6 +30,28 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
                 .WithMany() 
                 .HasForeignKey(u => u.PhotoMetadataId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<UserCredential>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Email)
+                .IsRequired()
+                .HasMaxLength(255);
+            
+            entity.HasIndex(x => x.Email).IsUnique();
+            entity.HasIndex(x => x.EmailConfirmationToken).IsUnique();
+            
+            entity.HasMany(x => x.RefreshTokens)
+                .WithOne()
+                .HasForeignKey(x => x.UserCredentialId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(x => x.UserRoles)
+                .WithOne()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<PhotoMetadata>(entity =>

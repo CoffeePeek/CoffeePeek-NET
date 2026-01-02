@@ -1,7 +1,6 @@
 ﻿using System.Net.Http.Json;
-using CoffeePeek.JobVacancies.Configuration;
-using CoffeePeek.JobVacancies.Models.Responses;
-using CoffeePeek.JobVacancies.Services;
+using CoffeePeek.JobVacancies.Application.Models.HH.Responses;
+using CoffeePeek.JobVacancies.Application.Services;
 using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.JobVacancies.Infrastructure.Services;

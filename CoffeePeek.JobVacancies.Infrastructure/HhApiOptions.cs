@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CoffeePeek.JobVacancies.Configuration;
+namespace CoffeePeek.JobVacancies.Infrastructure;
 
 public class HhApiOptions
 {

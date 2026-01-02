@@ -1,3 +1,4 @@
+#nullable enable
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Dtos.Shop;
@@ -9,7 +10,7 @@ public class ShopDto
 {
     public Guid Id { get; set; }
     public Guid CityId { get; set; }
-    public string Name { get; set; }
+    public required string Name { get; set; }
     public string? Description { get; set; }
     public string[]? ImageUrls { get; set; }
     

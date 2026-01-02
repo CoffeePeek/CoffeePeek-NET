@@ -1,6 +1,5 @@
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 

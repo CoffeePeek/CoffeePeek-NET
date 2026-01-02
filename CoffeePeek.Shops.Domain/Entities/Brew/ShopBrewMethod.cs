@@ -1,8 +1,7 @@
 ﻿namespace CoffeePeek.Shops.Domain.Entities;
 
-public class ShopBrewMethod
+public class ShopBrewMethod : Entity<Guid>
 {
-    public Guid Id { get; set; }
     public Guid BrewMethodId { get; set; }
     public Guid ShopId { get; set; }
     

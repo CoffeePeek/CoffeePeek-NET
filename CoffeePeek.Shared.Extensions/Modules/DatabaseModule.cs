@@ -7,44 +7,26 @@ namespace CoffeePeek.Shared.Extensions.Modules;
 
 public static class DatabaseModule
 {
-    public static IServiceCollection AddDatabaseModule<TDbContext>(
-        this IServiceCollection services,
-        string? connectionStringOverride = null)
-        where TDbContext : class
+    extension(IServiceCollection services)
     {
-        var connectionString = connectionStringOverride ?? DatabaseConnectionHelper.GetDatabaseConnectionString();
-        var dbOptions = services.AddValidateOptions<PostgresCpOptions>();
-        
-        if (!string.IsNullOrEmpty(connectionString))
+        public PostgresCpOptions GetDatabaseOptions(IConfiguration configuration,
+            string databaseName,
+            string? connectionStringOverride = null)
         {
-            dbOptions.ConnectionString = connectionString;
+            var connectionString =
+                connectionStringOverride
+                ?? configuration.GetConnectionString(databaseName)
+                ?? DatabaseConnectionHelper.GetDatabaseConnectionString();
+
+            var dbOptions = services.AddValidateOptions<PostgresCpOptions>();
+
+            if (!string.IsNullOrWhiteSpace(connectionString))
+            {
+                dbOptions.ConnectionString = connectionString;
+            }
+
+            return dbOptions;
         }
-        
-        // Note: AddEfCoreData should be called separately as it's in CoffeePeek.Data.Extensions
-        // This module only prepares the connection string and options
-        
-        return services;
-    }
-    
-    public static PostgresCpOptions GetDatabaseOptions(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        string databaseName,
-        string? connectionStringOverride = null)
-    {
-        var connectionString =
-            connectionStringOverride
-            ?? configuration.GetConnectionString(databaseName)
-            ?? DatabaseConnectionHelper.GetDatabaseConnectionString();
-
-        var dbOptions = services.AddValidateOptions<PostgresCpOptions>();
-
-        if (!string.IsNullOrWhiteSpace(connectionString))
-        {
-            dbOptions.ConnectionString = connectionString;
-        }
-
-        return dbOptions;
     }
 }
 

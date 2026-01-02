@@ -1,8 +1,6 @@
 using System.Text.Json;
 using CoffeePeek.Shared.Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
-using System.Text.Json;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 
 namespace CoffeePeek.Shared.Extensions.Outbox;
@@ -13,22 +11,16 @@ namespace CoffeePeek.Shared.Extensions.Outbox;
 /// </summary>
 /// <typeparam name="TOutboxEvent">Type of outbox event entity in the database</typeparam>
 /// <typeparam name="TDbContext">Type of database context</typeparam>
-public class OutboxEventPublisher<TOutboxEvent, TDbContext> : IOutboxEventPublisher
+public class OutboxEventPublisher<TOutboxEvent, TDbContext>(TDbContext dbContext) : IOutboxEventPublisher
     where TOutboxEvent : class, IOutboxEventEntity, new()
     where TDbContext : DbContext
 {
-    private readonly TDbContext _dbContext;
-    private readonly JsonSerializerOptions _jsonOptions;
-
-    public OutboxEventPublisher(TDbContext dbContext)
+    private readonly TDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+    private readonly JsonSerializerOptions _jsonOptions = new()
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = false
-        };
-    }
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = false
+    };
 
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : class
     {

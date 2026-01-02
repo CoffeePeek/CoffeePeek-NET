@@ -1,5 +1,4 @@
 using CoffeePeek.Contract.Constants;
-using Coffeepeek.Moderation.Application.Abstractions;
 using Coffeepeek.Moderation.Application.Common.Models;
 using Coffeepeek.Moderation.Application.Features.CreateShop;
 using CoffeePeek.Moderation.Domain.Entities;

@@ -1,8 +1,7 @@
 ﻿namespace CoffeePeek.Shops.Domain.Entities;
 
-public class CoffeeBean
+public class CoffeeBean : Entity<Guid>
 {
-    public Guid Id { get; set; }
     public string Name { get; set; }
 
     public virtual ICollection<CoffeeBeanShop> CoffeeBeanShops { get; set; } = new HashSet<CoffeeBeanShop>();

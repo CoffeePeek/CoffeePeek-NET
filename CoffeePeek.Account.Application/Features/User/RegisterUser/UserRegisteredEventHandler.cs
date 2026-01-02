@@ -2,14 +2,16 @@
 using CoffeePeek.Account.Domain.Events;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Resend;
 
-namespace CoffeePeek.Account.Application.Features.RegisterUser;
+namespace CoffeePeek.Account.Application.Features.User.RegisterUser;
 
 public class UserRegisteredEventHandler(
     IResend resend,
     IConfiguration config,
-    IEmailTemplateService templateService) : INotificationHandler<UserRegisteredDomainEvent>
+    IEmailTemplateService templateService,
+    ILogger<UserRegisteredEventHandler> logger) : INotificationHandler<UserRegisteredDomainEvent>
 {
     public async Task Handle(UserRegisteredDomainEvent notification, CancellationToken cancellationToken)
     {
@@ -17,12 +19,20 @@ public class UserRegisteredEventHandler(
 
         var message = new EmailMessage
         {
-            From = "CoffeePeek <hello@resend.dev>",
+            From = "CoffeePeek <hello@coffee-peek.by>",
             To = notification.Email,
             Subject = "Perfectly roasted beans are waiting for you! ☕",
             HtmlBody = templateService.GetConfirmationHtml(notification.Username, confirmationUrl)
         };
 
-        await resend.EmailSendAsync(message, cancellationToken);
+        try
+        {
+            await resend.EmailSendAsync(message, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e.Message);
+            throw;
+        }
     }
 }

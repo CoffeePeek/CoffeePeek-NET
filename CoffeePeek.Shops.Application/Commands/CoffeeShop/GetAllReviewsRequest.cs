@@ -1,10 +1,9 @@
 ﻿using System.Text.Json.Serialization;
-using CoffeePeek.Contract.Response;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using MediatR;
 
-namespace CoffeePeek.Contract.Requests.CoffeeShop;
+namespace CoffeePeek.Shops.Application.Commands.CoffeeShop;
 
 public class GetAllReviewsRequest(Guid userId, int pageNumber = 1, int pageSize = 10)
     : IRequest<Response<GetAllReviewsResponse>>

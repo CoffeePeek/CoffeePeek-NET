@@ -1,6 +1,6 @@
 ﻿namespace CoffeePeek.Account.Domain.Events;
 
-public record EmailConfirmedDomainEvent() : IDomainEvent
+public record EmailConfirmedDomainEvent : IDomainEvent
 {
-    public DateTime OccurredOn { get; }
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
 }

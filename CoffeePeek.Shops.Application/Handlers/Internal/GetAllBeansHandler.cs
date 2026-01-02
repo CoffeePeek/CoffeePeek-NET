@@ -1,12 +1,10 @@
-﻿using CoffeePeek.Contract.Requests.Internal;
-using CoffeePeek.Contract.Response;
-using CoffeePeek.Contract.Response.Internal;
-using CoffeePeek.Contract.Responses;
+﻿using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.Internal;
+using CoffeePeek.Shops.Application.Commands.Internal;
 using CoffeePeek.Shops.Application.Services;
 using MediatR;
 
-namespace CoffeePeek.ShopsService.Handlers.Internal;
+namespace CoffeePeek.Shops.Application.Handlers.Internal;
 
 public class GetAllBeansHandler(ICacheService cacheService) : IRequestHandler<GetAllBeansCommand, Response<GetAllBeansResponse>>
 {

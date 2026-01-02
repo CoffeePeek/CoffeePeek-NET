@@ -29,7 +29,7 @@ public class UpdateEntityResponse<T> : Response<T>
     /// <summary>
     /// Creates an error response for entity update.
     /// </summary>
-    public static UpdateEntityResponse<T> Error(string message)
+    public new static UpdateEntityResponse<T> Error(string message)
     {
         return new UpdateEntityResponse<T>
         {
