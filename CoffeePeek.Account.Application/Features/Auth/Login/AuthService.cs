@@ -23,8 +23,13 @@ public class AuthService(
             .Include(x => x.UserRoles)
             .ThenInclude(x => x.Role)
             .FirstOrDefaultAsync(x => x.Email == email);
+
+        if (userCredential == null)
+        {
+            throw new NotFoundException("User not found");
+        }
         
-        if (userCredential == null || !userCredential.ValidatePassword(password, passwordHasher))
+        if (!userCredential.ValidatePassword(password, passwordHasher))
         {
             throw new UnauthorizedException("Invalid credentials");
         }

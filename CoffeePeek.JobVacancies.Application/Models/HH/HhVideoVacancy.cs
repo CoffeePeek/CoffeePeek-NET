@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CoffeePeek.JobVacancies.Models;
+namespace CoffeePeek.JobVacancies.Application.Models.HH;
 
 public class HhVideoVacancy
 {

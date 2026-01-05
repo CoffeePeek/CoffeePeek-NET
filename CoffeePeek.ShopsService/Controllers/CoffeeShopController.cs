@@ -1,13 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
-using CoffeePeek.Contract.Responses.CoffeeShop.Favorite;
-using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeePeek.ShopsService.Controllers;
@@ -23,13 +19,11 @@ public class CoffeeShopController(IMediator mediator) : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<Response<GetCoffeeShopsResponse>> GetCoffeeShops(
-        [FromQuery] Guid? cityId,
-        [FromHeader(Name = "X-Page-Number")] int pageNumber = 1,
-        [FromHeader(Name = "X-Page-Size")] int pageSize = 10)
+        [FromQuery, Required] Guid cityId,
+        [FromQuery, Required] int page,
+        [FromQuery, Required] int pageSize)
     {
-        cityId ??= BusinessConstants.DefaultUnAuthorizedCityId;
-        
-        var response = await mediator.Send(new GetCoffeeShopsCommand(cityId.Value, pageNumber, pageSize));
+        var response = await mediator.Send(new GetCoffeeShopsCommand(cityId, page, pageSize));
 
         AddPaginationHeaders(response.Data);
 
@@ -83,7 +77,7 @@ public class CoffeeShopController(IMediator mediator) : Controller
 
         var response = await mediator.Send(command);
 
-        if (response.IsSuccess && response.Data != null)
+        if (response is { IsSuccess: true, Data: not null })
         {
             AddPaginationHeaders(response.Data);
         }

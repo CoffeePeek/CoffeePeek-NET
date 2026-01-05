@@ -2,7 +2,4 @@
 
 namespace CoffeePeek.Contract.Responses.CoffeeShop;
 
-public class GetCoffeeShopResponse(ShopDto shopDto)
-{
-    public ShopDto Shop { get; init; } = shopDto;
-}
+public sealed record GetCoffeeShopResponse(ShopDto ShopDto);

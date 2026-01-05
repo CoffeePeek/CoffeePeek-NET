@@ -1,4 +1,4 @@
-namespace CoffeePeek.JobVacancies.Models.Responses;
+namespace CoffeePeek.JobVacancies.Application.Models.HH.Responses;
 
 public class HhAreaNode
 {

@@ -4,10 +4,10 @@ using CoffeePeek.JobVacancies.Application.Services;
 using CoffeePeek.JobVacancies.Configuration;
 using CoffeePeek.JobVacancies.Domain.Entities;
 using CoffeePeek.JobVacancies.Domain.Repositories;
+using CoffeePeek.JobVacancies.Infrastructure;
 using CoffeePeek.JobVacancies.Infrastructure.Configuration;
 using CoffeePeek.JobVacancies.Infrastructure.Services;
 using CoffeePeek.JobVacancies.Jobs;
-using CoffeePeek.JobVacancies.Services;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Modules;
@@ -33,7 +33,7 @@ builder.ConfigureEnvironment();
 builder.Services.AddControllersModule();
 
 // Swagger
-builder.Services.AddSwaggerModule("CoffeePeek Job vacancies API", "v1");
+builder.Services.AddSwaggerModule("CoffeePeek Job vacancies API");
 
 // Authentication & Authorization
 builder.Services.AddJwtAuthModule();
@@ -66,7 +66,7 @@ builder.Services.AddHangfire((sp, config) =>
     config
         .UseSimpleAssemblyNameTypeSerializer()
         .UseRecommendedSerializerSettings()
-        .UsePostgreSqlStorage(cpDbOptions.ConnectionString);
+        .UsePostgreSqlStorage(options => options.UseNpgsqlConnection(cpDbOptions.ConnectionString));
 });
 builder.Services.AddHangfireServer();
 
@@ -95,10 +95,7 @@ app.UseExceptionHandler();
 
 app.MapDefaultEndpoints();
 
-if (CorsModule.IsCorsEnabled())
-{
-    app.UseCors();
-}
+app.UseCors();
 
 // Swagger documentation
 app.UseSwaggerDocumentation();

@@ -1,9 +1,8 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
-using CoffeePeek.JobVacancies.Configuration;
-using CoffeePeek.JobVacancies.Models;
-using CoffeePeek.JobVacancies.Models.Responses;
-using CoffeePeek.JobVacancies.Services;
+using CoffeePeek.JobVacancies.Application.Models.HH;
+using CoffeePeek.JobVacancies.Application.Models.HH.Responses;
+using CoffeePeek.JobVacancies.Application.Services;
 using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.JobVacancies.Infrastructure.Services;
@@ -27,17 +26,8 @@ public class HhApiService : IHhApiService
             httpClient.DefaultRequestHeaders.Add("User-Agent", _apiOptions.UserAgent);
     }
 
-    private async Task EnsureAccessTokenAsync(CancellationToken cancellationToken)
-    {
-        var token = await _authService.GetAccessTokenAsync(cancellationToken);
-        _httpClient.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-    }
-    
     public async Task<List<HhAreaNode>> GetAreas(CancellationToken cancellationToken = default)
     {
-        //await EnsureAccessTokenAsync(cancellationToken);
-        
         var url = $"{_apiOptions.BaseUrl.TrimEnd('/')}/areas";
 
         var response = await _httpClient.GetAsync(url,cancellationToken);
@@ -75,7 +65,7 @@ public class HhApiService : IHhApiService
                     cancellationToken
                 ) ?? new HhVacancyResponse();
 
-                allItems.AddRange(hhResponse.Items.Where(x => areaIds.Contains(int.Parse(x.Area.Id))));
+                allItems.AddRange(hhResponse.Items.Where(x => areaIds.Contains(int.Parse(x.Area?.Id!))));
             }
         }
 

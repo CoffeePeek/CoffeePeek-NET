@@ -1,9 +1,19 @@
-﻿namespace CoffeePeek.Account.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class Role
+namespace CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+
+public class Role : Entity<Guid>
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; }
+    [MaxLength(255)]
+    public string Name { get; private set; }
     
-    public virtual ICollection<UserRole> UserRoles { get; set; }
+    private readonly List<UserRole> _userRoles = [];
+    public IReadOnlyCollection<UserRole> UserRoles => _userRoles.AsReadOnly();
+    // ReSharper disable once UnusedMember.Local
+    private Role(){}
+
+    internal Role(string name)
+    {
+        Name = name;
+    }
 }

@@ -1,8 +1,7 @@
 ﻿namespace CoffeePeek.Shops.Domain.Entities;
 
-public class ShopSchedule
+public class ShopSchedule : Entity<Guid>
 {
-    public Guid Id { get; set; }
     public Guid ShopId { get; set; }
     public DayOfWeek DayOfWeek { get; set; }
     public bool IsClosed { get; set; }

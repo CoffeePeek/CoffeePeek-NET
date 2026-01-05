@@ -1,7 +1,6 @@
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Enums;
-using Newtonsoft.Json;
 
 namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 

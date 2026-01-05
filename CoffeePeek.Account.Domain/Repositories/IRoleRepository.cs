@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Account.Domain.Entities;
+﻿using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 
 namespace CoffeePeek.Account.Domain.Repositories;
 

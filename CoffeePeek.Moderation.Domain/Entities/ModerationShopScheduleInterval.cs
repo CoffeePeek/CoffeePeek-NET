@@ -10,6 +10,7 @@ public sealed class ModerationShopScheduleInterval : Entity<Guid>
 
     public ModerationShopSchedule Schedule { get; private set; }
 
+    // ReSharper disable once UnusedMember.Local
     private ModerationShopScheduleInterval() { }
 
     internal ModerationShopScheduleInterval(TimeSpan openTime, TimeSpan closeTime)

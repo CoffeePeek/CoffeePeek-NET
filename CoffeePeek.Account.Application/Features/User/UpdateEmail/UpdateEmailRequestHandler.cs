@@ -4,7 +4,7 @@ using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.UpdateEmail;
+namespace CoffeePeek.Account.Application.Features.User.UpdateEmail;
 
 public class UpdateEmailRequestHandler(
     IUserCredentialsRepository userRepository, 

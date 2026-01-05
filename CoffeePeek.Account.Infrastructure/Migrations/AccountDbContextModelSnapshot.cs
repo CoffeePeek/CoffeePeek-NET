@@ -88,6 +88,22 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
+            modelBuilder.Entity("CoffeePeek.Account.Domain.Aggregates.UserAggregate.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("CoffeePeek.Account.Domain.Aggregates.UserAggregate.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -134,7 +150,8 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<DateTime?>("EmailConfirmationExpiresAt")
                         .HasColumnType("timestamp with time zone");
@@ -160,7 +177,31 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("EmailConfirmationToken")
+                        .IsUnique();
+
                     b.ToTable("UserCredentials");
+                });
+
+            modelBuilder.Entity("CoffeePeek.Account.Domain.Aggregates.UserAggregate.UserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("CoffeePeek.Account.Domain.Entities.OutboxEvent", b =>
@@ -189,39 +230,6 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OutboxEvents");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Account.Domain.Entities.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Account.Domain.Entities.UserRole", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("CoffeePeek.UserService.Models.UserStatistics", b =>
@@ -281,9 +289,9 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.Navigation("UserCredential");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Account.Domain.Entities.UserRole", b =>
+            modelBuilder.Entity("CoffeePeek.Account.Domain.Aggregates.UserAggregate.UserRole", b =>
                 {
-                    b.HasOne("CoffeePeek.Account.Domain.Entities.Role", "Role")
+                    b.HasOne("CoffeePeek.Account.Domain.Aggregates.UserAggregate.Role", "Role")
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -311,6 +319,11 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CoffeePeek.Account.Domain.Aggregates.UserAggregate.Role", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
             modelBuilder.Entity("CoffeePeek.Account.Domain.Aggregates.UserAggregate.User", b =>
                 {
                     b.Navigation("UserStatistics")
@@ -323,11 +336,6 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
 
                     b.Navigation("User");
 
-                    b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Account.Domain.Entities.Role", b =>
-                {
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618

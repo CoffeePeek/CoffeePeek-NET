@@ -6,6 +6,8 @@ using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop.Review;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shops.Application.Commands.CoffeeShop;
+using CoffeePeek.Shops.Application.Commands.CoffeeShop.Review;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

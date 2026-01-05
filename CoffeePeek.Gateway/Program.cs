@@ -16,7 +16,7 @@ builder.ConfigureEnvironment();
 builder.Services.AddReverseProxy().LoadFromMemory(YarpConfig.GetRoutes(), YarpConfig.GetClusters());
 
 builder.Services.AddResponseCaching();
-builder.Services.AddSwaggerModule("CoffeePeek Gateway API", "v1");
+builder.Services.AddSwaggerModule("CoffeePeek Gateway API");
 builder.Services.AddCorsModule();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

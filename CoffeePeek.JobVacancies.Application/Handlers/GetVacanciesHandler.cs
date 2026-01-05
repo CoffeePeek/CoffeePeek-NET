@@ -1,8 +1,8 @@
 ﻿using CoffeePeek.Contract.Responses;
 using CoffeePeek.JobVacancies.Application.Commands;
+using CoffeePeek.JobVacancies.Application.Models.Dtos;
 using CoffeePeek.JobVacancies.Application.Models.Responses;
 using CoffeePeek.JobVacancies.Domain.Repositories;
-using CoffeePeek.JobVacancies.Models.Dtos;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using MapsterMapper;

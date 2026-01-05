@@ -1,5 +1,5 @@
-﻿using CoffeePeek.JobVacancies.Domain.Entities;
-using CoffeePeek.JobVacancies.Models;
+﻿using CoffeePeek.JobVacancies.Application.Models.HH;
+using CoffeePeek.JobVacancies.Domain.Entities;
 using Mapster;
 using MapsterMapper;
 
@@ -30,7 +30,7 @@ public class MapsterConfiguration
             .Map(dest => dest.PublishedAt, src => src.PublishedAt)
             .Map(dest => dest.SyncedAt, _ => DateTime.UtcNow)
             .Map(dest => dest.ProfessionalRole,
-                src => src.ProfessionalRoles != null && src.ProfessionalRoles.Any()
+                src => src.ProfessionalRoles.Any()
                     ? src.ProfessionalRoles.First().Name
                     : null)
             .Map(dest => dest.Area, src => src.Area != null ? (src.Area.Name ?? src.Area.Id) : null);

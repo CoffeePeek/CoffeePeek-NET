@@ -3,7 +3,7 @@ using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.GenerateUploadAvatarUrl;
+namespace CoffeePeek.Account.Application.Features.User.UpdateUserAvatar.GenerateUploadAvatarUrl;
 
 public class GenerateUploadAvatarUrlRequestHandler(IStorageService storageService)
     : IRequestHandler<GenerateUploadAvatarUrlCommand, Response<GenerateUploadUrlResponse>>

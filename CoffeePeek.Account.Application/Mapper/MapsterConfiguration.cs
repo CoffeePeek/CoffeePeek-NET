@@ -22,6 +22,8 @@ public static class MapsterConfiguration
             .MapWith(src => $"https://bucket-dev-771f.up.railway.app/coffee.avatars/{src.StorageKey}");
         
         config.NewConfig<User, UserDto>()
+            .Map(d => d.Email, s => s.UserCredential.Email)
+            .Map(dest => dest.Roles, src => src.UserCredential.UserRoles.Select(x => x.Role.Name))
             .Map(dest => dest.ReviewCount, src => src.UserStatistics.ReviewCount)
             .Map(dest => dest.CheckInCount, src => src.UserStatistics.CheckInCount)
             .Map(dest => dest.AddedShopsCount, src => src.UserStatistics.AddedShopsCount)

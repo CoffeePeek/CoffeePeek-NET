@@ -6,7 +6,7 @@ using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.UpdateUserAvatar;
+namespace CoffeePeek.Account.Application.Features.User.UpdateUserAvatar;
 
 public class UpdateUserAvatarRequestHandler(
     IUserRepository userRepository,
@@ -45,6 +45,6 @@ public class UpdateUserAvatarRequestHandler(
             await storageService.DeleteAsync(oldStorageKey);
         }
 
-        return UpdateEntityResponse<PhotoMetadata>.Success(user.PhotoMetadata, "Photo updated successfully");
+        return UpdateEntityResponse<PhotoMetadata>.Success(user.PhotoMetadata!, "Photo updated successfully");
     }
 }

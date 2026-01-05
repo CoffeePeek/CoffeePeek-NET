@@ -4,8 +4,6 @@ namespace CoffeePeek.Contract.Dtos.User;
 
 public class UserDto
 {
-    public Guid? Id { get; set; }
-    public Guid UserCredentialId { get; set; }
     [Required] public string UserName { get; set; }
     [Required] public string Email { get; set; }
     [Required] public string Password { get; set; }

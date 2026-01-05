@@ -14,7 +14,7 @@ public class MapsterConfiguration
     }
 
     private static TypeAdapterConfig Configure()
-    {
+    {   
         var config = new TypeAdapterConfig();
 
         TypeAdapterConfig<PhotoMetadata, string>.NewConfig()

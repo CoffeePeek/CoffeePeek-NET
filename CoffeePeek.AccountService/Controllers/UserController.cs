@@ -1,12 +1,12 @@
 using System.ComponentModel;
 using CoffeePeek.Account.Application.Features.DeleteUser;
-using CoffeePeek.Account.Application.Features.GenerateUploadAvatarUrl;
 using CoffeePeek.Account.Application.Features.GetProfile;
-using CoffeePeek.Account.Application.Features.UpdateEmail;
-using CoffeePeek.Account.Application.Features.UpdateProfile;
-using CoffeePeek.Account.Application.Features.UpdateUserAvatar;
 using CoffeePeek.Account.Application.Features.User.Email.ConfirmEmail;
 using CoffeePeek.Account.Application.Features.User.Email.ResendEmailConfirmation;
+using CoffeePeek.Account.Application.Features.User.UpdateEmail;
+using CoffeePeek.Account.Application.Features.User.UpdateProfile;
+using CoffeePeek.Account.Application.Features.User.UpdateUserAvatar;
+using CoffeePeek.Account.Application.Features.User.UpdateUserAvatar.GenerateUploadAvatarUrl;
 using CoffeePeek.Account.Domain.Aggregates;
 using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.User;
@@ -92,12 +92,16 @@ public class UserController(IMediator mediator) : Controller
     }
 
     [HttpPost("resend-email-confirm")]
+    [Authorize]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     public Task<Response> ResendEmailConfirm()
     {
         return mediator.Send(new ResendEmailConfirmationCommand(User.GetUserIdOrThrow()));
     }
     
     [HttpPost("confirm-email")]
+    [Authorize]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     public Task<Response> ConfirmEmail([FromQuery] string token)
     {
         return mediator.Send(new ConfirmEmailCommand(token));

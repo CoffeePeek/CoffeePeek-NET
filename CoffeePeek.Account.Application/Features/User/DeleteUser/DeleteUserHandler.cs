@@ -1,11 +1,11 @@
+using CoffeePeek.Account.Application.Features.DeleteUser;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Account.Domain.Repositories;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.DeleteUser;
+namespace CoffeePeek.Account.Application.Features.User.DeleteUser;
 
 public class DeleteUserHandler(
     IUserRepository userRepository,

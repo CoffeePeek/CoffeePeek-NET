@@ -1,8 +1,8 @@
 ﻿using CoffeePeek.Contract.Constants;
+using CoffeePeek.JobVacancies.Application.Models.HH.Responses;
+using CoffeePeek.JobVacancies.Application.Services;
 using CoffeePeek.JobVacancies.Domain.Entities;
 using CoffeePeek.JobVacancies.Domain.Repositories;
-using CoffeePeek.JobVacancies.Models.Responses;
-using CoffeePeek.JobVacancies.Services;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.JobVacancies.Infrastructure.Services;

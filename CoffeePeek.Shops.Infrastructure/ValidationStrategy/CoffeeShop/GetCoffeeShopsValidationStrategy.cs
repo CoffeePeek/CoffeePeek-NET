@@ -1,5 +1,6 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Shops.Application;
+using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Services;
 
 namespace CoffeePeek.Shops.Infrastructure.ValidationStrategy.CoffeeShop;

@@ -18,7 +18,9 @@ public static class MapsterConfiguration
         var config = new TypeAdapterConfig();
 
         config.NewConfig<Shop, ShortShopDto>()
-            .Map(dest => dest.ImageUrls, src => src.ShopPhotos.Select(x => x.Url))
+            .Map(dest => dest.ImageUrls, src => src.ShopPhotos.Select(x => !string.IsNullOrEmpty(x.Url) 
+                ? $"https://bucket-dev-771f.up.railway.app/coffee.shops/{x.Url}" 
+                : null))
             .Map(dest => dest.Rating, src => src.Reviews.Any()
                 ? src.Reviews.Average(r => (r.RatingCoffee + r.RatingPlace + r.RatingService) / 3m)
                 : 0m)

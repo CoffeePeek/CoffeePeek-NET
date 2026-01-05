@@ -1,6 +1,4 @@
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-
-namespace CoffeePeek.UserService.Models;
+namespace CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 
 public class UserStatistics
 {

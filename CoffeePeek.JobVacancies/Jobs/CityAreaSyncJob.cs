@@ -1,4 +1,4 @@
-using CoffeePeek.JobVacancies.Services;
+using CoffeePeek.JobVacancies.Application.Services;
 using Hangfire;
 
 namespace CoffeePeek.JobVacancies.Jobs;
