@@ -23,5 +23,5 @@ public class ModerationShopDto
     public List<Guid> CoffeeBeanIds { get; set; }
     public List<Guid> RoasterIds { get; set; }
     public List<Guid> BrewMethodIds { get; set; }
-    public List<string> ShopPhotos { get; set; }
+    public List<ShortPhotoMetadataDto> ShopPhotos { get; set; }
 }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoffeePeek.Moderation.Infrastructure.Migrations
 {
     [DbContext(typeof(ModerationDbContext))]
-    [Migration("20251224200658_schedulechange")]
-    partial class schedulechange
+    [Migration("20260105104357_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -147,9 +147,6 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.Property<string>("RejectedReason")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");

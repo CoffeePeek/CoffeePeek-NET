@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
+﻿using CoffeePeek.Contract.Dtos;
+using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Moderation.Domain.Entities;
 using Mapster;
 using MapsterMapper;
@@ -17,11 +18,14 @@ public class MapsterConfiguration
     {   
         var config = new TypeAdapterConfig();
 
-        TypeAdapterConfig<PhotoMetadata, string>.NewConfig()
-            .MapWith(src => $"https://bucket-dev-771f.up.railway.app/coffee.shops/{src.StorageKey}");
+        config.NewConfig<PhotoMetadata, ShortPhotoMetadataDto>()
+            .Map(d => d.FullUrl, s => $"https://bucket-dev-771f.up.railway.app/coffee.shops/{s.StorageKey}");
+        
+        config.NewConfig<PhotoMetadata, PhotoMetadataDto>()
+            .Map(d => d.FullUrl, s => $"https://bucket-dev-771f.up.railway.app/coffee.shops/{s.StorageKey}");
         
         config.NewConfig<ModerationShop, ModerationShopDto>()
-            .Map(dest => dest.ShopPhotos, src => src.ShopPhotos.Adapt<List<string>>())
+            .Map(dest => dest.ShopPhotos, src => src.ShopPhotos)
             .Map(dest => dest.ShopContact, src => src.ModerationShopContact)
             .Map(d => d.EquipmentIds, s => s.ModerationShopEquipments.Select(x => x.EquipmentId))
             .Map(d => d.CoffeeBeanIds, s => s.ModerationCoffeeBeanShops.Select(x => x.CoffeeBeanId))
@@ -29,7 +33,7 @@ public class MapsterConfiguration
             .Map(d => d.BrewMethodIds, s => s.ModerationShopBrewMethods.Select(x => x.BrewMethodId));
         
         config.NewConfig<ModerationShop, ShopDto>()
-            .Map(d => d.ImageUrls, s => s.ShopPhotos.Select(x => x.StorageKey))
+            .Map(d => d.Photos, s => s.ShopPhotos)
             .Map(d => d.Rating, s => 0)
             .Map(d => d.ReviewCount, s => 0)
             .Map(d => d.IsOpen, s => true)

@@ -7,7 +7,7 @@ public class ShortShopDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-    public string[]? ImageUrls { get; set; }
+    public ShortPhotoMetadataDto[] Photos { get; set; }
     
     public decimal Rating { get; set; }
     public int ReviewCount { get; set; }

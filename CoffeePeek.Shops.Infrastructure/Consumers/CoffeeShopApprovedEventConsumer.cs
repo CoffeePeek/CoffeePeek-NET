@@ -13,16 +13,27 @@ public class CoffeeShopApprovedShopsConsumer(
 {
     public async Task Consume(ConsumeContext<CoffeeShopApprovedIntegrationEvent> context)
     {
-        var @event = context.Message;
-    
-        var shop = new Shop(@event.Shop.Id, @event.Shop.Name, @event.Shop.CityId, @event.Shop.PriceRange);
-        shop.UpdateDetails(@event.Shop.Name, @event.Shop.Description, @event.Shop.PriceRange);
+        var (_, dto) = context.Message;
 
-        shop.SetLocation(mapper.Map<Location>(@event.Shop.Location!));
-        shop.SetContact(mapper.Map<ShopContact>(@event.Shop.ShopContact!));
-    
-        var photos = @event.Shop.ImageUrls?.Select(url => new ShopPhoto(Guid.NewGuid(), @event.CreatorId, url));
-        if (photos != null) shop.AddPhotos(photos);
+        var shop = new Shop(dto.Id, dto.Name, dto.CityId, dto.PriceRange);
+        shop.UpdateDetails(dto.Name, dto.Description, dto.PriceRange);
+
+        shop.SetLocation(mapper.Map<Location>(dto.Location!));
+        shop.SetContact(mapper.Map<ShopContact>(dto.ShopContact!));
+
+        
+        if (dto.Photos is { Length: > 0 })
+        {
+            var photos = dto.Photos.Select(p => new ShopPhoto(
+                p.FileName, 
+                p.ContentType, 
+                p.StorageKey, 
+                p.SizeBytes, 
+                p.OwnerId, 
+                shop.Id)).ToArray();
+            
+            shop.AddPhotos(photos);
+        }
 
         await shopRepository.AddAsync(shop, context.CancellationToken);
         await unitOfWork.SaveChangesAsync(context.CancellationToken);

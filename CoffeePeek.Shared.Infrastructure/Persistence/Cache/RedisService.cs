@@ -15,6 +15,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
 
     public async Task<T?> GetAsync<T>(CacheKey cacheKey)
     {
+        return default;
         try
         {
             string? value = await _db.StringGetAsync(cacheKey.Key);
@@ -35,6 +36,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
         Func<Task<T>> factory, 
         TimeSpan? expiration = null)
     {
+        return default;
         try
         {
             string? cachedValue = await _db.StringGetAsync(cacheKey.Key);

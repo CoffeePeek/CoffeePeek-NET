@@ -1,48 +1,37 @@
-﻿namespace CoffeePeek.Shops.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class ShopPhoto : Entity<Guid>
+namespace CoffeePeek.Shops.Domain.Entities;
+
+public sealed class ShopPhoto : Entity<Guid>
 {
-    public Guid UserId { get; private set; }
-    public Guid ShopId { get; private set; }
+    [MaxLength(50)]
+    public string FileName { get; private set; }
+    [MaxLength(30)]
+    public string ContentType { get; private set; }
+    [MaxLength(200)]
+    public string StorageKey { get; private set; } = null!;
     
+    public long SizeBytes { get; private set; }
+    public Guid OwnerId { get; private set; }
+    
+    public Guid ShopId { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
-    
-    public string Url { get; private set; } = null!;
 
-    public virtual Shop Shop { get; private set; } = null!;
+    public Shop Shop { get; private set; } = null!;
     
     // ReSharper disable once UnusedMember.Local
     private ShopPhoto() { }
 
-    public ShopPhoto(Guid id, Guid userId, string url)
+    public ShopPhoto(string fileName, string contentType, string storageKey, long sizeBytes, Guid ownerId, Guid shopId)
     {
-        Id = id;
-        UserId = userId;
-        Url = url;
+        FileName = fileName;
+        ContentType = contentType;
+        StorageKey = storageKey;
+        SizeBytes = sizeBytes;
+        OwnerId = ownerId;
+        ShopId = shopId;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
-
-    #region Domain Methods
-
-    internal void SetShop(Guid shopId)
-    {
-        if (shopId == Guid.Empty)
-            throw new ArgumentException("ShopId cannot be empty", nameof(shopId));
-
-        ShopId = shopId;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void UpdateUrl(string newUrl)
-    {
-        if (string.IsNullOrWhiteSpace(newUrl))
-            throw new ArgumentException("URL cannot be empty", nameof(newUrl));
-
-        Url = newUrl;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    #endregion
 }
