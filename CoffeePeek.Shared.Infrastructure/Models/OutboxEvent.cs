@@ -1,4 +1,4 @@
-namespace CoffeePeek.Shared.Infrastructure.Outbox;
+namespace CoffeePeek.Shared.Infrastructure.Models;
 
 /// <summary>
 /// Interface that outbox event entities must implement.

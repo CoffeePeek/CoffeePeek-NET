@@ -1,4 +1,5 @@
 using CoffeePeek.Contract.Enums;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 
 namespace CoffeePeek.Moderation.Domain.Entities;
 

@@ -2,6 +2,7 @@
 using CoffeePeek.Account.Domain.Events;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using Microsoft.AspNetCore.Http;
 
 namespace CoffeePeek.Account.Domain.Aggregates.UserAggregate;

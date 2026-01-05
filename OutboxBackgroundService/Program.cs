@@ -6,6 +6,7 @@ using OutboxBackgroundService.Configuration;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffePeek.ServiceDefaults;
 using Microsoft.AspNetCore.Builder;
+using PostgresCpOptions = OutboxBackgroundService.PostgresCpOptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +16,9 @@ builder.AddSerilogLogging();
 
 builder.Services.AddHostedService<Worker>();
 
-// Register all outbox DbContexts and processors
-builder.Services.RegisterOutboxDbContexts(builder.Configuration);
+var postgresCpOptions = builder.Services.AddValidateOptions<PostgresCpOptions>();
+
+builder.Services.RegisterOutboxDbContexts(postgresCpOptions);
 
 var rabbitMqOptions = builder.Services.AddValidateOptions<RabbitMqOptions>();
 var railwayRabbitMqOptions = RabbitMqConnectionHelper.GetRabbitMqOptions();

@@ -1,5 +1,5 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Outbox;
+using CoffeePeek.Shared.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

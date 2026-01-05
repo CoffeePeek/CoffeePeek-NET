@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Shared.Infrastructure.Abstract;
+﻿namespace CoffeePeek.Shared.Infrastructure.Abstract;
 
 public abstract class Entity<TId> : IEntity
 {

@@ -1,15 +1,15 @@
 ﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Moderation.Domain.Events;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using MapsterMapper;
-using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace Coffeepeek.Moderation.Application.Features.UpdateShop;
 
 public class ModerationShopApprovedEventHandler(
-    IPublishEndpoint publishEndpoint,
+    IOutboxEventPublisher outboxEventPublisher,
     IMapper mapper,
     ILogger<ModerationShopApprovedEventHandler> logger)
     : INotificationHandler<ModerationShopApprovedDomainEvent>
@@ -25,8 +25,8 @@ public class ModerationShopApprovedEventHandler(
             mapper.Map<ShopDto>(shop)
         );
 
-        await publishEndpoint.Publish(integrationEvent, ct);
+        await outboxEventPublisher.PublishAsync(integrationEvent, ct);
         
-        logger.LogInformation("Integration event for Shop {ShopId} published to the message bus.", shop.Id);
+        logger.LogInformation("Integration event for Shop {ShopId} saved to outbox.", shop.Id);
     }
 }

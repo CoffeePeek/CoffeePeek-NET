@@ -1,6 +1,6 @@
 using System.Text.Json;
 using CoffeePeek.Contract.Events;
-using CoffeePeek.Shared.Infrastructure.Outbox;
+using CoffeePeek.Shared.Infrastructure.Models;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,14 +32,37 @@ public class OutboxProcessor<TOutboxEvent, TDbContext>(
 
     public async Task ProcessOutboxEventsAsync(CancellationToken cancellationToken)
     {
-        var events = await _dbContext.Set<TOutboxEvent>()
+        // Проверяем, сколько всего записей в таблице (включая обработанные)
+        var totalCount = await _dbContext.Set<TOutboxEvent>().CountAsync(cancellationToken);
+        _logger.LogInformation("Total outbox events in database: {Count}", totalCount);
+    
+        // Проверяем необработанные события
+        var unprocessedCount = await _dbContext.Set<TOutboxEvent>()
+            .Where(x => !x.Processed)
+            .CountAsync(cancellationToken);
+        _logger.LogInformation("Unprocessed outbox events: {Count}", unprocessedCount);
+    
+        // Пробуем получить все события для диагностики
+        var allEvents = await _dbContext.Set<TOutboxEvent>()
+            .Take(5)
+            .ToListAsync(cancellationToken);
+        _logger.LogInformation("Sample events (first 5): {Count}. Types: {Types}", 
+            allEvents.Count,
+            string.Join(", ", allEvents.Select(e => e.GetType().FullName)));
+    
+        var events = await _dbContext
+            .Set<TOutboxEvent>()
             .Where(x => !x.Processed)
             .OrderBy(x => x.CreatedAt)
             .Take(20)
             .ToListAsync(cancellationToken);
 
         if (events.Count == 0)
+        {
+            _logger.LogWarning("No unprocessed events found. Total: {Total}, Unprocessed: {Unprocessed}", 
+                totalCount, unprocessedCount);
             return;
+        }
 
         _logger.LogDebug("Processing {Count} outbox events from {DbContext}", events.Count, typeof(TDbContext).Name);
 

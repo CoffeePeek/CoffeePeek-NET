@@ -1,4 +1,6 @@
-﻿namespace CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+﻿using CoffeePeek.Shared.Infrastructure.Abstract;
+
+namespace CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 
 public class UserRole : Entity<Guid>
 {

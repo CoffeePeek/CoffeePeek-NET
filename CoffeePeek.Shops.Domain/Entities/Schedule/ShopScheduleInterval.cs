@@ -1,4 +1,6 @@
-﻿namespace CoffeePeek.Shops.Domain.Entities;
+﻿using CoffeePeek.Shared.Infrastructure.Abstract;
+
+namespace CoffeePeek.Shops.Domain.Entities;
 
 public class ShopScheduleInterval : Entity<Guid>
 {

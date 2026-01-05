@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 
 namespace CoffeePeek.Account.Domain.Aggregates;
 

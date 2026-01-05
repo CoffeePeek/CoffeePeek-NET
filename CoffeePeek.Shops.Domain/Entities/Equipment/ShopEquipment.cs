@@ -1,12 +1,23 @@
-﻿namespace CoffeePeek.Shops.Domain.Entities;
+﻿using CoffeePeek.Shared.Infrastructure.Abstract;
 
-public class ShopEquipment
+namespace CoffeePeek.Shops.Domain.Entities;
+
+public class ShopEquipment : Entity<Guid>
 {
-    public Guid Id { get; set; }
+    public Guid ShopId { get; private set; }
+    public Guid EquipmentId { get; private set;}
     
-    public Guid ShopId { get; set; }
-    public Guid EquipmentId { get; set;}
+    public Shop Shop { get; private set; }
+    public Equipment Equipment { get; private set; }
     
-    public virtual Shop Shop { get; set; }
-    public virtual Equipment Equipment { get; set; }
+    // ReSharper disable once UnusedMember.Local
+    private ShopEquipment()
+    {
+        
+    }
+    public ShopEquipment(Guid equipmentId, Guid id)
+    {
+        EquipmentId = equipmentId;
+        ShopId = id;
+    }
 }

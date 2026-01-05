@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 
 namespace CoffeePeek.Moderation.Domain.Entities;
 

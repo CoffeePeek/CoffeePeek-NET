@@ -1,11 +1,23 @@
-﻿namespace CoffeePeek.Shops.Domain.Entities;
+﻿using CoffeePeek.Shared.Infrastructure.Abstract;
+
+namespace CoffeePeek.Shops.Domain.Entities;
 
 public class CoffeeBeanShop : Entity<Guid>
 {
-    
-    public Guid ShopId { get; set; }
-    public Guid CoffeeBeanId { get; set; }
+    public Guid ShopId { get; private set; }
+    public Guid CoffeeBeanId { get; private set; }
 
-    public virtual CoffeeBean CoffeeBean { get; set; }
-    public virtual Shop Shop { get; set; }
+    public CoffeeBean CoffeeBean { get; private set; }
+    public Shop Shop { get; private set; }
+
+    private CoffeeBeanShop()
+    {
+        
+    }
+
+    public CoffeeBeanShop(Guid coffeeBeanId, Guid id)
+    {
+        CoffeeBeanId = coffeeBeanId;
+        ShopId = id;
+    }
 }

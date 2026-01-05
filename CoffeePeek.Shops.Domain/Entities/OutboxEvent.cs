@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Shared.Infrastructure.Outbox;
+﻿using CoffeePeek.Shared.Infrastructure.Models;
 
 namespace CoffeePeek.Shops.Domain.Entities;
 

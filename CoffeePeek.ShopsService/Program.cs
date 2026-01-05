@@ -59,6 +59,7 @@ builder.Services.AddValidators();
 
 // Cache service
 builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<ICreateShopFromModerationService, CreateShopFromModerationService>();
 
 // Messaging for publishing events
 builder.Services.AddMessagingModule(x =>

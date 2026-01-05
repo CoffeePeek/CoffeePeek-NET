@@ -3,7 +3,6 @@ using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shared.Infrastructure.Outbox;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
 using MediatR;
