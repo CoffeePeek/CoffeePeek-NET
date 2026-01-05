@@ -13,6 +13,15 @@ public class UserRegisteredEventHandler(
 {
     public async Task Handle(UserRegisteredDomainEvent notification, CancellationToken cancellationToken)
     {
+        try
+        {
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
         var confirmationUrl = $"{config["WebClientUrl"]}/confirm-email?token={notification.ConfirmationToken}";
 
         var message = new EmailMessage

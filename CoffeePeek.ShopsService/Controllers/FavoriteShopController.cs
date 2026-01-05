@@ -1,6 +1,7 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Contract.Responses.CoffeeShop.Favorite;
 using CoffeePeek.Shared.Infrastructure;
 using MediatR;

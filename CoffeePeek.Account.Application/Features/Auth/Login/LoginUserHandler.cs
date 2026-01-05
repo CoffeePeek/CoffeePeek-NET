@@ -5,7 +5,7 @@ using CoffeePeek.Contract.Responses.Login;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.Login;
+namespace CoffeePeek.Account.Application.Features.Auth.Login;
 
 public class LoginUserHandler(
     IAuthService authService,

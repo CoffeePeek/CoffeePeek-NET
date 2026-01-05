@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+﻿using CoffeePeek.Account.Domain.Aggregates;
+using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 using CoffeePeek.Contract.Dtos.User;
 using Mapster;
 using MapsterMapper;
@@ -17,14 +18,14 @@ public static class MapsterConfiguration
     {
         var config = new TypeAdapterConfig();
 
+        TypeAdapterConfig<PhotoMetadata, string>.NewConfig()
+            .MapWith(src => $"https://bucket-dev-771f.up.railway.app/coffee.avatars/{src.StorageKey}");
+        
         config.NewConfig<User, UserDto>()
-            .Map(dest => dest.Roles, src => src.UserCredential.UserRoles.Select(x => x.Role.Name))
             .Map(dest => dest.ReviewCount, src => src.UserStatistics.ReviewCount)
             .Map(dest => dest.CheckInCount, src => src.UserStatistics.CheckInCount)
             .Map(dest => dest.AddedShopsCount, src => src.UserStatistics.AddedShopsCount)
-            .Map(dest => dest.AvatarUrl, src => src.PhotoMetadata != null 
-                ? $"https://bucket-dev-771f.up.railway.app/coffee.shops/{src.PhotoMetadata.StorageKey}" 
-                : null);
+            .Map(dest => dest.AvatarUrl, src => src.PhotoMetadata);
             
         return config;
     }

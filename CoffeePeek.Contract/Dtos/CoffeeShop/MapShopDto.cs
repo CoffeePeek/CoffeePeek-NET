@@ -7,4 +7,3 @@ public class MapShopDto
     public decimal Longitude { get; set; }
     public string Title { get; set; } = string.Empty;
 }
-

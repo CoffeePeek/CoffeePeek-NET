@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.Account.Application.Commands;
 using CoffeePeek.Account.Application.Features.Auth.CheckUserExistsByEmail;
+using CoffeePeek.Account.Application.Features.Auth.Login;
 using CoffeePeek.Account.Application.Features.Login;
 using CoffeePeek.Account.Application.Features.Logout;
 using CoffeePeek.Account.Application.Features.RefreshToken;
