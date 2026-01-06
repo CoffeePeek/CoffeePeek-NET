@@ -17,22 +17,15 @@ public class UserRegisteredEventHandler(
     {
         try
         {
+            var confirmationUrl = $"{config["WebClientUrl"]}/confirm-email?token={notification.ConfirmationToken}";
 
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-        var confirmationUrl = $"{config["WebClientUrl"]}/confirm-email?token={notification.ConfirmationToken}";
-
-        var message = new EmailMessage
-        {
-            From = "CoffeePeek <hello@coffee-peek.by>",
-            To = notification.Email,
-            Subject = "Perfectly roasted beans are waiting for you! ☕",
-            HtmlBody = templateService.GetConfirmationHtml(notification.Username, confirmationUrl)
-        };
+            var message = new EmailMessage
+            {
+                From = "CoffeePeek <hello@coffee-peek.by>",
+                To = notification.Email,
+                Subject = "Perfectly roasted beans are waiting for you! ☕",
+                HtmlBody = templateService.GetConfirmationHtml(notification.Username, confirmationUrl)
+            };
 
         try
         {

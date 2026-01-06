@@ -14,7 +14,6 @@ public class User : Entity<Guid>
     public bool PhoneNumberConfirmed { get; private set; }
     [MaxLength(255)]
     public string? About { get; private set; }
-    public DateTime DateTime { get; private set; } = DateTime.UtcNow;
     
     public bool IsSoftDelete { get; set; }
     

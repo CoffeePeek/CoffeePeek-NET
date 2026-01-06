@@ -12,9 +12,11 @@ public class UnitOfWork<TDbContext>(TDbContext context, IMediator mediator) : IU
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        var result = await context.SaveChangesAsync(cancellationToken);
+
         await PublishDomainEventsAsync(cancellationToken);
-        
-        return await context.SaveChangesAsync(cancellationToken);
+
+        return result;
     }
     
     private async Task PublishDomainEventsAsync(CancellationToken ct)
@@ -54,6 +56,8 @@ public class UnitOfWork<TDbContext>(TDbContext context, IMediator mediator) : IU
         {
             await context.SaveChangesAsync(cancellationToken);
             await _transaction.CommitAsync(cancellationToken);
+
+            await PublishDomainEventsAsync(cancellationToken);
         }
         catch
         {
