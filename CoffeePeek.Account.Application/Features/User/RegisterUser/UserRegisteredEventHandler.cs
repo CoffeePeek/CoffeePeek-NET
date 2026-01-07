@@ -27,14 +27,15 @@ public class UserRegisteredEventHandler(
                 HtmlBody = templateService.GetConfirmationHtml(notification.Username, confirmationUrl)
             };
 
-        try
-        {
             await resend.EmailSendAsync(message, cancellationToken);
+        }
+        catch (ResendException e)
+        {
+            logger.LogError(e.Message);
         }
         catch (Exception e)
         {
             logger.LogError(e.Message);
-            throw;
         }
     }
 }
