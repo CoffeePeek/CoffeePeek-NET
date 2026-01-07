@@ -2,7 +2,7 @@
 
 namespace CoffeePeek.Contract.Responses.CoffeeShop.Review;
 
-public class GetReviewByIdResponse(CoffeeShopReviewDto review)
+public class GetReviewByIdResponse(ReviewDto review)
 {
-    public CoffeeShopReviewDto Review { get; } = review;
+    public ReviewDto Review { get; } = review;
 }

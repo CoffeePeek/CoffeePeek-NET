@@ -5,6 +5,7 @@ using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
+using CoffeePeek.Shops.Application.Features.CoffeeShop;
 using CoffeePeek.Shops.Application.Handlers.CoffeeShop;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
@@ -72,7 +73,7 @@ builder.Services.AddOutboxEventPublisher<OutboxEvent, ShopsDbContext>();
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ShopsDb);
-builder.Services.AddEfCoreData<ShopsDbContext>(dbOptions.ConnectionString);
+builder.Services.AddEfCoreData<ShopsDbContext, OutboxEvent>(dbOptions.ConnectionString);
 builder.Services.AddGenericRepository<Shop, ShopsDbContext>();
 builder.Services.AddGenericRepository<ShopContact, ShopsDbContext>();
 builder.Services.AddGenericRepository<ShopPhoto, ShopsDbContext>();

@@ -21,16 +21,16 @@ public class ModerationShopCreationService(
     {
         var shop = ModerationShop.Create(
             command.Name,
-            command.NotValidatedAddress,
             command.UserId,
-            command.CityId ?? BusinessConstants.DefaultUnAuthorizedCityId,
+            command.CityId,
             command.PriceRange,
             command.Description
         );
 
         if (geocodingResult != null)
         {
-            shop.SetLocation(geocodingResult.Latitude, geocodingResult.Longitude, command.NotValidatedAddress);
+            var location = new ModerationLocation(shop.Id, command.NotValidatedAddress, lat: geocodingResult.Latitude, lon: geocodingResult.Longitude);
+            shop.SetLocation(location);
         }
 
         if (command.Schedules != null)

@@ -17,7 +17,6 @@ public class CreateShopFromModerationService(
 {
     public async Task CreateShopFromApprovedEventAsync(ShopDto shopDto, Guid creatorId, Guid moderationId, CancellationToken cancellationToken = default)
     {
-        // Проверка идемпотентности
         var exists = await shopRepository.AnyAsync(x => x.ModerationId == moderationId, cancellationToken);
         if (exists)
         {
@@ -25,36 +24,32 @@ public class CreateShopFromModerationService(
             return;
         }
 
-        // Создание доменной сущности с заданным Id и ModerationId
-        var shop = new Shop(shopDto.Id, creatorId, shopDto.Name, shopDto.CityId, shopDto.PriceRange, moderationId);
+        var shop = new Shop(creatorId, shopDto.Name, shopDto.CityId, shopDto.PriceRange, moderationId);
         shop.UpdateDetails(shopDto.Name, shopDto.Description, shopDto.PriceRange);
 
-        // Установка локации
         if (shopDto.Location != null)
         {
-            shop.SetLocation(shopDto.Location, shop.Id);
+            var location = new Location(shop.Id, shopDto.Location.Address, shopDto.Location.Latitude!.Value, shopDto.Location.Longitude!.Value);
+            shop.SetLocation(location);
         }
 
-        // Установка контактов
         if (shopDto.ShopContact != null)
         {
             shop.SetContact(shopDto.ShopContact, shop.Id);
         }
 
-        // Валидация и установка Equipment (только существующие ID)
         if (shopDto.Equipments is { Length: > 0 })
         {
             var validEquipmentIds = await ValidateEquipmentIdsAsync(
                 shopDto.Equipments.Select(e => e.Id).ToList(),
                 cancellationToken);
             
-            if (validEquipmentIds.Any())
+            if (validEquipmentIds.Count != 0)
             {
                 shop.SetEquipment(validEquipmentIds);
             }
         }
 
-        // Валидация и установка BrewMethods (только существующие ID)
         if (shopDto.BrewMethods is { Length: > 0 })
         {
             var validBrewMethodIds = await ValidateBrewMethodIdsAsync(
@@ -67,7 +62,6 @@ public class CreateShopFromModerationService(
             }
         }
 
-        // Валидация и установка Roasters (только существующие ID)
         if (shopDto.Roasters is { Length: > 0 })
         {
             var validRoasterIds = await ValidateRoasterIdsAsync(
@@ -80,7 +74,6 @@ public class CreateShopFromModerationService(
             }
         }
 
-        // Валидация и установка CoffeeBeans (только существующие ID)
         if (shopDto.Beans is { Length: > 0 })
         {
             var validCoffeeBeanIds = await ValidateCoffeeBeanIdsAsync(
@@ -93,7 +86,6 @@ public class CreateShopFromModerationService(
             }
         }
 
-        // Добавление фотографий
         if (shopDto.Photos is { Length: > 0 })
         {
             var photos = shopDto.Photos.Select(p => new ShopPhoto(
@@ -107,7 +99,6 @@ public class CreateShopFromModerationService(
             shop.AddPhotos(photos);
         }
 
-        // Сохранение
         await shopRepository.AddAsync(shop, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -27,29 +27,29 @@ public class EmailTemplateService : IEmailTemplateService
                 </tr>
                 <tr>
                     <td style="padding: 40px; text-align: center;">
-                        <h2 style="color: #FFFFFF; font-size: 28px; margin-bottom: 20px;">Hello, {username}!</h2>
+                        <h2 style="color: #FFFFFF; font-size: 28px; margin-bottom: 20px;">Привет, {username}!</h2>
                         <p style="color: #A39E93; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
-                            To start your journey into the world's finest specialty beans, please confirm your email. 
-                            The link is valid for 10 minutes.
+                            Чтобы начать свое знакомство с лучшими в мире сортами кофе, пожалуйста, подтвердите свой адрес электронной почты.
+                            Эта ссылка действительна в течении 10 минут.
                         </p>
                         <table align="center" border="0" cellpadding="0" cellspacing="0">
                             <tr>
                                 <td align="center" bgcolor="#EAB308" style="border-radius: 8px;">
                                     <a href="{confirmationUrl}" target="_blank" style="display: inline-block; padding: 16px 36px; font-size: 16px; color: #1A1412; font-weight: bold; text-decoration: none; border-radius: 8px;">
-                                        Confirm My Email
+                                        Подтвердить почту
                                     </a>
                                 </td>
                             </tr>
                         </table>
                         <p style="color: #5C544F; font-size: 14px; margin-top: 40px;">
-                            If the button doesn't work, copy and paste this link: <br>
+                            Если кнопка не работает, скопируйте и вставьте эту ссылку: <br>
                             <a href="{confirmationUrl}" style="color: #EAB308; text-decoration: none;">{confirmationUrl}</a>
                         </p>
                     </td>
                 </tr>
                 <tr>
                     <td style="padding: 30px; background-color: #1A1412; border-top: 1px solid #3D2F28; text-align: center;">
-                        <p style="color: #5C544F; font-size: 12px; margin: 0;">© 2025 CoffeePeek. All rights reserved.</p>
+                        <p style="color: #5C544F; font-size: 12px; margin: 0;">© 2025 CoffeePeek. Все права защищены.</p>
                     </td>
                 </tr>
             </table>

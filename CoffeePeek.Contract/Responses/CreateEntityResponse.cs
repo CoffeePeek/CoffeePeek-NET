@@ -4,14 +4,6 @@ public class CreateEntityResponse<T> : Response<T>
 {
     public int? EntityId { get; set; }
 
-    public CreateEntityResponse() { }
-
-    public CreateEntityResponse(bool success, string message, T data, int? entityId = null)
-        : base(success, message, data)
-    {
-        EntityId = entityId;
-    }
-
     /// <summary>
     /// Creates a successful response for entity creation.
     /// </summary>

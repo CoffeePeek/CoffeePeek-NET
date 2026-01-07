@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <Folder Include="Commands\" />
+      <Folder Include="Features\" />
     </ItemGroup>
 
 </Project>

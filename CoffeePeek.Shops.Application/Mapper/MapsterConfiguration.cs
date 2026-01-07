@@ -39,18 +39,18 @@ public static class MapsterConfiguration
                 : 0m)
             .Map(dest => dest.ReviewCount, src => src.Reviews.Count)
             .Map(dest => dest.IsOpen, src => true) //TODO fix
-            .Map(dest => dest.Beans, src => src.CoffeeBeanShops)
-            .Map(dest => dest.Roasters, src => src.RoasterShops)
-            .Map(dest => dest.Equipments, src => src.ShopEquipments);
+            .Map(dest => dest.Beans, src => src.CoffeeBeanShops.Select(x => x.CoffeeBean))
+            .Map(dest => dest.Roasters, src => src.RoasterShops.Select(x => x.Roaster))
+            .Map(dest => dest.BrewMethods, src => src.ShopBrewMethods.Select(x => x.BrewMethod))
+            .Map(dest => dest.Equipments, src => src.ShopEquipments.Select(x => x.Equipment));
         
         config.NewConfig<CheckIn, CheckInDto>()
-            .Map(dest => dest.ShopName, src => src.Shop != null ? src.Shop.Name : string.Empty);
+            .Map(dest => dest.ShopName, src => src.Shop.Name);
 
-        config.NewConfig<Review, CoffeeShopReviewDto>()
-            .Map(dest => dest.ShopId, src => src.ShopId.GetHashCode())
+        config.NewConfig<Review, ReviewDto>()
             .Map(dest => dest.UserId, src => src.UserId.GetHashCode())
             .Map(dest => dest.CreatedAt, src => src.ReviewDate)
-            .Map(dest => dest.ShopName, src => src.Shop != null ? src.Shop.Name : string.Empty);
+            .Map(dest => dest.ShopName, src => src.Shop.Name);
 
         return config;
     }

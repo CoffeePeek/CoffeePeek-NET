@@ -27,7 +27,7 @@ public class Worker(ILogger<Worker> logger, IServiceProvider serviceProvider) : 
                 logger.LogError(ex, "Error in outbox processing cycle");
             }
 
-            await Task.Delay(5000, stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
         }
     }
 }

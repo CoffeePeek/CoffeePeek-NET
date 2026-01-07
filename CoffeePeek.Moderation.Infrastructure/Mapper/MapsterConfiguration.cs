@@ -1,5 +1,7 @@
 ﻿using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Dtos.Contact;
+using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Moderation.Domain.Entities;
 using Mapster;
 using MapsterMapper;
@@ -45,6 +47,15 @@ public class MapsterConfiguration
             .Map(d => d.BrewMethods, s => s.ModerationShopBrewMethods)
             .Map(d => d.ShopContact, s => s.ModerationShopContact)
             .Map(d => d.Schedules, s => s.Schedules);
+        
+        config.NewConfig<ModerationShopRoaster, RoasterDto>()
+            .Map(dest => dest.Id, src => src.RoasterId);
+        config.NewConfig<ModerationShopEquipment, EquipmentDto>()
+            .Map(dest => dest.Id, src => src.EquipmentId);
+        config.NewConfig<ModerationShopBrewMethod, BrewMethodDto>()
+            .Map(dest => dest.Id, src => src.BrewMethodId);
+        config.NewConfig<ModerationCoffeeBeanShop, BeansDto>()
+            .Map(dest => dest.Id, src => src.CoffeeBeanId);
         
         return config;
     }

@@ -29,7 +29,7 @@ public class GetAllReviewsRequestHandler(IGenericRepository<Domain.Entities.Revi
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        var reviewDtos = mapper.Map<CoffeeShopReviewDto[]>(userReviews);
+        var reviewDtos = mapper.Map<ReviewDto[]>(userReviews);
 
         var response = new GetAllReviewsResponse(
             reviews: reviewDtos,

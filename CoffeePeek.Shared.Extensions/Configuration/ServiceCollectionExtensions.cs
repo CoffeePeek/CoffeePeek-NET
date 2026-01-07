@@ -1,4 +1,5 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Models;
 using CoffeePeek.Shared.Infrastructure.Options;
 using CoffeePeek.Shared.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
@@ -8,44 +9,43 @@ namespace CoffeePeek.Shared.Extensions.Configuration;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddEfCoreData<TDbContext>(
-        this IServiceCollection services,
-        string connectionString,
-        Action<DbContextOptionsBuilder>? additionalOptions = null)
-        where TDbContext : DbContext
+    extension(IServiceCollection services)
     {
-        services.AddDbContext<TDbContext>(options =>
+        public IServiceCollection AddEfCoreData<TDbContext, TOutboxEvent>(string connectionString,
+            Action<DbContextOptionsBuilder>? additionalOptions = null)
+            where TDbContext : DbContext
+            where TOutboxEvent : OutboxEvent, new()
         {
-            options.UseNpgsql(connectionString);
-            additionalOptions?.Invoke(options);
-        });
+            services.AddDbContext<TDbContext>(options =>
+            {
+                options.UseNpgsql(connectionString);
+                additionalOptions?.Invoke(options);
+            });
 
-        services.AddScoped<IUnitOfWork, UnitOfWork<TDbContext>>();
+            services.AddScoped<IUnitOfWork, UnitOfWork<TDbContext, TOutboxEvent>>();
 
-        return services;
-    }
-    
-    public static IServiceCollection AddEfCoreData<TDbContext>(
-        this IServiceCollection services,
-        PostgresCpOptions dbOptions,
-        Action<DbContextOptionsBuilder>? additionalOptions = null)
-        where TDbContext : DbContext
-    {
-        return services.AddEfCoreData<TDbContext>(dbOptions.ConnectionString, additionalOptions);
-    }
+            return services;
+        }
 
-    public static IServiceCollection AddGenericRepository<TEntity, TDbContext>(
-        this IServiceCollection services)
-        where TEntity : class
-        where TDbContext : DbContext
-    {
-        services.AddScoped<IGenericRepository<TEntity>>(provider =>
+        public IServiceCollection AddEfCoreData<TDbContext, TOutboxEvent>(PostgresCpOptions dbOptions,
+            Action<DbContextOptionsBuilder>? additionalOptions = null)
+            where TDbContext : DbContext
+            where TOutboxEvent : OutboxEvent, new()
         {
-            var context = provider.GetRequiredService<TDbContext>();
-            return new GenericRepository<TEntity, TDbContext>(context);
-        });
+            return services.AddEfCoreData<TDbContext, TOutboxEvent>(dbOptions.ConnectionString, additionalOptions);
+        }
 
-        return services;
+        public IServiceCollection AddGenericRepository<TEntity, TDbContext>()
+            where TEntity : class
+            where TDbContext : DbContext
+        {
+            services.AddScoped<IGenericRepository<TEntity>>(provider =>
+            {
+                var context = provider.GetRequiredService<TDbContext>();
+                return new GenericRepository<TEntity, TDbContext>(context);
+            });
+
+            return services;
+        }
     }
 }
-

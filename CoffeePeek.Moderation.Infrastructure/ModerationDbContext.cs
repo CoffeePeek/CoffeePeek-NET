@@ -10,10 +10,10 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
     public DbSet<PhotoMetadata> ShopPhotos { get; set; }
     public DbSet<ModerationShopSchedule> ModerationShopSchedules { get; set; }
     public DbSet<ModerationShopScheduleInterval> ModerationShopScheduleIntervals { get; set; }
-    public DbSet<Location> ModerationLocations { get; set; }
+    public DbSet<ModerationLocation> ModerationLocations { get; set; }
     public DbSet<ModerationShopEquipment> ModerationShopEquipments { get; set; }
     public DbSet<ModerationCoffeeBeanShop> ModerationCoffeeBeanShops { get; set; }
-    public DbSet<ModerationRoasterShop> ModerationRoasterShops { get; set; }
+    public DbSet<ModerationShopRoaster> ModerationRoasterShops { get; set; }
     public DbSet<ModerationShopBrewMethod> ModerationShopBrewMethods { get; set; }
     public DbSet<OutboxEvent> OutboxEvents { get; set; }
 
@@ -27,8 +27,6 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
             
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(50);
-            entity.Property(e => e.NotValidatedAddress).HasMaxLength(150);
-            entity.Property(e => e.Address).HasMaxLength(150);
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.RejectedReason).HasMaxLength(200);
             entity.HasIndex(e => e.UserId);
@@ -42,7 +40,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
                 
             entity.HasOne(e => e.Location)
                 .WithOne(l => l.ModerationShop)
-                .HasForeignKey<Location>(l => l.ShopId)
+                .HasForeignKey<ModerationLocation>(l => l.ShopId)
                 .OnDelete(DeleteBehavior.Cascade);
                 
             entity.HasMany(e => e.ShopPhotos)
@@ -88,7 +86,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
             entity.HasKey(e => e.Id);
         });
         
-        modelBuilder.Entity<Location>(entity =>
+        modelBuilder.Entity<ModerationLocation>(entity =>
         {
             entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.Property(e => e.Address).HasMaxLength(200);
@@ -110,7 +108,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
             entity.HasIndex(e => e.CoffeeBeanId);
         });
         
-        modelBuilder.Entity<ModerationRoasterShop>(entity =>
+        modelBuilder.Entity<ModerationShopRoaster>(entity =>
         {
             entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.HasKey(e => e.Id);

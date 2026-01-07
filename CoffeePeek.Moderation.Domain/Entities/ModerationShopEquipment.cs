@@ -1,11 +1,22 @@
+using CoffeePeek.Shared.Infrastructure.Abstract;
+
 namespace CoffeePeek.Moderation.Domain.Entities;
 
-public class ModerationShopEquipment
+public class ModerationShopEquipment : Entity<Guid>
 {
-    public Guid Id { get; set; }
+    public Guid ShopId { get; private set; }
+    public Guid EquipmentId { get; private set; }
     
-    public Guid ShopId { get; set; }
-    public Guid EquipmentId { get; set; }
-    
-    public virtual ModerationShop ModerationShop { get; set; }
+    public ModerationShop? ModerationShop { get; private set; }
+
+    private ModerationShopEquipment()
+    {
+        
+    }
+
+    public ModerationShopEquipment(Guid shopId, Guid equipmentId)
+    {
+        ShopId = shopId;
+        EquipmentId = equipmentId;
+    }
 }

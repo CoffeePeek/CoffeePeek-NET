@@ -18,7 +18,9 @@ using CoffeePeek.Shared.Infrastructure.Options;
 using Hangfire;
 using Hangfire.PostgreSql;
 using CoffeePeek.Shared.Extensions.Logging;
+using CoffeePeek.Shared.Infrastructure.Models;
 using CoffePeek.ServiceDefaults;
+using OutboxEvent = CoffeePeek.JobVacancies.Domain.Entities.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +48,7 @@ builder.Services.AddAuthorization(options =>
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.JobVacanciesDb);
-builder.Services.AddEfCoreData<JobVacanciesDbContext>(dbOptions);
+builder.Services.AddEfCoreData<JobVacanciesDbContext, OutboxEvent>(dbOptions);
 builder.Services.AddGenericRepository<JobVacancy, JobVacanciesDbContext>();
 builder.Services.AddGenericRepository<CityMap, JobVacanciesDbContext>();
 

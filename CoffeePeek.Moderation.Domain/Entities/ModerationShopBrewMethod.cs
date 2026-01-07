@@ -1,10 +1,22 @@
+using CoffeePeek.Shared.Infrastructure.Abstract;
+
 namespace CoffeePeek.Moderation.Domain.Entities;
 
-public class ModerationShopBrewMethod
+public class ModerationShopBrewMethod : Entity<Guid>
 {
-    public Guid Id { get; set; }
-    public Guid BrewMethodId { get; set; }
-    public Guid ShopId { get; set; }
+    public Guid BrewMethodId { get; private set; }
+    public Guid ShopId { get; private set; }
     
-    public virtual ModerationShop ModerationShop { get; set; }
+    public ModerationShop? ModerationShop { get; private set; }
+
+    private ModerationShopBrewMethod()
+    {
+        
+    }
+    
+    public ModerationShopBrewMethod(Guid shopId, Guid brewMethodId)
+    {
+        ShopId = shopId;
+        BrewMethodId = brewMethodId;
+    }
 }

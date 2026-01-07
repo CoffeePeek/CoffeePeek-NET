@@ -7,10 +7,9 @@ public class DuplicateShopSpecification : Specification<ModerationShop>
 {
     public DuplicateShopSpecification(string name, string address)
     {
-        Criteria = shop => 
+        Criteria = shop =>
 #pragma warning disable CA1862
-            shop.Name.ToLower() == name.ToLower() && 
-            shop.NotValidatedAddress.ToLower() == address.ToLower();
+            shop.Name.ToLower() == name.ToLower() && shop.Location!.Address.ToLower() == name.ToLower();
 #pragma warning restore CA1862
     }
 }

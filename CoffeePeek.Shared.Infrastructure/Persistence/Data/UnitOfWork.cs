@@ -1,63 +1,90 @@
+using System.Text.Json;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace CoffeePeek.Shared.Infrastructure.Persistence.Data;
 
-public class UnitOfWork<TDbContext>(TDbContext context, IMediator mediator) : IUnitOfWork
+public class UnitOfWork<TDbContext, TOutboxEvent>(TDbContext context, IMediator mediator) : IUnitOfWork
     where TDbContext : DbContext
+    where TOutboxEvent : OutboxEvent, new()
 {
     private IDbContextTransaction? _transaction;
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var result = await context.SaveChangesAsync(cancellationToken);
+        await ProcessDomainEventsThroughMediator(cancellationToken);
 
-        await PublishDomainEventsAsync(cancellationToken);
+        InsertOutboxMessages();
 
-        return result;
+        return await context.SaveChangesAsync(cancellationToken);
     }
-    
-    private async Task PublishDomainEventsAsync(CancellationToken ct)
+
+    private async Task ProcessDomainEventsThroughMediator(CancellationToken ct)
     {
-        var domainEntities = context.ChangeTracker
-            .Entries<IEntity>()
-            .Where(x => x.Entity.DomainEvents.Any())
-            .Select(x => x.Entity)
-            .ToList();
-
-        var domainEvents = domainEntities
-            .SelectMany(x => x.DomainEvents)
-            .ToList();
-
-        domainEntities.ForEach(entity => entity.ClearDomainEvents());
-
-        foreach (var domainEvent in domainEvents)
+        while (true)
         {
-            await mediator.Publish(domainEvent, ct);
+            var domainEntities = context.ChangeTracker
+                .Entries<IEntity>()
+                .Where(x => x.Entity.DomainEvents.Count != 0)
+                .ToList();
+
+            if (domainEntities.Count == 0) break;
+
+            var domainEvents = domainEntities
+                .SelectMany(x => x.Entity.DomainEvents)
+                .ToList();
+
+            domainEntities.ForEach(x => x.Entity.ClearDomainEvents());
+
+            foreach (var domainEvent in domainEvents)
+            {
+                await mediator.Publish(domainEvent, ct);
+            }
         }
     }
-    
+
+    private void InsertOutboxMessages()
+    {
+        var entitiesWithEvents = context.ChangeTracker
+            .Entries<IEntity>()
+            .Where(x => x.Entity.DomainEvents.Count != 0)
+            .ToList();
+
+        foreach (var entry in entitiesWithEvents)
+        {
+            var outboxMessages = entry.Entity.DomainEvents.Select(domainEvent => new TOutboxEvent
+            {
+                Id = Guid.NewGuid(),
+                EventType = domainEvent.GetType().Name,
+                Payload = JsonSerializer.Serialize(domainEvent, domainEvent.GetType()),
+                CreatedAt = DateTime.UtcNow,
+                Processed = false
+            });
+
+            context.Set<TOutboxEvent>().AddRange(outboxMessages);
+
+            entry.Entity.ClearDomainEvents();
+        }
+    }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
+        if (_transaction != null) return;
         _transaction = await context.Database.BeginTransactionAsync(cancellationToken);
     }
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
         if (_transaction == null)
-        {
             throw new InvalidOperationException("Transaction has not been started.");
-        }
 
         try
         {
-            await context.SaveChangesAsync(cancellationToken);
+            await SaveChangesAsync(cancellationToken);
             await _transaction.CommitAsync(cancellationToken);
-
-            await PublishDomainEventsAsync(cancellationToken);
         }
         catch
         {
@@ -66,26 +93,32 @@ public class UnitOfWork<TDbContext>(TDbContext context, IMediator mediator) : IU
         }
         finally
         {
-            await _transaction.DisposeAsync();
-            _transaction = null;
+            await DisposeTransactionAsync();
         }
     }
 
     public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
     {
-        if (_transaction == null)
+        if (_transaction != null)
         {
-            throw new InvalidOperationException("Transaction has not been started.");
+            await _transaction.RollbackAsync(cancellationToken);
+            await DisposeTransactionAsync();
         }
+    }
 
-        await _transaction.RollbackAsync(cancellationToken);
-        await _transaction.DisposeAsync();
-        _transaction = null;
+    private async Task DisposeTransactionAsync()
+    {
+        if (_transaction != null)
+        {
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
     }
 
     public void Dispose()
     {
         _transaction?.Dispose();
         context.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

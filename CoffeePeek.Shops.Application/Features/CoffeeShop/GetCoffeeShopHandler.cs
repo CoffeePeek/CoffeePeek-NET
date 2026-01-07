@@ -1,6 +1,4 @@
 ﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
@@ -12,7 +10,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop;
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop;
 
 public class GetCoffeeShopHandler(
     IGenericRepository<Shop> shopRepository,
@@ -31,7 +29,7 @@ public class GetCoffeeShopHandler(
         }
 
         var shopDto = await shopRepository
-            .QueryAsNoTracking()
+            .QueryAsNoTracking().AsSplitQuery()
             .ProjectToType<ShopDto>(mapper.Config)
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 

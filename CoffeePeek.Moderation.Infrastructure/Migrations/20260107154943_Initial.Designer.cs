@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoffeePeek.Moderation.Infrastructure.Migrations
 {
     [DbContext(typeof(ModerationDbContext))]
-    [Migration("20260105104357_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260107154943_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,34 +24,6 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.Location", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<decimal?>("Latitude")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal?>("Longitude")
-                        .HasColumnType("numeric");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ShopId")
-                        .IsUnique();
-
-                    b.ToTable("ModerationLocations");
-                });
 
             modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationCoffeeBeanShop", b =>
                 {
@@ -72,6 +44,37 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.HasIndex("ShopId");
 
                     b.ToTable("ModerationCoffeeBeanShops");
+                });
+
+            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationLocation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsAddressValidated")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal?>("Latitude")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("Longitude")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShopId")
+                        .IsUnique();
+
+                    b.ToTable("ModerationLocations");
                 });
 
             modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationRoasterShop", b =>
@@ -101,11 +104,6 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
                     b.Property<Guid>("CityId")
                         .HasColumnType("uuid");
 
@@ -116,14 +114,8 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<bool>("IsAddressValidated")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal?>("Latitude")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal?>("Longitude")
-                        .HasColumnType("numeric");
+                    b.Property<Guid?>("LocationId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("ModerationShopContactId")
                         .HasColumnType("uuid");
@@ -135,11 +127,6 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
-
-                    b.Property<string>("NotValidatedAddress")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
 
                     b.Property<int>("PriceRange")
                         .HasColumnType("integer");
@@ -353,22 +340,22 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.ToTable("ShopPhotos");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.Location", b =>
+            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationCoffeeBeanShop", b =>
                 {
                     b.HasOne("CoffeePeek.Moderation.Domain.Entities.ModerationShop", "ModerationShop")
-                        .WithOne("Location")
-                        .HasForeignKey("CoffeePeek.Moderation.Domain.Entities.Location", "ShopId")
+                        .WithMany("ModerationCoffeeBeanShops")
+                        .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ModerationShop");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationCoffeeBeanShop", b =>
+            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationLocation", b =>
                 {
                     b.HasOne("CoffeePeek.Moderation.Domain.Entities.ModerationShop", "ModerationShop")
-                        .WithMany("ModerationCoffeeBeanShops")
-                        .HasForeignKey("ShopId")
+                        .WithOne("Location")
+                        .HasForeignKey("CoffeePeek.Moderation.Domain.Entities.ModerationLocation", "ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

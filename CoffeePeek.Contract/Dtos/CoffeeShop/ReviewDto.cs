@@ -1,9 +1,8 @@
 namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 
-public class CoffeeShopReviewDto
+public class ReviewDto
 {
-    public int ShopId { get; set; }
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
 
     public string Header { get; set; }
     public string Comment { get; set; }

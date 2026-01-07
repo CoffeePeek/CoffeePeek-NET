@@ -1,8 +1,8 @@
-﻿using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 
-namespace CoffeePeek.Shops.Domain.Entities;
+namespace CoffeePeek.Moderation.Domain.Entities;
 
-public sealed class Location : Entity<Guid>
+public sealed class ModerationLocation : Entity<Guid>
 {
     public string Address { get; private set; }
     public bool IsAddressValidated { get; private set; }
@@ -10,21 +10,21 @@ public sealed class Location : Entity<Guid>
     public decimal? Longitude { get; private set; }
 
     public Guid ShopId { get; private set; }
-    public Shop? Shop { get; private set; }
+    public ModerationShop? ModerationShop { get; private set; }
 
     // ReSharper disable once UnusedMember.Local
-    private Location()
+    private ModerationLocation()
     {
     }
 
-    public Location(Guid shopId, string address)
+    public ModerationLocation(Guid shopId, string address)
     {
         ShopId = shopId;
         Address = address;
         IsAddressValidated = false;
     }
     
-    public Location(Guid shopId, string validatedAddress, decimal lat, decimal lon)
+    public ModerationLocation(Guid shopId, string validatedAddress, decimal lat, decimal lon)
     {
         Id = Guid.NewGuid();
         ShopId = shopId;

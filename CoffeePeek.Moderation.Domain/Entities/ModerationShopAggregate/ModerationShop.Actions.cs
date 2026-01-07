@@ -9,7 +9,6 @@ public sealed partial class ModerationShop
 {
     public static ModerationShop Create(
         string name,
-        string notValidatedAddress,
         Guid userId,
         Guid cityId,
         PriceRange priceRange,
@@ -22,32 +21,18 @@ public sealed partial class ModerationShop
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.UtcNow,
             Name = name,
-            NotValidatedAddress = notValidatedAddress,
-            Address = notValidatedAddress,
             UserId = userId,
             CityId = cityId,
             PriceRange = priceRange,
             Description = description,
             ModerationStatus = ModerationStatus.Pending,
-            IsAddressValidated = false
         };
     }
 
-
-    public void SetLocation(decimal lat, decimal lon, string validatedAddress)
+    public void SetLocation(ModerationLocation moderationLocation)
     {
-        Latitude = lat;
-        Longitude = lon;
-        Address = validatedAddress;
-        IsAddressValidated = true;
-
-        Location = new Location
-        {
-            Id = Guid.NewGuid(),
-            Latitude = lat,
-            Longitude = lon,
-            Address = validatedAddress
-        };
+        Location = moderationLocation;
+        LocationId = moderationLocation.Id;
     }
 
     public void AddPhoto(string fileName, string contentType, string storageKey, long length)
@@ -86,19 +71,19 @@ public sealed partial class ModerationShop
         List<Guid>? brewMethodIds)
     {
         UpdateCollection(_moderationShopEquipments, equipmentIds,
-            id => new ModerationShopEquipment { EquipmentId = id },
+            id => new ModerationShopEquipment(Id, id),
             e => e.EquipmentId);
         
         UpdateCollection(_moderationCoffeeBeanShops, coffeeBeanIds, 
-            id => new ModerationCoffeeBeanShop { CoffeeBeanId = id },
+            id => new ModerationCoffeeBeanShop(Id, id),
             e => e.CoffeeBeanId);
         
         UpdateCollection(_moderationRoasterShops, roasterIds, 
-            id => new ModerationRoasterShop { RoasterId = id },
+            id => new ModerationShopRoaster(Id, id),
             e => e.RoasterId);
         
         UpdateCollection(_moderationShopBrewMethods, brewMethodIds, 
-            id => new ModerationShopBrewMethod { BrewMethodId = id },
+            id => new ModerationShopBrewMethod(Id, id),
             e => e.BrewMethodId);
     }
     
@@ -106,7 +91,7 @@ public sealed partial class ModerationShop
     {
         if (ModerationStatus == ModerationStatus.Approved) return;
 
-        if (!IsAddressValidated)
+        if (!Location!.IsAddressValidated)
             throw new DomainException("Cannot approve shop with unvalidated address.");
 
         ModerationStatus = ModerationStatus.Approved;

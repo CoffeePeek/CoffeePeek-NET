@@ -30,12 +30,13 @@ public class GetCoffeeShopsRequestHandler(
 
         var cacheKey = CacheKey.CachedShop.ByCity(command.CityId, command.PageNumber, command.PageSize);
         var cached = await redisService.GetAsync<Response<GetCoffeeShopsResponse>>(cacheKey);
-        if (cached != null)
-        {
-            return cached;
-        }
+        //if (cached != null)
+        //{
+        //    return cached;
+        //}
 
-        var query = shopRepository.QueryAsNoTracking()
+        var query = shopRepository
+            .QueryAsNoTracking()
             .Where(s => s.CityId == command.CityId)
             .ProjectToType<ShortShopDto>(mapper.Config);
 

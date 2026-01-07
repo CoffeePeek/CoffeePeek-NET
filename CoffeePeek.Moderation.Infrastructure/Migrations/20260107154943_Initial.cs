@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CoffeePeek.Moderation.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,6 +46,7 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Address = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    IsAddressValidated = table.Column<bool>(type: "boolean", nullable: false),
                     Latitude = table.Column<decimal>(type: "numeric", nullable: true),
                     Longitude = table.Column<decimal>(type: "numeric", nullable: true),
                     ShopId = table.Column<Guid>(type: "uuid", nullable: false)
@@ -107,17 +108,13 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    NotValidatedAddress = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    Address = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     PriceRange = table.Column<int>(type: "integer", nullable: false),
-                    CityId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ModerationShopContactId = table.Column<Guid>(type: "uuid", nullable: true),
                     ModerationStatus = table.Column<int>(type: "integer", nullable: false),
                     RejectedReason = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    IsAddressValidated = table.Column<bool>(type: "boolean", nullable: false),
-                    Latitude = table.Column<decimal>(type: "numeric", nullable: true),
-                    Longitude = table.Column<decimal>(type: "numeric", nullable: true)
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CityId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LocationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ModerationShopContactId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {

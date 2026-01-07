@@ -4,7 +4,7 @@ using CoffeePeek.Account.Application.Features.Auth.Login;
 using CoffeePeek.Account.Application.Features.Login;
 using CoffeePeek.Account.Application.Features.Logout;
 using CoffeePeek.Account.Application.Features.RefreshToken;
-using CoffeePeek.Account.Application.Features.RegisterUser;
+using CoffeePeek.Account.Application.Features.User.RegisterUser;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.Auth;
 using CoffeePeek.Contract.Responses.Login;
@@ -36,7 +36,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("register")]
-    public Task<CreateEntityResponse<Guid>> Register([FromBody] RegisterUserCommand command)
+    public Task<CreateEntityResponse> Register([FromBody] RegisterUserCommand command)
     {
         return mediator.Send(command);
     }

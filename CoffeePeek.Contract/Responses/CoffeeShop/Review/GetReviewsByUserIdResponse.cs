@@ -3,13 +3,13 @@
 namespace CoffeePeek.Contract.Response.CoffeeShop.Review;
 
 public class GetReviewsByUserIdResponse(
-    CoffeeShopReviewDto[] reviewDtos,
+    ReviewDto[] reviewDtos,
     int totalItems,
     int totalPages,
     int currentPage,
     int pageSize)
 {
-    public CoffeeShopReviewDto[] Reviews { get; init; } = reviewDtos;
+    public ReviewDto[] Reviews { get; init; } = reviewDtos;
     public int TotalItems { get; init; } = totalItems;
     public int TotalPages { get; init; } = totalPages;
     public int CurrentPage { get; init; } = currentPage;

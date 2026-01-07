@@ -45,19 +45,10 @@ public sealed class Shop : Entity<Guid>
     private Shop()
     {
     }
-    
-    public Shop(Guid creatorId, string name, Guid cityId, PriceRange priceRange)
+
+    public Shop(Guid creatorId, string name, Guid cityId, PriceRange priceRange, Guid moderationId)
     {
         Id = Guid.NewGuid();
-        CreatorId = creatorId;
-        Name = name;
-        CityId = cityId;
-        PriceRange = priceRange;
-    }
-
-    public Shop(Guid id, Guid creatorId, string name, Guid cityId, PriceRange priceRange, Guid moderationId)
-    {
-        Id = id;
         CreatorId = creatorId;
         Name = name;
         CityId = cityId;
@@ -74,15 +65,9 @@ public sealed class Shop : Entity<Guid>
         PriceRange = priceRange;
     }
 
-    public void SetLocation(LocationDto location, Guid shopId)
+    public void SetLocation(Location location)
     {
-        Location = new Location
-        {
-            Address = location.Address,
-            Latitude = location.Latitude,
-            Longitude = location.Longitude,
-            ShopId = shopId,
-        };
+        Location = location;
         LocationId = Location.Id;
     }
 

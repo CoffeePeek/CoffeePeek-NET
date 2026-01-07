@@ -55,7 +55,7 @@ builder.Services.AddAuthorization(options =>
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.AccountDb);
-builder.Services.AddEfCoreData<AccountDbContext>(dbOptions);
+builder.Services.AddEfCoreData<AccountDbContext, OutboxEvent>(dbOptions);
 builder.Services.AddGenericRepository<UserCredential, AccountDbContext>();
 builder.Services.AddGenericRepository<OutboxEvent, AccountDbContext>();
 builder.Services.AddGenericRepository<Role, AccountDbContext>();

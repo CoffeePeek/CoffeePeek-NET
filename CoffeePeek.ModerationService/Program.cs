@@ -35,15 +35,15 @@ builder.Services.AddSwaggerModule("Coffee Peek ModerationService");
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ModerationDb);
-builder.Services.AddEfCoreData<ModerationDbContext>(dbOptions);
+builder.Services.AddEfCoreData<ModerationDbContext, OutboxEvent>(dbOptions);
 
 builder.Services.AddGenericRepository<ModerationShop, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopContact, ModerationDbContext>();
-builder.Services.AddGenericRepository<Location, ModerationDbContext>();
+builder.Services.AddGenericRepository<ModerationLocation, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopSchedule, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopEquipment, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationCoffeeBeanShop, ModerationDbContext>();
-builder.Services.AddGenericRepository<ModerationRoasterShop, ModerationDbContext>();
+builder.Services.AddGenericRepository<ModerationShopRoaster, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopBrewMethod, ModerationDbContext>();
 builder.Services.AddGenericRepository<PhotoMetadata, ModerationDbContext>();
 

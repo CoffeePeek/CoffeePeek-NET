@@ -21,7 +21,7 @@ public class SendCoffeeShopToModerationCommand : IRequest<Response<SendCoffeeSho
     
     public string? Description { get; set; }
     public PriceRange PriceRange { get; set; }
-    public Guid? CityId { get; set; }
+    [Required] public Guid CityId { get; set; }
     public ShopContactDto? ShopContact { get; set; }
     public List<ScheduleDto>? Schedules { get; set; }
     public List<Guid>? EquipmentIds { get; set; }

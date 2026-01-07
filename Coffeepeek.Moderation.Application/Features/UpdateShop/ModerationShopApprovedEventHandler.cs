@@ -27,6 +27,7 @@ public class ModerationShopApprovedEventHandler(
 
         await outboxEventPublisher.PublishAsync(integrationEvent, ct);
         
+        
         logger.LogInformation("Integration event for Shop {ShopId} saved to outbox.", shop.Id);
     }
 }

@@ -1,5 +1,3 @@
-#nullable enable
-using System.Text.Json.Serialization;
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Dtos.Shop;
@@ -9,7 +7,7 @@ namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 
 public class ShopDto 
 {
-    [JsonIgnore] public Guid Id { get; init; }
+    public Guid Id { get; init; }
     public Guid CityId { get; init; }
     public required string Name { get; init; }
     public string? Description { get; init; }
@@ -17,6 +15,7 @@ public class ShopDto
     
     public decimal Rating { get; init; }
     public int ReviewCount { get; init; }
+    public ReviewDto[] Reviews { get; init; }
 
     public bool IsOpen { get; init; }
     public PriceRange PriceRange { get; init; }

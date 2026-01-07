@@ -6,14 +6,10 @@ version: "3.9"
 
 services:
   # Override environment variables for local development
-  authservice:
+  accountservice:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       # Add your custom overrides here
-
-  userservice:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
 
   shopsservice:
     environment:

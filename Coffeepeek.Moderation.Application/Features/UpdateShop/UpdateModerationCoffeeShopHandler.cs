@@ -32,10 +32,10 @@ public class UpdateModerationCoffeeShopHandler(
 
         shop.UpdateInfo(moderationShopDto.Name, moderationShopDto.Description, moderationShopDto.PriceRange, moderationShopDto.CityId);
 
-        if (moderationShopDto.NotValidatedAddress != null && moderationShopDto.NotValidatedAddress != shop.NotValidatedAddress)
+        if (moderationShopDto.Address != null && moderationShopDto.Address != shop.Location?.Address)
         {
-            var geo = await geocodingService.GeocodeAsync(moderationShopDto.NotValidatedAddress, ct);
-            if (geo != null) shop.SetLocation(geo.Latitude, geo.Longitude, moderationShopDto.NotValidatedAddress);
+            var geo = await geocodingService.GeocodeAsync(moderationShopDto.Address, ct);
+            if (geo != null) shop.Location!.SetLocation(geo.Latitude, geo.Longitude, moderationShopDto.Address);
         }
 
         if (moderationShopDto.ShopContact != null)

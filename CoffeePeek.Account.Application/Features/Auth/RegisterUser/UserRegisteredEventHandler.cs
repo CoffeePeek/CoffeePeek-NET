@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Resend;
 
-namespace CoffeePeek.Account.Application.Features.User.RegisterUser;
+namespace CoffeePeek.Account.Application.Features.Auth.RegisterUser;
 
 public class UserRegisteredEventHandler(
     IResend resend,
@@ -21,7 +21,7 @@ public class UserRegisteredEventHandler(
 
             var message = new EmailMessage
             {
-                From = "Coffeepeek.by <coffeepeek.by@coffeepeek.by>",
+                From = "Coffeepeek.by <info@coffeepeek.by>",
                 To = notification.Email,
                 Subject = "Perfectly roasted beans are waiting for you! ☕",
                 HtmlBody = templateService.GetConfirmationHtml(notification.Username, confirmationUrl)

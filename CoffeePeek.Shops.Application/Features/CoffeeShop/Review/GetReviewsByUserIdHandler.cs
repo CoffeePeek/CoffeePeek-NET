@@ -31,7 +31,7 @@ public class GetReviewsByUserIdRequestHandler(
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        var reviewDtos = mapper.Map<CoffeeShopReviewDto[]>(reviews);
+        var reviewDtos = mapper.Map<ReviewDto[]>(reviews);
 
         var response = new GetReviewsByUserIdResponse(
             reviewDtos,

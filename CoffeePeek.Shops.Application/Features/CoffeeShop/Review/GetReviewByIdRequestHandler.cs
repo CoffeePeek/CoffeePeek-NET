@@ -25,7 +25,7 @@ public class GetReviewByIdRequestHandler(
             return Response<GetReviewByIdResponse>.Error("Review not found");
         }
 
-        var reviewDto = mapper.Map<CoffeeShopReviewDto>(review);
+        var reviewDto = mapper.Map<ReviewDto>(review);
         var response = new GetReviewByIdResponse(reviewDto);
 
         return Response<GetReviewByIdResponse>.Success(response);

@@ -14,15 +14,17 @@ public sealed class ModerationShopSchedule : Entity<Guid>
     public IReadOnlyCollection<ModerationShopScheduleInterval> Intervals => _intervals.AsReadOnly();
 
     // ReSharper disable once UnusedMember.Local
-    private ModerationShopSchedule() { }
+    private ModerationShopSchedule()
+    {
+    }
 
     internal ModerationShopSchedule(DayOfWeek dayOfWeek, List<ShopScheduleIntervalDto>? intervals)
     {
         Id = Guid.NewGuid();
         DayOfWeek = dayOfWeek;
-        
+
         if (intervals != null)
-            _intervals = intervals.Select(x => 
+            _intervals = intervals.Select(x =>
                 new ModerationShopScheduleInterval(x.OpenTime, x.CloseTime)
             ).ToList();
     }

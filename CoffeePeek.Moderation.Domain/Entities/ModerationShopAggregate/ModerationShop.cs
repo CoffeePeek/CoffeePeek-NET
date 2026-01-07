@@ -8,20 +8,18 @@ public partial class ModerationShop : Entity<Guid>
     public DateTime CreatedAt { get; private set; }
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
-    public string NotValidatedAddress { get; private set; } = null!;
-    public string Address { get; private set; } = null!;
-    public Guid UserId { get; private set; }
     public PriceRange PriceRange { get; private set; }
-    public Guid CityId { get; private set; }
-    public Guid? ModerationShopContactId { get; private set; }
     public ModerationStatus ModerationStatus { get; private set; }
     public string? RejectedReason { get; private set; }
-    public bool IsAddressValidated { get; private set; }
-    public decimal? Latitude { get; private set; }
-    public decimal? Longitude { get; private set; }
-
+    
+    public Guid UserId { get; private set; }
+    public Guid CityId { get; private set; }
+    public Guid? LocationId { get; private set; }
+    public Guid? ModerationShopContactId { get; private set; }
+    
     public ModerationShopContact? ModerationShopContact { get; private set; }
-    public Location? Location { get; private set; }
+    
+    public ModerationLocation? Location { get; private set; }
 
     private readonly List<PhotoMetadata> _shopPhotos = [];
     public IReadOnlyCollection<PhotoMetadata> ShopPhotos => _shopPhotos.AsReadOnly();
@@ -34,8 +32,8 @@ public partial class ModerationShop : Entity<Guid>
 
     private readonly List<ModerationCoffeeBeanShop> _moderationCoffeeBeanShops = [];
     public IReadOnlyCollection<ModerationCoffeeBeanShop> ModerationCoffeeBeanShops => _moderationCoffeeBeanShops.AsReadOnly();
-    private readonly List<ModerationRoasterShop> _moderationRoasterShops = [];
-    public IReadOnlyCollection<ModerationRoasterShop> ModerationRoasterShops => _moderationRoasterShops.AsReadOnly();
+    private readonly List<ModerationShopRoaster> _moderationRoasterShops = [];
+    public IReadOnlyCollection<ModerationShopRoaster> ModerationRoasterShops => _moderationRoasterShops.AsReadOnly();
     private readonly List<ModerationShopBrewMethod> _moderationShopBrewMethods = [];
     public IReadOnlyCollection<ModerationShopBrewMethod> ModerationShopBrewMethods => _moderationShopBrewMethods.AsReadOnly();
 
