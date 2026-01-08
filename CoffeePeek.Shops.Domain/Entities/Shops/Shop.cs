@@ -38,8 +38,10 @@ public sealed class Shop : Entity<Guid>
     private readonly List<ShopBrewMethod> _shopBrewMethods = [];
     public IReadOnlyCollection<ShopBrewMethod> ShopBrewMethods => _shopBrewMethods.AsReadOnly();
 
-    public ICollection<Review> Reviews { get; private set; } = new HashSet<Review>();
-    public ICollection<CheckIn> CheckIns { get; private set; } = new HashSet<CheckIn>();
+    private readonly List<Review> _reviews = [];
+    public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
+    private readonly List<CheckIn> _checkIns = [];
+    public IReadOnlyCollection<CheckIn> CheckIns => _checkIns.AsReadOnly();
 
     // ReSharper disable once UnusedMember.Local
     private Shop()

@@ -5,8 +5,7 @@ using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
-using CoffeePeek.Shops.Application.Features.CoffeeShop;
-using CoffeePeek.Shops.Application.Handlers.CoffeeShop;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
@@ -15,6 +14,7 @@ using CoffeePeek.Shops.Infrastructure.Consumers;
 using CoffeePeek.Shops.Infrastructure.Extensions;
 using CoffeePeek.Shops.Infrastructure.Services;
 using CoffePeek.ServiceDefaults;
+using Mapster;
 using OutboxEvent = CoffeePeek.Shops.Domain.Entities.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,7 +53,9 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddCacheModule();
 
 // Mapster
-builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
+builder.Services.AddMapster();
+var config = TypeAdapterConfig.GlobalSettings;
+config.Scan(typeof(MapsterConfiguration).Assembly);
 
 // Validation
 builder.Services.AddValidators();
