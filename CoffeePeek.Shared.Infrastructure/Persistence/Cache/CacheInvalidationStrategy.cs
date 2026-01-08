@@ -21,24 +21,24 @@ public sealed class CacheInvalidationStrategy(
         {
             Tags.ShopsDictionary,
             [
-                "Shop:cities:*",
-                "Shop:equipment:*",
-                "Shop:beans:*",
-                "Shop:roasters:*",
-                "Shop:brewmethods:*"
+                "city:list:*",
+                "equipment:list:*",
+                "bean:list:*",
+                "roaster:list:*",
+                "brewmethod:list:*"
             ]
         },
         {
             Tags.ShopsLists,
             [
-                "Shop:city:*" // all paged lists by city
+                "shop:list:city:*" // all paged lists by city
             ]
         },
         {
             Tags.ShopsDetails,
             [
-                "Shop:id:*",
-                "Shop:favorites:*"
+                "shop:detail:*",
+                "shop:favorites:*"
             ]
         }
     };

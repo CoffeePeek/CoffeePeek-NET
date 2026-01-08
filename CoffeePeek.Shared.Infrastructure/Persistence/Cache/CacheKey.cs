@@ -9,131 +9,230 @@ public record CacheKey(
     public static class User
     {
         public static CacheKey Profile(Guid userId) => new(
-            Key: $"{nameof(User)}:profile:{userId}",
+            Key: $"user:profile:{userId}",
             DefaultTtl: TimeSpan.FromHours(1),
             Description: "User profile DTO",
             Service: "UserService");
             
-        public static CacheKey ById(Guid userId) => new(
-            Key: $"{nameof(User)}:id:{userId}",
+        public static CacheKey Entity(Guid userId) => new(
+            Key: $"user:entity:{userId}",
             DefaultTtl: TimeSpan.FromHours(1),
             Description: "User entity",
             Service: "UserService");
             
         public static CacheKey ByEmail(string email) => new(
-            Key: $"{nameof(User)}:email:{email.ToLowerInvariant()}",
+            Key: $"user:email:{email.ToLowerInvariant()}",
             DefaultTtl: TimeSpan.FromHours(1),
             Description: "User by email",
             Service: "UserService");
         
             
-        public static string ProfilePattern() => $"{nameof(User)}:profile:*";
+        public static string ProfilePattern() => "user:profile:*";
         
-        public static string StatisticsPattern() => $"{nameof(User)}:statistics:*";
+        public static string StatisticsPattern() => "user:statistics:*";
         
-        public static string AllPattern() => $"{nameof(User)}:*";
+        public static string AllPattern() => "user:*";
     }
     
     public static class Auth
     {
         public static CacheKey Credentials(Guid userId) => new(
-            Key: $"{nameof(Auth)}:credentials:{userId}",
+            Key: $"auth:credentials:{userId}",
             DefaultTtl: TimeSpan.FromMinutes(30),
             Description: "User credentials entity",
             Service: "AuthService");
             
         public static CacheKey CredentialsByEmail(string email) => new(
-            Key: $"{nameof(Auth)}:credentials:email:{email.ToLowerInvariant()}",
+            Key: $"auth:credentials:email:{email.ToLowerInvariant()}",
             DefaultTtl: TimeSpan.FromMinutes(5),
             Description: "User credentials by email",
             Service: "AuthService");
             
         public static CacheKey RefreshToken(string token) => new(
-            Key: $"{nameof(Auth)}:refresh-token:{token}",
+            Key: $"auth:refresh-token:{token}",
             DefaultTtl: TimeSpan.FromDays(1),
             Description: "Refresh token",
             Service: "AuthService");
             
-        public static string CredentialsPattern() => $"{nameof(Auth)}:credentials:*";
+        public static string CredentialsPattern() => "auth:credentials:*";
         
-        public static string AllPattern() => $"{nameof(Auth)}:*";
+        public static string AllPattern() => "auth:*";
     }
     
-    public static class CachedShop
+    public static class Shop
     {
-        public static CacheKey ById(Guid shopId) => new(
-            Key: $"{nameof(CachedShop)}:id:{shopId}",
+        public static CacheKey Detail(Guid shopId) => new(
+            Key: $"shop:detail:{shopId}",
             DefaultTtl: TimeSpan.FromMinutes(3),
             Description: "Coffee shop entity (details)",
             Service: "ShopsService");
         
-        public static string ByIdPattern() => $"{nameof(CachedShop)}:id:*";
+        public static string DetailPattern() => "shop:detail:*";
         
-        public static CacheKey ByCity(Guid cityId, int pageNumber, int pageSize) => new(
-            Key: $"{nameof(CachedShop)}:city:{cityId}:page:{pageNumber}:size:{pageSize}",
+        public static CacheKey ListByCity(Guid cityId, int pageNumber, int pageSize) => new(
+            Key: $"shop:list:city:{cityId}:page:{pageNumber}:size:{pageSize}",
             DefaultTtl: TimeSpan.FromMinutes(5),
             Description: "Coffee shops list by city with paging",
             Service: "ShopsService");
         
-        public static string ByCityPattern(Guid cityId) => $"{nameof(CachedShop)}:city:{cityId}:*";
+        public static string ListByCityPattern(Guid cityId) => $"shop:list:city:{cityId}:*";
             
-        public static CacheKey Cities() => new(
-            Key: $"{nameof(Cities)}:all",
+        public static CacheKey Favorites(Guid userId) => new(
+            Key: $"shop:favorites:{userId}",
+            DefaultTtl: TimeSpan.FromHours(1),
+            Description: "User favorite shops",
+            Service: "ShopsService");
+        
+        public static CacheKey Search(string searchHash) => new(
+            Key: $"shop:search:{searchHash}",
+            DefaultTtl: TimeSpan.FromMinutes(5),
+            Description: "Shop search results",
+            Service: "ShopsService");
+            
+        public static string AllPattern() => "shop:*";
+    }
+    
+    public static class City
+    {
+        public static CacheKey ListAll() => new(
+            Key: "city:list:all",
             DefaultTtl: TimeSpan.FromDays(1),
             Description: "All cities list",
             Service: "ShopsService");
         
-        public static CacheKey Equipment() => new(
-            Key: $"{nameof(Equipment)}:all",
+        public static string ListPattern() => "city:list:*";
+    }
+    
+    public static class Equipment
+    {
+        public static CacheKey ListAll() => new(
+            Key: "equipment:list:all",
             DefaultTtl: TimeSpan.FromDays(1),
             Description: "All equipment list",
             Service: "ShopsService");
         
-        public static CacheKey Beans() => new(
-            Key: $"{nameof(Beans)}:all",
+        public static string ListPattern() => "equipment:list:*";
+    }
+    
+    public static class Bean
+    {
+        public static CacheKey ListAll() => new(
+            Key: "bean:list:all",
             DefaultTtl: TimeSpan.FromDays(1),
             Description: "All beans list",
             Service: "ShopsService");
         
-        public static CacheKey Roasters() => new(
-            Key: $"{nameof(Roasters)}:all",
+        public static string ListPattern() => "bean:list:*";
+    }
+    
+    public static class Roaster
+    {
+        public static CacheKey ListAll() => new(
+            Key: "roaster:list:all",
             DefaultTtl: TimeSpan.FromDays(1),
             Description: "All roasters list",
             Service: "ShopsService");
         
-        public static CacheKey BrewMethods() => new(
-            Key: $"{nameof(BrewMethods)}:all",
+        public static string ListPattern() => "roaster:list:*";
+    }
+    
+    public static class BrewMethod
+    {
+        public static CacheKey ListAll() => new(
+            Key: "brewmethod:list:all",
             DefaultTtl: TimeSpan.FromDays(1),
             Description: "All brew methods list",
             Service: "ShopsService");
-            
-        public static CacheKey Favorites(Guid userId) => new(
-            Key: $"{nameof(CachedShop)}:favorites:{userId}",
-            DefaultTtl: TimeSpan.FromHours(1),
-            Description: "User favorite shops",
-            Service: "ShopsService");
-            
-        public static string AllPattern() => $"{nameof(CachedShop)}:*";
         
+        public static string ListPattern() => "brewmethod:list:*";
     }
     
-    public static class Vacancies
+    public static class Vacancy
     {
         public static CacheKey HHVacancies(string key) => new(
-            Key: $"{nameof(Vacancies)}:key:{key}",
+            Key: $"vacancy:hh:{key}",
             DefaultTtl: TimeSpan.FromHours(1),
             Description: "Vacancies list hh.ru by key",
             Service: "JobVacancies");
         
-        public static CacheKey GetAll(Guid cityId, int jobType, int page, int pageSize) => new(
-            Key: $"{nameof(Vacancies)}:city:{cityId}:type:{jobType}:page:{page}:size:{pageSize}",
+        public static CacheKey List(Guid cityId, int jobType, int page, int pageSize) => new(
+            Key: $"vacancy:list:city:{cityId}:type:{jobType}:page:{page}:size:{pageSize}",
             DefaultTtl: TimeSpan.FromHours(1),
             Description: "Vacancies list by cityId, jobType, page and pageSize",
             Service: "JobVacancies");
         
-        public static string AllPattern() => $"{nameof(Vacancies)}:*";
+        public static string AllPattern() => "vacancy:*";
     }
     
     public static string AllPattern() => "*";
+    
+    /// <summary>
+    /// Cache categories for admin invalidation
+    /// </summary>
+    public static class Categories
+    {
+        public static class Account
+        {
+            public const string Users = "users";
+            public const string Auth = "auth";
+            
+            private static readonly Dictionary<string, string> Descriptions = new()
+            {
+                [Users] = "User profiles and entities",
+                [Auth] = "Authentication data (credentials, tokens)"
+            };
+            
+            private static readonly Dictionary<string, string[]> Patterns = new()
+            {
+                [Users] = [User.AllPattern()],
+                [Auth] = [CacheKey.Auth.AllPattern()]
+            };
+            
+            public static Dictionary<string, string> GetDescriptions() => new(Descriptions);
+            public static Dictionary<string, string[]> GetPatterns() => new(Patterns);
+        }
+        
+        public static class Shops
+        {
+            public const string Dictionaries = "dictionaries";
+            public const string Lists = "shops-lists";
+            public const string Details = "shops-details";
+            
+            private static readonly Dictionary<string, string> Descriptions = new()
+            {
+                [Dictionaries] = "Cities, Equipment, Beans, Roasters, Brew Methods",
+                [Lists] = "Coffee shops lists by city (paginated)",
+                [Details] = "Shop details and favorites"
+            };
+            
+            private static readonly Dictionary<string, string[]> Patterns = new()
+            {
+                [Dictionaries] = [City.ListPattern(), Equipment.ListPattern(), Bean.ListPattern(), 
+                                   Roaster.ListPattern(), BrewMethod.ListPattern()],
+                [Lists] = [$"shop:list:city:*"],
+                [Details] = [Shop.DetailPattern(), $"shop:favorites:*"]
+            };
+            
+            public static Dictionary<string, string> GetDescriptions() => new(Descriptions);
+            public static Dictionary<string, string[]> GetPatterns() => new(Patterns);
+        }
+        
+        public static class Vacancies
+        {
+            public const string All = "vacancies";
+            
+            private static readonly Dictionary<string, string> Descriptions = new()
+            {
+                [All] = "All job vacancies cache"
+            };
+            
+            private static readonly Dictionary<string, string[]> Patterns = new()
+            {
+                [All] = [Vacancy.AllPattern()]
+            };
+            
+            public static Dictionary<string, string> GetDescriptions() => new(Descriptions);
+            public static Dictionary<string, string[]> GetPatterns() => new(Patterns);
+        }
+    }
 }
-
