@@ -12,7 +12,7 @@ namespace CoffeePeek.JobVacancies.Application.Handlers;
 
 public class GetVacanciesHandler(
     IJobVacancyRepository repository,
-    IRedisService redisService,
+    IHybridCache hybridCache,
     IMapper mapper)
     : IRequestHandler<GetVacanciesCommand, Response<JobVacanciesResponse>>
 {
@@ -23,34 +23,40 @@ public class GetVacanciesHandler(
         if (request.PerPage <= 0) request = request with { PerPage = 20 };
         if (request.PerPage > 100) request = request with { PerPage = 100 };
 
-        var cacheKey = CacheKey.Vacancies.GetAll(
+        var cacheKey = CacheKey.Vacancy.List(
             request.CityId,
             (int)request.JobType,
             request.Page,
             request.PerPage);
 
-        var cachedResponse = await redisService.GetAsync<JobVacanciesResponse>(cacheKey);
-        if (cachedResponse != null)
-        {
-            return Response.Success(cachedResponse);
-        }
+        var response = await hybridCache.GetOrSetAsync(
+            cacheKey,
+            async () =>
+            {
+                var items = await repository.GetAllByCityIdWithPagination(
+                    request.CityId, 
+                    request.JobType, 
+                    request.Page,
+                    request.PerPage, 
+                    cancellationToken);
 
-        var items = await repository.GetAllByCityIdWithPagination(request.CityId, request.JobType, request.Page,
-                        request.PerPage, cancellationToken);
+                var dtoItems = mapper.Map<List<JobVacancyDto>>(items);
 
-        var dtoItems = mapper.Map<List<JobVacancyDto>>(items);
+                return new JobVacanciesResponse
+                {
+                    Items = dtoItems,
+                    Page = request.Page,
+                    PerPage = request.PerPage,
+                    Total = items.Length,
+                    TotalPages = (int)Math.Ceiling(items.Length / (double)request.PerPage)
+                };
+            },
+            distributedTtl: cacheKey.DefaultTtl,
+            memoryTtl: TimeSpan.FromMinutes(5),
+            cancellationToken: cancellationToken);
 
-        var response = new JobVacanciesResponse
-        {
-            Items = dtoItems,
-            Page = request.Page,
-            PerPage = request.PerPage,
-            Total = items.Length,
-                       TotalPages = (int)Math.Ceiling(items.Length / (double)request.PerPage)
-        };
-
-        await redisService.SetAsync(cacheKey, response);
-
-        return Response.Success(response);
+        return response != null 
+            ? Response.Success(response) 
+            : Response<JobVacanciesResponse>.Error("Failed to retrieve vacancies");
     }
 }
