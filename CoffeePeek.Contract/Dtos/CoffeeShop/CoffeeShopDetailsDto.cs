@@ -1,11 +1,11 @@
-using CoffeePeek.Contract.Dtos.Contact;
+﻿using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Contract.Enums;
 
 namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 
-public record ShopDto 
+public record CoffeeShopDetailsDto
 {
     public Guid Id { get; set; }
     public Guid CityId { get; set; }

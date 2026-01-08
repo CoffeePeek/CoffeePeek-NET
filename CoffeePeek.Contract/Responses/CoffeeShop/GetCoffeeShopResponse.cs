@@ -2,4 +2,4 @@
 
 namespace CoffeePeek.Contract.Responses.CoffeeShop;
 
-public sealed record GetCoffeeShopResponse(ShopDto ShopDto);
+public sealed record GetCoffeeShopResponse(CoffeeShopDetailsDto ShopDto);
