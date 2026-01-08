@@ -9,7 +9,7 @@ public static class YarpRouteFactory
     
     private static readonly List<ServiceRoute> Services =
     [
-        new("account", ["Auth", "User", "Admin"], "account-cluster"),
+        new("account", ["Auth", "User"], "account-cluster"),
         new("shops", ["CheckIn", "CoffeeShop", "Internal", "Review"], "shops-cluster"),
         new("moderation", ["Moderation"], "moderation-cluster"),
         new("jobs", ["Vacancies"], "jobs-cluster")
@@ -27,6 +27,11 @@ public static class YarpRouteFactory
 
             routes.Add(CreateSwaggerRoute(service));
         }
+        
+        // Admin routes with service-specific prefixes
+        routes.Add(CreateAdminRoute("account", "account-cluster"));
+        routes.Add(CreateAdminRoute("shops", "shops-cluster"));
+        routes.Add(CreateAdminRoute("vacancies", "jobs-cluster"));
     
         return routes.ToArray();
     }
@@ -50,5 +55,12 @@ public static class YarpRouteFactory
         {
             new() { { "PathPattern", "/swagger/{**catch-all}" } }
         }
+    };
+    
+    private static RouteConfig CreateAdminRoute(string serviceName, string clusterId) => new()
+    {
+        RouteId = $"admin-{serviceName}-route",
+        ClusterId = clusterId,
+        Match = new RouteMatch { Path = $"/api/admin/{serviceName}/{{**catch-all}}" }
     };
 }
