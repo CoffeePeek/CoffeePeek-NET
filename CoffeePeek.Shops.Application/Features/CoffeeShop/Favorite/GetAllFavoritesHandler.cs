@@ -9,7 +9,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.ShopsService.Handlers.CoffeeShop;
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop.Favorite;
 
 public class GetAllFavoritesHandler(IGenericRepository<FavoriteShop> favoriteShopRepository, IMapper mapper) : IRequestHandler<GetAllFavoritesCommand, Response<GetAllFavoritesResponse>>
 {
@@ -21,13 +21,22 @@ public class GetAllFavoritesHandler(IGenericRepository<FavoriteShop> favoriteSho
         }
 
         var favoriteShops = await favoriteShopRepository.QueryAsNoTracking()
-            .Include(x => x.Shop)
             .Where(x => x.UserId == request.UserId)
             .Select(x => x.Shop)
-            .ProjectToType<ShopDto>(mapper.Config)
+            .Include(x => x.ShopPhotos)
+            .Include(x => x.Reviews)
+            .Include(x => x.ShopEquipments).ThenInclude(x => x.Equipment)
+            .Include(x => x.CoffeeBeanShops).ThenInclude(x => x.CoffeeBean)
+            .Include(x => x.RoasterShops).ThenInclude(x => x.Roaster)
+            .Include(x => x.ShopBrewMethods).ThenInclude(x => x.BrewMethod)
+            .Include(x => x.ShopContact)
+            .Include(x => x.Location)
+            .Include(x => x.Schedules)
             .ToListAsync(cancellationToken);
+        
+        var favoriteDtos = favoriteShops.Adapt<List<CoffeeShopDetailsDto>>(mapper.Config);
 
-        var result = new GetAllFavoritesResponse(favoriteShops);
+        var result = new GetAllFavoritesResponse(favoriteDtos);
         
         return Response<GetAllFavoritesResponse>.Success(result);
     }

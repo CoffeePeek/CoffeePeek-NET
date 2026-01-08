@@ -15,6 +15,7 @@ public class AddCoffeeShopReviewRequestHandler(
     IGenericRepository<Shop> shopsRepository,
     IUnitOfWork unitOfWork,
     IValidationStrategy<AddCoffeeShopReviewRequest> validationStrategy,
+    IHybridCache hybridCache,
     IRedisService redisService,
     IOutboxEventPublisher outboxEventPublisher) 
     : IRequestHandler<AddCoffeeShopReviewRequest, Contract.Responses.Response<AddCoffeeShopReviewResponse>>
@@ -64,10 +65,10 @@ public class AddCoffeeShopReviewRequestHandler(
             .Select(s => s.CityId)
             .FirstOrDefaultAsync(cancellationToken);
 
-        await redisService.RemoveAsync(CacheKey.CachedShop.ById(shopId));
+        await hybridCache.RemoveAsync(CacheKey.Shop.Detail(shopId), cancellationToken);
         if (cityId != Guid.Empty)
         {
-            await redisService.RemoveByPatternAsync(CacheKey.CachedShop.ByCityPattern(cityId));
+            await redisService.RemoveByPatternAsync(CacheKey.Shop.ListByCityPattern(cityId));
         }
     }
 }

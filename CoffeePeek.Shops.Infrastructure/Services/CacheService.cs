@@ -21,7 +21,7 @@ public class CacheService(
 {
     public async Task<CityDto[]?> GetCities()
     {
-        var cacheKey = CacheKey.CachedShop.Cities();
+        var cacheKey = CacheKey.City.ListAll();
         return await cache.GetOrSetAsync(
             cacheKey,
             async () =>
@@ -34,7 +34,7 @@ public class CacheService(
 
     public async Task<BeansDto[]?> GetBeans()
     {
-        var cacheKey = CacheKey.CachedShop.Beans();
+        var cacheKey = CacheKey.Bean.ListAll();
         return await cache.GetOrSetAsync(
             cacheKey,
             async () =>
@@ -47,7 +47,7 @@ public class CacheService(
 
     public async Task<EquipmentDto[]?> GetEquipments()
     {
-        var cacheKey = CacheKey.CachedShop.Equipment();
+        var cacheKey = CacheKey.Equipment.ListAll();
         return await cache.GetOrSetAsync(
             cacheKey,
             async () =>
@@ -60,7 +60,7 @@ public class CacheService(
 
     public async Task<RoasterDto[]?> GetRoasters()
     {
-        var cacheKey = CacheKey.CachedShop.Roasters();
+        var cacheKey = CacheKey.Roaster.ListAll();
         return await cache.GetOrSetAsync(
             cacheKey,
             async () =>
@@ -73,7 +73,7 @@ public class CacheService(
 
     public async Task<BrewMethodDto[]?> GetBrewMethods()
     {
-        var cacheKey = CacheKey.CachedShop.BrewMethods();
+        var cacheKey = CacheKey.BrewMethod.ListAll();
         return await cache.GetOrSetAsync(
             cacheKey,
             async () =>

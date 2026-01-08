@@ -17,17 +17,18 @@ namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop;
 public class SearchCoffeeShopsHandler(
     IGenericRepository<Shop> shopRepository,
     IMapper mapper,
-    IRedisService redisService)
+    IHybridCache hybridCache)
     : IRequestHandler<SearchCoffeeShopsCommand, Response<GetCoffeeShopsResponse>>
 {
     public async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsCommand command, CancellationToken cancellationToken)
     {
-        var cacheKey = CreateCacheKey(command);
-        var cached = await redisService.GetAsync<Response<GetCoffeeShopsResponse>>(cacheKey);
-        if (cached != null)
-        {
-            return cached;
-        }
+        var searchHash = CreateSearchHash(command);
+        var cacheKey = CacheKey.Shop.Search(searchHash);
+        
+        var result = await hybridCache.GetOrSetAsync(
+            cacheKey,
+            async () =>
+            {
 
         var query = shopRepository.QueryAsNoTracking()
             .Include(s => s.Location)
@@ -81,26 +82,27 @@ public class SearchCoffeeShopsHandler(
             .Take(command.PageSize)
             .ToArrayAsync(cancellationToken);
 
-        var response = new GetCoffeeShopsResponse
-        {
-            CoffeeShops = shopDtos,
-            CurrentPage = command.PageNumber,
-            PageSize = command.PageSize,
-            TotalItems = totalCount,
-            TotalPages = totalPages
-        };
+                var response = new GetCoffeeShopsResponse
+                {
+                    CoffeeShops = shopDtos,
+                    CurrentPage = command.PageNumber,
+                    PageSize = command.PageSize,
+                    TotalItems = totalCount,
+                    TotalPages = totalPages
+                };
 
-        var result = Response<GetCoffeeShopsResponse>.Success(response);
+                return Response<GetCoffeeShopsResponse>.Success(response);
+            },
+            distributedTtl: TimeSpan.FromMinutes(5),
+            memoryTtl: TimeSpan.FromMinutes(1),
+            cancellationToken: cancellationToken);
         
-        await redisService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(5));
-        
-        return result;
+        return result ?? Response<GetCoffeeShopsResponse>.Error("Failed to search coffee shops.");
     }
 
-    private static CacheKey CreateCacheKey(SearchCoffeeShopsCommand command)
+    private static string CreateSearchHash(SearchCoffeeShopsCommand command)
     {
-        var keyBuilder = new StringBuilder("Shop:search:");
-        
+        var keyBuilder = new StringBuilder();
         if (!string.IsNullOrWhiteSpace(command.Query))
         {
             var queryHash = ComputeHash(command.Query.Trim().ToLowerInvariant());
@@ -131,7 +133,7 @@ public class SearchCoffeeShopsHandler(
         
         keyBuilder.Append($"page:{command.PageNumber}:size:{command.PageSize}");
         
-        return new CacheKey(keyBuilder.ToString());
+        return keyBuilder.ToString();
     }
 
     private static string ComputeHash(string input)

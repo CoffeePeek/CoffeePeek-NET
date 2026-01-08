@@ -8,13 +8,14 @@ using CoffeePeek.Shops.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop.Review;
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop.Review;
 
 public class UpdateCoffeeShopReviewRequestHandler(
     IGenericRepository<Domain.Entities.Review> reviewRepository,
     IGenericRepository<Shop> shopsRepository,
     IUnitOfWork unitOfWork,
     IValidationStrategy<UpdateCoffeeShopReviewRequest> validationStrategy,
+    IHybridCache hybridCache,
     IRedisService redisService)
     : IRequestHandler<UpdateCoffeeShopReviewRequest, Response<UpdateCoffeeShopReviewResponse>>
 {
@@ -61,10 +62,10 @@ public class UpdateCoffeeShopReviewRequestHandler(
             .Select(s => s.CityId)
             .FirstOrDefaultAsync(cancellationToken);
 
-        await redisService.RemoveAsync(CacheKey.CachedShop.ById(shopId));
+        await hybridCache.RemoveAsync(CacheKey.Shop.Detail(shopId), cancellationToken);
         if (cityId != Guid.Empty)
         {
-            await redisService.RemoveByPatternAsync(CacheKey.CachedShop.ByCityPattern(cityId));
+            await redisService.RemoveByPatternAsync(CacheKey.Shop.ListByCityPattern(cityId));
         }
     }
 }

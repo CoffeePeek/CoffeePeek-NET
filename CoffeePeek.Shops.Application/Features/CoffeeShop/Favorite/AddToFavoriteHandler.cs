@@ -13,7 +13,7 @@ public class AddToFavoriteHandler(
     IGenericRepository<Shop> shopRepository,
     IUnitOfWork unitOfWork,
     IValidationStrategy<AddToFavoriteCommand> validationStrategy,
-    IRedisService redisService)
+    IHybridCache hybridCache)
     : IRequestHandler<AddToFavoriteCommand, CreateEntityResponse<Guid>>
 {
     public async Task<CreateEntityResponse<Guid>> Handle(AddToFavoriteCommand request, CancellationToken cancellationToken)
@@ -49,7 +49,7 @@ public class AddToFavoriteHandler(
         await favoriteShopRepository.AddAsync(favoriteShop, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        await redisService.RemoveAsync(CacheKey.CachedShop.Favorites(request.UserId));
+        await hybridCache.RemoveAsync(CacheKey.Shop.Favorites(request.UserId), cancellationToken);
 
         return CreateEntityResponse<Guid>.Success(favoriteShop.Id, "Coffee shop added to favorites");
     }

@@ -17,7 +17,7 @@ public class GetCoffeeShopsRequestHandler(
     IGenericRepository<Shop> shopRepository,
     IValidationStrategy<GetCoffeeShopsCommand> validationStrategy,
     IMapper mapper,
-    IRedisService redisService) 
+    IHybridCache hybridCache) 
     : IRequestHandler<GetCoffeeShopsCommand, Response<GetCoffeeShopsResponse>>
 {
     public async Task<Response<GetCoffeeShopsResponse>> Handle(GetCoffeeShopsCommand command, CancellationToken cancellationToken)
@@ -28,37 +28,40 @@ public class GetCoffeeShopsRequestHandler(
             return Response<GetCoffeeShopsResponse>.Error(validationResult.ErrorMessage);
         }
 
-        var cacheKey = CacheKey.CachedShop.ByCity(command.CityId, command.PageNumber, command.PageSize);
-        var cached = await redisService.GetAsync<Response<GetCoffeeShopsResponse>>(cacheKey);
-        //if (cached != null)
-        //{
-        //    return cached;
-        //}
+        var cacheKey = CacheKey.Shop.ListByCity(command.CityId, command.PageNumber, command.PageSize);
+        
+        var result = await hybridCache.GetOrSetAsync(
+            cacheKey,
+            async () =>
+            {
+                var query = shopRepository
+                    .QueryAsNoTracking()
+                    .Where(s => s.CityId == command.CityId)
+                    .ProjectToType<ShortShopDto>(mapper.Config);
 
-        var query = shopRepository
-            .QueryAsNoTracking()
-            .Where(s => s.CityId == command.CityId)
-            .ProjectToType<ShortShopDto>(mapper.Config);
+                var totalCount = await query.CountAsync(cancellationToken);
+                var totalPages = (int)Math.Ceiling(totalCount / (double)command.PageSize); 
 
-        var totalCount = await query.CountAsync(cancellationToken);
-        var totalPages = (int)Math.Ceiling(totalCount / (double)command.PageSize); 
+                var shopDtos = await query
+                    .Skip((command.PageNumber - 1) * command.PageSize)
+                    .Take(command.PageSize)
+                    .ToArrayAsync(cancellationToken);
 
-        var shopDtos = await query
-            .Skip((command.PageNumber - 1) * command.PageSize)
-            .Take(command.PageSize)
-            .ToArrayAsync(cancellationToken);
+                var response = new GetCoffeeShopsResponse
+                {
+                    CoffeeShops = shopDtos,
+                    CurrentPage = command.PageNumber,
+                    PageSize = command.PageSize,
+                    TotalItems = totalCount,
+                    TotalPages = totalPages
+                };
 
-        var response = new GetCoffeeShopsResponse
-        {
-            CoffeeShops = shopDtos,
-            CurrentPage = command.PageNumber,
-            PageSize = command.PageSize,
-            TotalItems = totalCount,
-            TotalPages = totalPages
-        };
+                return Response<GetCoffeeShopsResponse>.Success(response);
+            },
+            distributedTtl: cacheKey.DefaultTtl,
+            memoryTtl: TimeSpan.FromMinutes(1),
+            cancellationToken: cancellationToken);
 
-        var result = Response<GetCoffeeShopsResponse>.Success(response);
-        await redisService.SetAsync(cacheKey, result);
-        return result;
+        return result ?? Response<GetCoffeeShopsResponse>.Error("Failed to retrieve coffee shops.");
     }
 }

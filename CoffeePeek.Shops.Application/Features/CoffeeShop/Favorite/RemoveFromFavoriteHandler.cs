@@ -13,7 +13,7 @@ public class RemoveFromFavoriteHandler(
     IGenericRepository<FavoriteShop> favoriteShopRepository,
     IUnitOfWork unitOfWork,
     IValidationStrategy<RemoveFromFavoriteCommand> validationStrategy,
-    IRedisService redisService)
+    IHybridCache hybridCache)
     : IRequestHandler<RemoveFromFavoriteCommand, UpdateEntityResponse<Guid>>
 {
     public async Task<UpdateEntityResponse<Guid>> Handle(RemoveFromFavoriteCommand request, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ public class RemoveFromFavoriteHandler(
         favoriteShopRepository.Remove(favoriteShop);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        await redisService.RemoveAsync(CacheKey.CachedShop.Favorites(request.UserId));
+        await hybridCache.RemoveAsync(CacheKey.Shop.Favorites(request.UserId), cancellationToken);
 
         return UpdateEntityResponse<Guid>.Success(shopId, "Coffee shop removed from favorites");
     }
