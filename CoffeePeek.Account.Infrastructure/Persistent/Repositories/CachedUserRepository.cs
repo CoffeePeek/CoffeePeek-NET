@@ -6,14 +6,14 @@ namespace CoffeePeek.Auth.Infrastructure.Persistent.Repositories;
 
 public class CachedUserRepository(
     IUserRepository decorated,
-    IRedisService redis) : IUserRepository
+    IHybridCache hybridCache) : IUserRepository
 {
     public async Task Update(User user)
     {
         await decorated.Update(user);
 
-        await redis.RemoveAsync(CacheKey.User.Profile(user.Id));
-        await redis.RemoveAsync(CacheKey.User.ById(user.Id));
+        await hybridCache.RemoveAsync(CacheKey.User.Profile(user.Id));
+        await hybridCache.RemoveAsync(CacheKey.User.Entity(user.Id));
     }
 
     public Task Add(User user, CancellationToken ct = default) => decorated.Add(user, ct);

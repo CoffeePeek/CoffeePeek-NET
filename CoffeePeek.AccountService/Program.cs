@@ -104,8 +104,8 @@ builder.Services.AddScoped<UserQueries>();
 builder.Services.AddScoped<IUserQueries>(provider =>
 {
     var baseService = provider.GetRequiredService<UserQueries>();
-    var redis = provider.GetRequiredService<IRedisService>();
-    return new CachedUserQueries(baseService, redis);
+    var hybridCache = provider.GetRequiredService<IHybridCache>();
+    return new CachedUserQueries(baseService, hybridCache);
 });
 
 builder.Services.AddScoped<UserRepository>(); 
@@ -113,9 +113,9 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<IUserRepository>(provider => 
 {
     var baseRepo = provider.GetRequiredService<UserRepository>();
-    var cache = provider.GetRequiredService<IRedisService>(); 
+    var hybridCache = provider.GetRequiredService<IHybridCache>(); 
     
-    return new CachedUserRepository(baseRepo, cache);
+    return new CachedUserRepository(baseRepo, hybridCache);
 });
 
 builder.Services.AddScoped<IStorageService, MinIOStorageService>();
