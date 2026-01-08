@@ -82,6 +82,6 @@ public class JobVacancySyncService(
         if (jobsToUpsert.Count != 0)
             await repository.UpsertRangeAsync(jobsToUpsert, cancellationToken);
 
-        await redisService.RemoveByPatternAsync(CacheKey.Vacancies.AllPattern());
+        await redisService.RemoveByPatternAsync(CacheKey.Vacancy.AllPattern());
     }
 }
