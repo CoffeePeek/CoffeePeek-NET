@@ -153,13 +153,13 @@ jobs:
           DB_CONN_MODERATION: ${{ secrets.DB_CONNECTION_MODERATION }}
         run: |
           echo "Applying AccountService migrations..."
-          dotnet ef database update --project CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj --startup-project CoffeePeek.AccountService/CoffeePeek.AccountService.csproj --context CoffeePeek.Account.Infrastructure.AccountDbContext --connection "$DB_CONN_ACCOUNT" --no-build
+          dotnet ef database update --project CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj --startup-project CoffeePeek.AccountService/CoffeePeek.AccountService.csproj --context CoffeePeek.Account.Infrastructure.AccountDbContext --connection "$DB_CONN_ACCOUNT"
           
           echo "Applying ShopsService migrations..."
-          dotnet ef database update --project CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj --startup-project CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj --context CoffeePeek.Shops.Infrastructure.ShopsDbContext --connection "$DB_CONN_SHOPS" --no-build
+          dotnet ef database update --project CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj --startup-project CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj --context CoffeePeek.Shops.Infrastructure.ShopsDbContext --connection "$DB_CONN_SHOPS"
           
           echo "Applying JobsService migrations..."
-          dotnet ef database update --project CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj --startup-project CoffeePeek.JobVacancies/CoffeePeek.JobVacancies.csproj --context CoffeePeek.Moderation.Infrastructure.JobVacanciesDbConext --connection "$DB_CONN_JOBS" --no-build
+          dotnet ef database update --project CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj --startup-project CoffeePeek.JobVacancies/CoffeePeek.JobVacancies.csproj --context CoffeePeek.JobVacancies.Infrastructure.JobVacanciesDbConext --connection "$DB_CONN_JOBS"
           
           echo "Applying ModerationService migrations..."
-          dotnet ef database update --project CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj --startup-project CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj --context CoffeePeek.Moderation.Infrastructure.ModerationDbContext --connection "$DB_CONN_MODERATION" --no-build
+          dotnet ef database update --project CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj --startup-project CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj --context CoffeePeek.Moderation.Infrastructure.ModerationDbContext --connection "$DB_CONN_MODERATION"
