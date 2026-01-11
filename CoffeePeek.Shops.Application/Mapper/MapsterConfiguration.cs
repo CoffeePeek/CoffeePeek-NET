@@ -24,9 +24,6 @@ public class MapsterConfiguration : IRegister
             .Map(dest => dest.FullUrl,
                 src => $"https://bucket-dev-771f.up.railway.app/coffee.shops/{src.StorageKey}");
         
-        config.NewConfig<ShopPhoto, ShortPhotoMetadataDto>()
-            .Map(dest => dest.FullUrl,
-                src => $"https://bucket-dev-771f.up.railway.app/coffee.shops/{src.StorageKey}");
             
         config.NewConfig<Shop, ShopDto>()
             .Map(d => d.Photos, s => s.ShopPhotos)

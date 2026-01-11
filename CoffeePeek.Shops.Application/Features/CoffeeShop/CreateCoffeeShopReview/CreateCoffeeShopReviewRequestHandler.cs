@@ -40,7 +40,7 @@ public class CreateCoffeeShopReviewRequestHandler(
         }
         
         var review = Review.Create(command.ShopId, command.UserId, command.Header, command.Comment,
-            command.RatingCoffee, command.RatingService, command.RatingPlace);
+            command.RatingCoffee, command.RatingPlace, command.RatingService);
 
         reviewRepository.Add(review);
         

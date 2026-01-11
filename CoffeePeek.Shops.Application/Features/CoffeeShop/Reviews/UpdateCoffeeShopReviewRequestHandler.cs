@@ -45,7 +45,7 @@ public class UpdateCoffeeShopReviewRequestHandler(
 
         review.UpdateHeader(request.Header);
         review.UpdateComment(request.Comment);
-        review.UpdateRating(request.RatingCoffee, request.RatingService, request.RatingPlace);
+        review.UpdateRating(request.RatingCoffee, request.RatingPlace, request.RatingService);
         
 
         reviewRepository.Update(review);

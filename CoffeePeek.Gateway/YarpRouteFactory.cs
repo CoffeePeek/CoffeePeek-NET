@@ -10,7 +10,7 @@ public static class YarpRouteFactory
     private static readonly List<ServiceRoute> Services =
     [
         new("account", ["Auth", "User"], "account-cluster"),
-        new("shops", ["CheckIn", "CoffeeShop", "Internal", "ReviewCoffeeShop", "Favorite"], "shops-cluster"),
+        new("shops", ["CheckIn", "CoffeeShop", "Internal", "ReviewCoffeeShop", "FavoriteShop"], "shops-cluster"),
         new("moderation", ["Moderation"], "moderation-cluster"),
         new("jobs", ["Vacancies"], "jobs-cluster")
     ];

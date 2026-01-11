@@ -1,5 +1,4 @@
 using CoffeePeek.Account.Application.Common.Interfaces;
-using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.User;
 using MapsterMapper;

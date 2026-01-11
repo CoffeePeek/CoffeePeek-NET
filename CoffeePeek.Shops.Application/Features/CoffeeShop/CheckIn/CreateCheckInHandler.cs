@@ -45,7 +45,7 @@ public class CreateCheckInHandler(
         {
             var reviewCommand = request.Review;
             var review = Review.Create(request.UserId, request.ShopId, reviewCommand.Header, reviewCommand.Comment,
-                reviewCommand.RatingCoffee, reviewCommand.RatingService, reviewCommand.RatingPlace);
+                reviewCommand.RatingCoffee, reviewCommand.RatingPlace, reviewCommand.RatingService);
 
             reviewsRepository.Add(review);
             checkIn.ReviewId = review.Id;
