@@ -1,21 +1,21 @@
-using CoffeePeek.Shops.Application;
+using CoffeePeek.Shops.Domain;
 
-namespace CoffeePeek.Shops.Infrastructure.ValidationStrategy.Review;
+namespace CoffeePeek.Shops.Application.ValidationStrategy.Review;
 
 public abstract class BaseReviewValidationStrategy
 {
-    protected const int MinRating = 1;
-    protected const int MaxRating = 5;
-    protected const int MinHeaderLength = 3;
-    protected const int MaxHeaderLength = 100;
-    protected const int MinCommentLength = 10;
-    protected const int MaxCommentLength = 1000;
+    protected const int MinRating = BusinessConstants.MinReviewRate;
+    protected const int MaxRating = BusinessConstants.MaxReviewRate;
+    protected const int MinHeaderLength = BusinessConstants.MinReviewHeaderLength;
+    protected const int MaxHeaderLength = BusinessConstants.MaxReviewHeaderLength;
+    protected const int MinCommentLength = BusinessConstants.MinReviewCommentLength;
+    protected const int MaxCommentLength = BusinessConstants.MaxReviewCommentLength;
 
     protected static ValidationResult ValidateUserId(Guid userId)
     {
-        if (userId.Variant > 0)
+        if (userId == Guid.Empty)
         {
-            return ValidationResult.Invalid("UserId must be greater than 0");
+            return ValidationResult.Invalid("UserId must be not empty");
         }
         return ValidationResult.Valid;
     }

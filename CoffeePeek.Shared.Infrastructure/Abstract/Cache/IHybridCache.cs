@@ -9,14 +9,16 @@ public interface IHybridCache
         Func<Task<T?>> factory,
         TimeSpan? distributedTtl = null,
         TimeSpan? memoryTtl = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 
     Task SetAsync<T>(
         CacheKey cacheKey,
         T value,
         TimeSpan? distributedTtl = null,
         TimeSpan? memoryTtl = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken ct = default);
 
-    Task RemoveAsync(CacheKey cacheKey, CancellationToken cancellationToken = default);
+    Task RemoveAsync(CacheKey cacheKey, CancellationToken ct = default);
+    
+    Task RemoveByPatternAsync(string pattern);
 }

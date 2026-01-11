@@ -1,6 +1,6 @@
 ﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
 
-namespace CoffeePeek.Contract.Response.CoffeeShop;
+namespace CoffeePeek.Contract.Responses.CoffeeShop;
 
 public class GetAllReviewsResponse(
     ICollection<ReviewDto> reviews,

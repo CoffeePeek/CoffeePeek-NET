@@ -10,7 +10,7 @@ using MediatR;
 namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop.Review;
 
 public class GetReviewByIdRequestHandler(
-    IGenericRepository<Shops.Domain.Entities.Review> reviewRepository,
+    IGenericRepository<Domain.Entities.ReviewAggregate.Review> reviewRepository,
     IMapper mapper)
     : IRequestHandler<GetReviewByIdCommand, Response<GetReviewByIdResponse>>
 {

@@ -1,10 +1,12 @@
 ﻿namespace CoffeePeek.Shared.Infrastructure.Abstract;
 
-public abstract class Entity<TId> : IEntity
+public abstract class Entity<TId> : IEntity, IAuditableEntity
 {
     private readonly List<IDomainEvent> _domainEvents = []; 
 
-    public virtual TId Id { get; protected init; } = default!;
+    public TId Id { get; protected init; } = default!;
+    public DateTime CreatedAtUtc { get; init; }
+    public DateTime? UpdatedAtUtc { get; set; }
 
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 

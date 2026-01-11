@@ -1,13 +1,13 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Shops.Application;
+using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Services;
-using CoffeePeek.Shops.Infrastructure.Configuration;
+using CoffeePeek.Shops.Domain;
 
-namespace CoffeePeek.Shops.Infrastructure.ValidationStrategy.CheckIn;
+namespace CoffeePeek.Shops.Application.ValidationStrategy.CheckIn;
 
-public class CheckInValidationStrategy(ShopsDbContext dbContext) : IValidationStrategy<CreateCheckInRequest>
+public class CheckInValidationStrategy : IValidationStrategy<CreateCheckInRequest>
 {
-    private const int MaxNoteLength = 500;
+    private const int MaxNoteLength = BusinessConstants.MaxCheckInNoteLength;
 
     public ValidationResult Validate(CreateCheckInRequest entity)
     {
@@ -24,12 +24,6 @@ public class CheckInValidationStrategy(ShopsDbContext dbContext) : IValidationSt
         if (!string.IsNullOrWhiteSpace(entity.Note) && entity.Note.Length > MaxNoteLength)
         {
             return ValidationResult.Invalid($"Note must not exceed {MaxNoteLength} characters");
-        }
-
-        var shopExists = dbContext.Shops.Any(s => s.Id == entity.ShopId);
-        if (!shopExists)
-        {
-            return ValidationResult.Invalid("Shop not found");
         }
 
         if (entity.Review != null)

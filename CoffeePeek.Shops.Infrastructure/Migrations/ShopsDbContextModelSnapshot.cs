@@ -28,9 +28,15 @@ namespace CoffeePeek.ShopsService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -78,9 +84,15 @@ namespace CoffeePeek.ShopsService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -93,9 +105,15 @@ namespace CoffeePeek.ShopsService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -111,8 +129,14 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Property<Guid>("CoffeeBeanId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -167,6 +191,9 @@ namespace CoffeePeek.ShopsService.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsAddressValidated")
                         .HasColumnType("boolean");
 
@@ -178,6 +205,9 @@ namespace CoffeePeek.ShopsService.Migrations
 
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -217,7 +247,7 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.ToTable("OutboxEvents");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Review", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,28 +258,34 @@ namespace CoffeePeek.ShopsService.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Header")
                         .IsRequired()
-                        .HasMaxLength(70)
-                        .HasColumnType("character varying(70)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
-                    b.Property<decimal>("RatingCoffee")
-                        .HasColumnType("numeric");
+                    b.Property<bool>("IsSoftDelete")
+                        .HasColumnType("boolean");
 
-                    b.Property<decimal>("RatingPlace")
-                        .HasColumnType("numeric");
+                    b.Property<int>("RatingCoffee")
+                        .HasColumnType("integer");
 
-                    b.Property<decimal>("RatingService")
-                        .HasColumnType("numeric");
+                    b.Property<int>("RatingPlace")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RatingService")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ReviewDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -267,9 +303,15 @@ namespace CoffeePeek.ShopsService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -282,11 +324,17 @@ namespace CoffeePeek.ShopsService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("RoasterId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -305,6 +353,9 @@ namespace CoffeePeek.ShopsService.Migrations
 
                     b.Property<Guid>("CityId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uuid");
@@ -328,6 +379,9 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Property<Guid?>("ShopContactId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
@@ -346,8 +400,14 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Property<Guid>("BrewMethodId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -364,6 +424,9 @@ namespace CoffeePeek.ShopsService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
@@ -379,6 +442,9 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Property<string>("SiteLink")
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ShopId")
@@ -393,11 +459,17 @@ namespace CoffeePeek.ShopsService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("EquipmentId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -422,6 +494,9 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -444,6 +519,9 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ShopId");
@@ -457,6 +535,9 @@ namespace CoffeePeek.ShopsService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("integer");
 
@@ -465,6 +546,9 @@ namespace CoffeePeek.ShopsService.Migrations
 
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -482,11 +566,17 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Property<TimeSpan>("CloseTime")
                         .HasColumnType("interval");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<TimeSpan>("OpenTime")
                         .HasColumnType("interval");
 
                     b.Property<Guid>("ScheduleId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -497,7 +587,7 @@ namespace CoffeePeek.ShopsService.Migrations
 
             modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CheckIn", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Review", "Review")
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", "Review")
                         .WithMany()
                         .HasForeignKey("ReviewId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -554,7 +644,7 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Navigation("Shop");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Review", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
                 {
                     b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
                         .WithMany("Reviews")
