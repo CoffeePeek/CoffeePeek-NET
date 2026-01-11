@@ -47,6 +47,8 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
                 .WithMany(s => s.Reviews)
                 .HasForeignKey(r => r.ShopId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasIndex(r => r.UserId);
 
             entity.Property(r => r.Header).HasMaxLength(100);
             entity.Property(r => r.Comment).HasMaxLength(2000);
