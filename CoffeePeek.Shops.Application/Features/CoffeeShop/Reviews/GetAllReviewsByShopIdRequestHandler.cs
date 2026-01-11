@@ -18,17 +18,25 @@ public class GetAllReviewsByShopIdRequestHandler(
 {
     public async Task<Response<GetAllReviewsResponse>> Handle(GetAllReviewsByShopIdQuery request, CancellationToken ct)
     {
+        if (request.ShopId == Guid.Empty)
+        {
+            throw new ArgumentNullException(nameof(request.ShopId));
+        }
+        
+        var pageNumber = Math.Max(1, request.PageNumber);
+        var pageSize = Math.Clamp(request.PageSize <= 0 ? 10 : request.PageSize, 1, 100);
+
         var query = reviewRepository
             .QueryAsNoTracking()
             .Where(r => r.ShopId == request.ShopId)
             .OrderByDescending(r => r.CreatedAtUtc);
 
         var totalItems = await query.CountAsync(ct);
-        var totalPages = (int)Math.Ceiling(totalItems / (double)request.PageSize);
+        var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
         var userReviews = await query
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync(ct);
 
         var reviewDtos = mapper.Map<ReviewDto[]>(userReviews);
