@@ -1,6 +1,7 @@
 ﻿using CoffeePeek.Shops.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using OutboxEvent = CoffeePeek.Shops.Domain.Entities.OutboxEvent;
+using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Infrastructure.Configuration;
 
@@ -40,6 +41,16 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Review>(entity =>
+        {
+            entity.HasOne(r => r.Shop)
+                .WithMany(s => s.Reviews)
+                .HasForeignKey(r => r.ShopId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(r => r.Header).HasMaxLength(100);
+            entity.Property(r => r.Comment).HasMaxLength(2000);
+        });
         modelBuilder.Entity<ShopContact>(entity =>
         {
             entity.HasOne(sc => sc.Shop)

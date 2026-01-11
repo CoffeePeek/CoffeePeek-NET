@@ -16,6 +16,7 @@ using CoffeePeek.Shops.Infrastructure.Services;
 using CoffePeek.ServiceDefaults;
 using Mapster;
 using OutboxEvent = CoffeePeek.Shops.Domain.Entities.OutboxEvent;
+using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 var builder = WebApplication.CreateBuilder(args);
 

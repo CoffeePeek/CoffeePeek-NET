@@ -4,4 +4,4 @@ using MediatR;
 
 namespace CoffeePeek.Account.Application.Features.User.GetProfile;
 
-public record GetProfileCommand(Guid UserId) : IRequest<Response<UserProfileResponse>>;
+public record GetPublicUserProfileQuery(Guid UserId) : IRequest<Response<UserProfileResponse>>{}

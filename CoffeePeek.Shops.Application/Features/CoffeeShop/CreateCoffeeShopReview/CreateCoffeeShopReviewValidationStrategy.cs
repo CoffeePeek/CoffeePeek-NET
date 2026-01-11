@@ -1,12 +1,12 @@
-using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Shops.Application;
 using CoffeePeek.Shops.Application.Services;
+using CoffeePeek.Shops.Application.ValidationStrategy.Review;
 
-namespace CoffeePeek.Shops.Infrastructure.ValidationStrategy.Review;
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
 
-public class ReviewCreateValidationStrategy : BaseReviewValidationStrategy, IValidationStrategy<AddCoffeeShopReviewRequest>
+public class CreateCoffeeShopReviewValidationStrategy : BaseReviewValidationStrategy,
+    IValidationStrategy<CreateCoffeeShopReviewCommand>
 {
-    public ValidationResult Validate(AddCoffeeShopReviewRequest entity)
+    public ValidationResult Validate(CreateCoffeeShopReviewCommand entity)
     {
         var userIdValidation = ValidateUserId(entity.UserId);
         if (!userIdValidation.IsValid)

@@ -47,7 +47,7 @@ public class GetCoffeeShopHandler(
             },
             distributedTtl: cacheKey.DefaultTtl,
             memoryTtl: TimeSpan.FromMinutes(1),
-            cancellationToken: cancellationToken);
+            ct: cancellationToken);
 
         return result ?? Response<GetCoffeeShopResponse>.Error($"Coffee shop with ID {request.Id} not found.");
     }

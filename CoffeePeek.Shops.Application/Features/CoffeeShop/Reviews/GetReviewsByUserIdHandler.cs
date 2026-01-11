@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeePeek.ShopsService.Handlers.CoffeeShop.Review;
 
 public class GetReviewsByUserIdRequestHandler(
-    IGenericRepository<Shops.Domain.Entities.Review> reviewRepository, 
+    IGenericRepository<Shops.Domain.Entities.ReviewAggregate.Review> reviewRepository, 
     IMapper mapper)
     : IRequestHandler<GetReviewsByUserIdCommand, Response<GetReviewsByUserIdResponse>>
 {
@@ -21,7 +21,7 @@ public class GetReviewsByUserIdRequestHandler(
         var query = reviewRepository
             .QueryAsNoTracking()
             .Where(x => x.UserId == request.UserId)
-            .OrderByDescending(r => r.CreatedAt);
+            .OrderByDescending(r => r.CreatedAtUtc);
 
         var totalItems = await query.CountAsync(cancellationToken);
         var totalPages = (int)Math.Ceiling(totalItems / (double)request.PageSize);

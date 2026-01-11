@@ -11,7 +11,7 @@ public record CoffeeShopDetailsDto
     public Guid CityId { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
-    public PhotoMetadataDto[] Photos { get; set; }
+    public ShortPhotoMetadataDto[] Photos { get; set; }
     
     public decimal Rating { get; set; }
     public int ReviewCount { get; set; }
