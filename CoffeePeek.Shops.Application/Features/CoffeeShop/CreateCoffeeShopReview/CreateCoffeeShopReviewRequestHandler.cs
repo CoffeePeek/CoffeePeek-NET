@@ -2,11 +2,9 @@ using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Services;
-using CoffeePeek.Shops.Domain.Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
 
@@ -14,11 +12,9 @@ using Review = Domain.Entities.ReviewAggregate.Review;
 
 public class CreateCoffeeShopReviewRequestHandler(
     IGenericRepository<Review> reviewRepository,
-    IGenericRepository<Shop> shopsRepository,
+    IShopCacheService shopCacheService,
     IUnitOfWork unitOfWork,
     IValidationStrategy<CreateCoffeeShopReviewCommand> validationStrategy,
-    IHybridCache hybridCache,
-    IRedisService redisService,
     IOutboxEventPublisher outboxEventPublisher)
     : IRequestHandler<CreateCoffeeShopReviewCommand, Contract.Responses.Response<CreateCoffeeShopReviewResponse>>
 {
@@ -54,24 +50,9 @@ public class CreateCoffeeShopReviewRequestHandler(
 
         await unitOfWork.SaveChangesAsync(ct);
         
-        await InvalidateShopCacheAsync(command.ShopId, ct);
+        await shopCacheService.InvalidateShopCacheAsync(command.ShopId, ct);
 
         return Contract.Responses.Response<CreateCoffeeShopReviewResponse>.Success(
             new CreateCoffeeShopReviewResponse(review.Id));
-    }
-
-    private async Task InvalidateShopCacheAsync(Guid shopId, CancellationToken cancellationToken)
-    {
-        var cityId = await shopsRepository
-            .QueryAsNoTracking()
-            .Where(s => s.Id == shopId)
-            .Select(s => s.CityId)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        await hybridCache.RemoveAsync(CacheKey.Shop.Detail(shopId), cancellationToken);
-        if (cityId != Guid.Empty)
-        {
-            await redisService.RemoveByPatternAsync(CacheKey.Shop.ListByCityPattern(cityId));
-        }
     }
 }

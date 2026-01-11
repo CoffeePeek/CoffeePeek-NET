@@ -1,9 +1,8 @@
 using CoffeePeek.Contract.Events.Shops;
-using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop;
+using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Services;
 using MediatR;
 
@@ -13,12 +12,10 @@ using Review = Domain.Entities.ReviewAggregate.Review;
 
 public class CreateCheckInHandler(
     IGenericRepository<Domain.Entities.CheckIn> checkInRepository,
+    IShopCacheService shopCacheService,
     IGenericRepository<Review> reviewsRepository,
-    IGenericRepository<Domain.Entities.Shop> shopRepository,
     IUnitOfWork unitOfWork,
     IValidationStrategy<CreateCheckInRequest> validationStrategy,
-    IHybridCache hybridCache,
-    IRedisService redisService,
     IOutboxEventPublisher outboxEventPublisher)
     : IRequestHandler<CreateCheckInRequest, Contract.Responses.Response<CreateCheckInResponse>>
 {
@@ -56,7 +53,7 @@ public class CreateCheckInHandler(
         
         if (request.Review != null)
         {
-            await InvalidateShopCacheAsync(request.ShopId, cancellationToken);
+            await shopCacheService.InvalidateShopCacheAsync(request.ShopId, cancellationToken);
         }
         
         await outboxEventPublisher.PublishAsync(new CheckinCreatedEvent
@@ -80,18 +77,5 @@ public class CreateCheckInHandler(
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Contract.Responses.Response<CreateCheckInResponse>.Success(new CreateCheckInResponse(checkIn.Id, reviewId));
-    }
-
-    private async Task InvalidateShopCacheAsync(Guid shopId, CancellationToken cancellationToken)
-    {
-        var shop = await shopRepository.GetByIdAsync(shopId, cancellationToken);
-        if (shop == null) return;
-        
-        await hybridCache.RemoveAsync(CacheKey.Shop.Detail(shopId), cancellationToken);
-        
-        if (shop.CityId != Guid.Empty)
-        {
-            await redisService.RemoveByPatternAsync(CacheKey.Shop.ListByCityPattern(shop.CityId));
-        }
     }
 }
