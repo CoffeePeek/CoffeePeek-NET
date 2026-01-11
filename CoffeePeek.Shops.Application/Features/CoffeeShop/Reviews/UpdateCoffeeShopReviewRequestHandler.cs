@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.Reviews;
 
 public class UpdateCoffeeShopReviewRequestHandler(
-    IGenericRepository<Domain.Entities.ReviewAggregate.Review> reviewRepository,
+    IGenericRepository<Review> reviewRepository,
     IGenericRepository<Shop> shopsRepository,
     IUnitOfWork unitOfWork,
     IValidationStrategy<UpdateCoffeeShopReviewRequest> validationStrategy,
