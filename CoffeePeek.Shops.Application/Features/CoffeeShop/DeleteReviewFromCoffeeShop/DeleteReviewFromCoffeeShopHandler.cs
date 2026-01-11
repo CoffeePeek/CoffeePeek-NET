@@ -11,7 +11,7 @@ public class DeleteReviewFromCoffeeShopHandler(IGenericRepository<Review> review
 {
     public async Task<Response> Handle(DeleteReviewFromCoffeeShopCommand request, CancellationToken cancellationToken)
     {
-        var review = await reviewRepository.FirstOrDefaultAsync(x => x.Id == request.CoffeeShopId, cancellationToken);
+        var review = await reviewRepository.FirstOrDefaultAsync(x => x.Id == request.ReviewId, cancellationToken);
 
         if (review == null)
         {

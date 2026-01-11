@@ -79,10 +79,10 @@ public class ReviewCoffeeShopController(IMediator mediator) : Controller
         return mediator.Send(request);
     }
 
-    [HttpDelete("{id:guid}")]
-    public Task<Response> RemoveCoffeeShopReview(Guid id)
+    [HttpDelete("{reviewId:guid}")]
+    public Task<Response> RemoveCoffeeShopReview(Guid reviewId)
     {
-        return mediator.Send(new DeleteReviewFromCoffeeShopCommand(id));
+        return mediator.Send(new DeleteReviewFromCoffeeShopCommand(reviewId));
     }
     
     private void AddPaginationHeaders(int totalItems, int totalPages, int currentPage, int pageSize)
