@@ -64,8 +64,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.accountservice:dev
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.accountservice:${{ steps.vars.outputs.TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build and push AuthService OutboxBackgroundService image
         uses: docker/build-push-action@v6
@@ -76,8 +74,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.authservice.outbox-bg:dev
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.authservice.outbox-bg:${{ steps.vars.outputs.TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build and push ShopsService image
         uses: docker/build-push-action@v6
@@ -88,8 +84,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.shopsservice:dev
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.shopsservice:${{ steps.vars.outputs.TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build and push ModerationService image
         uses: docker/build-push-action@v6
@@ -100,8 +94,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.moderationservice:dev
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.moderationservice:${{ steps.vars.outputs.TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build and push JobVacancies image
         uses: docker/build-push-action@v6
@@ -112,8 +104,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.jobvacancies:dev
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.jobvacancies:${{ steps.vars.outputs.TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build and push Gateway image
         uses: docker/build-push-action@v6
@@ -124,8 +114,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:dev
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:${{ steps.vars.outputs.TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
             
             
 
