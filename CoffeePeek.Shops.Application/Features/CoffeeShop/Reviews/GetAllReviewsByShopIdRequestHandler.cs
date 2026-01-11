@@ -1,5 +1,4 @@
 ﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
@@ -10,24 +9,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.Reviews;
 
-public class GetAllReviewsRequestHandler(IGenericRepository<Domain.Entities.ReviewAggregate.Review> reviewRepository, IMapper mapper) 
-    : IRequestHandler<GetAllReviewsRequest, Response<GetAllReviewsResponse>>
+using Review = Domain.Entities.ReviewAggregate.Review;
+
+public class GetAllReviewsByShopIdRequestHandler(
+    IGenericRepository<Review> reviewRepository,
+    IMapper mapper)
+    : IRequestHandler<GetAllReviewsByShopIdQuery, Response<GetAllReviewsResponse>>
 {
-    public async Task<Response<GetAllReviewsResponse>> Handle(GetAllReviewsRequest request, CancellationToken cancellationToken)
+    public async Task<Response<GetAllReviewsResponse>> Handle(GetAllReviewsByShopIdQuery request, CancellationToken ct)
     {
         var query = reviewRepository
             .QueryAsNoTracking()
-            .Include(r => r.Shop)
-            .Where(r => r.UserId == request.UserId)
+            .Where(r => r.ShopId == request.ShopId)
             .OrderByDescending(r => r.CreatedAtUtc);
 
-        var totalItems = await query.CountAsync(cancellationToken);
+        var totalItems = await query.CountAsync(ct);
         var totalPages = (int)Math.Ceiling(totalItems / (double)request.PageSize);
 
         var userReviews = await query
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .ToListAsync(cancellationToken);
+            .ToListAsync(ct);
 
         var reviewDtos = mapper.Map<ReviewDto[]>(userReviews);
 
