@@ -87,4 +87,9 @@ public sealed partial class Review
         RatingPlace = ratingPlace;
         RatingService = ratingService;
     }
+
+    public void SoftDelete()
+    {
+        IsSoftDelete = true;
+    }
 }

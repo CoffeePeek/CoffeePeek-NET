@@ -10,6 +10,7 @@ using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop.Review;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.DeleteReviewFromCoffeeShop;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -56,20 +57,12 @@ public class ReviewCoffeeShopController(IMediator mediator) : Controller
 
         var result = await mediator.Send(new GetReviewsByUserIdCommand(id, pageNumber, pageSize));
 
-        if (result.IsSuccess && result.Data is not null)
+        if (result is { IsSuccess: true, Data: not null })
         {
             AddPaginationHeaders(result.Data.TotalItems, result.Data.TotalPages, result.Data.CurrentPage, result.Data.PageSize);
         }
 
         return result;
-    }
-
-    private void AddPaginationHeaders(int totalItems, int totalPages, int currentPage, int pageSize)
-    {
-        Response.Headers.TryAdd("X-Total-Count", totalItems.ToString());
-        Response.Headers.TryAdd("X-Total-Pages", totalPages.ToString());
-        Response.Headers.TryAdd("X-Current-Page", currentPage.ToString());
-        Response.Headers.TryAdd("X-Page-Size", pageSize.ToString());
     }
 
     [HttpPost]
@@ -84,5 +77,19 @@ public class ReviewCoffeeShopController(IMediator mediator) : Controller
     {
         request.UserId = User.GetUserIdOrThrow();
         return mediator.Send(request);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public Task<Response> RemoveCoffeeShopReview(Guid id)
+    {
+        return mediator.Send(new DeleteReviewFromCoffeeShopCommand(id));
+    }
+    
+    private void AddPaginationHeaders(int totalItems, int totalPages, int currentPage, int pageSize)
+    {
+        Response.Headers.TryAdd("X-Total-Count", totalItems.ToString());
+        Response.Headers.TryAdd("X-Total-Pages", totalPages.ToString());
+        Response.Headers.TryAdd("X-Current-Page", currentPage.ToString());
+        Response.Headers.TryAdd("X-Page-Size", pageSize.ToString());
     }
 }
