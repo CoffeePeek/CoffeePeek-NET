@@ -1,0 +1,6 @@
+using CoffeePeek.Contract.Responses;
+using MediatR;
+
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop.DeleteReviewFromCoffeeShop;
+
+public record DeleteReviewFromCoffeeShopCommand(Guid ReviewId) : IRequest<Response>;
