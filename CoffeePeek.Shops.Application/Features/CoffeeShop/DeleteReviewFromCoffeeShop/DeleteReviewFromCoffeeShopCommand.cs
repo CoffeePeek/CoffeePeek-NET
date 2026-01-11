@@ -3,4 +3,4 @@ using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.DeleteReviewFromCoffeeShop;
 
-public record DeleteReviewFromCoffeeShopCommand(Guid CoffeeShopId) : IRequest<Response>;
+public record DeleteReviewFromCoffeeShopCommand(Guid ReviewId) : IRequest<Response>;
