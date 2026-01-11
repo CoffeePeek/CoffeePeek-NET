@@ -11,7 +11,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop;
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop;
 
 public class GetCoffeeShopsRequestHandler(
     IGenericRepository<Shop> shopRepository,
@@ -60,7 +60,7 @@ public class GetCoffeeShopsRequestHandler(
             },
             distributedTtl: cacheKey.DefaultTtl,
             memoryTtl: TimeSpan.FromMinutes(1),
-            cancellationToken: cancellationToken);
+            ct: cancellationToken);
 
         return result ?? Response<GetCoffeeShopsResponse>.Error("Failed to retrieve coffee shops.");
     }

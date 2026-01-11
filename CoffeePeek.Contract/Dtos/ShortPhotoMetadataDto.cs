@@ -2,7 +2,7 @@
 
 public class ShortPhotoMetadataDto
 {
-    public string FileName { get; private set; }
-    public string StorageKey { get; private set; }
-    public string FullUrl { get; private set; }
+    public string FileName { get; init; }
+    public string StorageKey { get; init; }
+    public string FullUrl { get; init; }
 }

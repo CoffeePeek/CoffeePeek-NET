@@ -3,6 +3,7 @@ using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

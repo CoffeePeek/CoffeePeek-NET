@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using CoffeePeek.Account.Application.Features.DeleteUser;
-using CoffeePeek.Account.Application.Features.GetProfile;
 using CoffeePeek.Account.Application.Features.User.Email.ConfirmEmail;
 using CoffeePeek.Account.Application.Features.User.Email.ResendEmailConfirmation;
+using CoffeePeek.Account.Application.Features.User.GetProfile;
 using CoffeePeek.Account.Application.Features.User.UpdateEmail;
 using CoffeePeek.Account.Application.Features.User.UpdateProfile;
 using CoffeePeek.Account.Application.Features.User.UpdateUserAvatar;
@@ -30,13 +30,20 @@ public class UserController(IMediator mediator) : Controller
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Task<Response<UserDto>> GetProfile(CancellationToken cancellationToken)
+    public Task<Response<UserProfileResponse>> GetProfile(CancellationToken cancellationToken)
     {
         var request = new GetProfileCommand(User.GetUserIdOrThrow());
 
         return mediator.Send(request, cancellationToken);
     }
 
+    [Authorize]
+    [HttpGet("{id:guid}")]
+    public Task<Response<UserProfileResponse>> GetUsPublicUserProfile(Guid id)
+    {
+        return mediator.Send(new GetPublicUserProfileQuery(id));
+    }
+    
     [HttpPost("upload-url")]
     [Authorize]
     [ProducesResponseType(typeof(Response<GenerateUploadUrlResponse>), StatusCodes.Status200OK)]

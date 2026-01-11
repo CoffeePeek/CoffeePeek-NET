@@ -5,6 +5,7 @@ using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
+using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
@@ -16,6 +17,7 @@ using CoffeePeek.Shops.Infrastructure.Services;
 using CoffePeek.ServiceDefaults;
 using Mapster;
 using OutboxEvent = CoffeePeek.Shops.Domain.Entities.OutboxEvent;
+using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,7 @@ builder.Services.AddValidators();
 // Cache service
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<ICreateShopFromModerationService, CreateShopFromModerationService>();
+builder.Services.AddScoped<IShopCacheService, ShopCacheService>();
 
 // Messaging for publishing events
 builder.Services.AddMessagingModule(x =>
@@ -91,6 +94,7 @@ builder.Services.AddGenericRepository<CheckIn, ShopsDbContext>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+
 
 var app = builder.Build();
 
