@@ -10,6 +10,8 @@ public sealed partial class Review : Entity<Guid>
     public Guid ShopId { get; private set; }
     public DateTime ReviewDate { get; private set; }
 
+    public bool IsSoftDelete { get; private set; }
+
     public int RatingCoffee { get; private set; }
     public int RatingPlace { get; private set; }
     public int RatingService { get; private set; }

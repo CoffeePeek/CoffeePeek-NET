@@ -9,6 +9,7 @@ using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop.Review;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.DeleteReviewFromCoffeeShop;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -65,14 +66,6 @@ public class ReviewCoffeeShopController(IMediator mediator) : Controller
         return result;
     }
 
-    private void AddPaginationHeaders(int totalItems, int totalPages, int currentPage, int pageSize)
-    {
-        Response.Headers.TryAdd("X-Total-Count", totalItems.ToString());
-        Response.Headers.TryAdd("X-Total-Pages", totalPages.ToString());
-        Response.Headers.TryAdd("X-Current-Page", currentPage.ToString());
-        Response.Headers.TryAdd("X-Page-Size", pageSize.ToString());
-    }
-
     [HttpPost]
     public Task<Response<CreateCoffeeShopReviewResponse>> AddCoffeeShopReview([FromBody] CreateCoffeeShopReviewCommand command)
     {
@@ -85,5 +78,19 @@ public class ReviewCoffeeShopController(IMediator mediator) : Controller
     {
         request.UserId = User.GetUserIdOrThrow();
         return mediator.Send(request);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public Task<Response> RemoveCoffeeShopReview(Guid id)
+    {
+        return mediator.Send(new DeleteReviewFromCoffeeShopCommand(id));
+    }
+    
+    private void AddPaginationHeaders(int totalItems, int totalPages, int currentPage, int pageSize)
+    {
+        Response.Headers.TryAdd("X-Total-Count", totalItems.ToString());
+        Response.Headers.TryAdd("X-Total-Pages", totalPages.ToString());
+        Response.Headers.TryAdd("X-Current-Page", currentPage.ToString());
+        Response.Headers.TryAdd("X-Page-Size", pageSize.ToString());
     }
 }
