@@ -12,7 +12,7 @@ public record CreateCheckInRequest(
     [Required] Guid ShopId,
     [MaxLength(BusinessConstants.MaxCheckInNoteLength)]
     string Note,
-    CheckInReviewCommand Review) : IRequest<Response<CreateCheckInResponse>>
+    CheckInReviewCommand? Review) : IRequest<Response<CreateCheckInResponse>>
 {
     [JsonIgnore]
     public Guid UserId { get; init; }
