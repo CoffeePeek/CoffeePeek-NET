@@ -5,13 +5,14 @@ using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Shops.Application.Features.CoffeeShop.Review;
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop.Reviews;
 
 public class UpdateCoffeeShopReviewRequestHandler(
-    IGenericRepository<Domain.Entities.Review> reviewRepository,
+    IGenericRepository<Domain.Entities.ReviewAggregate.Review> reviewRepository,
     IGenericRepository<Shop> shopsRepository,
     IUnitOfWork unitOfWork,
     IValidationStrategy<UpdateCoffeeShopReviewRequest> validationStrategy,
@@ -41,11 +42,11 @@ public class UpdateCoffeeShopReviewRequestHandler(
             return Response<UpdateCoffeeShopReviewResponse>.Error("You are not authorized to update this review");
         }
 
-        review.Header = request.Header;
-        review.Comment = request.Comment;
-        review.RatingCoffee = request.RatingCoffee;
-        review.RatingService = request.RatingService;
-        review.RatingPlace = request.RatingPlace;
+
+        review.UpdateHeader(request.Header);
+        review.UpdateComment(request.Comment);
+        review.UpdateRating(request.RatingCoffee, request.RatingService, request.RatingPlace);
+        
 
         reviewRepository.Update(review);
         await unitOfWork.SaveChangesAsync(cancellationToken);

@@ -2,12 +2,12 @@ namespace CoffeePeek.Contract.Responses;
 
 public class CreateEntityResponse<T> : Response<T>
 {
-    public int? EntityId { get; set; }
+    public Guid? EntityId { get; set; }
 
     /// <summary>
     /// Creates a successful response for entity creation.
     /// </summary>
-    public static CreateEntityResponse<T> Success(T data, string message = null, int? entityId = null)
+    public static CreateEntityResponse<T> Success(T data, string message = null, Guid? entityId = null)
     {
         return new CreateEntityResponse<T>
         {

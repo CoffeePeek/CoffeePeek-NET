@@ -1,17 +1,19 @@
-using CoffeePeek.Contract.Dtos.Internal;
 using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Services;
 using MediatR;
 
-namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop.CheckIn;
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn;
+
+using Review = Domain.Entities.ReviewAggregate.Review;
 
 public class CreateCheckInHandler(
     IGenericRepository<Domain.Entities.CheckIn> checkInRepository,
-    IGenericRepository<Domain.Entities.Review> reviewsRepository,
+    IGenericRepository<Review> reviewsRepository,
     IGenericRepository<Domain.Entities.Shop> shopRepository,
     IUnitOfWork unitOfWork,
     IValidationStrategy<CreateCheckInRequest> validationStrategy,
@@ -41,18 +43,9 @@ public class CreateCheckInHandler(
 
         if (request.Review != null)
         {
-            var review = new Domain.Entities.Review
-            {
-                Id = Guid.NewGuid(),
-                Header = request.Review.Header,
-                Comment = request.Review.Comment,
-                UserId = request.UserId,
-                ShopId = request.ShopId,
-                RatingCoffee = request.Review.RatingCoffee ?? 0,
-                RatingPlace = request.Review.RatingPlace ?? 0,
-                RatingService = request.Review.RatingService ?? 0,
-                ReviewDate = DateTime.UtcNow
-            };
+            var reviewCommand = request.Review;
+            var review = Review.Create(request.UserId, request.ShopId, reviewCommand.Header, reviewCommand.Comment,
+                reviewCommand.RatingCoffee, reviewCommand.RatingService, reviewCommand.RatingPlace);
 
             reviewsRepository.Add(review);
             checkIn.ReviewId = review.Id;

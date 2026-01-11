@@ -7,9 +7,9 @@ public class ReviewDto
     public string Header { get; set; }
     public string Comment { get; set; }
 
-    public decimal RatingCoffee { get; set; }
-    public decimal RatingService { get; set; }
-    public decimal RatingPlace { get; set; }
+    public int RatingCoffee { get; set; }
+    public int RatingService { get; set; }
+    public int RatingPlace { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

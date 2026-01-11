@@ -18,6 +18,6 @@ public class CachedUserQueries(
             () => decorated.GetProfileByIdAsync(userId, ct),
             distributedTtl: cacheKey.DefaultTtl,
             memoryTtl: TimeSpan.FromMinutes(5),
-            cancellationToken: ct);
+            ct: ct);
     }
 }

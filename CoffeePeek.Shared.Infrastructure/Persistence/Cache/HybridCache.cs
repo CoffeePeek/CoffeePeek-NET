@@ -88,6 +88,13 @@ public class HybridCache(
         await redisService.RemoveAsync(cacheKey);
     }
 
+    public Task RemoveByPatternAsync(string pattern)
+    {
+        memoryCache.Remove(pattern);
+        redisService.RemoveByPatternAsync(pattern);
+        return Task.CompletedTask;
+    }
+
     private void StoreInMemory<T>(string key, T value, TimeSpan? memoryTtl)
     {
         var ttl = memoryTtl ?? TimeSpan.FromMinutes(1);

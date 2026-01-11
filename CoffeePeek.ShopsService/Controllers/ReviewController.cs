@@ -3,11 +3,13 @@ using CoffeePeek.Contract.Requests.CoffeeShop.Review;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Contract.Responses.CoffeeShop.Review;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop.Review;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +17,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
-[Authorize(Policy = RoleConsts.User)]
+[Authorize]
 [Route("api/[controller]")]
-public class ReviewCoffeeController(IMediator mediator) : Controller
+public class ReviewCoffeeShopController(IMediator mediator) : Controller
 {
     [HttpGet]
     public async Task<Response<GetAllReviewsResponse>> GetAllReviews(
@@ -29,7 +31,7 @@ public class ReviewCoffeeController(IMediator mediator) : Controller
 
         var result = await mediator.Send(new GetAllReviewsRequest(User.GetUserIdOrThrow(), pageNumber, pageSize));
 
-        if (result.IsSuccess && result.Data is not null)
+        if (result is { IsSuccess: true, Data: not null })
         {
             AddPaginationHeaders(result.Data.TotalItems, result.Data.TotalPages, result.Data.CurrentPage, result.Data.PageSize);
         }
@@ -71,9 +73,9 @@ public class ReviewCoffeeController(IMediator mediator) : Controller
     }
 
     [HttpPost]
-    public Task<Response<AddCoffeeShopReviewResponse>> AddCoffeeShopReview([FromBody] AddCoffeeShopReviewRequest request)
+    public Task<Response<CreateCoffeeShopReviewResponse>> AddCoffeeShopReview([FromBody] CreateCoffeeShopReviewCommand command)
     {
-        var command = request with { UserId = User.GetUserIdOrThrow() };
+        command.UserId = User.GetUserIdOrThrow();
         return mediator.Send(command);
     }
 

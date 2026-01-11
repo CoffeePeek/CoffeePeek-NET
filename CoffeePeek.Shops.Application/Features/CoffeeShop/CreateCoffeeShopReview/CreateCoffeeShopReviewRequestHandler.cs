@@ -1,0 +1,77 @@
+using CoffeePeek.Contract.Events.Shops;
+using CoffeePeek.Contract.Response.CoffeeShop;
+using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shops.Application.Services;
+using CoffeePeek.Shops.Domain.Entities;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
+
+using Review = Domain.Entities.ReviewAggregate.Review;
+
+public class CreateCoffeeShopReviewRequestHandler(
+    IGenericRepository<Review> reviewRepository,
+    IGenericRepository<Shop> shopsRepository,
+    IUnitOfWork unitOfWork,
+    IValidationStrategy<CreateCoffeeShopReviewCommand> validationStrategy,
+    IHybridCache hybridCache,
+    IRedisService redisService,
+    IOutboxEventPublisher outboxEventPublisher)
+    : IRequestHandler<CreateCoffeeShopReviewCommand, Contract.Responses.Response<CreateCoffeeShopReviewResponse>>
+{
+    public async Task<Contract.Responses.Response<CreateCoffeeShopReviewResponse>> Handle(
+        CreateCoffeeShopReviewCommand command, CancellationToken ct)
+    {
+        var validationResult = validationStrategy.Validate(command);
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult.ErrorMessage);
+        }
+
+        var reviewExists = await reviewRepository
+                .AnyAsync(r => r.ShopId == command.ShopId && r.UserId == command.UserId, ct);
+
+        if (reviewExists)
+        {
+            throw new ValidationException("Review already exists");
+        }
+        
+        var review = Review.Create(command.ShopId, command.UserId, command.Header, command.Comment,
+            command.RatingCoffee, command.RatingService, command.RatingPlace);
+
+        reviewRepository.Add(review);
+        
+        await outboxEventPublisher.PublishAsync(new ReviewAddedEvent
+        {
+            UserId = command.UserId,
+            ShopId = command.ShopId,
+            ReviewId = review.Id,
+            CreatedAt = review.ReviewDate
+        }, ct);
+
+        await unitOfWork.SaveChangesAsync(ct);
+        
+        await InvalidateShopCacheAsync(command.ShopId, ct);
+
+        return Contract.Responses.Response<CreateCoffeeShopReviewResponse>.Success(
+            new CreateCoffeeShopReviewResponse(review.Id));
+    }
+
+    private async Task InvalidateShopCacheAsync(Guid shopId, CancellationToken cancellationToken)
+    {
+        var cityId = await shopsRepository
+            .QueryAsNoTracking()
+            .Where(s => s.Id == shopId)
+            .Select(s => s.CityId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        await hybridCache.RemoveAsync(CacheKey.Shop.Detail(shopId), cancellationToken);
+        if (cityId != Guid.Empty)
+        {
+            await redisService.RemoveByPatternAsync(CacheKey.Shop.ListByCityPattern(cityId));
+        }
+    }
+}

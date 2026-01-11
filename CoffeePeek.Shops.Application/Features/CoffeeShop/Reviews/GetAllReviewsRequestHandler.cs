@@ -1,16 +1,16 @@
 ﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop.Review;
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop.Reviews;
 
-public class GetAllReviewsRequestHandler(IGenericRepository<Domain.Entities.Review> reviewRepository, IMapper mapper) 
+public class GetAllReviewsRequestHandler(IGenericRepository<Domain.Entities.ReviewAggregate.Review> reviewRepository, IMapper mapper) 
     : IRequestHandler<GetAllReviewsRequest, Response<GetAllReviewsResponse>>
 {
     public async Task<Response<GetAllReviewsResponse>> Handle(GetAllReviewsRequest request, CancellationToken cancellationToken)
@@ -19,7 +19,7 @@ public class GetAllReviewsRequestHandler(IGenericRepository<Domain.Entities.Revi
             .QueryAsNoTracking()
             .Include(r => r.Shop)
             .Where(r => r.UserId == request.UserId)
-            .OrderByDescending(r => r.CreatedAt);
+            .OrderByDescending(r => r.CreatedAtUtc);
 
         var totalItems = await query.CountAsync(cancellationToken);
         var totalPages = (int)Math.Ceiling(totalItems / (double)request.PageSize);

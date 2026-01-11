@@ -1,7 +1,7 @@
 ﻿using CoffeePeek.Contract.Dtos.Contact;
-using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 
 namespace CoffeePeek.Shops.Domain.Entities;
 
@@ -37,9 +37,10 @@ public sealed class Shop : Entity<Guid>
 
     private readonly List<ShopBrewMethod> _shopBrewMethods = [];
     public IReadOnlyCollection<ShopBrewMethod> ShopBrewMethods => _shopBrewMethods.AsReadOnly();
-
+    
     private readonly List<Review> _reviews = [];
     public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
+    
     private readonly List<CheckIn> _checkIns = [];
     public IReadOnlyCollection<CheckIn> CheckIns => _checkIns.AsReadOnly();
 
