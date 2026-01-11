@@ -6,7 +6,6 @@ using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Contract.Responses.CoffeeShop.Review;
 using CoffeePeek.Shared.Infrastructure;
-using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop.Review;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
@@ -22,27 +21,29 @@ namespace CoffeePeek.ShopsService.Controllers;
 public class ReviewCoffeeShopController(IMediator mediator) : Controller
 {
     [HttpGet]
-    public async Task<Response<GetAllReviewsResponse>> GetAllReviews(
-        [FromHeader(Name = "X-Page-Number")] int pageNumber = 1,
-        [FromHeader(Name = "X-Page-Size")] int pageSize = 10)
+    public async Task<Response<GetAllReviewsResponse>> GetAllReviewsByShopId(
+        [FromQuery] Guid shopId,
+        [FromHeader(Name = "X-Page-Size")] int pageSize = 10,
+        [FromHeader(Name = "X-Page-Number")] int pageNumber = 1)
     {
         pageNumber = Math.Max(1, pageNumber);
         pageSize = Math.Clamp(pageSize <= 0 ? 10 : pageSize, 1, 100);
 
-        var result = await mediator.Send(new GetAllReviewsRequest(User.GetUserIdOrThrow(), pageNumber, pageSize));
+        var response = await mediator.Send(new GetAllReviewsByShopIdQuery(shopId, pageNumber, pageSize));
 
-        if (result is { IsSuccess: true, Data: not null })
+        if (response is { IsSuccess: true, Data: not null })
         {
-            AddPaginationHeaders(result.Data.TotalItems, result.Data.TotalPages, result.Data.CurrentPage, result.Data.PageSize);
+            AddPaginationHeaders(response.Data.TotalItems, response.Data.TotalPages, response.Data.CurrentPage,
+                response.Data.PageSize);
         }
 
-        return result;
+        return response;
     }
 
-    [HttpGet("{id:guid}")]
-    public Task<Response<GetReviewByIdResponse>> GetReviewById(Guid id)
+    [HttpGet("{reviewId:guid}")]
+    public Task<Response<GetReviewByIdResponse>> GetReviewById(Guid reviewId)
     {
-        return mediator.Send(new GetReviewByIdCommand(id));
+        return mediator.Send(new GetReviewByIdCommand(reviewId));
     }
     
     [HttpGet("user/{id:guid}")]
@@ -56,7 +57,7 @@ public class ReviewCoffeeShopController(IMediator mediator) : Controller
 
         var result = await mediator.Send(new GetReviewsByUserIdCommand(id, pageNumber, pageSize));
 
-        if (result.IsSuccess && result.Data is not null)
+        if (result is { IsSuccess: true, Data: not null })
         {
             AddPaginationHeaders(result.Data.TotalItems, result.Data.TotalPages, result.Data.CurrentPage, result.Data.PageSize);
         }
