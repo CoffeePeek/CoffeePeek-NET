@@ -10,7 +10,7 @@ using CoffeePeek.Shared.Infrastructure.Options;
 using MediatR;
 using Microsoft.Extensions.Options;
 
-namespace CoffeePeek.Account.Application.Features.OAuthLogin;
+namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 
 public class GoogleLoginHandler(
     IGoogleAuthService googleAuthService,
@@ -46,7 +46,7 @@ public class GoogleLoginHandler(
         await unitOfWork.SaveChangesAsync(ct);
 
         await cache.SetAsync(CacheKey.Auth.Credentials(user.UserCredential.Id), user.UserCredential,
-            cancellationToken: ct);
+            ct: ct);
 
         return Response<GoogleLoginResponse>.Success(new GoogleLoginResponse
         {

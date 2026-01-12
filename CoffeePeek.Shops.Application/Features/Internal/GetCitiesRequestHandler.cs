@@ -4,7 +4,7 @@ using CoffeePeek.Contract.Responses.Internal;
 using CoffeePeek.Shops.Application.Services;
 using MediatR;
 
-namespace CoffeePeek.Shops.Application.Handlers.Internal;
+namespace CoffeePeek.Shops.Application.Features.Internal;
 
 public class GetCitiesRequestHandler(ICacheService cacheService) : IRequestHandler<GetCitiesCommand, Response<GetCitiesResponse>>
 {

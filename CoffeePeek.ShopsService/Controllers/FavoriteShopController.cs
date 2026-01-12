@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
-[Route("api/favorite-shop")]
+[Route("api/[controller]")]
 public class FavoriteShopController(IMediator mediator) : Controller
 {
     

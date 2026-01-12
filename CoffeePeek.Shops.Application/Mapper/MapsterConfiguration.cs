@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shops.Domain.Entities;
 using Mapster;
+using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Application.Mapper;
 
@@ -22,6 +23,7 @@ public class MapsterConfiguration : IRegister
         config.NewConfig<ShopPhoto, ShortPhotoMetadataDto>()
             .Map(dest => dest.FullUrl,
                 src => $"https://bucket-dev-771f.up.railway.app/coffee.shops/{src.StorageKey}");
+        
             
         config.NewConfig<Shop, ShopDto>()
             .Map(d => d.Photos, s => s.ShopPhotos)
@@ -51,7 +53,6 @@ public class MapsterConfiguration : IRegister
             .Map(dest => dest.ShopName, src => src.Shop.Name);
 
         config.NewConfig<Review, ReviewDto>()
-            .Map(dest => dest.UserId, src => src.UserId.GetHashCode())
             .Map(dest => dest.CreatedAt, src => src.ReviewDate)
             .Map(dest => dest.ShopName, src => src.Shop.Name);
     }

@@ -1,7 +1,7 @@
-﻿namespace CoffeePeek.Shared.Infrastructure.Abstract;
+namespace CoffeePeek.Shared.Infrastructure.Abstract;
 
 public interface IAuditableEntity
 {
-    public DateTime CreatedAtUtc { get; set; }
+    public DateTime CreatedAtUtc { get; init; } 
     public DateTime? UpdatedAtUtc { get; set; }
 }

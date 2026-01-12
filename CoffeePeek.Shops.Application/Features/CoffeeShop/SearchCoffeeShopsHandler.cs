@@ -12,7 +12,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop;
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop;
 
 public class SearchCoffeeShopsHandler(
     IGenericRepository<Shop> shopRepository,
@@ -95,7 +95,7 @@ public class SearchCoffeeShopsHandler(
             },
             distributedTtl: TimeSpan.FromMinutes(5),
             memoryTtl: TimeSpan.FromMinutes(1),
-            cancellationToken: cancellationToken);
+            ct: cancellationToken);
         
         return result ?? Response<GetCoffeeShopsResponse>.Error("Failed to search coffee shops.");
     }

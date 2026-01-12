@@ -16,5 +16,5 @@ public class CheckIn
     public Guid? ReviewId { get; set; }
     
     public virtual Shop Shop { get; set; }
-    public virtual Review? Review { get; set; }
+    public virtual ReviewAggregate.Review? Review { get; set; }
 }

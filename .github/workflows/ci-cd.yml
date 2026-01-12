@@ -114,46 +114,40 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:dev
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:${{ steps.vars.outputs.TAG }}
+            
+            
 
-  deploy_railway:
+  apply_migrations:
     needs: build_and_push_images
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
-
     steps:
-      - name: Install Railway CLI
-        run: |
-          curl -fsSL https://railway.app/install.sh | sh
-          echo "$HOME/.railway/bin" >> $GITHUB_PATH
-
-      - name: Deploy services on Railway
+      - name: Checkout repository
+        uses: actions/checkout@v4
+  
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+  
+      - name: Install dotnet-ef tool
+        run: dotnet tool install --global dotnet-ef
+  
+      - name: Apply Migrations
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DB_CONN_ACCOUNT: ${{ secrets.DB_CONNECTION_ACCOUNT }}
+          DB_CONN_SHOPS: ${{ secrets.DB_CONNECTION_SHOPS }}
+          DB_CONN_JOBS: ${{ secrets.DB_CONNECTION_JOBS }}
+          DB_CONN_MODERATION: ${{ secrets.DB_CONNECTION_MODERATION }}
         run: |
-          SHORT_SHA=${GITHUB_SHA::7}
-          echo "Images pushed with tag ${SHORT_SHA}."
-          echo "Docker Hub username: ${DOCKER_HUB_USERNAME}"
+          echo "Applying AccountService migrations..."
+          dotnet ef database update --project CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj --startup-project CoffeePeek.AccountService/CoffeePeek.AccountService.csproj --context CoffeePeek.Account.Infrastructure.AccountDbContext --connection "$DB_CONN_ACCOUNT"
           
-          if [ -z "$RAILWAY_TOKEN" ]; then
-            echo "Warning: RAILWAY_TOKEN not set. Skipping Railway deployment."
-            exit 0
-          fi
+          echo "Applying ShopsService migrations..."
+          dotnet ef database update --project CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj --startup-project CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj --context CoffeePeek.Shops.Infrastructure.ShopsDbContext --connection "$DB_CONN_SHOPS"
           
-          # Railway CLI uses RAILWAY_TOKEN environment variable for authentication
-          export RAILWAY_TOKEN
+          echo "Applying JobsService migrations..."
+          dotnet ef database update --project CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj --startup-project CoffeePeek.JobVacancies/CoffeePeek.JobVacancies.csproj --context CoffeePeek.JobVacancies.Infrastructure.JobVacanciesDbConext --connection "$DB_CONN_JOBS"
           
-          # Link to project if RAILWAY_PROJECT_ID is provided
-          # Railway CLI link command uses --project flag or reads from .railway/project.json
-          if [ -n "$RAILWAY_PROJECT_ID" ]; then
-            echo "Linking to Railway project: $RAILWAY_PROJECT_ID"
-            # Create .railway directory if it doesn't exist
-            mkdir -p .railway
-            # Link using --project flag (non-interactive mode)
-            railway link --project "$RAILWAY_PROJECT_ID" --non-interactive 2>&1 || \
-            echo "Note: Project link may have failed or project already linked. Continuing..."
-          else
-            echo "Warning: RAILWAY_PROJECT_ID not set. Skipping project link."
-            echo "Note: Railway services should be configured manually in Railway dashboard."
-          fi
+          echo "Applying ModerationService migrations..."
+          dotnet ef database update --project CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj --startup-project CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj --context CoffeePeek.Moderation.Infrastructure.ModerationDbContext --connection "$DB_CONN_MODERATION"

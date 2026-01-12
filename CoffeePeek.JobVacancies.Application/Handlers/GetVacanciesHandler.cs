@@ -53,7 +53,7 @@ public class GetVacanciesHandler(
             },
             distributedTtl: cacheKey.DefaultTtl,
             memoryTtl: TimeSpan.FromMinutes(5),
-            cancellationToken: cancellationToken);
+            ct: cancellationToken);
 
         return response != null 
             ? Response.Success(response) 

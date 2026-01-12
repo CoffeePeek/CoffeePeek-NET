@@ -247,7 +247,7 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.ToTable("OutboxEvents");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Review", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -258,28 +258,34 @@ namespace CoffeePeek.ShopsService.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Header")
                         .IsRequired()
-                        .HasMaxLength(70)
-                        .HasColumnType("character varying(70)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
-                    b.Property<decimal>("RatingCoffee")
-                        .HasColumnType("numeric");
+                    b.Property<bool>("IsSoftDelete")
+                        .HasColumnType("boolean");
 
-                    b.Property<decimal>("RatingPlace")
-                        .HasColumnType("numeric");
+                    b.Property<int>("RatingCoffee")
+                        .HasColumnType("integer");
 
-                    b.Property<decimal>("RatingService")
-                        .HasColumnType("numeric");
+                    b.Property<int>("RatingPlace")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RatingService")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ReviewDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -581,7 +587,7 @@ namespace CoffeePeek.ShopsService.Migrations
 
             modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CheckIn", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Review", "Review")
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", "Review")
                         .WithMany()
                         .HasForeignKey("ReviewId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -638,7 +644,7 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Navigation("Shop");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Review", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
                 {
                     b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
                         .WithMany("Reviews")
