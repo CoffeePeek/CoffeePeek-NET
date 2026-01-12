@@ -21,16 +21,7 @@ using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseSentry(options =>
-{
-    options.Dsn = builder.Configuration["Sentry:Dsn"];
-    options.SendDefaultPii = true;
-    options.SetBeforeSend((@event, _) =>
-    {
-        @event.ServerName = null;
-        return @event;
-    });
-});
+builder.WebHost.UseSentry();
 
 builder.AddServiceDefaults();
 
@@ -81,7 +72,8 @@ builder.Services.AddScoped<IShopCacheService, ShopCacheService>();
 // Messaging for publishing events
 builder.Services.AddMessagingModule(x =>
 {
-    x.AddConsumer<CoffeeShopApprovedShopsConsumer>();
+    x.AddConsumer<ModerationShopApprovedConsumer>();
+    x.AddConsumer<ModerationReviewApprovedConsumer>();
 });
 
 // Outbox Event Publisher

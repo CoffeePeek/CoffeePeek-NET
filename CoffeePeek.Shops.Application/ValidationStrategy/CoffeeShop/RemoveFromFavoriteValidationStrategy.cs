@@ -1,7 +1,6 @@
 using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Shops.Application;
+using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop.Favorite;
-using CoffeePeek.Shops.Application.Services;
 
 namespace CoffeePeek.Shops.Infrastructure.ValidationStrategy.CoffeeShop;
 

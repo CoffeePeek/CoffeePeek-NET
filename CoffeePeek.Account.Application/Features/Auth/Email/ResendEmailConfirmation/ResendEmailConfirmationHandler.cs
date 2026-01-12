@@ -26,7 +26,7 @@ public class ResendEmailConfirmationHandler(
             throw new NotFoundException("User not found");
 
         if (user.EmailConfirmed)
-            throw new BusinessException("Email already confirmed.");
+            throw new DomainException("Email already confirmed.");
 
         var confirmationUrl = $"{config[WebClientUrl]}/confirm-email?token={user.EmailConfirmationToken}";
 

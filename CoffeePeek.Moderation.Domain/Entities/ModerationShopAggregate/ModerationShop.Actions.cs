@@ -1,6 +1,5 @@
-﻿using CoffeePeek.Contract.Dtos.Schedule;
+using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Enums;
-using CoffeePeek.Moderation.Domain.Events;
 using CoffeePeek.Shared.Extensions.Exceptions;
 
 namespace CoffeePeek.Moderation.Domain.Entities;
@@ -95,8 +94,6 @@ public sealed partial class ModerationShop
             throw new DomainException("Cannot approve shop with unvalidated address.");
 
         ModerationStatus = ModerationStatus.Approved;
-
-        AddDomainEvent(new ModerationShopApprovedEvent(this));
     }
 
     public void Reject(string reason)
