@@ -692,3 +692,5 @@ fabric.properties
 
 # Secrets for local development
 appsettings.Development.json
+.aspire
+.digitalocean
