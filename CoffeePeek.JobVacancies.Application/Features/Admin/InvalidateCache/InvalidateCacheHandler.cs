@@ -17,7 +17,7 @@ public class InvalidateCacheHandler(
     {
         try
         {
-            await redisService.RemoveByPatternAsync(CacheKey.Vacancy.AllPattern());
+            await redisService.RemoveByPattern(CacheKey.Vacancy.AllPattern());
             
             logger.LogInformation("Admin: All vacancies cache invalidated");
             

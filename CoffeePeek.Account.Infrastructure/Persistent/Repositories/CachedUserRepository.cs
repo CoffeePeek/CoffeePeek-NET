@@ -8,9 +8,9 @@ public class CachedUserRepository(
     IUserRepository decorated,
     IRedisService redisService) : IUserRepository
 {
-    public async Task Update(User user)
+    public async Task Update(User user, CancellationToken ct = default)
     {
-        await decorated.Update(user);
+        await decorated.Update(user, ct);
 
         await redisService.RemoveAsync(CacheKey.User.Profile(user.Id));
         await redisService.RemoveAsync(CacheKey.User.Entity(user.Id));

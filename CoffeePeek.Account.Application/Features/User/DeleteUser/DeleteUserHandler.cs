@@ -27,15 +27,17 @@ public class DeleteUserHandler(
         await userRepository.Update(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        await ClearUserCacheAsync(user.Id, cancellationToken);
+        await ClearUserCacheAsync(user.Id);
 
         return Response<bool>.Success(true);
     }
     
-    private async Task ClearUserCacheAsync(Guid userId, CancellationToken cancellationToken)
+    private Task ClearUserCacheAsync(Guid userId)
     {
-        await redisService.RemoveAsync(CacheKey.User.Profile(userId));
-        await redisService.RemoveAsync(CacheKey.User.Entity(userId));
+        return Task.WhenAll(
+            redisService.RemoveAsync(CacheKey.User.Profile(userId)), 
+            redisService.RemoveAsync(CacheKey.User.Entity(userId))
+            );
     }
 }
 

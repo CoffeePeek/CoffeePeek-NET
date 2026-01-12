@@ -11,6 +11,6 @@ public interface ICacheService
     Task<RoasterDto[]?> GetRoasters();
     Task<BrewMethodDto[]?> GetBrewMethods();
     
-    Task InvalidateShopDictionaries(CancellationToken cancellationToken = default);
-    Task InvalidateShopLists(CancellationToken cancellationToken = default);
+    Task InvalidateShopDictionaries();
+    Task InvalidateShopLists();
 }

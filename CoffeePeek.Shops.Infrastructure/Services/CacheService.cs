@@ -1,4 +1,4 @@
-using CoffeePeek.Contract.Dtos.Internal;
+﻿using CoffeePeek.Contract.Dtos.Internal;
 using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
@@ -84,13 +84,13 @@ public class CacheService(
             cacheKey.DefaultTtl);
     }
 
-    public Task InvalidateShopDictionaries(CancellationToken cancellationToken = default)
+    public Task InvalidateShopDictionaries()
     {
-        return cacheInvalidationStrategy.InvalidateTagsAsync([CacheInvalidationStrategy.Tags.ShopsDictionary], cancellationToken);
+        return cacheInvalidationStrategy.InvalidateTagsAsync([CacheInvalidationStrategy.Tags.ShopsDictionary]);
     }
 
-    public Task InvalidateShopLists(CancellationToken cancellationToken = default)
+    public Task InvalidateShopLists()
     {
-        return cacheInvalidationStrategy.InvalidateTagsAsync([CacheInvalidationStrategy.Tags.ShopsLists], cancellationToken);
+        return cacheInvalidationStrategy.InvalidateTagsAsync([CacheInvalidationStrategy.Tags.ShopsLists]);
     }
 }

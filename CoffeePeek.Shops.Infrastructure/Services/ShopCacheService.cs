@@ -22,7 +22,7 @@ public class ShopCacheService(
         await redisService.RemoveAsync(CacheKey.Shop.Detail(shopId));
         if (cityId != Guid.Empty)
         {
-            await redisService.RemoveByPatternAsync(CacheKey.Shop.ListByCityPattern(cityId));
+            await redisService.RemoveByPattern(CacheKey.Shop.ListByCityPattern(cityId));
         }
     }
 }

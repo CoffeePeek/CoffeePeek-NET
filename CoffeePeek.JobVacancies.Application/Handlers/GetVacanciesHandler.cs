@@ -1,4 +1,4 @@
-using CoffeePeek.Contract.Responses;
+﻿using CoffeePeek.Contract.Responses;
 using CoffeePeek.JobVacancies.Application.Commands;
 using CoffeePeek.JobVacancies.Application.Models.Dtos;
 using CoffeePeek.JobVacancies.Application.Models.Responses;
@@ -14,9 +14,9 @@ public class GetVacanciesHandler(
     IJobVacancyRepository repository,
     IRedisService redisService,
     IMapper mapper)
-    : IRequestHandler<GetVacanciesCommand, Response<JobVacanciesResponse>>
+    : IRequestHandler<GetVacanciesQuery, Response<JobVacanciesResponse>>
 {
-    public async Task<Response<JobVacanciesResponse>> Handle(GetVacanciesCommand request,
+    public async Task<Response<JobVacanciesResponse>> Handle(GetVacanciesQuery request,
         CancellationToken cancellationToken)
     {
         if (request.Page <= 0) request = request with { Page = 1 };

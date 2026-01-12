@@ -29,7 +29,7 @@ public class InvalidateCacheHandler(
             if (request.InvalidateAll)
             {
                 // Invalidate all cache by pattern
-                await redisService.RemoveByPatternAsync("*");
+                await redisService.RemoveByPattern("*");
                 
                 logger.LogInformation("Admin: All cache invalidated");
                 
@@ -53,7 +53,7 @@ public class InvalidateCacheHandler(
                     $"Available categories: {string.Join(", ", CategoryToTag.Keys)}");
             }
 
-            await cacheInvalidationStrategy.InvalidateTagsAsync([tag], cancellationToken);
+            await cacheInvalidationStrategy.InvalidateTagsAsync([tag]);
             
             logger.LogInformation("Admin: Cache category '{Category}' invalidated (tag: {Tag})", 
                 request.Category, tag);
