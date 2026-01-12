@@ -6,42 +6,42 @@ using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Auth.Infrastructure.EventConsumer;
 
-public class CoffeeShopApprovedAccountConsumer(
+public class ModerationShopApprovedAccountConsumer(
     IGenericRepository<UserStatistics> userStatisticRepository, 
     IUnitOfWork unitOfWork,
-    ILogger<CoffeeShopApprovedAccountConsumer> logger) 
-    : IConsumer<CoffeeShopApprovedIntegrationEvent>
+    ILogger<ModerationShopApprovedAccountConsumer> logger) 
+    : IConsumer<ModerationShopApprovedEvent>
 {
-    public async Task Consume(ConsumeContext<CoffeeShopApprovedIntegrationEvent> context)
+    public async Task Consume(ConsumeContext<ModerationShopApprovedEvent> context)
     {
-        var @event = context.Message;
+        var shop = context.Message.Shop;
         
-        logger.LogInformation("Received CoffeeShopApprovedEvent for CreatorId: {CreatorId}", @event.CreatorId);
+        logger.LogInformation("Received ModerationShopApprovedEvent for UserId: {UserId}", context.Message.UserId);
 
         var statistics = await userStatisticRepository
-            .FirstOrDefaultAsync(s => s.UserId == @event.CreatorId);
+            .FirstOrDefaultAsync(s => s.UserId == context.Message.UserId);
 
         if (statistics == null)
         {
             statistics = new UserStatistics
             {
-                UserId = @event.CreatorId,
+                UserId = context.Message.UserId,
                 CheckInCount = 0,
                 ReviewCount = 0,
                 AddedShopsCount = 1,
                 UpdatedAt = DateTime.UtcNow
             };
             userStatisticRepository.Add(statistics);
-            logger.LogInformation("Created new UserStatistics for UserId: {UserId}", @event.CreatorId);
+            logger.LogInformation("Created new UserStatistics for UserId: {UserId}", context.Message);
         }
         else
         {
             statistics.AddedShopsCount++;
             statistics.UpdatedAt = DateTime.UtcNow;
-            logger.LogInformation("Updated UserStatistics for UserId: {UserId}. New AddedShopsCount: {AddedShopsCount}", @event.CreatorId, statistics.AddedShopsCount);
+            logger.LogInformation("Updated UserStatistics for UserId: {UserId}. New AddedShopsCount: {AddedShopsCount}", context.Message, statistics.AddedShopsCount);
         }
 
         await unitOfWork.SaveChangesAsync();
-        logger.LogInformation("UserStatistics saved successfully for UserId: {UserId}", @event.CreatorId);
+        logger.LogInformation("UserStatistics saved successfully for UserId: {UserId}", context.Message);
     }
 }

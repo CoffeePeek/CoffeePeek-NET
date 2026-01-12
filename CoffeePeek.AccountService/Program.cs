@@ -91,7 +91,7 @@ builder.Services.AddMessagingModule(x =>
 {   
     x.AddConsumer<CheckinCreatedEventConsumer>();
     x.AddConsumer<ReviewAddedEventConsumer>();
-    x.AddConsumer<CoffeeShopApprovedAccountConsumer>();
+    x.AddConsumer<ModerationShopApprovedAccountConsumer>();
 });
 
 // Mapster

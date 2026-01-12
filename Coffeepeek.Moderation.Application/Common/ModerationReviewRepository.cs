@@ -1,5 +1,4 @@
-﻿using CoffeePeek.Contract.Enums;
-using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
+﻿using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,19 +7,18 @@ namespace Coffeepeek.Moderation.Application.Common;
 public class ModerationReviewRepository(IGenericRepository<ModerationReview> reviewRepository)
     : IModerationReviewRepository
 {
-    public Task<ModerationReview[]> GetAllPending()
+    public Task<ModerationReview[]> GetAll(CancellationToken ct = default)
     {
         return reviewRepository
             .QueryAsNoTracking()
-            .Where(x => x.ModerationStatus == ModerationStatus.Pending)
-            .ToArrayAsync();
+            .ToArrayAsync(ct);
     }
 
-    public Task<ModerationReview?> GetById(Guid id)
+    public Task<ModerationReview?> GetById(Guid id, CancellationToken ct = default)
     {
         return reviewRepository
             .Query()
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 
     public Task<ModerationReview?> GetByShopId(Guid shopId)

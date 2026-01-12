@@ -4,17 +4,17 @@ using MassTransit;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
-public class CoffeeShopApprovedShopsConsumer(
+public class ModerationShopApprovedConsumer(
     ICreateShopFromModerationService createShopService) 
-    : IConsumer<CoffeeShopApprovedIntegrationEvent>
+    : IConsumer<ModerationShopApprovedEvent>
 {
-    public async Task Consume(ConsumeContext<CoffeeShopApprovedIntegrationEvent> context)
+    public async Task Consume(ConsumeContext<ModerationShopApprovedEvent> context)
     {
-        var (creatorId, shopDto) = context.Message;
+        var shopDto = context.Message.Shop;
         
         await createShopService.CreateShopFromApprovedEventAsync(
             shopDto, 
-            creatorId, 
+            context.Message.UserId, 
             shopDto.Id, 
             context.CancellationToken);
     }

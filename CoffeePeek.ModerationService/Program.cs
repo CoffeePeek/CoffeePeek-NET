@@ -3,6 +3,9 @@ using Coffeepeek.Moderation.Application.Common;
 using Coffeepeek.Moderation.Application.Features.CreateShop;
 using CoffeePeek.Moderation.Application.Features.CreateShop;
 using Coffeepeek.Moderation.Application.Features.GetAllModerationShops;
+using Coffeepeek.Moderation.Application.Features.Review;
+using Coffeepeek.Moderation.Application.Features.Review.SendReviewToModeration;
+using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using CoffeePeek.Moderation.Domain.Repositories;
@@ -66,6 +69,8 @@ builder.Services.AddScoped<IModerationShopCreationService, ModerationShopCreatio
 builder.Services.AddScoped<IModerationReviewRepository, ModerationReviewRepository>();
 
 builder.Services.AddScoped<IStorageService, MinIOStorageService>();
+
+builder.Services.AddTransient<IValidationStrategy<SendReviewToModerationCommand>, SendReviewToModerationValidationStrategy>();
 
 // Mapster
 builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());

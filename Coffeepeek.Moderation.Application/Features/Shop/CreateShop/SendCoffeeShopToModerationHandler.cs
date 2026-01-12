@@ -2,8 +2,8 @@ using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop.Review;
 using Coffeepeek.Moderation.Application.Abstractions;
 using Coffeepeek.Moderation.Application.Common.Models;
+using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;
-using CoffeePeek.Moderation.Domain.Specifications;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

@@ -1,7 +1,6 @@
-﻿using CoffeePeek.Moderation.Domain.Entities;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+﻿using CoffeePeek.Shared.Infrastructure.Abstract;
 
-namespace CoffeePeek.Moderation.Domain.Specifications;
+namespace CoffeePeek.Moderation.Domain.Entities;
 
 public class DuplicateShopSpecification : Specification<ModerationShop>
 {

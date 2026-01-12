@@ -1,6 +1,6 @@
-using CoffeePeek.Shops.Domain;
+﻿using CoffeePeek.Moderation.Domain.Entities;
 
-namespace CoffeePeek.Shops.Application.ValidationStrategy.Review;
+namespace Coffeepeek.Moderation.Application.Features.Review;
 
 public abstract class BaseReviewValidationStrategy
 {

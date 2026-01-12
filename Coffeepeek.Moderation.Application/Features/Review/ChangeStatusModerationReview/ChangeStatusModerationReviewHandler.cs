@@ -1,0 +1,52 @@
+using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Enums;
+using CoffeePeek.Contract.Events.Moderation;
+using CoffeePeek.Contract.Responses;
+using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
+using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using MapsterMapper;
+using MediatR;
+
+namespace CoffeePeek.Moderation.Application.Features.Review.ChangeStatusModerationReview;
+
+public class ChangeStatusModerationReviewHandler(
+    IModerationReviewRepository repository, 
+    IUnitOfWork unitOfWork,
+    IMapper mapper)
+    : IRequestHandler<ChangeStatusModerationReviewCommand, UpdateEntityResponse<ModerationStatus>>
+{
+    public async Task<UpdateEntityResponse<ModerationStatus>> Handle(ChangeStatusModerationReviewCommand request,
+        CancellationToken cancellationToken)
+    {
+        var moderationReview = await repository.GetById(request.ModerationReviewId, cancellationToken);
+
+        if (moderationReview == null)
+        {
+            throw new NotFoundException("Moderation review not found");
+        }
+
+        switch (request.ModerationStatus)
+        {
+            case ModerationStatus.Approved:
+                moderationReview.Approve(request.UserId);
+                
+                // Create event with DTO for Outbox
+                var reviewDto = mapper.Map<ModerationReviewDto>(moderationReview);
+                moderationReview.AddDomainEvent(new ModerationReviewApprovedEvent(reviewDto));
+                break;
+            case ModerationStatus.Rejected:
+                moderationReview.Reject(request.RejectReason!, request.UserId);
+                break;
+            case ModerationStatus.Pending:
+                moderationReview.MoveToPending(request.UserId);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return UpdateEntityResponse<ModerationStatus>.Success(moderationReview.ModerationStatus);
+    }
+}
