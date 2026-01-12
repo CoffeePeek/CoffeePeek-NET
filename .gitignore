@@ -689,3 +689,6 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,aspnetcore,redis,csharp,jetbrains+all,rider,linux
+
+# Secrets for local development
+appsettings.Development.json
