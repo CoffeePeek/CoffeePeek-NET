@@ -5,17 +5,14 @@ namespace CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 
 public sealed class RefreshToken : Entity<Guid>
 {
-    [MaxLength(255)]
     public string Token { get; private set; }
     public DateTime ExpiryDate { get; private set; }
     public bool IsRevoked { get; private set; }
-    [MaxLength(50)]
     public string DeviceName { get; private set; }
-    [MaxLength(50)]
     public string IpAddress { get; private set; }
     public DateTime CreatedDate { get; private set; }
     public Guid UserCredentialId { get; private set; }
-    public UserCredential UserCredential { get; private set; }
+    public UserCredential? UserCredential { get; private set; }
 
     // ReSharper disable once UnusedMember.Local
     private RefreshToken() { }

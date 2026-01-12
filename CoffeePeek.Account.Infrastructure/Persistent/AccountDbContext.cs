@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Account.Domain.Aggregates;
+﻿using CoffeePeek.Account.Domain;
+using CoffeePeek.Account.Domain.Aggregates;
 using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 using Microsoft.EntityFrameworkCore;
 using OutboxEvent = CoffeePeek.Account.Domain.Events.OutboxEvent;
@@ -59,11 +60,18 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
             entity.HasKey(e => e.Id);
             entity.Property(e => e.StorageKey).IsRequired();
         });
-        
-        modelBuilder.Entity<RefreshToken>()
-            .HasOne(x => x.UserCredential)
-            .WithMany(uc => uc.RefreshTokens)
-            .HasForeignKey(x => x.UserCredentialId);
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity
+                .HasOne(x => x.UserCredential)
+                .WithMany(uc => uc.RefreshTokens)
+                .HasForeignKey(x => x.UserCredentialId);
+            
+            entity.Property(x => x.Token).HasMaxLength(BusinessConstants.MaxRefreshTokenLength).IsRequired();
+            entity.Property(x => x.DeviceName).HasMaxLength(BusinessConstants.MaxDeviceNameLength);
+            entity.Property(x => x.IpAddress).HasMaxLength(BusinessConstants.MaxIpAddressLength);
+        });
         
         modelBuilder.Entity<UserStatistics>(entity =>
         {

@@ -5,7 +5,7 @@ public abstract class Entity<TId> : IEntity, IAuditableEntity
     private readonly List<IDomainEvent> _domainEvents = []; 
 
     public TId Id { get; protected init; } = default!;
-    public DateTime CreatedAtUtc { get; init; }
+    public DateTime CreatedAtUtc { get; set; }
     public DateTime? UpdatedAtUtc { get; set; }
 
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
