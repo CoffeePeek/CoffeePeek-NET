@@ -43,13 +43,13 @@ public sealed class CacheInvalidationStrategy(
         }
     };
 
-    public async Task InvalidateAsync(CacheKey cacheKey, CancellationToken cancellationToken = default)
+    public async Task InvalidateAsync(CacheKey cacheKey)
     {
         ArgumentNullException.ThrowIfNull(cacheKey);
         await redisService.RemoveAsync(cacheKey);
     }
 
-    public async Task InvalidateTagsAsync(IEnumerable<string> tags, CancellationToken cancellationToken = default)
+    public async Task InvalidateTagsAsync(IEnumerable<string> tags)
     {
         foreach (var tag in tags)
         {
@@ -61,7 +61,7 @@ public sealed class CacheInvalidationStrategy(
 
             foreach (var pattern in patterns)
             {
-                await redisService.RemoveByPatternAsync(pattern);
+                await redisService.RemoveByPattern(pattern);
             }
         }
     }

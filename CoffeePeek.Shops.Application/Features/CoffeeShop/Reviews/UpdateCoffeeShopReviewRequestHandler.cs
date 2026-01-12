@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Contract.Requests.CoffeeShop;
+using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract;
@@ -17,7 +17,6 @@ public class UpdateCoffeeShopReviewRequestHandler(
     IGenericRepository<Shop> shopsRepository,
     IUnitOfWork unitOfWork,
     IValidationStrategy<UpdateCoffeeShopReviewRequest> validationStrategy,
-    IHybridCache hybridCache,
     IRedisService redisService)
     : IRequestHandler<UpdateCoffeeShopReviewRequest, Response<UpdateCoffeeShopReviewResponse>>
 {
@@ -64,10 +63,10 @@ public class UpdateCoffeeShopReviewRequestHandler(
             .Select(s => s.CityId)
             .FirstOrDefaultAsync(cancellationToken);
 
-        await hybridCache.RemoveAsync(CacheKey.Shop.Detail(shopId), cancellationToken);
+        await redisService.RemoveAsync(CacheKey.Shop.Detail(shopId));
         if (cityId != Guid.Empty)
         {
-            await redisService.RemoveByPatternAsync(CacheKey.Shop.ListByCityPattern(cityId));
+            await redisService.RemoveByPattern(CacheKey.Shop.ListByCityPattern(cityId));
         }
     }
 }

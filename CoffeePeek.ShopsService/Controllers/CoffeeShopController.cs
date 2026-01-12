@@ -67,7 +67,7 @@ public class CoffeeShopController(IMediator mediator) : Controller
         pageNumber = Math.Max(1, pageNumber);
         pageSize = pageSize <= 0 ? 10 : Math.Min(pageSize, 100);
 
-        var command = new SearchCoffeeShopsCommand(
+        var command = new SearchCoffeeShopsQuery(
             Query: q,
             CityId: cityId,
             Equipments: equipments,

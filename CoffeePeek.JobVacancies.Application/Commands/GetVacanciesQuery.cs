@@ -6,5 +6,5 @@ using MediatR;
 
 namespace CoffeePeek.JobVacancies.Application.Commands;
 
-public record GetVacanciesCommand(Guid CityId, CPJobType JobType, [Range(1, int.MaxValue)]int Page, [Range(1, 100)]int PerPage)
+public record GetVacanciesQuery(Guid CityId, CPJobType JobType, [Range(1, int.MaxValue)]int Page, [Range(1, 100)]int PerPage)
     : IRequest<Response<JobVacanciesResponse>>;

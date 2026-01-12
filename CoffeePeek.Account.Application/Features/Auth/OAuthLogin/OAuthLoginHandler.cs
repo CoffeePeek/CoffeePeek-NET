@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Contract.Dtos.Auth;
@@ -17,7 +17,7 @@ public class GoogleLoginHandler(
     IExternalAuthService externalAuthService,
     IJWTTokenService tokenService,
     IUnitOfWork unitOfWork,
-    IHybridCache cache,
+    IRedisService redisService,
     IOptions<JWTOptions> options)
     : IRequestHandler<GoogleLoginCommand, Response<GoogleLoginResponse>>
 {
@@ -45,8 +45,7 @@ public class GoogleLoginHandler(
 
         await unitOfWork.SaveChangesAsync(ct);
 
-        await cache.SetAsync(CacheKey.Auth.Credentials(user.UserCredential.Id), user.UserCredential,
-            ct: ct);
+        await redisService.SetAsync(CacheKey.Auth.Credentials(user.UserCredential.Id), user.UserCredential);
 
         return Response<GoogleLoginResponse>.Success(new GoogleLoginResponse
         {

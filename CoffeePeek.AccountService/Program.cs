@@ -106,8 +106,8 @@ builder.Services.AddScoped<UserQueries>();
 builder.Services.AddScoped<IUserQueries>(provider =>
 {
     var baseService = provider.GetRequiredService<UserQueries>();
-    var hybridCache = provider.GetRequiredService<IHybridCache>();
-    return new CachedUserQueries(baseService, hybridCache);
+    var redisService = provider.GetRequiredService<IRedisService>();
+    return new CachedUserQueries(baseService, redisService);
 });
 
 builder.Services.AddScoped<UserRepository>(); 
@@ -115,9 +115,9 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<IUserRepository>(provider => 
 {
     var baseRepo = provider.GetRequiredService<UserRepository>();
-    var hybridCache = provider.GetRequiredService<IHybridCache>(); 
+    var redisService = provider.GetRequiredService<IRedisService>(); 
     
-    return new CachedUserRepository(baseRepo, hybridCache);
+    return new CachedUserRepository(baseRepo, redisService);
 });
 
 builder.Services.AddScoped<IStorageService, MinIOStorageService>();
@@ -154,7 +154,6 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
-
 
 // Middleware pipeline
 app.UseExceptionHandler();

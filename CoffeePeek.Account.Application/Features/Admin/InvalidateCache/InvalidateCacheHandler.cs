@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 namespace CoffeePeek.Account.Application.Features.Admin.InvalidateCache;
 
 public class InvalidateCacheHandler(
-    IHybridCache hybridCache,
     IRedisService redisService,
     ILogger<InvalidateCacheHandler> logger) 
     : IRequestHandler<InvalidateCacheCommand, Response<InvalidateCacheResponse>>
@@ -23,7 +22,7 @@ public class InvalidateCacheHandler(
         {
             if (request.InvalidateAll)
             {
-                await redisService.RemoveByPatternAsync("*");
+                await redisService.RemoveByPattern("*");
                 
                 logger.LogInformation("Admin: All cache invalidated in AccountService");
                 
@@ -49,7 +48,7 @@ public class InvalidateCacheHandler(
 
             foreach (var pattern in patterns)
             {
-                await redisService.RemoveByPatternAsync(pattern);
+                await redisService.RemoveByPattern(pattern);
             }
             
             logger.LogInformation("Admin: Cache category '{Category}' invalidated in AccountService (patterns: {Patterns})", 

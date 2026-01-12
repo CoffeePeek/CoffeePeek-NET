@@ -17,15 +17,15 @@ namespace CoffeePeek.Shops.Application.Features.CoffeeShop;
 public class SearchCoffeeShopsHandler(
     IGenericRepository<Shop> shopRepository,
     IMapper mapper,
-    IHybridCache hybridCache)
-    : IRequestHandler<SearchCoffeeShopsCommand, Response<GetCoffeeShopsResponse>>
+    IRedisService redisService)
+    : IRequestHandler<SearchCoffeeShopsQuery, Response<GetCoffeeShopsResponse>>
 {
-    public async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsCommand command, CancellationToken cancellationToken)
+    public async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsQuery queryRequest, CancellationToken cancellationToken)
     {
-        var searchHash = CreateSearchHash(command);
+        var searchHash = CreateSearchHash(queryRequest);
         var cacheKey = CacheKey.Shop.Search(searchHash);
         
-        var result = await hybridCache.GetOrSetAsync(
+        var result = await redisService.GetAsync(
             cacheKey,
             async () =>
             {
@@ -40,32 +40,32 @@ public class SearchCoffeeShopsHandler(
                 .ThenInclude(cbs => cbs.CoffeeBean)
             .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(command.Query))
+        if (!string.IsNullOrWhiteSpace(queryRequest.Query))
         {
-            var searchTerm = command.Query.Trim().ToLower();
+            var searchTerm = queryRequest.Query.Trim().ToLower();
             query = query.Where(s =>
                 s.Name.ToLower().Contains(searchTerm) ||
                 (s.Location != null && s.Location.Address.ToLower().Contains(searchTerm)));
         }
 
-        if (command.CityId.HasValue)
+        if (queryRequest.CityId.HasValue)
         {
-            query = query.Where(s => s.CityId == command.CityId.Value);
+            query = query.Where(s => s.CityId == queryRequest.CityId.Value);
         }
         
-        if (command.Equipments is { Length: > 0 })
+        if (queryRequest.Equipments is { Length: > 0 })
         {
-            query = query.Where(s => s.ShopEquipments.Any(se => command.Equipments.AsEnumerable().Contains(se.EquipmentId)));
+            query = query.Where(s => s.ShopEquipments.Any(se => queryRequest.Equipments.AsEnumerable().Contains(se.EquipmentId)));
         }
 
-        if (command.Beans is { Length: > 0 })
+        if (queryRequest.Beans is { Length: > 0 })
         {
-            query = query.Where(s => s.CoffeeBeanShops.Any(cbs => command.Beans.AsEnumerable().Contains(cbs.CoffeeBeanId)));
+            query = query.Where(s => s.CoffeeBeanShops.Any(cbs => queryRequest.Beans.AsEnumerable().Contains(cbs.CoffeeBeanId)));
         }
 
-        if (command.MinRating.HasValue)
+        if (queryRequest.MinRating.HasValue)
         {
-            var minRating = command.MinRating.Value;
+            var minRating = queryRequest.MinRating.Value;
             
             query = query.Where(s => s.Reviews.Any() && 
                 s.Reviews.Sum(r => r.RatingCoffee + r.RatingPlace + r.RatingService) >= 
@@ -75,63 +75,60 @@ public class SearchCoffeeShopsHandler(
         var projectedQuery = query.ProjectToType<ShortShopDto>(mapper.Config);
 
         var totalCount = await projectedQuery.CountAsync(cancellationToken);
-        var totalPages = (int)Math.Ceiling(totalCount / (double)command.PageSize);
+        var totalPages = (int)Math.Ceiling(totalCount / (double)queryRequest.PageSize);
 
         var shopDtos = await projectedQuery
-            .Skip((command.PageNumber - 1) * command.PageSize)
-            .Take(command.PageSize)
+            .Skip((queryRequest.PageNumber - 1) * queryRequest.PageSize)
+            .Take(queryRequest.PageSize)
             .ToArrayAsync(cancellationToken);
 
                 var response = new GetCoffeeShopsResponse
                 {
                     CoffeeShops = shopDtos,
-                    CurrentPage = command.PageNumber,
-                    PageSize = command.PageSize,
+                    CurrentPage = queryRequest.PageNumber,
+                    PageSize = queryRequest.PageSize,
                     TotalItems = totalCount,
                     TotalPages = totalPages
                 };
 
                 return Response<GetCoffeeShopsResponse>.Success(response);
-            },
-            distributedTtl: TimeSpan.FromMinutes(5),
-            memoryTtl: TimeSpan.FromMinutes(1),
-            ct: cancellationToken);
+            });
         
         return result ?? Response<GetCoffeeShopsResponse>.Error("Failed to search coffee shops.");
     }
 
-    private static string CreateSearchHash(SearchCoffeeShopsCommand command)
+    private static string CreateSearchHash(SearchCoffeeShopsQuery query)
     {
         var keyBuilder = new StringBuilder();
-        if (!string.IsNullOrWhiteSpace(command.Query))
+        if (!string.IsNullOrWhiteSpace(query.Query))
         {
-            var queryHash = ComputeHash(command.Query.Trim().ToLowerInvariant());
+            var queryHash = ComputeHash(query.Query.Trim().ToLowerInvariant());
             keyBuilder.Append($"q:{queryHash}:");
         }
         
-        if (command.CityId.HasValue)
+        if (query.CityId.HasValue)
         {
-            keyBuilder.Append($"city:{command.CityId}:");
+            keyBuilder.Append($"city:{query.CityId}:");
         }
         
-        if (command.Equipments is { Length: > 0 })
+        if (query.Equipments is { Length: > 0 })
         {
-            var equipmentsHash = ComputeHash(string.Join(",", command.Equipments.OrderBy(x => x)));
+            var equipmentsHash = ComputeHash(string.Join(",", query.Equipments.OrderBy(x => x)));
             keyBuilder.Append($"eq:{equipmentsHash}:");
         }
         
-        if (command.Beans is { Length: > 0 })
+        if (query.Beans is { Length: > 0 })
         {
-            var beansHash = ComputeHash(string.Join(",", command.Beans.OrderBy(x => x)));
+            var beansHash = ComputeHash(string.Join(",", query.Beans.OrderBy(x => x)));
             keyBuilder.Append($"beans:{beansHash}:");
         }
         
-        if (command.MinRating.HasValue)
+        if (query.MinRating.HasValue)
         {
-            keyBuilder.Append($"rating:{command.MinRating.Value}:");
+            keyBuilder.Append($"rating:{query.MinRating.Value}:");
         }
         
-        keyBuilder.Append($"page:{command.PageNumber}:size:{command.PageSize}");
+        keyBuilder.Append($"page:{query.PageNumber}:size:{query.PageSize}");
         
         return keyBuilder.ToString();
     }

@@ -8,7 +8,6 @@ namespace CoffeePeek.Shops.Infrastructure.Services;
 
 public class ShopCacheService(
     IGenericRepository<Shop> shopRepository,
-    IHybridCache hybridCache,
     IRedisService redisService) 
     : IShopCacheService
 {
@@ -20,10 +19,10 @@ public class ShopCacheService(
             .Select(s => s.CityId)
             .FirstOrDefaultAsync(cancellationToken);
 
-        await hybridCache.RemoveAsync(CacheKey.Shop.Detail(shopId), cancellationToken);
+        await redisService.RemoveAsync(CacheKey.Shop.Detail(shopId));
         if (cityId != Guid.Empty)
         {
-            await redisService.RemoveByPatternAsync(CacheKey.Shop.ListByCityPattern(cityId));
+            await redisService.RemoveByPattern(CacheKey.Shop.ListByCityPattern(cityId));
         }
     }
 }
