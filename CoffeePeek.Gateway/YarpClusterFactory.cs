@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Extensions.Configuration;
 using Yarp.ReverseProxy.Configuration;
 
 namespace CoffeePeek.Gateway;
@@ -15,16 +15,15 @@ public static class YarpClusterFactory
     private record ClusterInfo(
         string ClusterId,
         string EnvPrefix,
-        string RailwayHost,
         string AspireServiceName
     );
 
     private static readonly List<ClusterInfo> Clusters =
     [
-        new("account-cluster", "ACCOUNT", "coffeepeekaccountservice.railway.internal", AppResources.AccountService),
-        new("shops-cluster", "SHOPS", "coffeepeekshopsservice.railway.internal", AppResources.ShopsService),
-        new("moderation-cluster", "MODERATION", "coffeepeekmoderationservice.railway.internal", AppResources.ModerationService),
-        new("jobs-cluster", "JOBS", "coffeepeekjobvacancies.railway.internal", AppResources.JobVacanciesService)
+        new("account-cluster", "ACCOUNT", AppResources.AccountService),
+        new("shops-cluster", "SHOPS", AppResources.ShopsService),
+        new("moderation-cluster", "MODERATION", AppResources.ModerationService),
+        new("jobs-cluster", "JOBS", AppResources.JobVacanciesService)
     ];
 
 
@@ -83,7 +82,14 @@ public static class YarpClusterFactory
         if (IsAspire)
             return cluster.AspireServiceName;
 
-        return cluster.RailwayHost;
+        // Fallback to Railway internal DNS pattern
+        var defaultRailwayHost = Environment.GetEnvironmentVariable($"{cluster.EnvPrefix}_HOST");
+        if (!string.IsNullOrEmpty(defaultRailwayHost))
+            return defaultRailwayHost;
+
+        throw new InvalidOperationException(
+            $"Host configuration not found for {cluster.ClusterId}. " +
+            $"Please set either {cluster.EnvPrefix}_HOST or {cluster.EnvPrefix}_HOST environment variable.");
     }
 
     private static string? TryGetServiceUri(string serviceName)
