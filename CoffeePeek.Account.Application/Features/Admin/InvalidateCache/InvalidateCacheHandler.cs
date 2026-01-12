@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 namespace CoffeePeek.Account.Application.Features.Admin.InvalidateCache;
 
 public class InvalidateCacheHandler(
-    IHybridCache hybridCache,
     IRedisService redisService,
     ILogger<InvalidateCacheHandler> logger) 
     : IRequestHandler<InvalidateCacheCommand, Response<InvalidateCacheResponse>>

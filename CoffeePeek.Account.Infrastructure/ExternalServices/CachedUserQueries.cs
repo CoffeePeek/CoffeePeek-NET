@@ -7,17 +7,15 @@ namespace CoffeePeek.Auth.Infrastructure.ExternalServices;
 
 public class CachedUserQueries(
     IUserQueries decorated, 
-    IHybridCache hybridCache) : IUserQueries
+    IRedisService redisService) : IUserQueries
 {
     public async Task<UserDto?> GetProfileByIdAsync(Guid userId, CancellationToken ct)
     {
         var cacheKey = CacheKey.User.Profile(userId);
         
-        return await hybridCache.GetOrSetAsync(
+        return await redisService.GetAsync(
             cacheKey, 
             () => decorated.GetProfileByIdAsync(userId, ct),
-            distributedTtl: cacheKey.DefaultTtl,
-            memoryTtl: TimeSpan.FromMinutes(5),
-            ct: ct);
+            cacheKey.DefaultTtl);
     }
 }

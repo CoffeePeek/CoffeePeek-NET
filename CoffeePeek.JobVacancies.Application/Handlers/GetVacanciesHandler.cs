@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.JobVacancies.Application.Commands;
 using CoffeePeek.JobVacancies.Application.Models.Dtos;
 using CoffeePeek.JobVacancies.Application.Models.Responses;
@@ -12,7 +12,7 @@ namespace CoffeePeek.JobVacancies.Application.Handlers;
 
 public class GetVacanciesHandler(
     IJobVacancyRepository repository,
-    IHybridCache hybridCache,
+    IRedisService redisService,
     IMapper mapper)
     : IRequestHandler<GetVacanciesCommand, Response<JobVacanciesResponse>>
 {
@@ -29,7 +29,7 @@ public class GetVacanciesHandler(
             request.Page,
             request.PerPage);
 
-        var response = await hybridCache.GetOrSetAsync(
+        var response = await redisService.GetAsync(
             cacheKey,
             async () =>
             {
@@ -51,9 +51,7 @@ public class GetVacanciesHandler(
                     TotalPages = (int)Math.Ceiling(items.Length / (double)request.PerPage)
                 };
             },
-            distributedTtl: cacheKey.DefaultTtl,
-            memoryTtl: TimeSpan.FromMinutes(5),
-            ct: cancellationToken);
+            cacheKey.DefaultTtl);
 
         return response != null 
             ? Response.Success(response) 

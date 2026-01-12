@@ -9,7 +9,6 @@ namespace CoffeePeek.Shops.Application.Features.Admin.InvalidateCache;
 
 public class InvalidateCacheHandler(
     ICacheInvalidationStrategy cacheInvalidationStrategy,
-    IHybridCache hybridCache,
     IRedisService redisService,
     ILogger<InvalidateCacheHandler> logger) 
     : IRequestHandler<InvalidateCacheCommand, Response<InvalidateCacheResponse>>
@@ -30,7 +29,7 @@ public class InvalidateCacheHandler(
             if (request.InvalidateAll)
             {
                 // Invalidate all cache by pattern
-                await hybridCache.RemoveByPatternAsync("*");
+                await redisService.RemoveByPatternAsync("*");
                 
                 logger.LogInformation("Admin: All cache invalidated");
                 

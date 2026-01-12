@@ -17,7 +17,7 @@ namespace CoffeePeek.Shops.Application.Features.CoffeeShop;
 public class SearchCoffeeShopsHandler(
     IGenericRepository<Shop> shopRepository,
     IMapper mapper,
-    IHybridCache hybridCache)
+    IRedisService redisService)
     : IRequestHandler<SearchCoffeeShopsCommand, Response<GetCoffeeShopsResponse>>
 {
     public async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsCommand command, CancellationToken cancellationToken)
@@ -25,7 +25,7 @@ public class SearchCoffeeShopsHandler(
         var searchHash = CreateSearchHash(command);
         var cacheKey = CacheKey.Shop.Search(searchHash);
         
-        var result = await hybridCache.GetOrSetAsync(
+        var result = await redisService.GetAsync(
             cacheKey,
             async () =>
             {
@@ -93,9 +93,7 @@ public class SearchCoffeeShopsHandler(
 
                 return Response<GetCoffeeShopsResponse>.Success(response);
             },
-            distributedTtl: TimeSpan.FromMinutes(5),
-            memoryTtl: TimeSpan.FromMinutes(1),
-            ct: cancellationToken);
+            TimeSpan.FromMinutes(5));
         
         return result ?? Response<GetCoffeeShopsResponse>.Error("Failed to search coffee shops.");
     }

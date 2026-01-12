@@ -9,10 +9,8 @@ public static class CacheModule
 {
     public static IServiceCollection AddCacheModule(this IServiceCollection services)
     {
-        services.AddMemoryCache();
         services.RedisConfigurationOptions();
         services.AddSingleton<IRedisService, RedisService>();
-        services.AddSingleton<IHybridCache, HybridCache>();
         services.AddSingleton<ICacheInvalidationStrategy, CacheInvalidationStrategy>();
         
         return services;
