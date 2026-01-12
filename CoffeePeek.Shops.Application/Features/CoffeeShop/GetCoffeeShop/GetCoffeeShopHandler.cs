@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
@@ -14,7 +14,7 @@ namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 public class GetCoffeeShopHandler(
     IGenericRepository<Shop> shopRepository,
     IMapper mapper,
-    IHybridCache hybridCache)
+    IRedisService redisService)
     : IRequestHandler<GetCoffeeShopQuery, Response<GetCoffeeShopResponse>>
 {
     public async Task<Response<GetCoffeeShopResponse>> Handle(GetCoffeeShopQuery request,
@@ -22,7 +22,7 @@ public class GetCoffeeShopHandler(
     {
         var cacheKey = CacheKey.Shop.Detail(request.Id);
         
-        var result = await hybridCache.GetOrSetAsync(
+        var result = await redisService.GetAsync(
             cacheKey,
             async () =>
             {
@@ -45,9 +45,7 @@ public class GetCoffeeShopHandler(
                     ? Response<GetCoffeeShopResponse>.Error($"Coffee shop with ID {request.Id} not found.")
                     : Response<GetCoffeeShopResponse>.Success(new GetCoffeeShopResponse(shopDto));
             },
-            distributedTtl: cacheKey.DefaultTtl,
-            memoryTtl: TimeSpan.FromMinutes(1),
-            ct: cancellationToken);
+            cacheKey.DefaultTtl);
 
         return result ?? Response<GetCoffeeShopResponse>.Error($"Coffee shop with ID {request.Id} not found.");
     }

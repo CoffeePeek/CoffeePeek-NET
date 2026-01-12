@@ -17,7 +17,7 @@ public class UserRepository(IGenericRepository<User> userRepository) : IUserRepo
         await userRepository.AddAsync(user, ct);
     }
 
-    public Task Update(User user)
+    public Task Update(User user, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(user);
         userRepository.Update(user);

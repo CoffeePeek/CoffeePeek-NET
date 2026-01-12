@@ -10,7 +10,7 @@ namespace CoffeePeek.Account.Application.Features.User.DeleteUser;
 public class DeleteUserHandler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
-    IHybridCache hybridCache) 
+    IRedisService redisService) 
     : IRequestHandler<DeleteUserCommand, Response<bool>>
 {
     public async Task<Response<bool>> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
@@ -27,15 +27,17 @@ public class DeleteUserHandler(
         await userRepository.Update(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        await ClearUserCacheAsync(user.Id, cancellationToken);
+        await ClearUserCacheAsync(user.Id);
 
         return Response<bool>.Success(true);
     }
     
-    private async Task ClearUserCacheAsync(Guid userId, CancellationToken cancellationToken)
+    private Task ClearUserCacheAsync(Guid userId)
     {
-        await hybridCache.RemoveAsync(CacheKey.User.Profile(userId), cancellationToken);
-        await hybridCache.RemoveAsync(CacheKey.User.Entity(userId), cancellationToken);
+        return Task.WhenAll(
+            redisService.RemoveAsync(CacheKey.User.Profile(userId)), 
+            redisService.RemoveAsync(CacheKey.User.Entity(userId))
+            );
     }
 }
 

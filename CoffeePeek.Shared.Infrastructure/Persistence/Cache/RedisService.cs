@@ -143,7 +143,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
         }
     }
 
-    public async Task RemoveByPatternAsync(string pattern)
+    public async Task RemoveByPattern(string pattern)
     {
         try
         {

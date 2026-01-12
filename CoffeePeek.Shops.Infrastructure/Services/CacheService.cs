@@ -10,7 +10,7 @@ using MapsterMapper;
 namespace CoffeePeek.Shops.Infrastructure.Services;
 
 public class CacheService(
-    IHybridCache cache,
+    IRedisService redisService,
     ICacheInvalidationStrategy cacheInvalidationStrategy,
     IGenericRepository<City> cityRepository,
     IGenericRepository<CoffeeBean> coffeeBeanRepository,
@@ -22,75 +22,75 @@ public class CacheService(
     public async Task<CityDto[]?> GetCities()
     {
         var cacheKey = CacheKey.City.ListAll();
-        return await cache.GetOrSetAsync(
+        return await redisService.GetAsync(
             cacheKey,
             async () =>
             {
                 var cities = await cityRepository.GetAllAsNoTrackingAsync();
                 return mapper.Map<CityDto[]>(cities);
             },
-            distributedTtl: cacheKey.DefaultTtl);
+            cacheKey.DefaultTtl);
     }
 
     public async Task<BeansDto[]?> GetBeans()
     {
         var cacheKey = CacheKey.Bean.ListAll();
-        return await cache.GetOrSetAsync(
+        return await redisService.GetAsync(
             cacheKey,
             async () =>
             {
                 var beans = await coffeeBeanRepository.GetAllAsNoTrackingAsync();
                 return mapper.Map<BeansDto[]>(beans);
             },
-            distributedTtl: cacheKey.DefaultTtl);
+            cacheKey.DefaultTtl);
     }
 
     public async Task<EquipmentDto[]?> GetEquipments()
     {
         var cacheKey = CacheKey.Equipment.ListAll();
-        return await cache.GetOrSetAsync(
+        return await redisService.GetAsync(
             cacheKey,
             async () =>
             {
                 var equipments = await equipmentRepository.GetAllAsNoTrackingAsync();
                 return mapper.Map<EquipmentDto[]>(equipments);
             },
-            distributedTtl: cacheKey.DefaultTtl);
+            cacheKey.DefaultTtl);
     }
 
     public async Task<RoasterDto[]?> GetRoasters()
     {
         var cacheKey = CacheKey.Roaster.ListAll();
-        return await cache.GetOrSetAsync(
+        return await redisService.GetAsync(
             cacheKey,
             async () =>
             {
                 var roasters = await roasterRepository.GetAllAsNoTrackingAsync();
                 return mapper.Map<RoasterDto[]>(roasters);
             },
-            distributedTtl: cacheKey.DefaultTtl);
+            cacheKey.DefaultTtl);
     }
 
     public async Task<BrewMethodDto[]?> GetBrewMethods()
     {
         var cacheKey = CacheKey.BrewMethod.ListAll();
-        return await cache.GetOrSetAsync(
+        return await redisService.GetAsync(
             cacheKey,
             async () =>
             {
                 var brewMethods = await brewMethodRepository.GetAllAsNoTrackingAsync();
                 return mapper.Map<BrewMethodDto[]>(brewMethods);
             },
-            distributedTtl: cacheKey.DefaultTtl);
+            cacheKey.DefaultTtl);
     }
 
-    public Task InvalidateShopDictionaries(CancellationToken cancellationToken = default)
+    public Task InvalidateShopDictionaries()
     {
-        return cacheInvalidationStrategy.InvalidateTagsAsync([CacheInvalidationStrategy.Tags.ShopsDictionary], cancellationToken);
+        return cacheInvalidationStrategy.InvalidateTagsAsync([CacheInvalidationStrategy.Tags.ShopsDictionary]);
     }
 
-    public Task InvalidateShopLists(CancellationToken cancellationToken = default)
+    public Task InvalidateShopLists()
     {
-        return cacheInvalidationStrategy.InvalidateTagsAsync([CacheInvalidationStrategy.Tags.ShopsLists], cancellationToken);
+        return cacheInvalidationStrategy.InvalidateTagsAsync([CacheInvalidationStrategy.Tags.ShopsLists]);
     }
 }

@@ -5,7 +5,7 @@ using MediatR;
 
 namespace CoffeePeek.Shops.Application.Commands.CoffeeShop;
 
-public record SearchCoffeeShopsCommand(
+public record SearchCoffeeShopsQuery(
     string? Query = null,
     Guid? CityId = null,
     Guid[]? Equipments = null,

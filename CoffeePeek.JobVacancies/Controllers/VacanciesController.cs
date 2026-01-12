@@ -20,6 +20,6 @@ public class VacanciesController(IMediator mediator) : ControllerBase
         [FromQuery][Range(1, 100)] int perPage = 20,
         CancellationToken cancellationToken = default)
     {
-        return await mediator.Send(new GetVacanciesCommand(cityId, jobType, page, perPage), cancellationToken);
+        return await mediator.Send(new GetVacanciesQuery(cityId, jobType, page, perPage), cancellationToken);
     }
 }

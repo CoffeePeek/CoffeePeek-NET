@@ -10,5 +10,5 @@ public interface IRedisService
     Task RemoveAsync(CacheKey cacheKey);
     Task<bool> ExistsAsync(CacheKey cacheKey);
     
-    Task RemoveByPatternAsync(string pattern);
+    Task RemoveByPattern(string pattern);
 }

@@ -18,7 +18,7 @@ public class GetCoffeeShopsRequestHandler(
     IGenericRepository<Shop> shopRepository,
     IValidationStrategy<GetCoffeeShopsCommand> validationStrategy,
     IMapper mapper,
-    IHybridCache hybridCache) 
+    IRedisService redisService) 
     : IRequestHandler<GetCoffeeShopsCommand, Response<GetCoffeeShopsResponse>>
 {
     public async Task<Response<GetCoffeeShopsResponse>> Handle(GetCoffeeShopsCommand command, CancellationToken cancellationToken)
@@ -31,7 +31,7 @@ public class GetCoffeeShopsRequestHandler(
 
         var cacheKey = CacheKey.Shop.ListByCity(command.CityId, command.PageNumber, command.PageSize);
         
-        var result = await hybridCache.GetOrSetAsync(
+        var result = await redisService.GetAsync(
             cacheKey,
             async () =>
             {
@@ -59,9 +59,7 @@ public class GetCoffeeShopsRequestHandler(
 
                 return Response<GetCoffeeShopsResponse>.Success(response);
             },
-            distributedTtl: cacheKey.DefaultTtl,
-            memoryTtl: TimeSpan.FromMinutes(1),
-            ct: cancellationToken);
+            cacheKey.DefaultTtl);
 
         return result ?? Response<GetCoffeeShopsResponse>.Error("Failed to retrieve coffee shops.");
     }
