@@ -17,6 +17,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Bogus" Version="35.6.5" />
+        <PackageReference Include="Sentry.AspNetCore" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>

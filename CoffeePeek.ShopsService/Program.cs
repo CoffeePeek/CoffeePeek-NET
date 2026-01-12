@@ -21,6 +21,17 @@ using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseSentry(options =>
+{
+    options.Dsn = builder.Configuration["Sentry:Dsn"];
+    options.SendDefaultPii = true;
+    options.SetBeforeSend((@event, _) =>
+    {
+        @event.ServerName = null;
+        return @event;
+    });
+});
+
 builder.AddServiceDefaults();
 
 builder.AddSerilogLogging();

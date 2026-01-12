@@ -36,9 +36,8 @@ builder.WebHost.UseSentry(options =>
 {
     options.Dsn = builder.Configuration["Sentry:Dsn"];
     options.SendDefaultPii = true;
-    options.SetBeforeSend((@event, hint) =>
+    options.SetBeforeSend((@event, _) =>
     {
-
         @event.ServerName = null;
         return @event;
     });

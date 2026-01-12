@@ -22,6 +22,17 @@ using OutboxEvent = CoffeePeek.Moderation.Domain.Entities.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseSentry(options =>
+{
+    options.Dsn = builder.Configuration["Sentry:Dsn"];
+    options.SendDefaultPii = true;
+    options.SetBeforeSend((@event, _) =>
+    {
+        @event.ServerName = null;
+        return @event;
+    });
+});
+
 builder.AddServiceDefaults();
 
 builder.AddSerilogLogging();
