@@ -144,32 +144,32 @@ jobs:
         run: |
           echo "Applying AccountService migrations..."
           cd CoffeePeek.AccountService
-          dotnet ef database update 
-          --context AccountDbContext `
-          --project ../CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj `
-          --startup-project CoffeePeek.AccountService.csproj `
+          dotnet ef database update \
+          --context AccountDbContext \
+          --project ../CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj \
+          --startup-project CoffeePeek.AccountService.csproj \
           --connection "DB_CONNECTION_ACCOUNT"
 
           cd ../CoffeePeek.ShopsService
           echo "Applying ShopsService migrations..."
-          dotnet ef database update 
-          --context ShopsDbContext `
-          --project ../CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj `
-          --startup-project CoffeePeek.ShopsService.csproj `
+          dotnet ef database update \
+          --context ShopsDbContext \
+          --project ../CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj \
+          --startup-project CoffeePeek.ShopsService.csproj \
           --connection "DB_CONNECTION_SHOPS"
           
           cd ../CoffeePeek.ModerationService
           echo "Applying ModerationService migrations..."
-          dotnet ef database update 
-          --context ModerationDbContext `
-          --project ../CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj `
-          --startup-project CoffeePeek.ModerationService.csproj `
+          dotnet ef database update \
+          --context ModerationDbContext \
+          --project ../CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj \
+          --startup-project CoffeePeek.ModerationService.csproj \
           --connection "DB_CONNECTION_MODERATION"
           
           cd ../CoffeePeek.JobVacancies
           echo "Applying JobsService migrations..."
-          dotnet ef database update 
-          --context JobVacanciesDbConext `
-          --project ../CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj `
-          --startup-project CoffeePeek.JobVacancies.csproj `
+          dotnet ef database update \
+          --context JobVacanciesDbConext \
+          --project ../CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj \
+          --startup-project CoffeePeek.JobVacancies.csproj \
           --connection "$DB_CONN_JOBS"
