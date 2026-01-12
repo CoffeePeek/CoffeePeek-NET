@@ -26,7 +26,8 @@ public static class MapsterConfiguration
             .Map(dest => dest.ReviewCount, src => src.UserStatistics.ReviewCount)
             .Map(dest => dest.CheckInCount, src => src.UserStatistics.CheckInCount)
             .Map(dest => dest.AddedShopsCount, src => src.UserStatistics.AddedShopsCount)
-            .Map(dest => dest.AvatarUrl, src => src.PhotoMetadata);
+            .Map(dest => dest.AvatarUrl, src => src.PhotoMetadata)
+            .Map(dest => dest.CreatedAt, src => src.CreatedAtUtc);
             
         return config;
     }

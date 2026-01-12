@@ -54,7 +54,7 @@ public class UserCredential : Entity<Guid>
         EmailConfirmationToken = null;
         EmailConfirmationExpiresAt = null;
         
-        AddDomainEvent(new EmailConfirmedDomainEvent());
+        AddDomainEvent(new EmailConfirmedInternalEvent());
     }
     
     public void UpdateEmail(string email)
@@ -119,9 +119,7 @@ public class UserCredential : Entity<Guid>
     {
         if (_userRoles.Any(ur => ur.RoleId == role.Id)) return;
         
-        _userRoles.Add(new UserRole(Id, role.Id) { 
-            Role = role 
-        });
+        _userRoles.Add(new UserRole(Id, role.Id));
     }
 
     public void RevokeAllSessions()

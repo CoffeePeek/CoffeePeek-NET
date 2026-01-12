@@ -1,5 +1,5 @@
-﻿using CoffeePeek.Account.Application.Commands;
-using CoffeePeek.Account.Application.Common.Interfaces;
+﻿using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Contract.Dtos.Auth;
 using CoffeePeek.Contract.Responses;

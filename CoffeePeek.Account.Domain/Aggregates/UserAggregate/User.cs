@@ -36,7 +36,7 @@ public class User : Entity<Guid>
             UserCredential = new UserCredential(email, passwordHash, userId, confirmationToken),
         };
         
-        user.AddDomainEvent(new UserRegisteredDomainEvent(userId, email, username, confirmationToken));
+        user.AddDomainEvent(new UserRegisteredInternalEvent(userId, email, username, confirmationToken));
         
         return user;
     }

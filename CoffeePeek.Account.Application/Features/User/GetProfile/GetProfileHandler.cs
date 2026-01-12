@@ -1,9 +1,10 @@
 using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Application.Features.GetProfile;
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Responses;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.GetProfile;
+namespace CoffeePeek.Account.Application.Features.User.GetProfile;
 
 public class GetProfileHandler(IUserQueries userQueries) 
     : IRequestHandler<GetProfileCommand, Response<UserDto>>

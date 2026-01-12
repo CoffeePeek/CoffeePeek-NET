@@ -11,9 +11,9 @@ public class UserRegisteredEventHandler(
     IResend resend,
     IConfiguration config,
     IEmailTemplateService templateService,
-    ILogger<UserRegisteredEventHandler> logger) : INotificationHandler<UserRegisteredDomainEvent>
+    ILogger<UserRegisteredEventHandler> logger) : INotificationHandler<UserRegisteredInternalEvent>
 {
-    public async Task Handle(UserRegisteredDomainEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(UserRegisteredInternalEvent notification, CancellationToken cancellationToken)
     {
         try
         {

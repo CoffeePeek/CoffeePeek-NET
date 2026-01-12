@@ -18,11 +18,12 @@ public static class ServiceCollectionExtensions
         {
             services.AddDbContext<TDbContext>(options =>
             {
-                options.UseNpgsql(connectionString);
+                options.UseNpgsql(connectionString)
+                    .AddInterceptors(new OutboxInterceptor<TOutboxEvent>(), new AuditInterceptor());
                 additionalOptions?.Invoke(options);
             });
 
-            services.AddScoped<IUnitOfWork, UnitOfWork<TDbContext, TOutboxEvent>>();
+            services.AddScoped<IUnitOfWork, UnitOfWork<TDbContext>>();
 
             return services;
         }

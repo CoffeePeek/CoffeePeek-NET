@@ -100,7 +100,6 @@ public class UserController(IMediator mediator) : Controller
     }
     
     [HttpPost("confirm-email")]
-    [Authorize]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     public Task<Response> ConfirmEmail([FromQuery] string token)
     {

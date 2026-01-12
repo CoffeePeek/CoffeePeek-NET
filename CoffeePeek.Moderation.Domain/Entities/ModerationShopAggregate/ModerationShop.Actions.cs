@@ -96,7 +96,7 @@ public sealed partial class ModerationShop
 
         ModerationStatus = ModerationStatus.Approved;
 
-        AddDomainEvent(new ModerationShopApprovedDomainEvent(this));
+        AddDomainEvent(new ModerationShopApprovedEvent(this));
     }
 
     public void Reject(string reason)

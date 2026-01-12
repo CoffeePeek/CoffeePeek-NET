@@ -4,7 +4,6 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var accountService = builder.AddProject<Projects.CoffeePeek_AccountService>(AppResources.AccountService);
 
-
 var jobVacanciesService = builder.AddProject<Projects.CoffeePeek_JobVacancies>(AppResources.JobVacanciesService);
 
 var shopsService = builder.AddProject<Projects.CoffeePeek_ShopsService>(AppResources.ShopsService);

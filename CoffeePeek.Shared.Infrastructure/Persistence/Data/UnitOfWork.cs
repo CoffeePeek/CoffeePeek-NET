@@ -1,73 +1,37 @@
-using System.Text.Json;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace CoffeePeek.Shared.Infrastructure.Persistence.Data;
 
-public class UnitOfWork<TDbContext, TOutboxEvent>(TDbContext context, IMediator mediator) : IUnitOfWork
+public class UnitOfWork<TDbContext>(TDbContext context, IMediator mediator) : IUnitOfWork
     where TDbContext : DbContext
-    where TOutboxEvent : OutboxEvent, new()
 {
     private IDbContextTransaction? _transaction;
 
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public async Task<int> SaveChangesAsync(CancellationToken ct = default)
     {
-        await ProcessDomainEventsThroughMediator(cancellationToken);
-
-        InsertOutboxMessages();
-
-        return await context.SaveChangesAsync(cancellationToken);
-    }
-
-    private async Task ProcessDomainEventsThroughMediator(CancellationToken ct)
-    {
-        while (true)
-        {
-            var domainEntities = context.ChangeTracker
-                .Entries<IEntity>()
-                .Where(x => x.Entity.DomainEvents.Count != 0)
-                .ToList();
-
-            if (domainEntities.Count == 0) break;
-
-            var domainEvents = domainEntities
-                .SelectMany(x => x.Entity.DomainEvents)
-                .ToList();
-
-            domainEntities.ForEach(x => x.Entity.ClearDomainEvents());
-
-            foreach (var domainEvent in domainEvents)
-            {
-                await mediator.Publish(domainEvent, ct);
-            }
-        }
-    }
-
-    private void InsertOutboxMessages()
-    {
-        var entitiesWithEvents = context.ChangeTracker
+        var result = await context.SaveChangesAsync(ct);
+        
+        var entities = context.ChangeTracker
             .Entries<IEntity>()
             .Where(x => x.Entity.DomainEvents.Count != 0)
             .ToList();
 
-        foreach (var entry in entitiesWithEvents)
+        foreach (var entry in entities)
         {
-            var outboxMessages = entry.Entity.DomainEvents.Select(domainEvent => new TOutboxEvent
+            var immediateEvents = entry.Entity.DomainEvents.ToList();
+            
+            foreach (var domainEvent in immediateEvents)
             {
-                Id = Guid.NewGuid(),
-                EventType = domainEvent.GetType().Name,
-                Payload = JsonSerializer.Serialize(domainEvent, domainEvent.GetType()),
-                CreatedAt = DateTime.UtcNow,
-                Processed = false
-            });
-
-            context.Set<TOutboxEvent>().AddRange(outboxMessages);
+                await mediator.Publish(domainEvent, ct);
+            }
 
             entry.Entity.ClearDomainEvents();
         }
+        
+        return result;
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
@@ -76,24 +40,24 @@ public class UnitOfWork<TDbContext, TOutboxEvent>(TDbContext context, IMediator 
         _transaction = await context.Database.BeginTransactionAsync(cancellationToken);
     }
 
-    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+    public async Task CommitTransactionAsync(CancellationToken ct = default)
     {
-        if (_transaction == null)
-            throw new InvalidOperationException("Transaction has not been started.");
+        if (_transaction == null) throw new InvalidOperationException("No transaction");
 
         try
         {
-            await SaveChangesAsync(cancellationToken);
-            await _transaction.CommitAsync(cancellationToken);
+            await context.SaveChangesAsync(ct);
+            await _transaction.CommitAsync(ct);
         }
         catch
         {
-            await RollbackTransactionAsync(cancellationToken);
+            await _transaction.RollbackAsync(ct);
             throw;
         }
         finally
         {
-            await DisposeTransactionAsync();
+            await _transaction.DisposeAsync();
+            _transaction = null;
         }
     }
 

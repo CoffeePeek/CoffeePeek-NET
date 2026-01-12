@@ -32,6 +32,22 @@ using OutboxEvent = CoffeePeek.Account.Domain.Events.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseSentry(options =>
+{
+    options.Dsn = builder.Configuration["Sentry:Dsn"];
+    options.SendDefaultPii = true;
+    options.SetBeforeSend((@event, hint) =>
+    {
+
+        @event.ServerName = null;
+        return @event;
+    });
+});
+
+// Add tunneling middleware.
+// Note that UseSentryTunneling also needs to be called on the IApplicationBuilder
+builder.Services.AddSentryTunneling();
+
 builder.AddServiceDefaults();
 builder.AddSerilogLogging();
 
@@ -151,7 +167,11 @@ builder.Services.AddOutboxEventPublisher<OutboxEvent, AccountDbContext>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+CreateHostBuilder(args);
+    
 var app = builder.Build();
+
+app.UseSentryTunneling();
 
 // Middleware pipeline
 app.UseExceptionHandler();
@@ -166,4 +186,20 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+SentrySdk.CaptureMessage("Hello Sentry");
 app.Run();
+
+
+return;
+
+static IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .ConfigureWebHostDefaults(webBuilder =>
+        {
+            // Add the following line:
+            webBuilder.UseSentry(o =>
+            {
+                o.Dsn = "https://b2bda147d60802d281928d9080e91409@o4510357410611200.ingest.de.sentry.io/4510675300646992";
+                o.Debug = true;
+            });
+        });

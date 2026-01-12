@@ -12,9 +12,9 @@ public class ModerationShopApprovedEventHandler(
     IOutboxEventPublisher outboxEventPublisher,
     IMapper mapper,
     ILogger<ModerationShopApprovedEventHandler> logger)
-    : INotificationHandler<ModerationShopApprovedDomainEvent>
+    : INotificationHandler<ModerationShopApprovedEvent>
 {
-    public async Task Handle(ModerationShopApprovedDomainEvent notification, CancellationToken ct)
+    public async Task Handle(ModerationShopApprovedEvent notification, CancellationToken ct)
     {
         var shop = notification.Shop;
         

@@ -4,17 +4,19 @@ namespace CoffeePeek.Account.Domain.Aggregates.UserAggregate;
 
 public class UserRole : Entity<Guid>
 {
-    public Guid UserId { get; set; }
-    public Guid RoleId { get; set; }
+    public Guid UserId { get; private set; }
+    public Guid RoleId { get; private set; }
 
-    public virtual UserCredential User { get; set; }
-    public virtual Role Role { get; set; }
+    public UserCredential? User { get; private set; }
+    public Role? Role { get; private set; }
     
     // ReSharper disable once UnusedMember.Local
     private UserRole(){}
     
     internal UserRole(Guid userId, Guid roleId)
     {
+        Id = Guid.NewGuid();
+        
         UserId = userId;
         RoleId = roleId;
     }

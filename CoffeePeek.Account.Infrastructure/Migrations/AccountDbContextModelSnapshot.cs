@@ -31,6 +31,8 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.Property<string>("ContentType")
                         .IsRequired()
                         .HasColumnType("text");
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FileName")
                         .IsRequired()
@@ -42,6 +44,8 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.Property<string>("StorageKey")
                         .IsRequired()
                         .HasColumnType("text");
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("UploadedAt")
                         .HasColumnType("timestamp with time zone");
@@ -56,6 +60,9 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -77,6 +84,8 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("text");
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserCredentialId")
                         .HasColumnType("uuid");
@@ -94,10 +103,16 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -112,6 +127,8 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
 
                     b.Property<string>("About")
                         .HasColumnType("text");
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsSoftDelete")
                         .HasColumnType("boolean");
@@ -124,6 +141,9 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
 
                     b.Property<Guid?>("PhotoMetadataId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserCredentialId")
                         .HasColumnType("uuid");
@@ -148,6 +168,9 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -171,6 +194,8 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
 
                     b.Property<string>("ProviderId")
                         .HasColumnType("text");
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -194,8 +219,14 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -258,6 +289,34 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("UserStatistics");
+                });
+
+            modelBuilder.Entity("CoffeePeek.Account.Domain.Events.OutboxEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Processed")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OutboxEvents");
                 });
 
             modelBuilder.Entity("CoffeePeek.Account.Domain.Aggregates.UserAggregate.RefreshToken", b =>

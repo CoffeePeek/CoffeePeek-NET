@@ -2,7 +2,7 @@
 using CoffeePeek.Contract.Responses.Auth;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Commands;
+namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 
 public record GoogleLoginCommand(
     string IdToken,
