@@ -59,6 +59,7 @@ builder.Services.AddGenericRepository<ModerationCoffeeBeanShop, ModerationDbCont
 builder.Services.AddGenericRepository<ModerationShopRoaster, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopBrewMethod, ModerationDbContext>();
 builder.Services.AddGenericRepository<PhotoMetadata, ModerationDbContext>();
+builder.Services.AddGenericRepository<ModerationReview, ModerationDbContext>();
 
 builder.Services.AddScoped<IModerationShopRepository, ModerationShopRepository>();
 builder.Services.AddScoped<IModerationShopCreationService, ModerationShopCreationService>();
