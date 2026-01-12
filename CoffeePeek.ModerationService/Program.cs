@@ -1,8 +1,10 @@
 using Coffeepeek.Moderation.Application.Abstractions;
+using Coffeepeek.Moderation.Application.Common;
 using Coffeepeek.Moderation.Application.Features.CreateShop;
 using CoffeePeek.Moderation.Application.Features.CreateShop;
 using Coffeepeek.Moderation.Application.Features.GetAllModerationShops;
 using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Moderation.Infrastructure.Mapper;
@@ -60,6 +62,7 @@ builder.Services.AddGenericRepository<PhotoMetadata, ModerationDbContext>();
 
 builder.Services.AddScoped<IModerationShopRepository, ModerationShopRepository>();
 builder.Services.AddScoped<IModerationShopCreationService, ModerationShopCreationService>();
+builder.Services.AddScoped<IModerationReviewRepository, ModerationReviewRepository>();
 
 builder.Services.AddScoped<IStorageService, MinIOStorageService>();
 

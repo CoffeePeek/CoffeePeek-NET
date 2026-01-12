@@ -1,4 +1,5 @@
 using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Moderation.Infrastructure;
@@ -6,6 +7,7 @@ namespace CoffeePeek.Moderation.Infrastructure;
 public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) : DbContext(options)
 {
     public DbSet<ModerationShop> ModerationShops { get; set; }
+    public DbSet<ModerationReview> ModerationReviews { get; set; }
     public DbSet<ModerationShopContact> ModerationShopContacts { get; set; }
     public DbSet<PhotoMetadata> ShopPhotos { get; set; }
     public DbSet<ModerationShopSchedule> ModerationShopSchedules { get; set; }
@@ -20,6 +22,18 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<ModerationReview>(entity =>
+        {
+            entity.HasIndex(mr => mr.ShopId);
+            entity.HasIndex(mr => mr.UserId);
+            entity.HasIndex(mr => mr.ModeratedBy);
+            entity.HasIndex(mr => mr.ModerationStatus);
+
+            entity.Property(mr => mr.Header).HasMaxLength(BusinessConstants.MaxReviewHeaderLength);
+            entity.Property(mr => mr.Comment).HasMaxLength(BusinessConstants.MaxReviewCommentLength);
+            entity.Property(mr => mr.RejectedReason).HasMaxLength(BusinessConstants.MaxRejectReasonCommentLength);
+        });
         
         modelBuilder.Entity<ModerationShop>(entity =>
         {
