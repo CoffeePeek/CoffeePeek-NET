@@ -1,6 +1,7 @@
 using CoffeePeek.Contract.Constants;
 using Coffeepeek.Moderation.Application.Common.Models;
 using Coffeepeek.Moderation.Application.Features.CreateShop;
+using Coffeepeek.Moderation.Application.Features.Shop.CreateShop;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Shared.Infrastructure.Abstract;

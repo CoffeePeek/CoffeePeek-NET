@@ -25,6 +25,9 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
 
         modelBuilder.Entity<ModerationReview>(entity =>
         {
+            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
+            entity.HasKey(mr => mr.Id);
+            
             entity.HasIndex(mr => mr.ShopId);
             entity.HasIndex(mr => mr.UserId);
             entity.HasIndex(mr => mr.ModeratedBy);

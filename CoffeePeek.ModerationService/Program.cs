@@ -1,11 +1,12 @@
 using Coffeepeek.Moderation.Application.Abstractions;
 using Coffeepeek.Moderation.Application.Common;
+using CoffeePeek.Moderation.Application.Common;
 using Coffeepeek.Moderation.Application.Features.CreateShop;
 using CoffeePeek.Moderation.Application.Features.CreateShop;
-using Coffeepeek.Moderation.Application.Features.GetAllModerationShops;
 using Coffeepeek.Moderation.Application.Features.Review;
 using Coffeepeek.Moderation.Application.Features.Review.SendReviewToModeration;
 using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
+using Coffeepeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using CoffeePeek.Moderation.Domain.Repositories;
@@ -21,22 +22,14 @@ using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
+using CoffeePeek.Shared.Validation;
 using CoffePeek.ServiceDefaults;
 using Minio;
 using OutboxEvent = CoffeePeek.Moderation.Domain.Entities.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseSentry(options =>
-{
-    options.Dsn = builder.Configuration["Sentry:Dsn"];
-    options.SendDefaultPii = true;
-    options.SetBeforeSend((@event, _) =>
-    {
-        @event.ServerName = null;
-        return @event;
-    });
-});
+builder.WebHost.UseSentry();
 
 builder.AddServiceDefaults();
 

@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop.Review;
 using Coffeepeek.Moderation.Application.Abstractions;
 using Coffeepeek.Moderation.Application.Common.Models;
+using Coffeepeek.Moderation.Application.Features.Shop.CreateShop;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;
 using MediatR;

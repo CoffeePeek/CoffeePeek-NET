@@ -30,7 +30,6 @@ public class ChangeStatusModerationReviewHandler(
         {
             case ModerationStatus.Approved:
                 moderationReview.Approve(request.UserId);
-                
                 var reviewDto = mapper.Map<ModerationReviewDto>(moderationReview);
                 moderationReview.AddDomainEvent(new ModerationReviewApprovedEvent(reviewDto));
                 break;

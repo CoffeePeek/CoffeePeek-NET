@@ -18,11 +18,12 @@ using CoffeePeek.Shared.Infrastructure.Options;
 using Hangfire;
 using Hangfire.PostgreSql;
 using CoffeePeek.Shared.Extensions.Logging;
-using CoffeePeek.Shared.Infrastructure.Models;
 using CoffePeek.ServiceDefaults;
 using OutboxEvent = CoffeePeek.JobVacancies.Domain.Entities.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.UseSentry();
 
 builder.AddServiceDefaults();
 

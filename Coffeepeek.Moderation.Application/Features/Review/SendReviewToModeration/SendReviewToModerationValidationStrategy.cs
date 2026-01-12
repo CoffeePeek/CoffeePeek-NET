@@ -1,4 +1,6 @@
-﻿using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
+using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
+using CoffeePeek.Shared.Validation;
+using CoffeePeek.Shared.Validation.Review;
 
 namespace Coffeepeek.Moderation.Application.Features.Review.SendReviewToModeration;
 

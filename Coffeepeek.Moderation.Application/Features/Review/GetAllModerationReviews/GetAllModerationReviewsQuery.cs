@@ -1,6 +1,7 @@
 ﻿using CoffeePeek.Contract.Responses;
+using Coffeepeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 using MediatR;
 
-namespace Coffeepeek.Moderation.Application.Features.Review.GetAllModerationReviews;
+namespace CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 
 public record GetAllModerationReviewsQuery : IRequest<Response<GetAllModerationReviewsResponse>>;

@@ -43,6 +43,8 @@ public class ModerationReviewApprovedConsumer(
 
         reviewRepository.Add(review);
 
+        await unitOfWork.SaveChangesAsync(context.CancellationToken);
+        
         await outboxEventPublisher.PublishAsync(new ReviewAddedEvent
         {
             UserId = reviewDto.UserId,
@@ -50,8 +52,6 @@ public class ModerationReviewApprovedConsumer(
             ReviewId = review.Id,
             CreatedAt = review.ReviewDate
         }, context.CancellationToken);
-
-        await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
         logger.LogInformation("Review created successfully for UserId: {UserId}, ShopId: {ShopId}, ReviewId: {ReviewId}",
             reviewDto.UserId, reviewDto.ShopId, review.Id);

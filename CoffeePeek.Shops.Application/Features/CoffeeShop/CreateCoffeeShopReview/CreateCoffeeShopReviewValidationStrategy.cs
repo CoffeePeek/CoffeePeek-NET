@@ -1,5 +1,5 @@
-using CoffeePeek.Shops.Application.Services;
-using CoffeePeek.Shops.Application.ValidationStrategy.Review;
+using CoffeePeek.Shared.Validation;
+using CoffeePeek.Shared.Validation.Review;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
 

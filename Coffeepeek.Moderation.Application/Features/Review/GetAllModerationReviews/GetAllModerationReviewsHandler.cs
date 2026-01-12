@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using Mapster;
 using MapsterMapper;
@@ -15,7 +16,7 @@ public class GetAllModerationReviewsHandler(IModerationReviewRepository reposito
     {
         var moderationReviews = await repository.GetAll(cancellationToken);
 
-        var moderationReviewDtos = moderationReviews.Adapt<ModerationReviewDto[]>(mapper.Config);
+        var moderationReviewDtos = mapper.Map<ModerationReviewDto[]>(moderationReviews);
 
         var result = new GetAllModerationReviewsResponse(moderationReviewDtos);
 

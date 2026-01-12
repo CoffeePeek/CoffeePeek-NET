@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Coffeepeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 
-public class GetAllModerationShopsCommand : IRequest<Response<GetCoffeeShopsInModerationByIdResponse>>;
+public class GetAllModerationShopsQuery : IRequest<Response<GetCoffeeShopsInModerationByIdResponse>>;
 

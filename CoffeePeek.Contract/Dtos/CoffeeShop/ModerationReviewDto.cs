@@ -15,6 +15,6 @@ public class ModerationReviewDto
 
     public string? RejectedReason  { get; init; }
     public Guid? ModeratedBy  { get; init; }
-    public DateTime ModeratedAt  { get; init; }
+    public DateTime? ModeratedAt  { get; init; }
     public ModerationStatus ModerationStatus { get; init; }
 }

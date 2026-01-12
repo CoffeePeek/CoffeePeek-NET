@@ -2,7 +2,7 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using Microsoft.EntityFrameworkCore;
 
-namespace Coffeepeek.Moderation.Application.Common;
+namespace CoffeePeek.Moderation.Application.Common;
 
 public class ModerationReviewRepository(IGenericRepository<ModerationReview> reviewRepository)
     : IModerationReviewRepository
@@ -21,11 +21,11 @@ public class ModerationReviewRepository(IGenericRepository<ModerationReview> rev
             .FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 
-    public Task<ModerationReview?> GetByShopId(Guid shopId)
+    public Task<ModerationReview?> GetByShopId(Guid shopId, CancellationToken ct = default)
     {
         return reviewRepository
             .Query()
-            .FirstOrDefaultAsync(x => x.ShopId == shopId);
+            .FirstOrDefaultAsync(x => x.ShopId == shopId, ct);
     }
 
     public void Add(ModerationReview review)

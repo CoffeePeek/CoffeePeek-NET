@@ -1,15 +1,13 @@
-﻿using CoffeePeek.Moderation.Domain.Entities;
-
-namespace Coffeepeek.Moderation.Application.Features.Review;
+namespace CoffeePeek.Shared.Validation.Review;
 
 public abstract class BaseReviewValidationStrategy
 {
-    protected const int MinRating = BusinessConstants.MinReviewRate;
-    protected const int MaxRating = BusinessConstants.MaxReviewRate;
-    protected const int MinHeaderLength = BusinessConstants.MinReviewHeaderLength;
-    protected const int MaxHeaderLength = BusinessConstants.MaxReviewHeaderLength;
-    protected const int MinCommentLength = BusinessConstants.MinReviewCommentLength;
-    protected const int MaxCommentLength = BusinessConstants.MaxReviewCommentLength;
+    protected const int MinRating = 1;
+    protected const int MaxRating = 5;
+    protected const int MinHeaderLength = 3;
+    protected const int MaxHeaderLength = 100;
+    protected const int MinCommentLength = 10;
+    protected const int MaxCommentLength = 1000;
 
     protected static ValidationResult ValidateUserId(Guid userId)
     {

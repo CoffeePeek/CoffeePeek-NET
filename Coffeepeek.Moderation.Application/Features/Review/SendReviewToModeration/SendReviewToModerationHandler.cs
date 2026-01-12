@@ -2,6 +2,7 @@
 using Coffeepeek.Moderation.Application.Features.Review;
 using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Validation;
 using MediatR;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;

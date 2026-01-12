@@ -14,8 +14,6 @@ public class ModerationShopApprovedAccountConsumer(
 {
     public async Task Consume(ConsumeContext<ModerationShopApprovedEvent> context)
     {
-        var shop = context.Message.Shop;
-        
         logger.LogInformation("Received ModerationShopApprovedEvent for UserId: {UserId}", context.Message.UserId);
 
         var statistics = await userStatisticRepository
@@ -38,10 +36,10 @@ public class ModerationShopApprovedAccountConsumer(
         {
             statistics.AddedShopsCount++;
             statistics.UpdatedAt = DateTime.UtcNow;
-            logger.LogInformation("Updated UserStatistics for UserId: {UserId}. New AddedShopsCount: {AddedShopsCount}", context.Message, statistics.AddedShopsCount);
+            logger.LogInformation("Updated UserStatistics for UserId: {UserId}. New AddedShopsCount: {AddedShopsCount}", context.Message.UserId, statistics.AddedShopsCount);
         }
 
-        await unitOfWork.SaveChangesAsync();
-        logger.LogInformation("UserStatistics saved successfully for UserId: {UserId}", context.Message);
+        await unitOfWork.SaveChangesAsync(context.CancellationToken);
+        logger.LogInformation("UserStatistics saved successfully for UserId: {UserId}", context.Message.UserId);
     }
 }

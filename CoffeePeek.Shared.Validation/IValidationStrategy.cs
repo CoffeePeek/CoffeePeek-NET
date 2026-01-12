@@ -1,4 +1,4 @@
-namespace CoffeePeek.Shops.Application.Services;
+namespace CoffeePeek.Shared.Validation;
 
 public interface IValidationStrategy<in TEntity>
 {

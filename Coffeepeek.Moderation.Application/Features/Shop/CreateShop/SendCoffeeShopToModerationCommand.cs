@@ -8,9 +8,9 @@ using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop.Review;
 using MediatR;
 
-namespace Coffeepeek.Moderation.Application.Features.CreateShop;
+namespace Coffeepeek.Moderation.Application.Features.Shop.CreateShop;
 
-public class SendCoffeeShopToModerationCommand : IRequest<Response<SendCoffeeShopToModerationResponse>>
+public record SendCoffeeShopToModerationCommand : IRequest<Response<SendCoffeeShopToModerationResponse>>
 {
     [Required, MaxLength(55)]
     public string Name { get; set; }

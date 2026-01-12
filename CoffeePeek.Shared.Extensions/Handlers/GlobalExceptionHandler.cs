@@ -58,7 +58,7 @@ public class GlobalExceptionHandler(
         BaseException { StatusCode: not null } be => be.StatusCode.Value,
         NotFoundException => StatusCodes.Status404NotFound,
         UnauthorizedException or UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
-        ValidationException or DomainException or InvalidOperationException => StatusCodes.Status400BadRequest,
+        ValidationException or DomainException => StatusCodes.Status400BadRequest,
         DatabaseException or NpgsqlException => StatusCodes.Status503ServiceUnavailable,
         _ => StatusCodes.Status500InternalServerError
     };

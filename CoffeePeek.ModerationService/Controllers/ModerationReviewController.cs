@@ -3,6 +3,7 @@ using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Moderation.Application.Features.Review.ChangeStatusModerationReview;
 using Coffeepeek.Moderation.Application.Features.Review.GetAllModerationReviews;
+using CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
@@ -29,7 +30,7 @@ public class ModerationReviewController(IMediator mediator) : Controller
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CreateEntityResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -37,11 +38,11 @@ public class ModerationReviewController(IMediator mediator) : Controller
     [Description("Create new moderation review")]
     public async Task<CreateEntityResponse> SendReviewToModeration(SendReviewToModerationCommand command)
     {
-        command.UserId = User.GetUserIdOrThrow();
-        return await mediator.Send(command);
+        var commandWithUser = command with { UserId = User.GetUserIdOrThrow() };
+        return await mediator.Send(commandWithUser);
     }
 
-    [HttpPost]
+    [HttpPut]
     [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -50,7 +51,7 @@ public class ModerationReviewController(IMediator mediator) : Controller
     public async Task<UpdateEntityResponse<ModerationStatus>> ChangeStatusModerationReview(
         ChangeStatusModerationReviewCommand command)
     {
-        command.UserId = User.GetUserIdOrThrow();
-        return await mediator.Send(command);
+        var commandWithUser = command with { UserId = User.GetUserIdOrThrow() };
+        return await mediator.Send(commandWithUser);
     }
 }
