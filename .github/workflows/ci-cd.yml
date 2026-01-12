@@ -169,7 +169,7 @@ jobs:
           cd ../CoffeePeek.JobVacancies
           echo "Applying JobsService migrations..."
           dotnet ef database update \
-          --context JobVacanciesDbConext \
+          --context JobVacanciesDbContext \
           --project ../CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj \
           --startup-project CoffeePeek.JobVacancies.csproj \
           --connection "$DB_CONN_JOBS"
