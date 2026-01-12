@@ -67,10 +67,8 @@ public static class YarpClusterFactory
             return null;
 
         var port = Environment.GetEnvironmentVariable($"{cluster.EnvPrefix}_PORT");
-        if (!string.IsNullOrWhiteSpace(port))
-            return port;
-
-        return DefaultPort;
+        
+        return !string.IsNullOrWhiteSpace(port) ? port : DefaultPort;
     }
     
     private static string ResolveHost(ClusterInfo cluster)
