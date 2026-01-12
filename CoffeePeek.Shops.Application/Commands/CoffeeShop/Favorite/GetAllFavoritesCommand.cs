@@ -1,6 +1,7 @@
-﻿using CoffeePeek.Contract.Responses.CoffeeShop.Favorite;
+﻿using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Responses.CoffeeShop.Favorite;
 using MediatR;
 
-namespace CoffeePeek.Contract.Requests.CoffeeShop;
+namespace CoffeePeek.Shops.Application.Commands.CoffeeShop.Favorite;
 
-public record GetAllFavoritesCommand(Guid UserId) : IRequest<Responses.Response<GetAllFavoritesResponse>>;
+public record GetAllFavoritesCommand(Guid UserId) : IRequest<Response<GetAllFavoritesResponse>>;
