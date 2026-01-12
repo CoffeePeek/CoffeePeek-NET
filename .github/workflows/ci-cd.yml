@@ -148,7 +148,7 @@ jobs:
           --context AccountDbContext \
           --project ../CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj \
           --startup-project CoffeePeek.AccountService.csproj \
-          --connection "$DB_CONNECTION_ACCOUNT"
+          --connection "$DB_CONN_ACCOUNT"
 
           cd ../CoffeePeek.ShopsService
           echo "Applying ShopsService migrations..."
@@ -156,7 +156,7 @@ jobs:
           --context ShopsDbContext \
           --project ../CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj \
           --startup-project CoffeePeek.ShopsService.csproj \
-          --connection "$DB_CONNECTION_SHOPS"
+          --connection "$DB_CONN_SHOPS"
           
           cd ../CoffeePeek.ModerationService
           echo "Applying ModerationService migrations..."
@@ -164,7 +164,7 @@ jobs:
           --context ModerationDbContext \
           --project ../CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj \
           --startup-project CoffeePeek.ModerationService.csproj \
-          --connection "$DB_CONNECTION_MODERATION"
+          --connection "$DB_CONN_MODERATION"
           
           cd ../CoffeePeek.JobVacancies
           echo "Applying JobsService migrations..."
@@ -172,4 +172,4 @@ jobs:
           --context JobVacanciesDbConext \
           --project ../CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj \
           --startup-project CoffeePeek.JobVacancies.csproj \
-          --connection "$$DB_CONN_JOBS"
+          --connection "$DB_CONN_JOBS"
