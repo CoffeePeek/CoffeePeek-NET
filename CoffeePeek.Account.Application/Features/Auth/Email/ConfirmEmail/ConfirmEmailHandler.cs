@@ -18,7 +18,7 @@ public class ConfirmEmailHandler(IUserCredentialsRepository userRepository, IUni
             throw new NotFoundException("User not found.");
 
         if (user.EmailConfirmed)
-            throw new BusinessException("Email already confirmed.");
+            throw new DomainException("Email already confirmed.");
 
         user.ConfirmEmail(request.Token);
 

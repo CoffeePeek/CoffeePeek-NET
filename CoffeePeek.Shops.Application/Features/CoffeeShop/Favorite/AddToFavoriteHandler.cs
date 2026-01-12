@@ -2,11 +2,11 @@
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shops.Application.Services;
+using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Domain.Entities;
 using MediatR;
 
-namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop.Favorite;
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop.Favorite;
 
 public class AddToFavoriteHandler(
     IGenericRepository<FavoriteShop> favoriteShopRepository,

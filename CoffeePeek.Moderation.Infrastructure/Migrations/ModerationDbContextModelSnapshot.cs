@@ -86,6 +86,72 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.ToTable("ModerationLocations");
                 });
 
+            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate.ModerationReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Header")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsSoftDelete")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModeratedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModeratedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ModerationStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RatingCoffee")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RatingPlace")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RatingService")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RejectedReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModeratedBy");
+
+                    b.HasIndex("ModerationStatus");
+
+                    b.HasIndex("ShopId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ModerationReviews");
+                });
+
             modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationShop", b =>
                 {
                     b.Property<Guid>("Id")

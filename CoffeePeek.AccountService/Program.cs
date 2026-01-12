@@ -34,10 +34,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.UseSentry();
 
-// Add tunneling middleware.
-// Note that UseSentryTunneling also needs to be called on the IApplicationBuilder
-builder.Services.AddSentryTunneling();
-
 builder.AddServiceDefaults();
 builder.AddSerilogLogging();
 
@@ -82,7 +78,7 @@ builder.Services.AddMessagingModule(x =>
 {   
     x.AddConsumer<CheckinCreatedEventConsumer>();
     x.AddConsumer<ReviewAddedEventConsumer>();
-    x.AddConsumer<CoffeeShopApprovedAccountConsumer>();
+    x.AddConsumer<ModerationShopApprovedAccountConsumer>();
 });
 
 // Mapster
@@ -156,7 +152,7 @@ builder.Services.AddOutboxEventPublisher<OutboxEvent, AccountDbContext>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
-    
+
 var app = builder.Build();
 
 // Middleware pipeline
@@ -172,5 +168,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-SentrySdk.CaptureMessage("Hello Sentry");
 app.Run();

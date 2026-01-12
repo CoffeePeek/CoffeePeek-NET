@@ -1,8 +1,14 @@
 using Coffeepeek.Moderation.Application.Abstractions;
+using Coffeepeek.Moderation.Application.Common;
+using CoffeePeek.Moderation.Application.Common;
 using Coffeepeek.Moderation.Application.Features.CreateShop;
 using CoffeePeek.Moderation.Application.Features.CreateShop;
-using Coffeepeek.Moderation.Application.Features.GetAllModerationShops;
+using Coffeepeek.Moderation.Application.Features.Review;
+using Coffeepeek.Moderation.Application.Features.Review.SendReviewToModeration;
+using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
+using Coffeepeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Moderation.Infrastructure.Mapper;
@@ -16,6 +22,7 @@ using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
+using CoffeePeek.Shared.Validation;
 using CoffePeek.ServiceDefaults;
 using Minio;
 using OutboxEvent = CoffeePeek.Moderation.Domain.Entities.OutboxEvent;
@@ -48,11 +55,15 @@ builder.Services.AddGenericRepository<ModerationCoffeeBeanShop, ModerationDbCont
 builder.Services.AddGenericRepository<ModerationShopRoaster, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopBrewMethod, ModerationDbContext>();
 builder.Services.AddGenericRepository<PhotoMetadata, ModerationDbContext>();
+builder.Services.AddGenericRepository<ModerationReview, ModerationDbContext>();
 
 builder.Services.AddScoped<IModerationShopRepository, ModerationShopRepository>();
 builder.Services.AddScoped<IModerationShopCreationService, ModerationShopCreationService>();
+builder.Services.AddScoped<IModerationReviewRepository, ModerationReviewRepository>();
 
 builder.Services.AddScoped<IStorageService, MinIOStorageService>();
+
+builder.Services.AddTransient<IValidationStrategy<SendReviewToModerationCommand>, SendReviewToModerationValidationStrategy>();
 
 // Mapster
 builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());

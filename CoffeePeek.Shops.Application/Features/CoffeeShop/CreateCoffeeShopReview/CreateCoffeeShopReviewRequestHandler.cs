@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Services;
 using MediatR;

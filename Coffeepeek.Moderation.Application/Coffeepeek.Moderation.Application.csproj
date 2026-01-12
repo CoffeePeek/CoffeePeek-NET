@@ -9,11 +9,16 @@
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Moderation.Domain\CoffeePeek.Moderation.Domain.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shared.Validation\CoffeePeek.Shared.Validation.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Mapster" Version="7.4.0" />
       <PackageReference Include="MediatR" Version="14.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\Shop\" />
     </ItemGroup>
 
 </Project>
