@@ -1,13 +1,12 @@
-﻿using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Contract.Responses;
+﻿using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop.Favorite;
-using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
 using MediatR;
 
-namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop.Favorite;
+namespace CoffeePeek.Shops.Application.Features.CoffeeShop.Favorite;
 
 public class RemoveFromFavoriteHandler(
     IGenericRepository<FavoriteShop> favoriteShopRepository,
