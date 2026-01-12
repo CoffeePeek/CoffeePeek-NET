@@ -31,7 +31,6 @@ public class ChangeStatusModerationReviewHandler(
             case ModerationStatus.Approved:
                 moderationReview.Approve(request.UserId);
                 
-                // Create event with DTO for Outbox
                 var reviewDto = mapper.Map<ModerationReviewDto>(moderationReview);
                 moderationReview.AddDomainEvent(new ModerationReviewApprovedEvent(reviewDto));
                 break;

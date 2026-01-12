@@ -1,6 +1,7 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
+using Coffeepeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 using CoffeePeek.Moderation.Domain.Repositories;
 using MapsterMapper;
 using MediatR;

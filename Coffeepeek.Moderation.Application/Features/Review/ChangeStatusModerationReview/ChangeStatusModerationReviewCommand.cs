@@ -8,4 +8,7 @@ public record ChangeStatusModerationReviewCommand(
     Guid UserId,
     Guid ModerationReviewId,
     ModerationStatus ModerationStatus,
-    string? RejectReason) : IRequest<UpdateEntityResponse<ModerationStatus>>;
+    string? RejectReason) : IRequest<UpdateEntityResponse<ModerationStatus>>
+{
+    public Guid UserId { get; set; } = UserId;
+}
