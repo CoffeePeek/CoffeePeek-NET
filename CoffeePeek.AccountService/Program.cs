@@ -155,7 +155,6 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
-
 // Middleware pipeline
 app.UseExceptionHandler();
 
