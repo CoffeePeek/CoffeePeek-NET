@@ -11,7 +11,7 @@ public partial class MapsterConfiguration
     {
         config.NewConfig<ModerationShop, ModerationShopDto>()
             .Map(dest => dest.ShopPhotos, src => src.ShopPhotos)
-            .Map(dest => dest.ShopContact, src => src.ModerationShopContact)
+            .Map(dest => dest.ShopContact, src => src.Contact)
             .Map(d => d.EquipmentIds, s => s.ModerationShopEquipments.Select(x => x.EquipmentId))
             .Map(d => d.CoffeeBeanIds, s => s.ModerationCoffeeBeanShops.Select(x => x.CoffeeBeanId))
             .Map(d => d.RoasterIds, s => s.ModerationRoasterShops.Select(x => x.RoasterId))
@@ -26,7 +26,7 @@ public partial class MapsterConfiguration
             .Map(d => d.Roasters, s => s.ModerationRoasterShops)
             .Map(d => d.Equipments, s => s.ModerationShopEquipments)
             .Map(d => d.BrewMethods, s => s.ModerationShopBrewMethods)
-            .Map(d => d.ShopContact, s => s.ModerationShopContact)
+            .Map(d => d.ShopContact, s => s.Contact)
             .Map(d => d.Schedules, s => s.Schedules);
         
         config.NewConfig<ModerationShopRoaster, RoasterDto>()

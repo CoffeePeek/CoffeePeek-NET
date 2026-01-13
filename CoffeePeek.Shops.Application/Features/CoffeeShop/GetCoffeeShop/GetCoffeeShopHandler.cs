@@ -4,6 +4,7 @@ using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using Mapster;
 using MapsterMapper;
 using MediatR;
@@ -12,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 
 public class GetCoffeeShopHandler(
-    IGenericRepository<Shop> shopRepository,
+    IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> shopRepository,
     IMapper mapper,
     IRedisService redisService)
     : IRequestHandler<GetCoffeeShopQuery, Response<GetCoffeeShopResponse>>
@@ -34,7 +35,7 @@ public class GetCoffeeShopHandler(
                     .Include(x => x.CoffeeBeanShops).ThenInclude(x => x.CoffeeBean)
                     .Include(x => x.RoasterShops).ThenInclude(x => x.Roaster)
                     .Include(x => x.ShopBrewMethods).ThenInclude(x => x.BrewMethod)
-                    .Include(x => x.ShopContact)
+                    .Include(x => x.Contact)
                     .Include(x => x.Location)
                     .Include(x => x.Schedules)
                     .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);

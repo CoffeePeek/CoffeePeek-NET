@@ -1,9 +1,10 @@
-using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Contract.Responses.CoffeeShop.Favorite;
 using CoffeePeek.Shared.Infrastructure;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop.Favorite;
+using CoffeePeek.Shops.Application.Features.Favorite.AddToFavorite;
+using CoffeePeek.Shops.Application.Features.Favorite.GetAllFavorites;
+using CoffeePeek.Shops.Application.Features.Favorite.RemoveFromFavorite;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

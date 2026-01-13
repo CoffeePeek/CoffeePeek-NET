@@ -19,4 +19,25 @@ public static class BusinessConstants
     public const int MaxCheckInNoteLength = 500;
     
     #endregion
+
+    #region ShopContact
+
+    public const int MaxShopContactInstagramLinkLength = 255;
+    public const int MaxShopContactEmailLength = 255;
+    public const int MaxShopContactSiteLinkLength = 2048;
+    public const int MaxShopContactPhoneNumberLength = 20;
+
+    #endregion
+
+    #region CoffeeShop
+
+    public const int ItNewEntityInDays = 30;
+
+    #endregion
+
+    #region Visits
+
+    public const int MaxVisitNoteLength = 500;
+
+    #endregion
 }

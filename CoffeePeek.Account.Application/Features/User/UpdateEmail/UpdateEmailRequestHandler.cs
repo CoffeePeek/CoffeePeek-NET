@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Account.Domain.Repositories;
+﻿using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
@@ -7,7 +7,7 @@ using MediatR;
 namespace CoffeePeek.Account.Application.Features.User.UpdateEmail;
 
 public class UpdateEmailRequestHandler(
-    IUserCredentialsRepository userRepository, 
+    IUserRepository userRepository, 
     IUnitOfWork unitOfWork)
     : IRequestHandler<UpdateEmailCommand, UpdateEntityResponse<string>>
 {
@@ -21,10 +21,10 @@ public class UpdateEmailRequestHandler(
             throw new NotFoundException("User not found");
         }
 
-        user.UpdateEmail(request.Email);
+        user.Credentials.UpdateEmail(request.Email);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return UpdateEntityResponse<string>.Success(user.Email, "Email updated successfully");
+        return UpdateEntityResponse<string>.Success(user.Credentials.Email, "Email updated successfully");
     }
 }

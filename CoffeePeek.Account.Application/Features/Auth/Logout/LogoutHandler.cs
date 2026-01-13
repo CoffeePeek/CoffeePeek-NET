@@ -1,13 +1,14 @@
-using CoffeePeek.Account.Domain.Repositories;
+using CoffeePeek.Account.Application.Features.Logout;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeePeek.Account.Application.Features.Logout;
+namespace CoffeePeek.Account.Application.Features.Auth.Logout;
 
 public class LogoutHandler(
-    IUserCredentialsRepository userRepository,
+    IUserRepository userRepository,
     IUnitOfWork unitOfWork,
     ILogger<LogoutHandler> logger) : IRequestHandler<LogoutCommand, Response>
 {

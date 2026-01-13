@@ -1,4 +1,4 @@
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.User;
 using CoffeePeek.Shared.Infrastructure.Abstract;
@@ -17,7 +17,7 @@ public class UpdateProfileHandler(
         UpdateProfileCommand command,
         CancellationToken ct)
     {
-        var user = await userRepository.GetById(command.UserId);
+        var user = await userRepository.GetById(command.UserId, ct);
         if (user == null)
         {
             return Response<UpdateProfileResponse>.Error("User not found");
@@ -25,7 +25,7 @@ public class UpdateProfileHandler(
 
         user.UpdateProfile(command.UserName, command.About);
         
-        await userRepository.Update(user);
+        await userRepository.Update(user, ct);
         await unitOfWork.SaveChangesAsync(ct);
 
         logger.LogInformation("Profile updated for user {UserId}", user.Id);

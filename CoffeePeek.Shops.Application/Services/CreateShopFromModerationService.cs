@@ -1,13 +1,14 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Shops.Application.Services;
 
 public class CreateShopFromModerationService(
-    IGenericRepository<Shop> shopRepository,
+    IGenericRepository<CoffeeShop> shopRepository,
     IGenericRepository<CoffeeBean> coffeeBeanRepository,
     IGenericRepository<Equipment> equipmentRepository,
     IGenericRepository<Roaster> roasterRepository,
@@ -24,18 +25,17 @@ public class CreateShopFromModerationService(
             return;
         }
 
-        var shop = new Shop(creatorId, shopDto.Name, shopDto.CityId, shopDto.PriceRange, moderationId);
+        var shop = new CoffeeShop(creatorId, shopDto.Name, shopDto.CityId, shopDto.PriceRange, moderationId);
         shop.UpdateDetails(shopDto.Name, shopDto.Description, shopDto.PriceRange);
 
         if (shopDto.Location != null)
         {
-            var location = new Location(shop.Id, shopDto.Location.Address, shopDto.Location.Latitude!.Value, shopDto.Location.Longitude!.Value);
-            shop.SetLocation(location);
+            shop.SetLocation(shopDto.Location.Address, shopDto.Location.Latitude!.Value, shopDto.Location.Longitude!.Value);
         }
 
         if (shopDto.ShopContact != null)
         {
-            shop.SetContact(shopDto.ShopContact, shop.Id);
+            shop.SetContact(shopDto.ShopContact);
         }
 
         if (shopDto.Equipments is { Length: > 0 })

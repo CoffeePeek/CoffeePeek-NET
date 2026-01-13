@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
+using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop;
+using CoffeePeek.Shops.Application.Features.CoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShops;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +26,8 @@ public class CoffeeShopController(IMediator mediator) : Controller
         [FromQuery, Required] int page,
         [FromQuery, Required] int pageSize)
     {
-        var response = await mediator.Send(new GetCoffeeShopsCommand(cityId, page, pageSize));
+        var command = new GetCoffeeShopsQuery(User.GetUserId(), cityId, page, pageSize);
+        var response = await mediator.Send(command);
 
         AddPaginationHeaders(response.Data);
 
@@ -58,25 +61,33 @@ public class CoffeeShopController(IMediator mediator) : Controller
     public async Task<Response<GetCoffeeShopsResponse>> SearchCoffeeShops(
         [FromQuery] string? q = null,
         [FromQuery] Guid? cityId = null,
+        [FromQuery] Guid[]? roasters = null,
         [FromQuery] Guid[]? equipments = null,
         [FromQuery] Guid[]? beans = null,
+        [FromQuery] Guid[]? brewMethods = null,
+        [FromQuery] Contract.Enums.PriceRange? priceRange = null,
         [FromQuery][Range(0, 5)] decimal? minRating = null,
         [FromHeader(Name = "X-Page-Number")][Range(1, int.MaxValue)] int pageNumber = 1,
-        [FromHeader(Name = "X-Page-Size")][Range(1, 100)] int pageSize = 10)
+        [FromHeader(Name = "X-Page-Size")][Range(1, 100)] int pageSize = 10,
+        CancellationToken cancellationToken = default)
     {
         pageNumber = Math.Max(1, pageNumber);
         pageSize = pageSize <= 0 ? 10 : Math.Min(pageSize, 100);
 
         var command = new SearchCoffeeShopsQuery(
+            UserId: User.GetUserId(),
             Query: q,
             CityId: cityId,
+            Roasters: roasters,
             Equipments: equipments,
             Beans: beans,
+            BrewMethods: brewMethods,
+            PriceRange: priceRange,
             MinRating: minRating,
             PageNumber: pageNumber,
             PageSize: pageSize);
 
-        var response = await mediator.Send(command);
+        var response = await mediator.Send(command, cancellationToken);
 
         if (response is { IsSuccess: true, Data: not null })
         {

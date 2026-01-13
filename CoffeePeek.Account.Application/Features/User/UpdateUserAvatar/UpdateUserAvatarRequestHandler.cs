@@ -1,5 +1,5 @@
-﻿using CoffeePeek.Account.Domain.Aggregates;
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+﻿using CoffeePeek.Account.Domain.Entities;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;

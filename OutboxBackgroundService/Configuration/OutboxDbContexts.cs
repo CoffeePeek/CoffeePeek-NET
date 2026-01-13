@@ -1,4 +1,5 @@
-using CoffeePeek.Auth.Infrastructure.Persistent;
+using CoffeePeek.Account.Domain.Entities;
+using CoffeePeek.Auth.Infrastructure.Configuration;
 using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Shops.Infrastructure.Configuration;
 using MassTransit;
@@ -25,8 +26,8 @@ public static class OutboxDbContexts
                 var publishEndpoint = provider.GetRequiredService<IPublishEndpoint>();
                 var logger = provider
                     .GetRequiredService<
-                        ILogger<OutboxProcessor<CoffeePeek.Account.Domain.Events.OutboxEvent, AccountDbContext>>>();
-                return new OutboxProcessor<CoffeePeek.Account.Domain.Events.OutboxEvent, AccountDbContext>(dbContext,
+                        ILogger<OutboxProcessor<OutboxEvent, AccountDbContext>>>();
+                return new OutboxProcessor<OutboxEvent, AccountDbContext>(dbContext,
                     publishEndpoint, logger);
             });
         }

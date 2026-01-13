@@ -1,13 +1,23 @@
-﻿using CoffeePeek.Shared.Infrastructure.Abstract;
+﻿namespace CoffeePeek.Shops.Domain.Entities;
 
-namespace CoffeePeek.Shops.Domain.Entities;
-
-public class ShopSchedule : Entity<Guid>
+public record ShopSchedule
 {
-    public Guid ShopId { get; set; }
-    public DayOfWeek DayOfWeek { get; set; }
-    public bool IsClosed { get; set; }
+    public DayOfWeek DayOfWeek { get; private set; }
+    public bool IsClosed { get; private set; }
+    public IReadOnlyCollection<ShopScheduleInterval> Intervals { get; private set; }
 
-    public virtual Shop Shop { get; set; }
-    public virtual ICollection<ShopScheduleInterval> Intervals { get; set; }
+    // ReSharper disable once UnusedMember.Local
+    private ShopSchedule()
+    {
+    }
+
+    internal ShopSchedule(
+        DayOfWeek dayOfWeek,
+        bool isClosed,
+        IReadOnlyCollection<ShopScheduleInterval> intervals)
+    {
+        DayOfWeek = dayOfWeek;
+        IsClosed = isClosed;
+        Intervals = intervals;
+    }
 }

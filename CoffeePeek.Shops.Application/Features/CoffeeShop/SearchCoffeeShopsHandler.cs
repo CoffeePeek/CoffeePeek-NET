@@ -5,8 +5,8 @@ using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop;
-using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Mapster;
 using MapsterMapper;
 using MediatR;
@@ -15,73 +15,82 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop;
 
 public class SearchCoffeeShopsHandler(
-    IGenericRepository<Shop> shopRepository,
+    IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> shopRepository,
+    IUserFavoriteRepository favoriteRepository,
+    IUserVisitRepository visitRepository,
     IMapper mapper,
     IRedisService redisService)
     : IRequestHandler<SearchCoffeeShopsQuery, Response<GetCoffeeShopsResponse>>
 {
-    public async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsQuery queryRequest, CancellationToken cancellationToken)
+    public async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsQuery queryRequest,
+        CancellationToken cancellationToken)
     {
         var searchHash = CreateSearchHash(queryRequest);
         var cacheKey = CacheKey.Shop.Search(searchHash);
-        
-        var result = await redisService.GetAsync(
+
+        var cacheResult = await redisService.GetAsync(
             cacheKey,
             async () =>
             {
+                var query = shopRepository
+                    .QueryAsNoTracking()
+                    .AsQueryable();
 
-        var query = shopRepository.QueryAsNoTracking()
-            .Include(s => s.Location)
-            .Include(s => s.Reviews)
-            .Include(s => s.ShopPhotos)
-            .Include(s => s.ShopEquipments)
-                .ThenInclude(se => se.Equipment)
-            .Include(s => s.CoffeeBeanShops)
-                .ThenInclude(cbs => cbs.CoffeeBean)
-            .AsQueryable();
+                if (!string.IsNullOrWhiteSpace(queryRequest.Query))
+                {
+                    var searchTerm = queryRequest.Query.Trim().ToLower();
+                    query = query.Where(s =>
+                        s.Name.Contains(searchTerm) ||
+                        (s.Location != null &&
+                         s.Location.Address.Contains(searchTerm)));
+                }
 
-        if (!string.IsNullOrWhiteSpace(queryRequest.Query))
-        {
-            var searchTerm = queryRequest.Query.Trim().ToLower();
-            query = query.Where(s =>
-                s.Name.ToLower().Contains(searchTerm) ||
-                (s.Location != null && s.Location.Address.ToLower().Contains(searchTerm)));
-        }
+                if (queryRequest.CityId.HasValue)
+                {
+                    query = query.Where(s => s.CityId == queryRequest.CityId.Value);
+                }
 
-        if (queryRequest.CityId.HasValue)
-        {
-            query = query.Where(s => s.CityId == queryRequest.CityId.Value);
-        }
-        
-        if (queryRequest.Equipments is { Length: > 0 })
-        {
-            query = query.Where(s => s.ShopEquipments.Any(se => queryRequest.Equipments.AsEnumerable().Contains(se.EquipmentId)));
-        }
+                if (queryRequest.Equipments is { Length: > 0 })
+                {
+                    query = query.Where(s => s.ShopEquipments.Any(se => queryRequest.Equipments.Contains(se.EquipmentId)));
+                }
 
-        if (queryRequest.Beans is { Length: > 0 })
-        {
-            query = query.Where(s => s.CoffeeBeanShops.Any(cbs => queryRequest.Beans.AsEnumerable().Contains(cbs.CoffeeBeanId)));
-        }
+                if (queryRequest.Beans is { Length: > 0 })
+                {
+                    query = query.Where(s =>
+                        s.CoffeeBeanShops.Any(cbs => queryRequest.Beans.Contains(cbs.CoffeeBeanId)));
+                }
 
-        if (queryRequest.MinRating.HasValue)
-        {
-            var minRating = queryRequest.MinRating.Value;
-            
-            query = query.Where(s => s.Reviews.Any() && 
-                s.Reviews.Sum(r => r.RatingCoffee + r.RatingPlace + r.RatingService) >= 
-                minRating * s.Reviews.Count * 3m);
-        }
+                if (queryRequest.Roasters is { Length: > 0 })
+                {
+                    query = query.Where(s =>
+                        s.RoasterShops.Any(rs => queryRequest.Roasters.Contains(rs.RoasterId)));
+                }
 
-        var projectedQuery = query.ProjectToType<ShortShopDto>(mapper.Config);
+                if (queryRequest.BrewMethods is { Length: > 0 })
+                {
+                    query = query.Where(s =>
+                        s.ShopBrewMethods.Any(sbm =>
+                            queryRequest.BrewMethods.Contains(sbm.BrewMethodId)));
+                }
 
-        var totalCount = await projectedQuery.CountAsync(cancellationToken);
-        var totalPages = (int)Math.Ceiling(totalCount / (double)queryRequest.PageSize);
+                if (queryRequest.PriceRange.HasValue)
+                {
+                    query = query.Where(s => s.PriceRange == queryRequest.PriceRange.Value);
+                }
 
-        var shopDtos = await projectedQuery
-            .Skip((queryRequest.PageNumber - 1) * queryRequest.PageSize)
-            .Take(queryRequest.PageSize)
-            .ToArrayAsync(cancellationToken);
+                var projectedQuery = query.ProjectToType<ShortShopDto>(mapper.Config);
 
+                var totalCount = await projectedQuery.CountAsync(cancellationToken);
+                var totalPages = (int)Math.Ceiling(totalCount / (double)queryRequest.PageSize);
+
+                var shops = await projectedQuery
+                    .Skip((queryRequest.PageNumber - 1) * queryRequest.PageSize)
+                    .Take(queryRequest.PageSize)
+                    .ToArrayAsync(cancellationToken);
+
+                var shopDtos = new List<ShortShopDto>();
+                
                 var response = new GetCoffeeShopsResponse
                 {
                     CoffeeShops = shopDtos,
@@ -94,42 +103,79 @@ public class SearchCoffeeShopsHandler(
                 return Response<GetCoffeeShopsResponse>.Success(response);
             });
         
-        return result ?? Response<GetCoffeeShopsResponse>.Error("Failed to search coffee shops.");
+        if (cacheResult?.Data == null) 
+            return Response<GetCoffeeShopsResponse>.Error("Failed to fetch shops.");
+        
+        if (queryRequest.UserId.HasValue)
+        {
+            var userId = queryRequest.UserId.Value;
+        
+            var favoriteIds = await favoriteRepository.GetFavoriteShopIdsAsync(userId, cancellationToken);
+            var visitedIds = await visitRepository.GetVisitedShopIdsAsync(userId, cancellationToken);
+
+            var enrichedShops = cacheResult.Data.CoffeeShops.Select(shop => shop with
+            {
+                IsFavorite = favoriteIds.Contains(shop.Id),
+                IsVisited = visitedIds.Contains(shop.Id)
+            }).ToList();
+
+            cacheResult.Data.CoffeeShops = enrichedShops;
+        }
+
+        return cacheResult;
     }
 
     private static string CreateSearchHash(SearchCoffeeShopsQuery query)
     {
         var keyBuilder = new StringBuilder();
+
         if (!string.IsNullOrWhiteSpace(query.Query))
         {
             var queryHash = ComputeHash(query.Query.Trim().ToLowerInvariant());
             keyBuilder.Append($"q:{queryHash}:");
         }
-        
+
         if (query.CityId.HasValue)
         {
             keyBuilder.Append($"city:{query.CityId}:");
         }
-        
+
         if (query.Equipments is { Length: > 0 })
         {
             var equipmentsHash = ComputeHash(string.Join(",", query.Equipments.OrderBy(x => x)));
             keyBuilder.Append($"eq:{equipmentsHash}:");
         }
-        
+
         if (query.Beans is { Length: > 0 })
         {
             var beansHash = ComputeHash(string.Join(",", query.Beans.OrderBy(x => x)));
             keyBuilder.Append($"beans:{beansHash}:");
         }
-        
+
+        if (query.Roasters is { Length: > 0 })
+        {
+            var roastersHash = ComputeHash(string.Join(",", query.Roasters.OrderBy(x => x)));
+            keyBuilder.Append($"roasters:{roastersHash}:");
+        }
+
+        if (query.BrewMethods is { Length: > 0 })
+        {
+            var brewMethodsHash = ComputeHash(string.Join(",", query.BrewMethods.OrderBy(x => x)));
+            keyBuilder.Append($"brew:{brewMethodsHash}:");
+        }
+
+        if (query.PriceRange.HasValue)
+        {
+            keyBuilder.Append($"price:{(int)query.PriceRange.Value}:");
+        }
+
         if (query.MinRating.HasValue)
         {
             keyBuilder.Append($"rating:{query.MinRating.Value}:");
         }
-        
+
         keyBuilder.Append($"page:{query.PageNumber}:size:{query.PageSize}");
-        
+
         return keyBuilder.ToString();
     }
 
@@ -140,4 +186,3 @@ public class SearchCoffeeShopsHandler(
         return Convert.ToBase64String(hash)[..16].Replace("/", "_").Replace("+", "-");
     }
 }
-

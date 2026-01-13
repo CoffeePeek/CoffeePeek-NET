@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.Account.Application.Common.Interfaces;
-using CoffeePeek.Account.Domain.Repositories;
+using CoffeePeek.Account.Application.Features.RefreshToken;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.Auth;
 using CoffeePeek.Shared.Extensions.Exceptions;
@@ -8,10 +9,10 @@ using CoffeePeek.Shared.Infrastructure.Options;
 using MediatR;
 using Microsoft.Extensions.Options;
 
-namespace CoffeePeek.Account.Application.Features.RefreshToken;
+namespace CoffeePeek.Account.Application.Features.Auth.RefreshToken;
 
 public class RefreshTokenHandler(
-    IUserCredentialsRepository repository,
+    IUserRepository repository,
     IJWTTokenService tokenService,
     IUnitOfWork unitOfWork,
     IOptions<JWTOptions> jwtOptions) : IRequestHandler<RefreshTokenCommand, Response<GetRefreshTokenResponse>>

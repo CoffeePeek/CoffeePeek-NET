@@ -7,9 +7,13 @@ using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
 using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
+using CoffeePeek.Shops.Application.Features.Favorite;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain.Entities.City;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using CoffeePeek.Shops.Infrastructure.Configuration;
 using CoffeePeek.Shops.Infrastructure.Consumers;
 using CoffeePeek.Shops.Infrastructure.Extensions;
@@ -67,10 +71,10 @@ builder.Services.AddValidators();
 // Cache service
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<ICreateShopFromModerationService, CreateShopFromModerationService>();
-builder.Services.AddScoped<IShopCacheService, ShopCacheService>();
+builder.Services.AddScoped<ICoffeeShopCacheService, CoffeeShopCacheService>();
 
 // Messaging for publishing events
-builder.Services.AddMessagingModule(x =>
+builder.Services.AddMessagingModule(configureConsumers: x =>
 {
     x.AddConsumer<ModerationShopApprovedConsumer>();
     x.AddConsumer<ModerationReviewApprovedConsumer>();
@@ -82,22 +86,28 @@ builder.Services.AddOutboxEventPublisher<OutboxEvent, ShopsDbContext>();
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ShopsDb);
 builder.Services.AddEfCoreData<ShopsDbContext, OutboxEvent>(dbOptions.ConnectionString);
-builder.Services.AddGenericRepository<Shop, ShopsDbContext>();
-builder.Services.AddGenericRepository<ShopContact, ShopsDbContext>();
+builder.Services.AddGenericRepository<CoffeeShop, ShopsDbContext>();
 builder.Services.AddGenericRepository<ShopPhoto, ShopsDbContext>();
 builder.Services.AddGenericRepository<City, ShopsDbContext>();
 builder.Services.AddGenericRepository<Review, ShopsDbContext>();
-builder.Services.AddGenericRepository<FavoriteShop, ShopsDbContext>();
+builder.Services.AddGenericRepository<UserFavorite, ShopsDbContext>();
+builder.Services.AddGenericRepository<UserVisit, ShopsDbContext>();
 builder.Services.AddGenericRepository<CoffeeBean, ShopsDbContext>();
 builder.Services.AddGenericRepository<Equipment, ShopsDbContext>();
 builder.Services.AddGenericRepository<BrewMethod, ShopsDbContext>();
 builder.Services.AddGenericRepository<Roaster, ShopsDbContext>();
-builder.Services.AddGenericRepository<Location, ShopsDbContext>();
 builder.Services.AddGenericRepository<CheckIn, ShopsDbContext>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddScoped<IUserFavoriteRepository, UserFavoriteRepository>();
+builder.Services.AddScoped<IUserVisitRepository, UserVisitRepository>();
+builder.Services.AddScoped<ICoffeeShopRepository, CoffeeShopRepository>();
+
+// Domain Services
+builder.Services.AddScoped<IUserFavoriteService, UserFavoriteService>();
+builder.Services.AddScoped<IUserVisitService, UserVisitService>();
 
 var app = builder.Build();
 

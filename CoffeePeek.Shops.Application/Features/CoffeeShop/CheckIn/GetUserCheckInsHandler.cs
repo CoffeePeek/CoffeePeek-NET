@@ -1,8 +1,8 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +17,7 @@ public class GetUserCheckInsHandler(
     public async Task<Response<GetUserCheckInsResponse>> Handle(GetUserCheckInsCommand request, CancellationToken cancellationToken)
     {
         var query = checkInRepository.QueryAsNoTracking()
-            .Include(c => c.Shop)
+            .Include(c => c.CoffeeShop)
             .Where(c => c.UserId == request.UserId)
             .OrderByDescending(c => c.CreatedAt);
 

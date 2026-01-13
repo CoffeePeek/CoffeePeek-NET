@@ -1,38 +1,20 @@
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Auth.Infrastructure.Persistent;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Events.Shops;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Auth.Infrastructure.EventConsumer;
 
-public class ReviewAddedEventConsumer(AccountDbContext dbContext) : IConsumer<ReviewAddedEvent>
+public class ReviewAddedEventConsumer(IUserRepository userRepository, IUnitOfWork unitOfWork) : IConsumer<ReviewAddedEvent>
 {
     public async Task Consume(ConsumeContext<ReviewAddedEvent> context)
     {
-        var @event = context.Message;
+        var user = await userRepository.GetById(context.Message.UserId);
 
-        var statistics = await dbContext.UserStatistics
-            .FirstOrDefaultAsync(s => s.UserId == @event.UserId);
+        if (user == null) return;
 
-        if (statistics == null)
-        {
-            statistics = new UserStatistics
-            {
-                UserId = @event.UserId,
-                CheckInCount = 0,
-                ReviewCount = 1,
-                AddedShopsCount = 0,
-                UpdatedAt = DateTime.UtcNow
-            };
-            dbContext.UserStatistics.Add(statistics);
-        }
-        else
-        {
-            statistics.ReviewCount++;
-            statistics.UpdatedAt = DateTime.UtcNow;
-        }
+        user.Statistics.IncrementReviews();
 
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync();
     }
 }

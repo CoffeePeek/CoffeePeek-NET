@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Shared.Infrastructure.Models;
 using MassTransit;
@@ -27,7 +28,10 @@ public class OutboxProcessor<TOutboxEvent, TDbContext>(
 
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Converters = { new JsonStringEnumConverter() }
     };
 
     public async Task ProcessOutboxEventsAsync(CancellationToken cancellationToken)
@@ -78,7 +82,7 @@ public class OutboxProcessor<TOutboxEvent, TDbContext>(
                     continue;
                 }
 
-                await _publishEndpoint.Publish(message, cancellationToken);
+                await _publishEndpoint.Publish(message, eventType, cancellationToken);
 
                 e.Processed = true;
                 e.ProcessedAt = DateTime.UtcNow;

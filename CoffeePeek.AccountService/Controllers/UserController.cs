@@ -7,7 +7,7 @@ using CoffeePeek.Account.Application.Features.User.UpdateEmail;
 using CoffeePeek.Account.Application.Features.User.UpdateProfile;
 using CoffeePeek.Account.Application.Features.User.UpdateUserAvatar;
 using CoffeePeek.Account.Application.Features.User.UpdateUserAvatar.GenerateUploadAvatarUrl;
-using CoffeePeek.Account.Domain.Aggregates;
+using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests;

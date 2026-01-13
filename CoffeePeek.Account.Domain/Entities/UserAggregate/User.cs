@@ -1,0 +1,141 @@
+﻿using CoffeePeek.Account.Domain.Entities.RoleAggregate;
+using CoffeePeek.Account.Domain.Events;
+using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+
+namespace CoffeePeek.Account.Domain.Entities.UserAggregate;
+
+public class User : Entity<Guid>
+{
+    public Username Username { get; private set; }
+    public PhoneNumber? PhoneNumber { get; private set; }
+
+    public UserCredential Credentials { get; private set; }
+    public UserStatistics Statistics { get; private set; }
+
+    public string? About { get; private set; }
+    public Guid? PhotoMetadataId { get; private set; }
+    public PhotoMetadata? PhotoMetadata { get; private set; }
+    public bool IsSoftDelete { get; private set; }
+
+    private readonly List<RefreshToken> _refreshTokens = [];
+    public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
+
+    private readonly List<Role> _roles = [];
+    public IReadOnlyCollection<Role> Roles => _roles.AsReadOnly();
+
+    private User()
+    {
+    }
+
+    public static User Register(string invalidEmail, string invalidUsername, string passwordHash)
+    {
+        Email email;
+        Username userName;
+        try
+        {
+            email = Email.Create(invalidEmail);
+            userName = Username.Create(invalidUsername);
+        }
+        catch
+        {
+            throw new DomainException("Invalid email or username");
+        }
+        
+        var userId = Guid.NewGuid();
+        var token = Guid.NewGuid().ToString("N");
+
+        var user = new User
+        {
+            Id = userId,
+            Username = userName,
+            Credentials = UserCredential.CreateBasic(email, passwordHash, token),
+            Statistics = UserStatistics.Empty()
+        };
+
+        user.AddDomainEvent(new UserRegisteredInternalEvent(userId, email.Value, userName, token));
+        return user;
+    }
+
+    public static User CreateExternal(string invalidEmail, string provider, string providerId)
+    {
+        var email = Email.Create(invalidEmail);
+        var userId = Guid.NewGuid();
+        return new User
+        {
+            Id = userId,
+            Username = Username.Create(email.Value.Split('@')[0]),
+            Credentials = UserCredential.CreateExternal(email, provider, providerId),
+            Statistics = UserStatistics.Empty()
+        };
+    }
+
+    public void AddSession(string token, TimeSpan ttl, string device, string ip)
+    {
+        if (_refreshTokens.Count(t => t.IsActive) >= BusinessConstants.MaxActiveSessions)
+        {
+            _refreshTokens.Where(t => t.IsActive).OrderBy(t => t.CreatedDate).First().Revoke();
+        }
+
+        _refreshTokens.Add(new RefreshToken(Id, token, ttl, device, ip));
+    }
+
+    public void RotateRefreshToken(string oldToken, string newToken, TimeSpan ttl, string device, string ip)
+    {
+        var existing = _refreshTokens.FirstOrDefault(t => t.Token == oldToken);
+        if (existing is not { IsActive: true })
+        {
+            RevokeAllSessions();
+            throw new DomainException("Security breach: Token reused.");
+        }
+
+        existing.Revoke();
+        AddSession(newToken, ttl, device, ip);
+    }
+
+    public void RevokeAllSessions() => _refreshTokens.ForEach(t => t.Revoke());
+
+    public void Logout(string tokenValue) =>
+        _refreshTokens.FirstOrDefault(t => t.Token == tokenValue)?.Revoke();
+
+    public void ConfirmEmail(string token)
+    {
+        if (Credentials.EmailConfirmed)
+            throw new DomainException("Email already confirmed.");
+
+        Credentials = Credentials.ConfirmEmail(token);
+        AddDomainEvent(new EmailConfirmedInternalEvent());
+    }
+
+    public void AssignRole(Role role)
+    {
+        if (_roles.Any(r => r.Id == role.Id)) return;
+        _roles.Add(role);
+    }
+
+    public void RemoveRole(Guid roleId)
+    {
+        var role = _roles.FirstOrDefault(r => r.Id == roleId);
+        if (role != null) _roles.Remove(role);
+    }
+
+    public void UpdateProfile(string invalidUserName, string? about)
+    {
+        if (!string.IsNullOrEmpty(invalidUserName))
+        {
+            Username = Username.Create(invalidUserName);
+        }
+
+        About = about;
+    }
+
+    public void SetSoftDelete()
+    {
+        IsSoftDelete = true;
+    }
+
+    public void UpdatePhoto(PhotoMetadata photoMetadata)
+    {
+        PhotoMetadata = photoMetadata;
+    }
+}

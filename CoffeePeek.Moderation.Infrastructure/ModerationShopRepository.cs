@@ -21,7 +21,7 @@ public class ModerationShopRepository(ModerationDbContext context) : IModeration
     public async Task<IReadOnlyList<ModerationShop>> GetAllForReviewAsync()
     {
         return await ShopRepository
-            .Include(s => s.ModerationShopContact)
+            .Include(s => s.Contact)
             .Include(s => s.Location)
             .Include(s => s.ShopPhotos)
             .Include(s => s.Schedules)
@@ -36,7 +36,7 @@ public class ModerationShopRepository(ModerationDbContext context) : IModeration
     public async Task<ModerationShop?> GetByIdAsync(Guid id)
     {
         return await ShopRepository
-            .Include(s => s.ModerationShopContact)
+            .Include(s => s.Contact)
             .Include(s => s.Location)
             .Include(s => s.ShopPhotos)
             .Include(s => s.Schedules)

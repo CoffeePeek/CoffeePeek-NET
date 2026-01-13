@@ -31,7 +31,6 @@ public sealed partial class ModerationShop
     public void SetLocation(ModerationLocation moderationLocation)
     {
         Location = moderationLocation;
-        LocationId = moderationLocation.Id;
     }
 
     public void AddPhoto(string fileName, string contentType, string storageKey, long length)
@@ -50,16 +49,23 @@ public sealed partial class ModerationShop
 
     public void UpdateContacts(string? phone, string? instagram, string? email, string? site)
     {
-        ModerationShopContact ??= ModerationShopContact.Create(Id, phone, instagramLink: instagram, email, site);
-        ModerationShopContact.Update(phone, email, instagram, site);
+        Contact = ModerationShopContact.Create(phone, instagramLink: instagram, email, site);
     }
 
     public void UpdateSchedules(IEnumerable<ScheduleDto> dtos)
     {
         _schedules.Clear();
+    
         foreach (var dto in dtos)
         {
-            _schedules.Add(new ModerationShopSchedule(dto.DayOfWeek, dto.Intervals));
+            var intervals = dto.Intervals?
+                .Select(i => new ModerationShopScheduleInterval(i.OpenTime, i.CloseTime))
+                .ToList()
+                .AsReadOnly() ?? new List<ModerationShopScheduleInterval>().AsReadOnly();
+        
+            var isClosed = dto.Intervals == null || dto.Intervals.Count == 0;
+        
+            _schedules.Add(new ModerationShopSchedule(dto.DayOfWeek, isClosed, intervals));
         }
     }
 

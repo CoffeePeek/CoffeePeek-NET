@@ -11,7 +11,7 @@ public static class YarpRouteFactory
     [
         new("account", ["Auth", "User"], "account-cluster"),
         new("shops", ["CheckIn", "CoffeeShop", "Internal", "ReviewCoffeeShop", "FavoriteShop"], "shops-cluster"),
-        new("moderation", ["Moderation"], "moderation-cluster"),
+        new("moderation", ["Moderation", "ModerationReview", "ModerationShop"], "moderation-cluster"),
         new("jobs", ["Vacancies"], "jobs-cluster")
     ];
 

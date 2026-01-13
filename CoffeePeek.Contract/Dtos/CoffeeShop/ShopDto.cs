@@ -17,7 +17,11 @@ public record ShopDto
     public int ReviewCount { get; set; }
     public ReviewDto[] Reviews { get; set; }
 
-    public bool IsOpen { get; set; }
+    public bool IsFavorite { get; init; }
+    public bool IsVisited { get; init; }
+    public bool IsNew { get; init; }
+    public bool IsOpen { get; init; }
+    
     public PriceRange PriceRange { get; set; }
     
     public LocationDto? Location { get; set; }

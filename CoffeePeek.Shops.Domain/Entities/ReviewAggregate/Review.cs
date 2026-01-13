@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 
 namespace CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 
@@ -17,7 +18,7 @@ public sealed partial class Review : Entity<Guid>
     public int RatingService { get; private set; }
     public decimal AverageRating => (RatingCoffee + RatingPlace + RatingService) / 3m;
     
-    public Shop? Shop { get; private set; }
+    public CoffeeShop? Shop { get; private set; }
 
     // ReSharper disable once UnusedMember.Local
     private Review()

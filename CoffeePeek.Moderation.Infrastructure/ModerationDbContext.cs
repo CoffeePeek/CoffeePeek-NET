@@ -1,3 +1,4 @@
+using CoffeePeek.Moderation.Domain;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +9,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
 {
     public DbSet<ModerationShop> ModerationShops { get; set; }
     public DbSet<ModerationReview> ModerationReviews { get; set; }
-    public DbSet<ModerationShopContact> ModerationShopContacts { get; set; }
     public DbSet<PhotoMetadata> ShopPhotos { get; set; }
-    public DbSet<ModerationShopSchedule> ModerationShopSchedules { get; set; }
-    public DbSet<ModerationShopScheduleInterval> ModerationShopScheduleIntervals { get; set; }
-    public DbSet<ModerationLocation> ModerationLocations { get; set; }
     public DbSet<ModerationShopEquipment> ModerationShopEquipments { get; set; }
     public DbSet<ModerationCoffeeBeanShop> ModerationCoffeeBeanShops { get; set; }
     public DbSet<ModerationShopRoaster> ModerationRoasterShops { get; set; }
@@ -49,17 +46,30 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => e.ModerationStatus);
             entity.HasIndex(e => e.CityId);
+
+            entity.OwnsOne(e => e.Contact, contact =>
+            {
+                contact.Property(sc => sc.PhoneNumber).HasMaxLength(BusinessConstants.MaxShopContactPhoneNumberLength);
+                contact.Property(sc => sc.Email).HasMaxLength(BusinessConstants.MaxShopContactEmailLength);
+                contact.Property(sc => sc.SiteLink).HasMaxLength(BusinessConstants.MaxShopContactSiteLinkLength);
+                contact.Property(sc => sc.InstagramLink)
+                    .HasMaxLength(BusinessConstants.MaxShopContactInstagramLinkLength);
+            });
+
+            entity.OwnsOne(e => e.Location, location =>
+            {
+                location.HasIndex(l => new { l.Latitude, l.Longitude });
+            });
+
+            entity.OwnsMany(e => e.Schedules, schedules =>
+            {
+                schedules.OwnsMany(sc => sc.Intervals, intervals =>
+                {
+                    intervals.Property(i => i.OpenTime).IsRequired();
+                    intervals.Property(i => i.CloseTime).IsRequired();
+                });
+            });
             
-            entity.HasOne(e => e.ModerationShopContact)
-                .WithMany()
-                .HasForeignKey(e => e.ModerationShopContactId)
-                .OnDelete(DeleteBehavior.SetNull);
-                
-            entity.HasOne(e => e.Location)
-                .WithOne(l => l.ModerationShop)
-                .HasForeignKey<ModerationLocation>(l => l.ShopId)
-                .OnDelete(DeleteBehavior.Cascade);
-                
             entity.HasMany(e => e.ShopPhotos)
                 .WithOne()
                 .HasForeignKey(x => x.ModerationShopId)
@@ -86,27 +96,10 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
                 .OnDelete(DeleteBehavior.Cascade);
         });
         
-        
-        modelBuilder.Entity<ModerationShopContact>(entity =>
-        {
-            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.PhoneNumber).HasMaxLength(18);
-            entity.Property(e => e.InstagramLink).HasMaxLength(50);
-            entity.Property(e => e.Email).HasMaxLength(100);
-            entity.Property(e => e.SiteLink).HasMaxLength(200);
-        });
-        
         modelBuilder.Entity<PhotoMetadata>(entity =>
         {
             entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.HasKey(e => e.Id);
-        });
-        
-        modelBuilder.Entity<ModerationLocation>(entity =>
-        {
-            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
-            entity.Property(e => e.Address).HasMaxLength(200);
         });
         
         modelBuilder.Entity<ModerationShopEquipment>(entity =>
@@ -139,27 +132,6 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.ShopId);
             entity.HasIndex(e => e.BrewMethodId);
-        });
-        
-        modelBuilder.Entity<ModerationShopSchedule>(entity =>
-        {
-            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
-            entity.HasKey(e => e.Id);
-            entity.HasIndex(e => e.ModerationShopId);
-            entity.HasOne(e => e.ModerationShop)
-                .WithMany(s => s.Schedules)
-                .HasForeignKey(e => e.ModerationShopId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-        
-        modelBuilder.Entity<ModerationShopScheduleInterval>(entity =>
-        {
-            entity.UsePropertyAccessMode(PropertyAccessMode.Field);
-            entity.HasKey(e => e.Id);
-            entity.HasOne(e => e.Schedule)
-                .WithMany(s => s.Intervals)
-                .HasForeignKey(e => e.ModerationShopScheduleId)
-                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

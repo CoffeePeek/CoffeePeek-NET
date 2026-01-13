@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using CoffeePeek.Account.Application.Common.Interfaces;
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -14,17 +14,17 @@ public class JWTTokenService(IOptions<JWTOptions> options) : IJWTTokenService
 {
     private readonly JWTOptions _options = options.Value;
 
-    public string GenerateAccessToken(UserCredential user, string device, string ipAddress)
+    public string GenerateAccessToken(User user, string device, string ipAddress)
     {
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
-            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.Email, user.Credentials.Email),
             new(JwtRegisteredClaimNames.Locale, device),
             new(JwtRegisteredClaimNames.Address, ipAddress),
-            new(JwtRegisteredClaimNames.EmailVerified, user.Email),
+            new(JwtRegisteredClaimNames.EmailVerified, user.Credentials.Email),
         };
-        claims.AddRange(user.UserRoles.Select(ur => new Claim(ClaimTypes.Role, ur.Role.Name)));
+        claims.AddRange(user.Roles.Select(ur => new Claim(ClaimTypes.Role, ur.Name)));
 
         return CreateToken(claims, _options.AccessTokenLifetimeMinutes);
     }

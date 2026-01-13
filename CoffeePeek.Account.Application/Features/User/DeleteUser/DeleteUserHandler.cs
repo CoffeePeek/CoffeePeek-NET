@@ -1,5 +1,5 @@
 using CoffeePeek.Account.Application.Features.DeleteUser;
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
@@ -15,16 +15,16 @@ public class DeleteUserHandler(
 {
     public async Task<Response<bool>> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetById(command.UserId);
+        var user = await userRepository.GetById(command.UserId, cancellationToken);
 
         if (user == null)
         {
             return Response<bool>.Error("User not found");
         }
+
+        user.SetSoftDelete();
         
-        user.IsSoftDelete = true;
-        
-        await userRepository.Update(user);
+        await userRepository.Update(user, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
         await ClearUserCacheAsync(user.Id);

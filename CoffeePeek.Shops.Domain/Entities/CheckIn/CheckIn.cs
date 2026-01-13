@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 
 namespace CoffeePeek.Shops.Domain.Entities;
 
@@ -15,6 +16,6 @@ public class CheckIn
     
     public Guid? ReviewId { get; set; }
     
-    public virtual Shop Shop { get; set; }
+    public virtual CoffeeShop CoffeeShop { get; set; }
     public virtual ReviewAggregate.Review? Review { get; set; }
 }

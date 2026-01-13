@@ -1,4 +1,4 @@
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 
 namespace CoffeePeek.Account.Domain.Services;
 

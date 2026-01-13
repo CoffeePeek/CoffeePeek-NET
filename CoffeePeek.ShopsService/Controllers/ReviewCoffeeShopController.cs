@@ -1,15 +1,16 @@
-﻿using CoffeePeek.Contract.Requests.CoffeeShop;
-using CoffeePeek.Contract.Requests.CoffeeShop.Review;
-using CoffeePeek.Contract.Response.CoffeeShop;
+﻿using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Contract.Response.CoffeeShop.Review;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Contract.Responses.CoffeeShop.Review;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shops.Application.Commands.CoffeeShop;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop.Review;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.DeleteReviewFromCoffeeShop;
+using CoffeePeek.Shops.Application.Features.Review.GetAllReviewsByShopId;
+using CoffeePeek.Shops.Application.Features.Review.GetReviewById;
+using CoffeePeek.Shops.Application.Features.Review.GetReviewsByUserId;
+using CoffeePeek.Shops.Application.Features.Review.UpdateCoffeeShopReview;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,7 +45,7 @@ public class ReviewCoffeeShopController(IMediator mediator) : Controller
     [HttpGet("{reviewId:guid}")]
     public Task<Response<GetReviewByIdResponse>> GetReviewById(Guid reviewId)
     {
-        return mediator.Send(new GetReviewByIdCommand(reviewId));
+        return mediator.Send(new GetReviewByIdQuery(reviewId));
     }
     
     [HttpGet("user/{id:guid}")]
@@ -56,7 +57,7 @@ public class ReviewCoffeeShopController(IMediator mediator) : Controller
         pageNumber = Math.Max(1, pageNumber);
         pageSize = pageSize <= 0 ? 10 : pageSize;
 
-        var result = await mediator.Send(new GetReviewsByUserIdCommand(id, pageNumber, pageSize));
+        var result = await mediator.Send(new GetReviewsByUserIdQuery(id, pageNumber, pageSize));
 
         if (result is { IsSuccess: true, Data: not null })
         {

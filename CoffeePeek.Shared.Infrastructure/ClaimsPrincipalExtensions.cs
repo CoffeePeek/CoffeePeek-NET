@@ -20,5 +20,22 @@ public static class ClaimsPrincipalExtensions
 
             return userId;
         }
+        
+        public Guid? GetUserId()
+        {
+            ArgumentNullException.ThrowIfNull(user);
+
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return null;
+            }
+
+            if (!Guid.TryParse(userIdClaim, out var userId))
+                return null;
+
+            return userId;
+        }
     }
 }

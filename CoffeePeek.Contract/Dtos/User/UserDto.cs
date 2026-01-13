@@ -4,15 +4,15 @@ namespace CoffeePeek.Contract.Dtos.User;
 
 public class UserDto
 {
-    [Required] public string UserName { get; set; }
-    [Required] public string Email { get; set; }
+    [Required] public string UserName { get; init; }
+    [Required] public string Email { get; init; }
 
-    public string Token { get; set; }
+    public string Token { get; init; }
 
-    public string? About { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public string? AvatarUrl { get; set; }
-    public int? ReviewCount { get; set; } = 0;
-    public int? CheckInCount { get; set; } = 0;
-    public int? AddedShopsCount { get; set; } = 0;
+    public string? About { get; init; }
+    public DateTime CreatedAt { get; init; }
+    public string? AvatarUrl { get; init; }
+    public int? ReviewCount { get; init; } = 0;
+    public int? CheckInCount { get; init; } = 0;
+    public int? AddedShopsCount { get; init; } = 0;
 }

@@ -1,5 +1,5 @@
 ﻿using CoffeePeek.Account.Application.Features.User.Email.ConfirmEmail;
-using CoffeePeek.Account.Domain.Repositories;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
@@ -7,7 +7,7 @@ using MediatR;
 
 namespace CoffeePeek.Account.Application.Features.Auth.Email.ConfirmEmail;
 
-public class ConfirmEmailHandler(IUserCredentialsRepository userRepository, IUnitOfWork unitOfWork) 
+public class ConfirmEmailHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) 
     : IRequestHandler<ConfirmEmailCommand, Response>
 {
     public async Task<Response> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
@@ -16,9 +16,6 @@ public class ConfirmEmailHandler(IUserCredentialsRepository userRepository, IUni
 
         if (user == null)
             throw new NotFoundException("User not found.");
-
-        if (user.EmailConfirmed)
-            throw new DomainException("Email already confirmed.");
 
         user.ConfirmEmail(request.Token);
 

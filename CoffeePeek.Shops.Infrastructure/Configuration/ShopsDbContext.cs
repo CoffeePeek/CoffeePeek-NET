@@ -1,4 +1,8 @@
-﻿using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain.Entities.City;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Microsoft.EntityFrameworkCore;
 using OutboxEvent = CoffeePeek.Shops.Domain.Entities.OutboxEvent;
 using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
@@ -22,18 +26,13 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     public virtual DbSet<Roaster> Roasters { get; set; }
     public virtual DbSet<RoasterShop> RoasterShops { get; set; }
     
-    public virtual DbSet<ShopSchedule> ShopSchedules { get; set; }
-    public virtual DbSet<ShopScheduleInterval> ShopScheduleIntervals { get; set; }
+    public virtual DbSet<UserFavorite> UserFavorites { get; set; }
+    public virtual DbSet<UserVisit> UserVisits { get; set; }
+    public virtual DbSet<CoffeeShop> Shops { get; set; }
     
-    public virtual DbSet<FavoriteShop> FavoriteShops { get; set; }
-    public virtual DbSet<Shop> Shops { get; set; }
-    
-    public virtual DbSet<ShopContact> ShopContacts { get; set; }
     public virtual DbSet<ShopPhoto> ShopPhotos { get; set; }
     
     public virtual DbSet<City> Cities { get; set; }
-    
-    public virtual DbSet<Location> Locations { get; set; }
     
     public virtual DbSet<OutboxEvent> OutboxEvents { get; set; }
 
@@ -50,39 +49,41 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
             
             entity.HasIndex(r => r.UserId);
 
-            entity.Property(r => r.Header).HasMaxLength(100);
-            entity.Property(r => r.Comment).HasMaxLength(2000);
-        });
-        modelBuilder.Entity<ShopContact>(entity =>
-        {
-            entity.HasOne(sc => sc.Shop)
-                .WithOne(s => s.ShopContact)
-                .HasForeignKey<ShopContact>(sc => sc.ShopId)
-                .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(r => r.Header).HasMaxLength(BusinessConstants.MaxReviewHeaderLength);
+            entity.Property(r => r.Comment).HasMaxLength(BusinessConstants.MaxReviewCommentLength);
         });
 
-        modelBuilder.Entity<Location>(entity =>
+        modelBuilder.Entity<CoffeeShop>(entity =>
         {
-            entity.HasOne(sc => sc.Shop)
-                .WithOne(s => s.Location)
-                .HasForeignKey<Location>(sc => sc.ShopId)
-                .OnDelete(DeleteBehavior.Cascade);
-            
-            // Spatial index for efficient geographical queries
-            entity.HasIndex(l => new { l.Latitude, l.Longitude });
-        });
-
-        modelBuilder.Entity<Shop>(orb =>
-        {
-            orb.HasIndex(s => s.LocationId);
-            orb.HasIndex(s => s.ShopContactId);
-            orb.HasKey(s => s.Id);
+            entity.HasKey(s => s.Id);
     
-            var navigationPhotos = orb.Metadata.FindNavigation(nameof(Shop.ShopPhotos));
+            var navigationPhotos = entity.Metadata.FindNavigation(nameof(CoffeeShop.ShopPhotos));
             navigationPhotos?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
-            var navigationSchedules = orb.Metadata.FindNavigation(nameof(Shop.Schedules));
+            var navigationSchedules = entity.Metadata.FindNavigation(nameof(CoffeeShop.Schedules));
             navigationSchedules?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            
+            entity.OwnsOne(e => e.Contact, contact =>
+            {
+                contact.Property(sc => sc.PhoneNumber).HasMaxLength(BusinessConstants.MaxShopContactPhoneNumberLength);
+                contact.Property(sc => sc.Email).HasMaxLength(BusinessConstants.MaxShopContactEmailLength);
+                contact.Property(sc => sc.SiteLink).HasMaxLength(BusinessConstants.MaxShopContactSiteLinkLength);
+                contact.Property(sc => sc.InstagramLink).HasMaxLength(BusinessConstants.MaxShopContactInstagramLinkLength);
+            });
+            
+            entity.OwnsOne(e => e.Location, location =>
+            {
+                location.HasIndex(l => new { l.Latitude, l.Longitude });
+            });
+
+            entity.OwnsMany(e => e.Schedules, schedules =>
+            {
+                schedules.OwnsMany(sc => sc.Intervals, intervals =>
+                    {
+                        intervals.Property(i => i.OpenTime).IsRequired();
+                        intervals.Property(i => i.CloseTime).IsRequired();
+                    });
+            });
         });
         
         modelBuilder.Entity<CheckIn>(entity =>
@@ -92,7 +93,7 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
             entity.HasIndex(c => c.ShopId);
             entity.HasIndex(c => new { c.UserId, c.ShopId, c.CreatedAt });
             
-            entity.HasOne(c => c.Shop)
+            entity.HasOne(c => c.CoffeeShop)
                 .WithMany(s => s.CheckIns)
                 .HasForeignKey(c => c.ShopId)
                 .OnDelete(DeleteBehavior.Cascade);
@@ -103,6 +104,49 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
                 .OnDelete(DeleteBehavior.SetNull);
                 
             entity.Property(c => c.Note).HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<UserFavorite>(entity =>
+        {
+            entity.HasIndex(f => new { f.UserId, f.CoffeeShopId }).IsUnique();
+
+            entity.HasIndex(f => f.UserId);
+
+            entity.HasIndex(f => f.CoffeeShopId);
+
+            entity.Property(f => f.UserId).IsRequired();
+            entity.Property(f => f.CoffeeShopId).IsRequired();
+        });
+
+        modelBuilder.Entity<UserVisit>(entity =>
+        {
+            entity.HasKey(v => v.Id);
+            
+            // Уникальный индекс: одна запись на пару User-Shop
+            entity.HasIndex(v => new { v.UserId, v.ShopId })
+                .IsUnique()
+                .HasDatabaseName("IX_UserVisit_User_Shop_Unique");
+            
+            // Индекс для поиска посещений пользователя
+            entity.HasIndex(v => v.UserId)
+                .HasDatabaseName("IX_UserVisit_UserId");
+            
+            // Индекс для сортировки по последнему посещению
+            entity.HasIndex(v => new { v.UserId, v.LastVisitedAt })
+                .HasDatabaseName("IX_UserVisit_UserId_LastVisited");
+            
+            // Индекс для поиска самых популярных мест
+            entity.HasIndex(v => new { v.UserId, v.VisitCount })
+                .HasDatabaseName("IX_UserVisit_UserId_VisitCount");
+            
+            // Свойства
+            entity.Property(v => v.UserId).IsRequired();
+            entity.Property(v => v.ShopId).IsRequired();
+            entity.Property(v => v.FirstVisitedAt).IsRequired();
+            entity.Property(v => v.LastVisitedAt).IsRequired();
+            entity.Property(v => v.VisitCount).IsRequired().HasDefaultValue(1);
+            entity.Property(v => v.HasReview).IsRequired().HasDefaultValue(false);
+            entity.Property(v => v.Note).HasMaxLength(500);
         });
     }
 }

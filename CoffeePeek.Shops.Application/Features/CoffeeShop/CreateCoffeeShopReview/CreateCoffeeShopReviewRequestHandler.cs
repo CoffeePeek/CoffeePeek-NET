@@ -13,7 +13,7 @@ using Review = Domain.Entities.ReviewAggregate.Review;
 
 public class CreateCoffeeShopReviewRequestHandler(
     IGenericRepository<Review> reviewRepository,
-    IShopCacheService shopCacheService,
+    ICoffeeShopCacheService coffeeShopCacheService,
     IUnitOfWork unitOfWork,
     IValidationStrategy<CreateCoffeeShopReviewCommand> validationStrategy,
     IOutboxEventPublisher outboxEventPublisher)
@@ -51,7 +51,7 @@ public class CreateCoffeeShopReviewRequestHandler(
 
         await unitOfWork.SaveChangesAsync(ct);
         
-        await shopCacheService.InvalidateShopCacheAsync(command.ShopId, ct);
+        await coffeeShopCacheService.InvalidateShopCacheAsync(command.ShopId, ct);
 
         return Contract.Responses.Response<CreateCoffeeShopReviewResponse>.Success(
             new CreateCoffeeShopReviewResponse(review.Id));

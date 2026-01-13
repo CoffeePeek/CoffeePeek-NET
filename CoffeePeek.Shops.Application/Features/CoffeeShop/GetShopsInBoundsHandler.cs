@@ -1,15 +1,17 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Application.Commands.CoffeeShop;
+using CoffeePeek.Shops.Application.Features.CoffeeShop;
 using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop;
 
-public class GetShopsInBoundsHandler(IGenericRepository<Shop> shopRepository)
+public class GetShopsInBoundsHandler(IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> shopRepository)
     : IRequestHandler<GetShopsInBoundsRequest, Response<GetShopsInBoundsResponse>>
 {
     public async Task<Response<GetShopsInBoundsResponse>> Handle(GetShopsInBoundsRequest request, CancellationToken cancellationToken)

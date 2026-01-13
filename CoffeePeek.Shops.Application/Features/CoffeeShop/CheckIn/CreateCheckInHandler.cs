@@ -2,9 +2,8 @@ using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Response.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Validation;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Common;
-using CoffeePeek.Shops.Application.Services;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn;
@@ -13,8 +12,9 @@ using Review = Domain.Entities.ReviewAggregate.Review;
 
 public class CreateCheckInHandler(
     IGenericRepository<Domain.Entities.CheckIn> checkInRepository,
-    IShopCacheService shopCacheService,
+    ICoffeeShopCacheService coffeeShopCacheService,
     IGenericRepository<Review> reviewsRepository,
+    IUserVisitService userVisitService,
     IUnitOfWork unitOfWork,
     IValidationStrategy<CreateCheckInRequest> validationStrategy,
     IOutboxEventPublisher outboxEventPublisher)
@@ -38,6 +38,7 @@ public class CreateCheckInHandler(
         };
 
         Guid? reviewId = null;
+        var hasReview = false;
 
         if (request.Review != null)
         {
@@ -48,13 +49,21 @@ public class CreateCheckInHandler(
             reviewsRepository.Add(review);
             checkIn.ReviewId = review.Id;
             reviewId = review.Id;
+            hasReview = true;
         }
 
         checkInRepository.Add(checkIn);
         
+        await userVisitService.RegisterVisitAsync(
+            request.UserId,
+            request.ShopId,
+            checkIn.CreatedAt,
+            hasReview,
+            cancellationToken);
+        
         if (request.Review != null)
         {
-            await shopCacheService.InvalidateShopCacheAsync(request.ShopId, cancellationToken);
+            await coffeeShopCacheService.InvalidateShopCacheAsync(request.ShopId, cancellationToken);
         }
         
         await outboxEventPublisher.PublishAsync(new CheckinCreatedEvent
