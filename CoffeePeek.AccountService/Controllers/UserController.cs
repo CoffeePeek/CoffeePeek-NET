@@ -1,7 +1,7 @@
 using System.ComponentModel;
+using CoffeePeek.Account.Application.Features.Auth.Email.ConfirmEmail;
+using CoffeePeek.Account.Application.Features.Auth.Email.ResendEmailConfirmation;
 using CoffeePeek.Account.Application.Features.DeleteUser;
-using CoffeePeek.Account.Application.Features.User.Email.ConfirmEmail;
-using CoffeePeek.Account.Application.Features.User.Email.ResendEmailConfirmation;
 using CoffeePeek.Account.Application.Features.User.GetProfile;
 using CoffeePeek.Account.Application.Features.User.UpdateEmail;
 using CoffeePeek.Account.Application.Features.User.UpdateProfile;

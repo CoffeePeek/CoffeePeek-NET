@@ -1,7 +1,6 @@
 ﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.User.Email.ResendEmailConfirmation;
+namespace CoffeePeek.Account.Application.Features.Auth.Email.ResendEmailConfirmation;
 
 public record ResendEmailConfirmationCommand(Guid UserId) : IRequest<Response>;
