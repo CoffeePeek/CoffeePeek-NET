@@ -23,7 +23,10 @@ public class UpdateProfileHandler(
             return Response.Error("User not found");
         }
 
-        user.UpdateProfile(command.UserName, command.About);
+        var userName = Username.Create(command.Username);
+        var phoneNumber = PhoneNumber.Create(command.PhoneNumber);
+        
+        user.UpdateProfile(userName, phoneNumber, command.About);
         
         await userRepository.Update(user, ct);
         await unitOfWork.SaveChangesAsync(ct);

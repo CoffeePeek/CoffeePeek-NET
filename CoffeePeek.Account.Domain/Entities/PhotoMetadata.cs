@@ -20,6 +20,7 @@ public class PhotoMetadata : Entity<Guid>
 
     private PhotoMetadata(string fileName, string contentType, string storageKey, long length)
     {
+        Id = Guid.NewGuid();
         FileName = fileName;
         ContentType = contentType;
         StorageKey = storageKey;

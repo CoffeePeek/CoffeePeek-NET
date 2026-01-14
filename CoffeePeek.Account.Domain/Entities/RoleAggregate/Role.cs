@@ -17,6 +17,12 @@ public class Role : Entity<Guid>
 
     internal Role(string name)
     {
+        Id = Guid.NewGuid();
         Name = name;
+    }
+
+    public static Role Create(string name)
+    {
+        return new Role(name);
     }
 }
