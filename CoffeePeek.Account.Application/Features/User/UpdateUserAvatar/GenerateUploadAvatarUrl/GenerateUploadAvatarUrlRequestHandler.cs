@@ -1,5 +1,5 @@
-﻿using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using MediatR;
 
@@ -14,6 +14,6 @@ public class GenerateUploadAvatarUrlRequestHandler(IStorageService storageServic
         var (uploadUrl, storageKey) =
             await storageService.GetPresignedUploadUrlAsync(request.Request.FileName, request.Request.ContentType);
 
-        return Response.Success(new GenerateUploadUrlResponse(uploadUrl, storageKey));
+        return Response<GenerateUploadUrlResponse>.Success(new GenerateUploadUrlResponse(uploadUrl, storageKey));
     }
 }

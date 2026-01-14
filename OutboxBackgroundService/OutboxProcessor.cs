@@ -61,7 +61,7 @@ public class OutboxProcessor<TOutboxEvent, TDbContext>(
                     continue;
                 }
 
-                var contractAssembly = typeof(UserRegisteredEvent).Assembly;
+                var contractAssembly = typeof(Response).Assembly;
                 var eventType = contractAssembly.GetTypes()
                     .FirstOrDefault(t => t.Name.Equals(e.EventType, StringComparison.OrdinalIgnoreCase));
 

@@ -13,6 +13,7 @@ using CoffeePeek.Auth.Infrastructure.Configuration;
 using CoffeePeek.Auth.Infrastructure.EventConsumer;
 using CoffeePeek.Auth.Infrastructure.Identity;
 using CoffeePeek.Auth.Infrastructure.Repositories;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;

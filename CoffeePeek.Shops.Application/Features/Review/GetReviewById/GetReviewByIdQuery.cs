@@ -1,5 +1,4 @@
-﻿using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop.Review;
+﻿using CoffeePeek.Contract.Abstract;
 using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.Review.GetReviewById;

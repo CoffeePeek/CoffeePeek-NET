@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop.Review;
+using FluentResults;
 using MediatR;
 
 namespace Coffeepeek.Moderation.Application.Features.Shop.CreateShop;

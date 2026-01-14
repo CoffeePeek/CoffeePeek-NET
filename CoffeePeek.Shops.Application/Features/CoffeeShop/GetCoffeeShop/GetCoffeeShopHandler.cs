@@ -1,3 +1,4 @@
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
@@ -31,10 +32,10 @@ public class GetCoffeeShopHandler(
                     .QueryAsNoTracking()
                     .Include(x => x.ShopPhotos)
                     .Include(x => x.Reviews)
-                    .Include(x => x.ShopEquipments).ThenInclude(x => x.Equipment)
-                    .Include(x => x.CoffeeBeanShops).ThenInclude(x => x.CoffeeBean)
-                    .Include(x => x.RoasterShops).ThenInclude(x => x.Roaster)
-                    .Include(x => x.ShopBrewMethods).ThenInclude(x => x.BrewMethod)
+                    .Include(x => x.Equipments)
+                    .Include(x => x.CoffeeBeans)
+                    .Include(x => x.Roasters)
+                    .Include(x => x.BrewMethods)
                     .Include(x => x.Contact)
                     .Include(x => x.Location)
                     .Include(x => x.Schedules)

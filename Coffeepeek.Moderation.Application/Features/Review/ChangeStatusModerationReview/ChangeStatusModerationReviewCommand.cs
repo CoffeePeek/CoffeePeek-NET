@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Responses;
 using MediatR;

@@ -1,3 +1,4 @@
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using MediatR;

@@ -1,5 +1,6 @@
-﻿using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Extensions.Models;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Exceptions;
+using CoffeePeek.Shared.Extensions.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -27,18 +28,12 @@ public class GlobalExceptionHandler(
 
         var statusCode = GetStatusCode(exception);
         
-        var errorResponse = new ErrorResponse
+        var errorResponse = new Response
         {
-            TraceId = traceId,
             StatusCode = statusCode,
             Message = GetSafeMessage(exception),
             ErrorCode = (exception as BaseException)?.ErrorCode ?? "INTERNAL_SERVER_ERROR"
         };
-
-        if (exception is ValidationException { Errors: not null } valEx)
-        {
-            errorResponse.Errors = valEx.Errors;
-        }
 
         if (environment.IsDevelopment())
         {

@@ -1,3 +1,4 @@
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;

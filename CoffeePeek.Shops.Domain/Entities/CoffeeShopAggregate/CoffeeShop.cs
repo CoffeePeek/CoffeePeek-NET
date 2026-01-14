@@ -11,13 +11,12 @@ public sealed class CoffeeShop : Entity<Guid>
     public string? Description { get; private set; }
     public PriceRange PriceRange { get; private set; }
     public ShopStatus Status { get; private set; } = ShopStatus.Active;
-    public Guid CityId { get; private set; }
 
     public Guid CreatorId { get; private set; }
     public Guid? ModerationId {get; private set; }
 
     public ShopContact Contact { get; private set; }
-    public Location? Location { get; private set; }
+    public Location Location { get; private set; }
 
     private readonly List<ShopSchedule> _schedules = [];
     public IReadOnlyCollection<ShopSchedule> Schedules => _schedules.AsReadOnly();
@@ -25,17 +24,17 @@ public sealed class CoffeeShop : Entity<Guid>
     private readonly List<ShopPhoto> _shopPhotos = [];
     public IReadOnlyCollection<ShopPhoto> ShopPhotos => _shopPhotos.AsReadOnly();
 
-    private readonly List<ShopEquipment> _shopEquipments = [];
-    public IReadOnlyCollection<ShopEquipment> ShopEquipments => _shopEquipments.AsReadOnly();
+    private readonly List<Equipment> _equipments = [];
+    public IReadOnlyCollection<Equipment> Equipments => _equipments.AsReadOnly();
 
-    private readonly List<CoffeeBeanShop> _coffeeBeanShops = [];
-    public IReadOnlyCollection<CoffeeBeanShop> CoffeeBeanShops => _coffeeBeanShops.AsReadOnly();
+    private readonly List<CoffeeBean> _coffeeBeans = [];
+    public IReadOnlyCollection<CoffeeBean> CoffeeBeans => _coffeeBeans.AsReadOnly();
 
-    private readonly List<RoasterShop> _roasterShops = [];
-    public IReadOnlyCollection<RoasterShop> RoasterShops => _roasterShops.AsReadOnly();
+    private readonly List<Roaster> _roasters = [];
+    public IReadOnlyCollection<Roaster> Roasters => _roasters.AsReadOnly();
 
-    private readonly List<ShopBrewMethod> _shopBrewMethods = [];
-    public IReadOnlyCollection<ShopBrewMethod> ShopBrewMethods => _shopBrewMethods.AsReadOnly();
+    private readonly List<BrewMethod> _brewMethods = [];
+    public IReadOnlyCollection<BrewMethod> BrewMethods => _brewMethods.AsReadOnly();
     
     private readonly List<Review> _reviews = [];
     public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
@@ -48,12 +47,11 @@ public sealed class CoffeeShop : Entity<Guid>
     {
     }
 
-    public CoffeeShop(Guid creatorId, string name, Guid cityId, PriceRange priceRange, Guid moderationId)
+    public CoffeeShop(Guid creatorId, string name, PriceRange priceRange, Guid moderationId)
     {
         Id = Guid.NewGuid();
         CreatorId = creatorId;
         Name = name;
-        CityId = cityId;
         PriceRange = priceRange;
         ModerationId = moderationId;
     }
@@ -101,9 +99,9 @@ public sealed class CoffeeShop : Entity<Guid>
         PriceRange = priceRange;
     }
 
-    public void SetLocation(string address, decimal latitude, decimal longitude)
+    public void SetLocation(Guid cityId, string address, decimal latitude, decimal longitude)
     {
-        Location = new Location(address, latitude, longitude);
+        Location = Location.CreateValidated(cityId, address, latitude, longitude);
     }
 
     public void SetContact(ShopContactDto contact)
@@ -117,40 +115,29 @@ public sealed class CoffeeShop : Entity<Guid>
         _shopPhotos.AddRange(photos);
     }
     
-    public void SetEquipment(IEnumerable<Guid> equipmentIds)
+    public void SetEquipment(IEnumerable<Equipment> equipments)
     {
-        _shopEquipments.Clear();
-        foreach (var equipmentId in equipmentIds)
-        {
-            _shopEquipments.Add(new ShopEquipment(equipmentId, Id));
-        }
+        _equipments.Clear();
+        _equipments.AddRange(equipments);
     }
     
-    public void SetBrewMethods(IEnumerable<Guid> brewMethodIds)
+    public void SetBrewMethods(IEnumerable<BrewMethod> methods)
     {
-        _shopBrewMethods.Clear();
-        foreach (var brewMethodId in brewMethodIds)
-        {
-            _shopBrewMethods.Add(new ShopBrewMethod(brewMethodId, Id));
-        }
+        _brewMethods.Clear();
+        _brewMethods.AddRange(methods);
+    }
+
+    public void SetRoasters(IEnumerable<Roaster> roasters)
+    {
+        _roasters.Clear();
+        _roasters.AddRange(roasters);
+    }
+
+    public void SetBeans(IEnumerable<CoffeeBean> beans)
+    {
+        _coffeeBeans.Clear();
+        _coffeeBeans.AddRange(beans);
     }
     
-    public void SetRoasters(IEnumerable<Guid> roasterIds)
-    {
-        _roasterShops.Clear();
-        foreach (var roasterId in roasterIds)
-        {
-            _roasterShops.Add(new RoasterShop(roasterId, Id));
-        }
-    }
-    
-    public void SetBeans(IEnumerable<Guid> coffeeBeanIds)
-    {
-        _coffeeBeanShops.Clear();
-        foreach (var coffeeBeanId in coffeeBeanIds)
-        {
-            _coffeeBeanShops.Add(new CoffeeBeanShop(coffeeBeanId, Id));
-        }
-    }
     #endregion
 }

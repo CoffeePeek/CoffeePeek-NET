@@ -1,6 +1,6 @@
-﻿using CoffeePeek.Account.Domain.Entities;
+﻿using CoffeePeek.Account.Application.Features.User.GetProfile;
+using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Dtos.User;
 using Mapster;
 using MapsterMapper;
 
@@ -20,15 +20,15 @@ public static class MapsterConfiguration
 
         TypeAdapterConfig<PhotoMetadata, string>.NewConfig()
             .MapWith(src => $"https://bucket-dev-771f.up.railway.app/coffee.avatars/{src.StorageKey}");
-        
-        config.NewConfig<User, UserDto>()
+
+        config.NewConfig<User, UserProfileResponse>()
+            .Map(d => d.UserName, s => s.Username.Value)
             .Map(d => d.Email, s => s.Credentials.Email)
             .Map(dest => dest.ReviewCount, src => src.Statistics.ReviewCount)
             .Map(dest => dest.CheckInCount, src => src.Statistics.CheckInCount)
             .Map(dest => dest.AddedShopsCount, src => src.Statistics.AddedShopsCount)
-            .Map(dest => dest.AvatarUrl, src => src.PhotoMetadata)
-            .Map(dest => dest.CreatedAt, src => src.CreatedAtUtc);
-            
+            .Map(dest => dest.AvatarUrl, src => src.PhotoMetadata);
+        
         return config;
     }
 }

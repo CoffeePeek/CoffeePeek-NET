@@ -1,9 +1,11 @@
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Validation;
+using CoffeePeek.Shops.Application.Common.Responses;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Mapster;
@@ -38,7 +40,7 @@ public class GetCoffeeShopsHandler(
             {
                 var query = shopRepository
                     .QueryAsNoTracking()
-                    .Where(s => s.CityId == queryRequest.CityId)
+                    .Where(s => s.Location.CityId == queryRequest.CityId)
                     .ProjectToType<ShortShopDto>(mapper.Config);
 
                 var totalCount = await query.CountAsync(cancellationToken);

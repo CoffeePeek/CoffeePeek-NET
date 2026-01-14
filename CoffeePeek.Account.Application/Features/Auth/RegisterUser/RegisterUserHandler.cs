@@ -3,6 +3,7 @@ using CoffeePeek.Account.Application.Features.User.RegisterUser;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;

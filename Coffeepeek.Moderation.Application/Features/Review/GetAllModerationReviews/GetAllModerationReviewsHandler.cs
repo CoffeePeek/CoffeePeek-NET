@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;

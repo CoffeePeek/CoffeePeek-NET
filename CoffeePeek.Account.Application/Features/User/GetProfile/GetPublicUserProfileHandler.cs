@@ -1,6 +1,6 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.User;
 using MapsterMapper;
 using MediatR;
 
@@ -11,15 +11,15 @@ public class GetPublicUserProfileHandler(IUserRepository userRepository, IMapper
 {
     public async Task<Response<UserProfileResponse>> Handle(GetPublicUserProfileQuery request, CancellationToken ct)
     {
-        var userDto = await userRepository.GetById(request.UserId, ct);
+        var user = await userRepository.GetById(request.UserId, ct);
 
-        if (userDto == null)
+        if (user == null)
         {
             return Response<UserProfileResponse>.Error("User not found.");
         }
 
-        var result = mapper.Map<UserProfileResponse>(userDto);
-
+        var result = mapper.Map<UserProfileResponse>(user);
+        
         return Response<UserProfileResponse>.Success(result);
     }
 }

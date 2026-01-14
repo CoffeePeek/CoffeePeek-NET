@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Contract.Response.CoffeeShop.Review;
-using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Abstract;
 using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.Review.GetReviewsByUserId;

@@ -1,3 +1,4 @@
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;

@@ -1,8 +1,8 @@
 using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Application.Common.Models;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Contract.Dtos.Auth;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.Auth;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Options;
@@ -50,7 +50,7 @@ public class GoogleLoginHandler(
         {
             AccessToken = authResult.AccessToken,
             RefreshToken = authResult.RefreshToken,
-            User = new GoogleLoginUserDto { Email = user.Credentials.Email, AvatarUrl = payload.Picture }
+            User = new GoogleLoginUser { Email = user.Credentials.Email, AvatarUrl = payload.Picture }
         });
     }
 }

@@ -1,8 +1,6 @@
-﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Response.CoffeeShop.Review;
-using CoffeePeek.Contract.Responses;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Application.Features.Review.GetReviewById;
 using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

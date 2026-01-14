@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Contract.Responses;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.JobVacancies.Application.Commands;
 using CoffeePeek.JobVacancies.Application.Models.Dtos;
 using CoffeePeek.JobVacancies.Application.Models.Responses;
@@ -54,7 +55,7 @@ public class GetVacanciesHandler(
             cacheKey.DefaultTtl);
 
         return response != null 
-            ? Response.Success(response) 
+            ? Response<JobVacanciesResponse>.Success(response) 
             : Response<JobVacanciesResponse>.Error("Failed to retrieve vacancies");
     }
 }

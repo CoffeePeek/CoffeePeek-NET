@@ -28,11 +28,6 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
         
         modelBuilder.Entity<RefreshToken>(entity =>
         {
-            entity
-                .HasOne(x => x.User)
-                .WithMany(uc => uc.RefreshTokens)
-                .HasForeignKey(x => x.UserId);
-            
             entity.Property(x => x.Token).HasMaxLength(BusinessConstants.MaxRefreshTokenLength).IsRequired();
             entity.Property(x => x.DeviceName).HasMaxLength(BusinessConstants.MaxDeviceNameLength);
             entity.Property(x => x.IpAddress).HasMaxLength(BusinessConstants.MaxIpAddressLength);

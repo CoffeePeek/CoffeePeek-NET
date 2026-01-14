@@ -1,12 +1,10 @@
-﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop.Review;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Application.Features.Review.GetReviewById;
 using MapsterMapper;
 using MediatR;
 
-namespace CoffeePeek.Shops.Application.Handlers.CoffeeShop.Review;
+namespace CoffeePeek.Shops.Application.Features.Review.GetReviewById;
 
 public class GetReviewByIdRequestHandler(
     IGenericRepository<Domain.Entities.ReviewAggregate.Review> reviewRepository,

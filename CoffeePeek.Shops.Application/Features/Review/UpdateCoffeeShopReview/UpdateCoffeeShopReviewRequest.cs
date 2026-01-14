@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using CoffeePeek.Contract.Response.CoffeeShop;
-using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Shops.Domain;
 using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.Review.UpdateCoffeeShopReview;
@@ -16,12 +16,12 @@ public class UpdateCoffeeShopReviewRequest : IRequest<Response<UpdateCoffeeShopR
     public string Header { get; set; }
     public string Comment { get; set; }
     
-    [Range(1, 5, ErrorMessage = "RatingCoffee must be between 1 and 5")]
+    [Range(BusinessConstants.MinReviewRate, BusinessConstants.MaxReviewRate, ErrorMessage = "RatingCoffee must be between 1 and 5")]
     public int RatingCoffee { get; set; }
     
-    [Range(1, 5, ErrorMessage = "RatingService must be between 1 and 5")]
+    [Range(BusinessConstants.MinReviewRate, BusinessConstants.MaxReviewRate, ErrorMessage = "RatingService must be between 1 and 5")]
     public int RatingService { get; set; }
     
-    [Range(1, 5, ErrorMessage = "RatingPlace must be between 1 and 5")]
+    [Range(BusinessConstants.MinReviewRate, BusinessConstants.MaxReviewRate, ErrorMessage = "RatingPlace must be between 1 and 5")]
     public int RatingPlace { get; set; }
 }

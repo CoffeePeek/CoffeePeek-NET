@@ -1,14 +1,11 @@
-﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop;
-using CoffeePeek.Shops.Application.Features.Review.GetAllReviewsByShopId;
 using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Shops.Application.Features.CoffeeShop.Reviews;
+namespace CoffeePeek.Shops.Application.Features.Review.GetAllReviewsByShopId;
 
 using Review = Domain.Entities.ReviewAggregate.Review;
 

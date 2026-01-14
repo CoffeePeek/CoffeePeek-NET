@@ -5,7 +5,6 @@ using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Persistence;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.City;
 using MapsterMapper;
 
 namespace CoffeePeek.Shops.Infrastructure.Services;

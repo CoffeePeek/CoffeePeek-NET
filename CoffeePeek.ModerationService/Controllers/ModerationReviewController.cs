@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Moderation.Application.Features.Review.ChangeStatusModerationReview;
@@ -14,11 +15,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoffeePeek.ModerationService.Controllers;
 
 [ApiController]
-[Authorize(Policy = RoleConsts.Admin)]
 [Route("api/[controller]")]
 public class ModerationReviewController(IMediator mediator) : Controller
 {
     [HttpGet]
+    [Authorize(Policy = RoleConsts.Moderator)]
     [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
@@ -30,6 +31,7 @@ public class ModerationReviewController(IMediator mediator) : Controller
     }
 
     [HttpPost]
+    [Authorize]
     [ProducesResponseType(typeof(CreateEntityResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -43,6 +45,7 @@ public class ModerationReviewController(IMediator mediator) : Controller
     }
 
     [HttpPut]
+    [Authorize(Policy =  RoleConsts.Moderator)]
     [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

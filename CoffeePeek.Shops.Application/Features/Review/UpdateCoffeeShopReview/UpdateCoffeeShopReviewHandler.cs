@@ -1,17 +1,11 @@
-using CoffeePeek.Contract.Response.CoffeeShop;
-using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Validation;
-using CoffeePeek.Shops.Application.Features.Review.UpdateCoffeeShopReview;
-using CoffeePeek.Shops.Application.Services;
-using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Shops.Application.Features.CoffeeShop.Reviews;
+namespace CoffeePeek.Shops.Application.Features.Review.UpdateCoffeeShopReview;
 
 public class UpdateCoffeeShopReviewRequestHandler(
     IGenericRepository<Domain.Entities.ReviewAggregate.Review> reviewRepository,
@@ -61,7 +55,7 @@ public class UpdateCoffeeShopReviewRequestHandler(
     {
         var cityId = await shopsRepository.QueryAsNoTracking()
             .Where(s => s.Id == shopId)
-            .Select(s => s.CityId)
+            .Select(s => s.Location.CityId)
             .FirstOrDefaultAsync(cancellationToken);
 
         await redisService.RemoveAsync(CacheKey.Shop.Detail(shopId));

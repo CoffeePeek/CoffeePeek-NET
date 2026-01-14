@@ -1,15 +1,15 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
-using Coffeepeek.Moderation.Application.Features.Shop.UpdateModerationShopStatus;
+using CoffeePeek.Moderation.Application.Features.Shop.UpdateModerationShopStatus;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Response = CoffeePeek.Contract.Responses.Response;
+using Response = CoffeePeek.Contract.Abstract.Response;
 
-namespace Coffeepeek.Moderation.Application.Features.UpdateModerationShopStatus;
+namespace Coffeepeek.Moderation.Application.Features.Shop.UpdateModerationShopStatus;
 
 public class UpdateModerationCoffeeShopStatusHandler(
     IModerationShopRepository repository,

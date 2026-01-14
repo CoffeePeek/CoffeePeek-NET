@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Contract.Responses;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Responses;
 using MediatR;
 
 namespace CoffeePeek.Account.Application.Features.Admin.ChangeRole;

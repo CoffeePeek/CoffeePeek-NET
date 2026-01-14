@@ -1,5 +1,4 @@
-﻿using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop.Favorite;
+﻿using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using MapsterMapper;

@@ -1,9 +1,9 @@
-﻿using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using MediatR;
 
-namespace CoffeePeek.Moderation.Application.Features.GenerateUploadUrl;
+namespace Coffeepeek.Moderation.Application.Features.Shop.GenerateUploadUrl;
 
 public class GenerateUploadUrlHandler(IStorageService storageService)
     : IRequestHandler<GenerateUploadUrlsCommand, Response<List<GenerateUploadUrlResponse>>>

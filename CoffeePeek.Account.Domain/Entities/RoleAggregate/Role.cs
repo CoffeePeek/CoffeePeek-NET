@@ -9,8 +9,8 @@ public class Role : Entity<Guid>
     [MaxLength(255)]
     public string Name { get; private set; }
     
-    private readonly List<User>? _userRoles = [];
-    public ICollection<User>? Users => _userRoles?.AsReadOnly();
+    private readonly IList<User> _userRoles = [];
+    public ICollection<User> Users => _userRoles;
     
     // ReSharper disable once UnusedMember.Local
     private Role(){}

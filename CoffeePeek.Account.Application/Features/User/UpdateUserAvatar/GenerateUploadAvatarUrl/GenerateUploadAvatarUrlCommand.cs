@@ -1,6 +1,6 @@
-﻿using CoffeePeek.Contract.Requests;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Requests;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop;
 using MediatR;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserAvatar.GenerateUploadAvatarUrl;

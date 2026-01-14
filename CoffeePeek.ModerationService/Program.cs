@@ -1,3 +1,4 @@
+using CoffeePeek.Contract.Abstract;
 using Coffeepeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Application.Common;
 using Coffeepeek.Moderation.Application.Features.CreateShop;
@@ -91,8 +92,11 @@ builder.Services.AddJwtAuthModule();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin));
-    options.AddPolicy(RoleConsts.Merchant, policy => policy.RequireRole(RoleConsts.Merchant));
+    options.AddPolicy(RoleConsts.Owner, policy => policy.RequireRole(RoleConsts.Owner));
     options.AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
+    options.AddPolicy(RoleConsts.Moderator, policy => policy.RequireRole(RoleConsts.Moderator));
+    options.AddPolicy(RoleConsts.Employee, policy => policy.RequireRole(RoleConsts.Employee));
+    options.AddPolicy(RoleConsts.Roaster, policy => policy.RequireRole(RoleConsts.Roaster));
 });
 
 // RabbitMQ для публикации событий

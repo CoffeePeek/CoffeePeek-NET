@@ -25,12 +25,12 @@ public class CreateShopFromModerationService(
             return;
         }
 
-        var shop = new CoffeeShop(creatorId, shopDto.Name, shopDto.CityId, shopDto.PriceRange, moderationId);
+        var shop = new CoffeeShop(creatorId, shopDto.Name, shopDto.PriceRange, moderationId);
         shop.UpdateDetails(shopDto.Name, shopDto.Description, shopDto.PriceRange);
 
         if (shopDto.Location != null)
         {
-            shop.SetLocation(shopDto.Location.Address, shopDto.Location.Latitude!.Value, shopDto.Location.Longitude!.Value);
+            shop.SetLocation(shopDto.CityId, shopDto.Location.Address, shopDto.Location.Latitude!.Value, shopDto.Location.Longitude!.Value);
         }
 
         if (shopDto.ShopContact != null)
@@ -40,50 +40,30 @@ public class CreateShopFromModerationService(
 
         if (shopDto.Equipments is { Length: > 0 })
         {
-            var validEquipmentIds = await ValidateEquipmentIdsAsync(
-                shopDto.Equipments.Select(e => e.Id).ToList(),
-                cancellationToken);
-            
-            if (validEquipmentIds.Count != 0)
-            {
-                shop.SetEquipment(validEquipmentIds);
-            }
+            var ids = shopDto.Equipments.Select(x => x.Id).ToList();
+            var equipments = await GetValidEntitiesAsync(equipmentRepository, ids, nameof(Equipment), cancellationToken);
+            shop.SetEquipment(equipments);
         }
 
         if (shopDto.BrewMethods is { Length: > 0 })
         {
-            var validBrewMethodIds = await ValidateBrewMethodIdsAsync(
-                shopDto.BrewMethods.Select(b => b.Id).ToList(),
-                cancellationToken);
-            
-            if (validBrewMethodIds.Any())
-            {
-                shop.SetBrewMethods(validBrewMethodIds);
-            }
+            var ids = shopDto.BrewMethods.Select(x => x.Id).ToList();
+            var brewMethods = await GetValidEntitiesAsync(brewMethodRepository, ids, nameof(BrewMethod), cancellationToken);
+            shop.SetBrewMethods(brewMethods);
         }
 
         if (shopDto.Roasters is { Length: > 0 })
         {
-            var validRoasterIds = await ValidateRoasterIdsAsync(
-                shopDto.Roasters.Select(r => r.Id).ToList(),
-                cancellationToken);
-            
-            if (validRoasterIds.Any())
-            {
-                shop.SetRoasters(validRoasterIds);
-            }
+            var ids = shopDto.Roasters.Select(x => x.Id).ToList();
+            var roasters = await GetValidEntitiesAsync(roasterRepository, ids, nameof(Roaster), cancellationToken);
+            shop.SetRoasters(roasters);
         }
 
-        if (shopDto.Beans is { Length: > 0 })
+        if (shopDto.CoffeeBeans is { Length: > 0 })
         {
-            var validCoffeeBeanIds = await ValidateCoffeeBeanIdsAsync(
-                shopDto.Beans.Select(b => b.Id).ToList(),
-                cancellationToken);
-            
-            if (validCoffeeBeanIds.Any())
-            {
-                shop.SetBeans(validCoffeeBeanIds);
-            }
+            var ids = shopDto.CoffeeBeans.Select(x => x.Id).ToList();
+            var coffeeBeans = await GetValidEntitiesAsync(coffeeBeanRepository, ids, nameof(CoffeeBean), cancellationToken);
+            shop.SetBeans(coffeeBeans);
         }
 
         if (shopDto.Photos is { Length: > 0 })
@@ -105,84 +85,21 @@ public class CreateShopFromModerationService(
         logger.LogInformation("Shop {ShopId} successfully created from moderation event {ModerationId}", shop.Id, moderationId);
     }
 
-    private async Task<List<Guid>> ValidateEquipmentIdsAsync(
-        List<Guid> ids,
-        CancellationToken cancellationToken)
+    private async Task<List<T>> GetValidEntitiesAsync<T>(
+        IGenericRepository<T> repository, 
+        List<Guid> ids, 
+        string entityName, 
+        CancellationToken ct) where T : Entity<Guid>
     {
-        var existingIds = await equipmentRepository
-            .QueryAsNoTracking()
-            .Where(e => ids.Contains(e.Id))
-            .Select(e => e.Id)
-            .ToListAsync(cancellationToken);
+        var existing = await repository.Query()
+            .Where(x => ids.Contains(x.Id))
+            .ToListAsync(ct);
 
-        var missingIds = ids.Except(existingIds).ToList();
-        if (missingIds.Any())
-        {
-            logger.LogWarning("Some Equipment IDs do not exist in ShopsService database: {MissingIds}",
-                string.Join(", ", missingIds));
-        }
+        var missingIds = ids.Except(existing.Select(x => x.Id)).ToList();
+        if (missingIds.Count != 0)
+            logger.LogWarning("Missing {EntityName} IDs: {Ids}", entityName, string.Join(", ", missingIds));
 
-        return existingIds;
-    }
-
-    private async Task<List<Guid>> ValidateBrewMethodIdsAsync(
-        List<Guid> ids,
-        CancellationToken cancellationToken)
-    {
-        var existingIds = await brewMethodRepository
-            .QueryAsNoTracking()
-            .Where(b => ids.Contains(b.Id))
-            .Select(b => b.Id)
-            .ToListAsync(cancellationToken);
-
-        var missingIds = ids.Except(existingIds).ToList();
-        if (missingIds.Any())
-        {
-            logger.LogWarning("Some BrewMethod IDs do not exist in ShopsService database: {MissingIds}",
-                string.Join(", ", missingIds));
-        }
-
-        return existingIds;
-    }
-
-    private async Task<List<Guid>> ValidateRoasterIdsAsync(
-        List<Guid> ids,
-        CancellationToken cancellationToken)
-    {
-        var existingIds = await roasterRepository
-            .QueryAsNoTracking()
-            .Where(r => ids.Contains(r.Id))
-            .Select(r => r.Id)
-            .ToListAsync(cancellationToken);
-
-        var missingIds = ids.Except(existingIds).ToList();
-        if (missingIds.Any())
-        {
-            logger.LogWarning("Some Roaster IDs do not exist in ShopsService database: {MissingIds}",
-                string.Join(", ", missingIds));
-        }
-
-        return existingIds;
-    }
-
-    private async Task<List<Guid>> ValidateCoffeeBeanIdsAsync(
-        List<Guid> ids,
-        CancellationToken cancellationToken)
-    {
-        var existingIds = await coffeeBeanRepository
-            .QueryAsNoTracking()
-            .Where(b => ids.Contains(b.Id))
-            .Select(b => b.Id)
-            .ToListAsync(cancellationToken);
-
-        var missingIds = ids.Except(existingIds).ToList();
-        if (missingIds.Any())
-        {
-            logger.LogWarning("Some CoffeeBean IDs do not exist in ShopsService database: {MissingIds}",
-                string.Join(", ", missingIds));
-        }
-
-        return existingIds;
+        return existing;
     }
 }
 

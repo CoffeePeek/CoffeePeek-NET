@@ -19,14 +19,13 @@ public class User : Entity<Guid>
     public bool IsSoftDelete { get; private set; }
 
     private readonly List<RefreshToken> _refreshTokens = [];
-    public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
+    public ICollection<RefreshToken> RefreshTokens => _refreshTokens;
 
-    private readonly List<Role> _roles = [];
-    public IReadOnlyCollection<Role> Roles => _roles.AsReadOnly();
-
-    private User()
-    {
-    }
+    private readonly IList<Role> _roles = [];
+    public ICollection<Role> Roles => _roles;
+    
+    // ReSharper disable once UnusedMember.Local
+    private User() { }
 
     public static User Register(string invalidEmail, string invalidUsername, string passwordHash)
     {

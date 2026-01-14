@@ -31,7 +31,10 @@ public class UserRepository(IGenericRepository<User> userRepository) : IUserRepo
 
     public Task<User?> GetByEmail(string email, CancellationToken ct)
     {
-        return userRepository.FirstOrDefaultAsNoTrackingAsync(c => c.Credentials.Email == email, ct);
+        return userRepository
+            .QueryAsNoTracking()
+            .Include(x => x.Roles)
+            .FirstOrDefaultAsync(c => c.Credentials.Email == email, ct);
     }
 
     public Task<User?> GetByProvider(string provider, string providerId, CancellationToken ct)

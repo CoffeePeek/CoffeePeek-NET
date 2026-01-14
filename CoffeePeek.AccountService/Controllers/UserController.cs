@@ -8,12 +8,10 @@ using CoffeePeek.Account.Application.Features.User.UpdateProfile;
 using CoffeePeek.Account.Application.Features.User.UpdateUserAvatar;
 using CoffeePeek.Account.Application.Features.User.UpdateUserAvatar.GenerateUploadAvatarUrl;
 using CoffeePeek.Account.Domain.Entities;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos;
-using CoffeePeek.Contract.Dtos.User;
 using CoffeePeek.Contract.Requests;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop;
-using CoffeePeek.Contract.Responses.User;
 using CoffeePeek.Shared.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -27,7 +25,7 @@ public class UserController(IMediator mediator) : Controller
 {
     [HttpGet]
     [Authorize]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response<UserProfileResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<Response<UserProfileResponse>> GetProfile(CancellationToken cancellationToken)
@@ -68,7 +66,7 @@ public class UserController(IMediator mediator) : Controller
 
     [HttpPut]
     [Authorize]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response<UpdateProfileResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<Response<UpdateProfileResponse>> UpdateProfile([FromBody] UpdateProfileCommand command,
         CancellationToken cancellationToken)
@@ -79,7 +77,7 @@ public class UserController(IMediator mediator) : Controller
 
     [HttpPut("email")]
     [Authorize]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UpdateEntityResponse<string>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<UpdateEntityResponse<string>> UpdateEmail([FromBody] UpdateEmailCommand command,
         CancellationToken cancellationToken)
@@ -90,7 +88,7 @@ public class UserController(IMediator mediator) : Controller
 
     [HttpDelete("{id:guid}")]
     [Authorize]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response<bool>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<Response<bool>> DeleteUser(Guid id, CancellationToken cancellationToken)
     {
@@ -100,14 +98,14 @@ public class UserController(IMediator mediator) : Controller
 
     [HttpPost("resend-email-confirm")]
     [Authorize]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status200OK)]
     public Task<Response> ResendEmailConfirm()
     {
         return mediator.Send(new ResendEmailConfirmationCommand(User.GetUserIdOrThrow()));
     }
     
     [HttpPost("confirm-email")]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status200OK)]
     public Task<Response> ConfirmEmail([FromQuery] string token)
     {
         return mediator.Send(new ConfirmEmailCommand(token));

@@ -17,7 +17,7 @@ public class CoffeeShopCacheService(
         var cityId = await shopRepository
             .QueryAsNoTracking()
             .Where(s => s.Id == shopId)
-            .Select(s => s.CityId)
+            .Select(s => s.Location.CityId)
             .FirstOrDefaultAsync(cancellationToken);
 
         await redisService.RemoveAsync(CacheKey.Shop.Detail(shopId));

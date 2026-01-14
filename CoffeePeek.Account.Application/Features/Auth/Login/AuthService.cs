@@ -1,7 +1,7 @@
 using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Application.Common.Models;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Contract.Dtos.Auth;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.Extensions.Options;

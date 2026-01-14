@@ -1,6 +1,7 @@
 ﻿using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Application.Features.User.Email.ResendEmailConfirmation;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;

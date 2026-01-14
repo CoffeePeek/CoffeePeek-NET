@@ -1,6 +1,6 @@
 using CoffeePeek.Shared.Validation;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.CreateCheckIn;
 using CoffeePeek.Shops.Domain;
 
 namespace CoffeePeek.Shops.Application.ValidationStrategy.CheckIn;

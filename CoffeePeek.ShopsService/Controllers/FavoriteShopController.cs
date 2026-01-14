@@ -1,6 +1,6 @@
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
-using CoffeePeek.Contract.Responses.CoffeeShop.Favorite;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shops.Application.Features.Favorite.AddToFavorite;
 using CoffeePeek.Shops.Application.Features.Favorite.GetAllFavorites;
@@ -30,7 +30,7 @@ public class FavoriteShopController(IMediator mediator) : Controller
     
     [HttpPost]
     [Authorize]
-    [ProducesResponseType(typeof(Response<GetCoffeeShopResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(CreateEntityResponse<Guid>), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -42,7 +42,7 @@ public class FavoriteShopController(IMediator mediator) : Controller
     
     [HttpDelete()]
     [Authorize]
-    [ProducesResponseType(typeof(Response<GetCoffeeShopResponse>), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(UpdateEntityResponse<Guid>), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

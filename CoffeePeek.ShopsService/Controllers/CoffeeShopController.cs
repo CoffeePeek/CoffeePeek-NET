@@ -1,11 +1,15 @@
 using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop;
+using CoffeePeek.Shops.Application;
+using CoffeePeek.Shops.Application.Common.Responses;
 using CoffeePeek.Shops.Application.Features.CoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShops;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

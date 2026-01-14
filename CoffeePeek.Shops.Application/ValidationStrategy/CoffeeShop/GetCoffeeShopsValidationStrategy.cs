@@ -1,5 +1,4 @@
 using CoffeePeek.Shared.Validation;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShops;
 
 namespace CoffeePeek.Shops.Infrastructure.ValidationStrategy.CoffeeShop;

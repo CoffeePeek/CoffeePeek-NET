@@ -22,7 +22,7 @@ public partial class MapsterConfiguration
             .Map(d => d.Rating, s => 0)
             .Map(d => d.ReviewCount, s => 0)
             .Map(d => d.IsOpen, s => true)
-            .Map(d => d.Beans, s => s.ModerationCoffeeBeanShops)
+            .Map(d => d.CoffeeBeans, s => s.ModerationCoffeeBeanShops)
             .Map(d => d.Roasters, s => s.ModerationRoasterShops)
             .Map(d => d.Equipments, s => s.ModerationShopEquipments)
             .Map(d => d.BrewMethods, s => s.ModerationShopBrewMethods)

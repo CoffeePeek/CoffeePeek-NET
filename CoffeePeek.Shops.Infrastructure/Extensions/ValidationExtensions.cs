@@ -1,6 +1,6 @@
 using CoffeePeek.Shared.Validation;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.CreateCheckIn;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShops;
 using CoffeePeek.Shops.Application.Features.Favorite.AddToFavorite;

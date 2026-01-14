@@ -1,8 +1,12 @@
-using CoffeePeek.Contract.Requests.Internal;
-using CoffeePeek.Contract.Response.Internal;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.Internal;
-using CoffeePeek.Shops.Application.Commands.Internal;
+using CoffeePeek.Shops.Application.Features.Internal;
+using CoffeePeek.Shops.Application.Features.Internal.GetAllBeans;
+using CoffeePeek.Shops.Application.Features.Internal.GetAllBrewMethods;
+using CoffeePeek.Shops.Application.Features.Internal.GetAllCities;
+using CoffeePeek.Shops.Application.Features.Internal.GetAllEquipment;
+using CoffeePeek.Shops.Application.Features.Internal.GetAllRoasters;
+using CoffeePeek.Shops.Application.Features.Internal.GetUserStatistics;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

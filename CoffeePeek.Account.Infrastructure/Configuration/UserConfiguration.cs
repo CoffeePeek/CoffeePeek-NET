@@ -47,14 +47,18 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             sb.Property(s => s.StatisticUpdatedAtUtc).HasColumnName(nameof(UserStatistics.StatisticUpdatedAtUtc));
         });
 
-        builder
-            .HasMany(u => u.Roles)
+        builder.HasMany(u => u.RefreshTokens)
+            .WithOne(rt => rt.User)
+            .HasForeignKey(rt => rt.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasMany(u => u.Roles)
             .WithMany(r => r.Users)
             .UsingEntity<Dictionary<string, object>>(
                 "UserRoles",
                 j => j.HasOne<Role>().WithMany().HasForeignKey("RoleId"),
                 j => j.HasOne<User>().WithMany().HasForeignKey("UserId")
             );
-        
+
     }
 }

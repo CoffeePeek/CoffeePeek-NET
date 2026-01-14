@@ -1,7 +1,7 @@
 ﻿using CoffeePeek.Account.Application.Common;
 using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.Login;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MediatR;
 

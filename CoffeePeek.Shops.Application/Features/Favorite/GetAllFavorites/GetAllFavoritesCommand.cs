@@ -1,5 +1,5 @@
-﻿using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop.Favorite;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Responses;
 using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.Favorite.GetAllFavorites;

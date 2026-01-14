@@ -1,9 +1,9 @@
-﻿using CoffeePeek.Contract.Requests;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Requests;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop;
 using MediatR;
 
-namespace CoffeePeek.Moderation.Application.Features.GenerateUploadUrl;
+namespace Coffeepeek.Moderation.Application.Features.Shop.GenerateUploadUrl;
 
 public record GenerateUploadUrlsCommand(IList<UploadUrlRequest> Requests)
     : IRequest<Response<List<GenerateUploadUrlResponse>>>;

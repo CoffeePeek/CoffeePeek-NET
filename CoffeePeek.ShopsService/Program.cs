@@ -1,17 +1,17 @@
 using System.Reflection;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Outbox;
+using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
-using CoffeePeek.Shops.Application.Features.Favorite;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.City;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using CoffeePeek.Shops.Infrastructure.Configuration;
@@ -50,12 +50,13 @@ builder.Services.AddMediatRModule(typeof(GetCoffeeShopHandler));
 builder.Services.AddJwtAuthModule();
 
 // Authorization policies
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.Admin, policy => policy.RequireRole(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.Admin));
-    options.AddPolicy(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.User, policy => policy.RequireRole(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.User));
-    options.AddPolicy(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.Merchant, policy => policy.RequireRole(CoffeePeek.Shared.Infrastructure.Constants.RoleConsts.Merchant));
-});
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
+    .AddPolicy(RoleConsts.Owner, policy => policy.RequireRole(RoleConsts.Owner))
+    .AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User))
+    .AddPolicy(RoleConsts.Moderator, policy => policy.RequireRole(RoleConsts.Moderator))
+    .AddPolicy(RoleConsts.Employee, policy => policy.RequireRole(RoleConsts.Employee))
+    .AddPolicy(RoleConsts.Roaster, policy => policy.RequireRole(RoleConsts.Roaster));
 
 // Cache
 builder.Services.AddCacheModule();

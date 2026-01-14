@@ -1,3 +1,4 @@
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.JobVacancies.Application.Handlers;
 using CoffeePeek.JobVacancies.Application.Repositories;
 using CoffeePeek.JobVacancies.Application.Services;

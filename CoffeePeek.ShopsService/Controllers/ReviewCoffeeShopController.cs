@@ -1,10 +1,6 @@
-﻿using CoffeePeek.Contract.Response.CoffeeShop;
-using CoffeePeek.Contract.Response.CoffeeShop.Review;
-using CoffeePeek.Contract.Responses;
+﻿using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses.CoffeeShop;
-using CoffeePeek.Contract.Responses.CoffeeShop.Review;
 using CoffeePeek.Shared.Infrastructure;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.DeleteReviewFromCoffeeShop;
 using CoffeePeek.Shops.Application.Features.Review.GetAllReviewsByShopId;

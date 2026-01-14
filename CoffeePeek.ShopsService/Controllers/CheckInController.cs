@@ -1,9 +1,8 @@
-using CoffeePeek.Contract.Response.CoffeeShop;
-using CoffeePeek.Contract.Responses;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop;
-using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.CreateCheckIn;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.GetUserCheckIns;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
