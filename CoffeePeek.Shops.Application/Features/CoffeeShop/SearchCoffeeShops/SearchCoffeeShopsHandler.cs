@@ -35,6 +35,7 @@ public class SearchCoffeeShopsHandler(
             {
                 var query = shopRepository
                     .QueryAsNoTracking()
+                    .Include(s => s.Reviews)
                     .AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(queryRequest.Query))
@@ -88,13 +89,11 @@ public class SearchCoffeeShopsHandler(
                 var shops = await projectedQuery
                     .Skip((queryRequest.PageNumber - 1) * queryRequest.PageSize)
                     .Take(queryRequest.PageSize)
-                    .ToArrayAsync(cancellationToken);
+                    .ToListAsync(cancellationToken);
 
-                var shopDtos = new List<ShortShopDto>();
-                
                 var response = new GetCoffeeShopsResponse
                 {
-                    CoffeeShops = shopDtos,
+                    CoffeeShops = shops,
                     CurrentPage = queryRequest.PageNumber,
                     PageSize = queryRequest.PageSize,
                     TotalItems = totalCount,

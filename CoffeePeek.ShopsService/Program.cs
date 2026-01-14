@@ -13,6 +13,7 @@ using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using CoffeePeek.Shops.Infrastructure.Configuration;
 using CoffeePeek.Shops.Infrastructure.Consumers;
@@ -105,6 +106,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddScoped<IUserFavoriteRepository, UserFavoriteRepository>();
 builder.Services.AddScoped<IUserVisitRepository, UserVisitRepository>();
 builder.Services.AddScoped<ICoffeeShopRepository, CoffeeShopRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 // Domain Services
 builder.Services.AddScoped<IUserFavoriteService, UserFavoriteService>();

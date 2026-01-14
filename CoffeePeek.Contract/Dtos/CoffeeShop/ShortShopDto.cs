@@ -29,5 +29,4 @@ public record ShortShopDto
     public EquipmentDto[]? Equipments { get; init; }
     public BrewMethodDto[]? BrewMethods { get; init; }
     public ShopContactDto? ShopContact { get; init; }
-    public List<ScheduleDto>? Schedules { get; init; }
 }

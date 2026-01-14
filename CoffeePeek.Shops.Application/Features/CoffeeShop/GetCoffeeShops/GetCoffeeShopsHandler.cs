@@ -40,6 +40,7 @@ public class GetCoffeeShopsHandler(
             {
                 var query = shopRepository
                     .QueryAsNoTracking()
+                    .Include(s => s.Reviews)
                     .Where(s => s.Location.CityId == queryRequest.CityId)
                     .ProjectToType<ShortShopDto>(mapper.Config);
 

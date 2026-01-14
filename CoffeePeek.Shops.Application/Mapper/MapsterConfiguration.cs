@@ -12,7 +12,9 @@ public class MapsterConfiguration : IRegister
     public void Register(TypeAdapterConfig config)
     {
         config.NewConfig<CoffeeShop, ShortShopDto>()
+            .Map(dest => dest.CityId, src => src.Location.CityId)
             .Map(dest => dest.Photos, src => src.ShopPhotos)
+            .Map(dest => dest.Rating, src => src.Rating)
             .Map(dest => dest.ReviewCount, src => src.Reviews.Count)
             .Map(dest => dest.ShopContact, src => src.Contact)
             .Map(dest => dest.Beans, src => src.CoffeeBeans)
@@ -36,7 +38,10 @@ public class MapsterConfiguration : IRegister
             .Map(dest => dest.CoffeeBeans, src => src.CoffeeBeans);
 
         config.NewConfig<CoffeeShop, CoffeeShopDetailsDto>()
+            .Map(d => d.CityId, s => s.Location.CityId)
             .Map(d => d.Photos, s => s.ShopPhotos)
+            .Map(d => d.ShopContact, s => s.Contact)
+            .Map(d => d.Schedules, s => s.Schedules)
             .Map(dest => dest.Rating, src => src.Reviews.Any()
                 ? src.Reviews.Average(r => (r.RatingCoffee + r.RatingPlace + r.RatingService) / 3m)
                 : 0m)

@@ -1,14 +1,16 @@
+using System.Net;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Validation;
+using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shops.Application.Features.Review.UpdateCoffeeShopReview;
 
 public class UpdateCoffeeShopReviewRequestHandler(
-    IGenericRepository<Domain.Entities.ReviewAggregate.Review> reviewRepository,
+    IReviewRepository reviewRepository,
     IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> shopsRepository,
     IUnitOfWork unitOfWork,
     IValidationStrategy<UpdateCoffeeShopReviewRequest> validationStrategy,
@@ -21,27 +23,28 @@ public class UpdateCoffeeShopReviewRequestHandler(
         var validationResult = validationStrategy.Validate(request);
         if (!validationResult.IsValid)
         {
-            return Response<UpdateCoffeeShopReviewResponse>.Error(validationResult.ErrorMessage);
+            return Response<UpdateCoffeeShopReviewResponse>.Error(HttpStatusCode.BadRequest,
+                validationResult.ErrorMessage);
         }
 
-        var review = await reviewRepository
-            .FirstOrDefaultAsync(r => r.Id == request.ReviewId, cancellationToken);
+        var review = await reviewRepository.GetById(request.ReviewId, cancellationToken);
 
         if (review == null)
         {
-            return Response<UpdateCoffeeShopReviewResponse>.Error("Review not found");
+            return Response<UpdateCoffeeShopReviewResponse>.Error(HttpStatusCode.NotFound, "Review not found");
         }
 
         if (review.UserId != request.UserId)
         {
-            return Response<UpdateCoffeeShopReviewResponse>.Error("You are not authorized to update this review");
+            return Response<UpdateCoffeeShopReviewResponse>.Error(HttpStatusCode.Forbidden,
+                "You are not authorized to update this review");
         }
 
 
         review.UpdateHeader(request.Header);
         review.UpdateComment(request.Comment);
         review.UpdateRating(request.RatingCoffee, request.RatingPlace, request.RatingService);
-        
+
 
         reviewRepository.Update(review);
         await unitOfWork.SaveChangesAsync(cancellationToken);

@@ -1,4 +1,6 @@
-﻿namespace CoffeePeek.Contract.Abstract;
+﻿using System.Net;
+
+namespace CoffeePeek.Contract.Abstract;
 
 public class Response<TData> : Response
 {
@@ -42,7 +44,7 @@ public class Response<TData> : Response
         };
     }
     
-    public new static Response<TData> Error(int statusCode, string message)
+    public static Response<TData> Error(HttpStatusCode statusCode, string message)
     {
         return new Response<TData>
         {

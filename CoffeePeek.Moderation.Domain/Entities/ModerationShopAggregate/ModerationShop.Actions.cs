@@ -1,4 +1,3 @@
-using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Extensions.Exceptions;
 
@@ -52,20 +51,20 @@ public sealed partial class ModerationShop
         Contact = ModerationShopContact.Create(phone, instagramLink: instagram, email, site);
     }
 
-    public void UpdateSchedules(IEnumerable<ScheduleDto> dtos)
+    public void UpdateSchedules(IEnumerable<(DayOfWeek DayOfWeek, List<(TimeSpan OpenTime, TimeSpan CloseTime)> Intervals)> schedules)
     {
         _schedules.Clear();
     
-        foreach (var dto in dtos)
+        foreach (var schedule in schedules)
         {
-            var intervals = dto.Intervals?
+            var intervals = schedule.Intervals
                 .Select(i => new ModerationShopScheduleInterval(i.OpenTime, i.CloseTime))
                 .ToList()
-                .AsReadOnly() ?? new List<ModerationShopScheduleInterval>().AsReadOnly();
+                .AsReadOnly();
         
-            var isClosed = dto.Intervals == null || dto.Intervals.Count == 0;
+            var isClosed = schedule.Intervals.Count == 0;
         
-            _schedules.Add(new ModerationShopSchedule(dto.DayOfWeek, isClosed, intervals));
+            _schedules.Add(new ModerationShopSchedule(schedule.DayOfWeek, isClosed, intervals));
         }
     }
 

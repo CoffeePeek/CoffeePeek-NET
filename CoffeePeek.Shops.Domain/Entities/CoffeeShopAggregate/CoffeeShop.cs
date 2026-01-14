@@ -1,5 +1,4 @@
-﻿using CoffeePeek.Contract.Dtos.Contact;
-using CoffeePeek.Contract.Enums;
+﻿using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 
@@ -104,10 +103,9 @@ public sealed class CoffeeShop : Entity<Guid>
         Location = Location.CreateValidated(cityId, address, latitude, longitude);
     }
 
-    public void SetContact(ShopContactDto contact)
+    public void SetContact(string? instagramLink, string? email, string? siteLink, string? phoneNumber)
     {
-        Contact = ShopContact.Create(contact.InstagramLink, contact.Email, contact.SiteLink,
-            contact.PhoneNumber);
+        Contact = ShopContact.Create(instagramLink, email, siteLink, phoneNumber);
     }
     
     public void AddPhotos(IEnumerable<ShopPhoto> photos)

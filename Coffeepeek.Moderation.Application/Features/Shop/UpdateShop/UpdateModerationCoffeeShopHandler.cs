@@ -48,7 +48,9 @@ public class UpdateModerationCoffeeShopHandler(
                 moderationShopDto.ShopContact.SiteLink);
         }
 
-        if (moderationShopDto.Schedules != null) shop.UpdateSchedules(moderationShopDto.Schedules);
+        if (moderationShopDto.Schedules != null)
+            shop.UpdateSchedules(moderationShopDto.Schedules.Select(s =>
+                (s.DayOfWeek, s.Intervals.Select(i => (i.OpenTime, i.CloseTime)).ToList())));
         
         shop.UpdateRelations(
             moderationShopDto.EquipmentIds, 

@@ -34,7 +34,8 @@ public class ModerationShopCreationService(
 
         if (command.Schedules != null)
         {
-            shop.UpdateSchedules(command.Schedules);
+            var schedules = command.Schedules.Select(s => (s.DayOfWeek, s.Intervals.Select(i => (i.OpenTime, i.CloseTime)).ToList()));
+            shop.UpdateSchedules(schedules);
         }
         
         shop.UpdateRelations(

@@ -8,7 +8,7 @@ using MediatR;
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
 
 public record CreateCoffeeShopReviewCommand(
-    Guid ShopId,
+    Guid CoffeeShopId,
     [MinLength(BusinessConstants.MinReviewHeaderLength), MaxLength(BusinessConstants.MaxReviewHeaderLength)]
     string Header,
     [MinLength(BusinessConstants.MinReviewCommentLength), MaxLength(BusinessConstants.MaxReviewCommentLength)]

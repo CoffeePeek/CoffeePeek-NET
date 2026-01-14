@@ -35,7 +35,7 @@ public class CreateShopFromModerationService(
 
         if (shopDto.ShopContact != null)
         {
-            shop.SetContact(shopDto.ShopContact);
+            shop.SetContact(shopDto.ShopContact.InstagramLink, shopDto.ShopContact.Email, shopDto.ShopContact.SiteLink, shopDto.ShopContact.PhoneNumber);
         }
 
         if (shopDto.Equipments is { Length: > 0 })

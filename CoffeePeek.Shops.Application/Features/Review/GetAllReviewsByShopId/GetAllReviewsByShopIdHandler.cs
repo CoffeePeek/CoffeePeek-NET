@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Contract.Abstract;
+﻿using System.Net;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MapsterMapper;
@@ -18,7 +19,7 @@ public class GetAllReviewsByShopIdRequestHandler(
     {
         if (request.ShopId == Guid.Empty)
         {
-            throw new ArgumentNullException(nameof(request.ShopId));
+            return Response<GetAllReviewsResponse>.Error(HttpStatusCode.BadRequest, "ShopId cannot be empty");
         }
         
         var pageNumber = Math.Max(1, request.PageNumber);

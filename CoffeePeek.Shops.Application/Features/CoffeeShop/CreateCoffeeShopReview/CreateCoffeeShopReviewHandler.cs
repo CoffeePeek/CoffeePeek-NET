@@ -30,14 +30,14 @@ public class CreateCoffeeShopReviewHandler(
         }
 
         var reviewExists = await reviewRepository
-                .AnyAsync(r => r.ShopId == command.ShopId && r.UserId == command.UserId, ct);
+                .AnyAsync(r => r.ShopId == command.CoffeeShopId && r.UserId == command.UserId, ct);
 
         if (reviewExists)
         {
             throw new ValidationException("Review already exists");
         }
         
-        var review = Review.Create(command.ShopId, command.UserId, command.Header, command.Comment,
+        var review = Review.Create(command.CoffeeShopId, command.UserId, command.Header, command.Comment,
             command.RatingCoffee, command.RatingPlace, command.RatingService);
 
         reviewRepository.Add(review);
@@ -45,14 +45,14 @@ public class CreateCoffeeShopReviewHandler(
         await outboxEventPublisher.PublishAsync(new ReviewAddedEvent
         {
             UserId = command.UserId,
-            ShopId = command.ShopId,
+            ShopId = command.CoffeeShopId,
             ReviewId = review.Id,
             CreatedAt = review.ReviewDate
         }, ct);
 
         await unitOfWork.SaveChangesAsync(ct);
         
-        await coffeeShopCacheService.InvalidateShopCacheAsync(command.ShopId, ct);
+        await coffeeShopCacheService.InvalidateShopCacheAsync(command.CoffeeShopId, ct);
 
         return Response<CreateCoffeeShopReviewResponse>.Success(
             new CreateCoffeeShopReviewResponse(review.Id));
