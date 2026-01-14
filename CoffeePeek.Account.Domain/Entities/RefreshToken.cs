@@ -10,7 +10,6 @@ public sealed class RefreshToken : Entity<Guid>
     public bool IsRevoked { get; private set; }
     public string DeviceName { get; private set; }
     public string IpAddress { get; private set; }
-    public DateTime CreatedDate { get; private set; }
     public Guid UserId { get; private set; }
     public User? User { get; private set; }
 
@@ -26,11 +25,18 @@ public sealed class RefreshToken : Entity<Guid>
         ExpiryDate = DateTime.UtcNow.Add(ttl);
         DeviceName = deviceName;
         IpAddress = ipAddress;
-        CreatedDate = DateTime.UtcNow;
         IsRevoked = false;
+        CreatedAtUtc = DateTime.UtcNow;
+        UpdatedAtUtc = DateTime.UtcNow;
     }
+    
 
     public bool IsActive => !IsRevoked && DateTime.UtcNow < ExpiryDate;
+
+    public static RefreshToken Create(Guid userId, string token, TimeSpan ttl, string deviceName, string ipAddress)
+    {
+        return new RefreshToken(userId, token, ttl, deviceName, ipAddress);
+    }
 
     public void Revoke()
     {

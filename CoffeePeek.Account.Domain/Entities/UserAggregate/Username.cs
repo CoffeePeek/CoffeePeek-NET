@@ -14,6 +14,11 @@ public partial record Username
 
     private Username(string value)
     {
+        Value = value;
+    }
+
+    public static Username Create(string value)
+    {
         if (string.IsNullOrWhiteSpace(value))
             throw new DomainException("Username cannot be empty.");
 
@@ -25,11 +30,9 @@ public partial record Username
         if (!UsernameRegex.IsMatch(value))
             throw new DomainException(
                 "Username can only contain letters, numbers, dots, and underscores, and must start with a letter.");
-
-        Value = value;
+        
+        return new Username(value);
     }
-
-    public static Username Create(string value) => new(value);
 
     public static implicit operator string(Username username) => username.Value;
 

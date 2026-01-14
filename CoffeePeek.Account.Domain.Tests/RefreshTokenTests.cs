@@ -18,17 +18,17 @@ public class RefreshTokenTests
         var beforeCreation = DateTime.UtcNow;
 
         // Act
-        var refreshToken = new RefreshToken(userId, token, ttl, device, ip);
+        var refreshToken = RefreshToken.Create(userId, token, ttl, device, ip);
         var afterCreation = DateTime.UtcNow;
 
         // Assert
         refreshToken.UserId.Should().Be(userId);
         refreshToken.Token.Should().Be(token);
-        refreshToken.Device.Should().Be(device);
+        refreshToken.DeviceName.Should().Be(device);
         refreshToken.IpAddress.Should().Be(ip);
         refreshToken.IsActive.Should().BeTrue();
-        refreshToken.CreatedDate.Should().BeAfter(beforeCreation).And.BeBefore(afterCreation.AddSeconds(1));
-        refreshToken.ExpiresAt.Should().BeCloseTo(DateTime.UtcNow.Add(ttl), TimeSpan.FromSeconds(1));
+        refreshToken.CreatedAtUtc.Should().BeAfter(beforeCreation).And.BeBefore(afterCreation.AddSeconds(1));
+        refreshToken.ExpiryDate.Should().BeCloseTo(DateTime.UtcNow.Add(ttl), TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -36,14 +36,14 @@ public class RefreshTokenTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var refreshToken = new RefreshToken(userId, "token", TimeSpan.FromDays(7), "device", "ip");
+        var refreshToken = RefreshToken.Create(userId, "token", TimeSpan.FromDays(7), "device", "ip");
 
         // Act
         refreshToken.Revoke();
 
         // Assert
         refreshToken.IsActive.Should().BeFalse();
-        refreshToken.RevokedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        refreshToken.UpdatedAtUtc.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class RefreshTokenTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var refreshToken = new RefreshToken(userId, "token", TimeSpan.FromDays(7), "device", "ip");
+        var refreshToken = RefreshToken.Create(userId, "token", TimeSpan.FromDays(7), "device", "ip");
         var firstRevokeTime = DateTime.UtcNow;
 
         // Act
@@ -61,7 +61,7 @@ public class RefreshTokenTests
 
         // Assert
         refreshToken.IsActive.Should().BeFalse();
-        refreshToken.RevokedAt.Should().BeCloseTo(firstRevokeTime, TimeSpan.FromMilliseconds(200));
+        refreshToken.UpdatedAtUtc.Should().BeCloseTo(firstRevokeTime, TimeSpan.FromMilliseconds(200));
     }
 
     [Fact]
@@ -69,10 +69,10 @@ public class RefreshTokenTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var refreshToken = new RefreshToken(userId, "token", TimeSpan.FromDays(7), "device", "ip");
+        var refreshToken = RefreshToken.Create(userId, "token", TimeSpan.FromDays(7), "device", "ip");
 
         // Act
-        var isExpired = refreshToken.ExpiresAt < DateTime.UtcNow;
+        var isExpired = refreshToken.ExpiryDate < DateTime.UtcNow;
 
         // Assert
         isExpired.Should().BeFalse();
@@ -83,11 +83,11 @@ public class RefreshTokenTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var refreshToken = new RefreshToken(userId, "token", TimeSpan.FromMilliseconds(-1), "device", "ip");
+        var refreshToken = RefreshToken.Create(userId, "token", TimeSpan.FromMilliseconds(-1), "device", "ip");
 
         // Act
         Thread.Sleep(10); // Ensure time has passed
-        var isExpired = refreshToken.ExpiresAt < DateTime.UtcNow;
+        var isExpired = refreshToken.ExpiryDate < DateTime.UtcNow;
 
         // Assert
         isExpired.Should().BeTrue();
@@ -101,10 +101,10 @@ public class RefreshTokenTests
     public void Constructor_WithDifferentDevices_ShouldStoreDevice(string device)
     {
         // Arrange & Act
-        var refreshToken = new RefreshToken(Guid.NewGuid(), "token", TimeSpan.FromDays(7), device, "ip");
+        var refreshToken = RefreshToken.Create(Guid.NewGuid(), "token", TimeSpan.FromDays(7), device, "ip");
 
         // Assert
-        refreshToken.Device.Should().Be(device);
+        refreshToken.DeviceName.Should().Be(device);
     }
 
     [Theory]
@@ -114,7 +114,7 @@ public class RefreshTokenTests
     public void Constructor_WithDifferentIPs_ShouldStoreIP(string ip)
     {
         // Arrange & Act
-        var refreshToken = new RefreshToken(Guid.NewGuid(), "token", TimeSpan.FromDays(7), "device", ip);
+        var refreshToken = RefreshToken.Create(Guid.NewGuid(), "token", TimeSpan.FromDays(7), "device", ip);
 
         // Assert
         refreshToken.IpAddress.Should().Be(ip);
@@ -132,18 +132,18 @@ public class RefreshTokenTests
         var beforeCreation = DateTime.UtcNow;
 
         // Act
-        var refreshToken = new RefreshToken(Guid.NewGuid(), "token", ttl, "device", "ip");
+        var refreshToken = RefreshToken.Create(Guid.NewGuid(), "token", ttl, "device", "ip");
 
         // Assert
         var expectedExpiration = beforeCreation.Add(ttl);
-        refreshToken.ExpiresAt.Should().BeCloseTo(expectedExpiration, TimeSpan.FromSeconds(1));
+        refreshToken.ExpiryDate.Should().BeCloseTo(expectedExpiration, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
     public void IsActive_AfterRevoke_ShouldReturnFalse()
     {
         // Arrange
-        var refreshToken = new RefreshToken(Guid.NewGuid(), "token", TimeSpan.FromDays(7), "device", "ip");
+        var refreshToken = RefreshToken.Create(Guid.NewGuid(), "token", TimeSpan.FromDays(7), "device", "ip");
 
         // Act
         refreshToken.Revoke();
@@ -159,10 +159,10 @@ public class RefreshTokenTests
         var beforeCreation = DateTime.UtcNow;
 
         // Act
-        var refreshToken = new RefreshToken(Guid.NewGuid(), "token", TimeSpan.FromDays(7), "device", "ip");
+        var refreshToken = RefreshToken.Create(Guid.NewGuid(), "token", TimeSpan.FromDays(7), "device", "ip");
 
         // Assert
-        refreshToken.CreatedDate.Kind.Should().Be(DateTimeKind.Utc);
-        refreshToken.CreatedDate.Should().BeCloseTo(beforeCreation, TimeSpan.FromSeconds(1));
+        refreshToken.CreatedAtUtc.Kind.Should().Be(DateTimeKind.Utc);
+        refreshToken.CreatedAtUtc.Should().BeCloseTo(beforeCreation, TimeSpan.FromSeconds(1));
     }
 }

@@ -73,7 +73,7 @@ public class User : Entity<Guid>
     {
         if (_refreshTokens.Count(t => t.IsActive) >= BusinessConstants.MaxActiveSessions)
         {
-            _refreshTokens.Where(t => t.IsActive).OrderBy(t => t.CreatedDate).First().Revoke();
+            _refreshTokens.Where(t => t.IsActive).OrderBy(t => t.CreatedAtUtc).First().Revoke();
         }
 
         _refreshTokens.Add(new RefreshToken(Id, token, ttl, device, ip));
@@ -97,15 +97,6 @@ public class User : Entity<Guid>
     public void Logout(string tokenValue) =>
         _refreshTokens.FirstOrDefault(t => t.Token == tokenValue)?.Revoke();
 
-    public void ConfirmEmail(string token)
-    {
-        if (Credentials.EmailConfirmed)
-            throw new DomainException("Email already confirmed.");
-
-        Credentials = Credentials.ConfirmEmail(token);
-        AddDomainEvent(new EmailConfirmedInternalEvent());
-    }
-
     public void AssignRole(Role role)
     {
         if (_roles.Any(r => r.Id == role.Id)) return;
@@ -118,14 +109,22 @@ public class User : Entity<Guid>
         if (role != null) _roles.Remove(role);
     }
 
-    public void UpdateProfile(string invalidUserName, string? about)
+    public void UpdateProfile(Username userName, PhoneNumber phoneNumber, string? about)
     {
-        if (!string.IsNullOrEmpty(invalidUserName))
+        if (userName != Username)
         {
-            Username = Username.Create(invalidUserName);
+            Username = userName;
         }
-
-        About = about;
+        
+        if (phoneNumber != PhoneNumber)
+        {
+            PhoneNumber = phoneNumber;
+        }
+        
+        if (about != About)
+        {
+            About = about;
+        }
     }
 
     public void SetSoftDelete()
@@ -136,5 +135,25 @@ public class User : Entity<Guid>
     public void UpdatePhoto(PhotoMetadata photoMetadata)
     {
         PhotoMetadata = photoMetadata;
+    }
+
+    public void UpdateAvatar(PhotoMetadata photo)
+    {
+        PhotoMetadata = photo;
+        PhotoMetadataId = photo.Id;
+    }
+
+    public void SoftDelete()
+    {
+        IsSoftDelete = true;
+    }
+
+    public void ConfirmEmail(string token)
+    {
+        if (Credentials.EmailConfirmed)
+            throw new DomainException("Email already confirmed.");
+
+        Credentials = Credentials.ConfirmEmail(token);
+        AddDomainEvent(new EmailConfirmedInternalEvent());
     }
 }

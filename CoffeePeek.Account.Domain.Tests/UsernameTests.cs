@@ -57,15 +57,15 @@ public class UsernameTests
     [Fact]
     public void Create_WithUsernameTooLong_ShouldThrowDomainException()
     {
-        // Arrange - more than MaxLength (50)
-        var longUsername = new string('a', 51);
+        // Arrange - more than MaxLength (30)
+        var longUsername = new string('a', 31);
 
         // Act
         Action act = () => Username.Create(longUsername);
 
         // Assert
         act.Should().Throw<DomainException>()
-            .WithMessage("*between*50*");
+            .WithMessage("*between*30*");
     }
 
     [Theory]
@@ -107,15 +107,15 @@ public class UsernameTests
     [Fact]
     public void Create_WithMaximumValidLength_ShouldSucceed()
     {
-        // Arrange - exactly 50 characters
-        var maxUsername = "a" + new string('b', 49);
+        // Arrange - exactly 30 characters
+        var maxUsername = "a" + new string('b', 29);
 
         // Act
         var username = Username.Create(maxUsername);
 
         // Assert
         username.Value.Should().Be(maxUsername);
-        username.Value.Length.Should().Be(50);
+        username.Value.Length.Should().Be(30);
     }
 
     [Fact]

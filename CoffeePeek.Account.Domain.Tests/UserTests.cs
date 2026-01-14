@@ -206,7 +206,7 @@ public class UserTests
         // Arrange
         var user = User.Register("test@example.com", "testuser", "hash");
         var newUsername = Username.Create("newusername");
-        var newPhone = PhoneNumber.Create("+1234567890");
+        var newPhone = PhoneNumber.Create("+375447095174");
         const string newAbout = "New bio";
 
         // Act
@@ -269,7 +269,7 @@ public class UserTests
         const string newEmail = "new@example.com";
 
         // Act
-        user.UpdateEmail(newEmail);
+        user.Credentials.UpdateEmail(newEmail);
 
         // Assert
         user.Credentials.Email.Value.Should().Be(newEmail);

@@ -8,14 +8,14 @@ namespace CoffeePeek.Account.Domain.Tests;
 public class PhoneNumberTests
 {
     [Theory]
-    [InlineData("+1234567890")]
-    [InlineData("+12345678901234")]
-    [InlineData("+79991234567")]
-    [InlineData("+441234567890")]
-    [InlineData("1234567890")] // Should add + automatically
-    [InlineData("+375 29 123 45 67")] // Spaces should be removed
+    [InlineData("+375446789055")]
+    [InlineData("+375456789012")]
+    [InlineData("+80447095174")]
+    [InlineData("+375291567890")]
+    [InlineData("375446789055")] // Should add + automatically
+    [InlineData("+375 44 678 90 55")] // Spaces should be removed
     [InlineData("+375-29-123-45-67")] // Dashes should be removed
-    [InlineData("+375(29)1234567")] // Parentheses should be removed
+    [InlineData("+375(44)1234567")] // Parentheses should be removed
     public void Create_WithValidPhoneNumber_ShouldSucceed(string validPhone)
     {
         // Act
@@ -42,11 +42,11 @@ public class PhoneNumberTests
     }
 
     [Theory]
-    [InlineData("+123")] // Too short (less than 4 digits after +)
-    [InlineData("+123456789012345")] // Too long (more than 14 digits after +)
-    [InlineData("abc123456789")] // Contains letters
-    [InlineData("+12a3456789")] // Contains letter after +
-    [InlineData("+0123456789")] // Starts with 0 after +
+    [InlineData("+375 29 123-45-6")]
+    [InlineData("3752912345678")]
+    [InlineData("+123456789012")]
+    [InlineData("+3752912A4567")]
+    [InlineData("+0123456789")]
     public void Create_WithInvalidFormat_ShouldThrowDomainException(string invalidPhone)
     {
         // Act
@@ -54,7 +54,35 @@ public class PhoneNumberTests
 
         // Assert
         act.Should().Throw<DomainException>()
-            .WithMessage("*phone number format*");
+            .WithMessage("Invalid Belarusian phone number format*");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_WhenEmpty_ShouldThrowDomainException(string emptyPhone)
+    {
+        // Act
+        Action act = () => PhoneNumber.Create(emptyPhone);
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("Phone number cannot be empty.");
+    }
+
+    [Theory]
+    [InlineData("80291234567", "+375291234567")]   // Префикс 80
+    [InlineData("375447654321", "+375447654321")]  // Без плюса
+    [InlineData("259876543", "+375259876543")]     // Только номер (9 цифр)
+    [InlineData("+375 (33) 111-22-33", "+375331112233")] // С форматированием
+    public void Create_WithValidFormats_ShouldNormalizeToInternational(string input, string expected)
+    {
+        // Act
+        var phoneNumber = PhoneNumber.Create(input);
+
+        // Assert
+        phoneNumber.Value.Should().Be(expected);
     }
 
     [Fact]
@@ -68,7 +96,7 @@ public class PhoneNumberTests
 
         // Assert
         phone.Value.Should().NotContain(" ");
-        phone.Value.Should().Be("+37529123456 7");
+        phone.Value.Should().Be("+375291234567");
     }
 
     [Fact]
@@ -102,18 +130,17 @@ public class PhoneNumberTests
     public void Create_WithoutPlusPrefix_ShouldAddPlus()
     {
         // Arrange
-        const string phoneWithoutPlus = "1234567890";
+        const string phoneWithoutPlus = "375445678906";
 
         // Act
         var phone = PhoneNumber.Create(phoneWithoutPlus);
 
         // Assert
         phone.Value.Should().StartWith("+");
-        phone.Value.Should().Be("+1234567890");
+        phone.Value.Should().Be("+375445678906");
     }
 
     [Theory]
-    [InlineData("+37529", "A1")]
     [InlineData("+375292345678", "A1")]
     [InlineData("+375295234567", "A1")]
     [InlineData("+375297234567", "A1")]
@@ -125,55 +152,50 @@ public class PhoneNumberTests
     [InlineData("+375299234567", "MTS")]
     [InlineData("+375441234567", "A1")]
     [InlineData("+375331234567", "MTS")]
-    [InlineData("+375251234567", "Life")]
-    [InlineData("+375171234567", "Landline (Minsk)")]
-    [InlineData("+375161234567", "Other Belarusian")]
-    [InlineData("+11234567890", "International / Unknown")]
-    [InlineData("+441234567890", "International / Unknown")]
     public void GetBelarusianOperator_ShouldReturnCorrectOperator(string phoneNumber, string expectedOperator)
     {
         // Arrange
         var phone = PhoneNumber.Create(phoneNumber);
 
         // Act
-        var operator = phone.GetBelarusianOperator();
+        var BYOperator = phone.GetOperator();
 
         // Assert
-        operator.Should().Be(expectedOperator);
+        BYOperator.Should().Be(expectedOperator);
     }
 
     [Fact]
     public void ImplicitConversion_FromPhoneNumber_ShouldReturnValue()
     {
         // Arrange
-        var phone = PhoneNumber.Create("+1234567890");
+        var phone = PhoneNumber.Create("+375447095174");
 
         // Act
         string value = phone;
 
         // Assert
-        value.Should().Be("+1234567890");
+        value.Should().Be("+375447095174");
     }
 
     [Fact]
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var phone = PhoneNumber.Create("+1234567890");
+        var phone = PhoneNumber.Create("+375447095174");
 
         // Act
         var result = phone.ToString();
 
         // Assert
-        result.Should().Be("+1234567890");
+        result.Should().Be("+375447095174");
     }
 
     [Fact]
     public void Equals_WithSamePhoneNumber_ShouldReturnTrue()
     {
         // Arrange
-        var phone1 = PhoneNumber.Create("+1234567890");
-        var phone2 = PhoneNumber.Create("+1234567890");
+        var phone1 = PhoneNumber.Create("+375446789074");
+        var phone2 = PhoneNumber.Create("+375446789074");
 
         // Act & Assert
         phone1.Equals(phone2).Should().BeTrue();
@@ -184,8 +206,8 @@ public class PhoneNumberTests
     public void Equals_WithDifferentPhoneNumber_ShouldReturnFalse()
     {
         // Arrange
-        var phone1 = PhoneNumber.Create("+1234567890");
-        var phone2 = PhoneNumber.Create("+9876543210");
+        var phone1 = PhoneNumber.Create("+375446789074");
+        var phone2 = PhoneNumber.Create("+375654321065");
 
         // Act & Assert
         phone1.Equals(phone2).Should().BeFalse();
@@ -196,8 +218,8 @@ public class PhoneNumberTests
     public void GetHashCode_WithSamePhoneNumber_ShouldReturnSameHash()
     {
         // Arrange
-        var phone1 = PhoneNumber.Create("+1234567890");
-        var phone2 = PhoneNumber.Create("+1234567890");
+        var phone1 = PhoneNumber.Create("+375447095174");
+        var phone2 = PhoneNumber.Create("+375447095174");
 
         // Act & Assert
         phone1.GetHashCode().Should().Be(phone2.GetHashCode());

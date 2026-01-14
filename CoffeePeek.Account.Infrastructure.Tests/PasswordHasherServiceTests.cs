@@ -1,17 +1,11 @@
 using CoffeePeek.Auth.Infrastructure.Identity;
 using FluentAssertions;
-using Xunit;
 
-namespace CoffeePeek.Shared.Infrastructure.Tests;
+namespace CoffeePeek.Account.Infrastructure.Tests;
 
 public class PasswordHasherServiceTests
 {
-    private readonly PasswordHasherService _sut;
-
-    public PasswordHasherServiceTests()
-    {
-        _sut = new PasswordHasherService();
-    }
+    private readonly PasswordHasherService _sut = new();
 
     [Fact]
     public void HashPassword_WithValidPassword_ShouldReturnHashedString()
