@@ -16,7 +16,7 @@ namespace CoffeePeek.ModerationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ModerationReviewController(IMediator mediator) : Controller
+public class ModerationReviewController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [Authorize(Policy = RoleConsts.Moderator)]

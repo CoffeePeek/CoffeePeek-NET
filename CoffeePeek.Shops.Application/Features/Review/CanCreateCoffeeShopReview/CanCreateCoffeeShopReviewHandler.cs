@@ -5,13 +5,14 @@ using MediatR;
 namespace CoffeePeek.Shops.Application.Features.Review.CanCreateCoffeeShopReview;
 
 public class CanCreateCoffeeShopReviewHandler(IReviewRepository reviewRepository)
-    : IRequestHandler<CanCreateCoffeeShopReviewQuery, Response<bool>>
+    : IRequestHandler<CanCreateCoffeeShopReviewQuery, Response<CanCreateCoffeeShopReviewResponse>>
 {
-    public async Task<Response<bool>> Handle(CanCreateCoffeeShopReviewQuery request,
+    public async Task<Response<CanCreateCoffeeShopReviewResponse>> Handle(CanCreateCoffeeShopReviewQuery request,
         CancellationToken cancellationToken)
     {
-        var exists = await reviewRepository.ExistsWithCurrentUser(request.ShopId, request.UserId, cancellationToken);
+        var (exists, reviewId) = await reviewRepository.ExistsForCurrentUser(request.ShopId, request.UserId, cancellationToken);
 
-        return Response<bool>.Success(!exists);
+        var response = new CanCreateCoffeeShopReviewResponse(!exists, reviewId);
+        return Response<CanCreateCoffeeShopReviewResponse>.Success(response);
     }
 }

@@ -6,12 +6,22 @@ namespace CoffeePeek.Gateway;
 public static class YarpRouteFactory
 {
     public record ServiceRoute(string Id, string[] Controllers, string ClusterId);
-    
+
     private static readonly List<ServiceRoute> Services =
     [
-        new("account", ["Auth", "User"], "account-cluster"),
-        new("shops", ["Catalogs", "CheckIn", "CoffeeShop", "CoffeeShopReviews", "FavoriteShop", "Map", "UserReviews"], "shops-cluster"),
-        new("moderation", ["Moderation", "ModerationReview", "ModerationShop"], "moderation-cluster"),
+        new("account", ["Auth", "Users"], "account-cluster"),
+        new("shops",
+            [
+                "Catalogs",
+                    "CheckIns",
+                "CoffeeShops",
+                "CoffeeShopReviews",
+                "FavoriteCoffeeShops",
+                "Map",
+                "UserReviews"
+            ],
+            "shops-cluster"),
+        new("moderation", ["Moderations", "ModerationReviews", "ModerationShops"], "moderation-cluster"),
         new("jobs", ["Vacancies"], "jobs-cluster")
     ];
 

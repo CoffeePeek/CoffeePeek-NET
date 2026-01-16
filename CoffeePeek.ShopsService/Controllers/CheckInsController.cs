@@ -10,7 +10,7 @@ namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CheckInController(IMediator mediator) : Controller
+public class CheckInsController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
     [ProducesResponseType(typeof(Response<CreateCheckInResponse>), StatusCodes.Status200OK)]

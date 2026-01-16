@@ -8,7 +8,7 @@ namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MapController(IMediator mediator) : Controller
+public class MapController(IMediator mediator) : ControllerBase
 {
     [HttpGet()]
     [ProducesResponseType(typeof(Response<GetShopsInBoundsResponse>), StatusCodes.Status200OK)]

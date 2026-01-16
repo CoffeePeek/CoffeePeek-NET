@@ -21,7 +21,7 @@ namespace CoffeePeek.AccountService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController(IMediator mediator) : Controller
+public class UsersController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [Authorize]

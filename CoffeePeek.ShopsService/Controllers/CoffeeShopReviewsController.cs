@@ -17,14 +17,14 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/[controller]")]
-public class ReviewCoffeeShopController(IMediator mediator) : Controller
+public class CoffeeShopReviewsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetAllReviewsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetReviews(
-        Guid shopId,
+        [FromQuery] Guid shopId,
         [FromQuery] int pageNumber = 1,
         [FromQuery] [Range(1, 100)] int pageSize = 10)
     {
@@ -57,12 +57,12 @@ public class ReviewCoffeeShopController(IMediator mediator) : Controller
     }
 
     [HttpGet("can-create")]
-    [ProducesResponseType(typeof(Response<bool>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response<CanCreateCoffeeShopReviewResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CanCreateReview(Guid shopId)
+    public async Task<IActionResult> CanCreateReview([FromQuery] Guid shopId)
     {
         if (shopId == Guid.Empty)
-            return BadRequest(Response<bool>.Error("Invalid shop ID"));
+            return BadRequest(Response<CanCreateCoffeeShopReviewResponse>.Error("Invalid shop ID"));
 
         var userId = User.GetUserIdOrThrow();
         var query = new CanCreateCoffeeShopReviewQuery(userId, shopId);

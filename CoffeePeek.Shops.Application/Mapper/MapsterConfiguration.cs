@@ -52,8 +52,7 @@ public class MapsterConfiguration : IRegister
             .Map(dest => dest.ShopName, src => src.CoffeeShop.Name);
 
         config.NewConfig<Review, ReviewDto>()
-            .Map(dest => dest.CreatedAt, src => src.ReviewDate)
-            .Map(dest => dest.ShopName, src => src.Shop.Name);
+            .Map(dest => dest.CreatedAt, src => src.ReviewDate);
     }
 }
 

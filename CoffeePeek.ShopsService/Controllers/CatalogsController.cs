@@ -12,7 +12,7 @@ namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CatalogsController(IMediator mediator) : Controller
+public class CatalogsController(IMediator mediator) : ControllerBase
 {
     [HttpGet("cities")]
     [ProducesResponseType(typeof(Response<GetCitiesResponse>), StatusCodes.Status200OK)]

@@ -13,7 +13,7 @@ namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class FavoriteShopController(IMediator mediator) : Controller
+public class FavoriteShopsController(IMediator mediator) : ControllerBase
 {
     
     [HttpGet("all")]

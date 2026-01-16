@@ -10,7 +10,7 @@ namespace CoffeePeek.ModerationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ModerationController(IMediator mediator) : Controller
+public class ModerationController(IMediator mediator) : ControllerBase
 {
     [HttpPost("upload-urls")]
     [Description("Get urls for presigned upload photos")]

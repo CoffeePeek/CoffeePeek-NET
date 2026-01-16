@@ -19,7 +19,7 @@ namespace CoffeePeek.ModerationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ModerationShopController(IMediator mediator) : Controller
+public class ModerationShopController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [Authorize(Policy = RoleConsts.Moderator)]

@@ -20,8 +20,11 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
         reviewRepository.Update(review);
     }
 
-    public Task<bool> ExistsWithCurrentUser(Guid shopId, Guid userId, CancellationToken ct)
+    public async Task<(bool, Guid?)> ExistsForCurrentUser(Guid shopId, Guid userId, CancellationToken ct)
     {
-        return reviewRepository.AnyAsync(x => x.ShopId == shopId && x.UserId == userId, ct);
+        var review = await reviewRepository
+            .FirstOrDefaultAsNoTrackingAsync(x => x.ShopId == shopId && x.UserId == userId, ct);
+        
+        return (review != null, review?.Id);
     }
 }
