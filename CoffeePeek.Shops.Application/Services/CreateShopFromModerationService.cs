@@ -1,4 +1,5 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Domain.Entities;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
@@ -14,6 +15,7 @@ public class CreateShopFromModerationService(
     IGenericRepository<Roaster> roasterRepository,
     IGenericRepository<BrewMethod> brewMethodRepository,
     IUnitOfWork unitOfWork,
+    IOutboxEventPublisher outboxEventPublisher,
     ILogger<CreateShopFromModerationService> logger) : ICreateShopFromModerationService
 {
     public async Task CreateShopFromApprovedEventAsync(ShopDto shopDto, Guid creatorId, Guid moderationId, CancellationToken cancellationToken = default)
@@ -81,6 +83,13 @@ public class CreateShopFromModerationService(
 
         await shopRepository.AddAsync(shop, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await outboxEventPublisher.PublishAsync(new ShopCreatedEvent
+        {
+            ShopId = shop.Id,
+            ModerationId = moderationId,
+            CreatedAt = DateTime.UtcNow
+        }, cancellationToken);
 
         logger.LogInformation("Shop {ShopId} successfully created from moderation event {ModerationId}", shop.Id, moderationId);
     }

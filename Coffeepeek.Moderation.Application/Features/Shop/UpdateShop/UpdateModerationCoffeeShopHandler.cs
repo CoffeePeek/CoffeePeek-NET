@@ -1,15 +1,13 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Responses;
-using Coffeepeek.Moderation.Application.Abstractions;
-using Coffeepeek.Moderation.Application.UpdateShop;
+using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Coffeepeek.Moderation.Application.Features.UpdateShop;
+namespace CoffeePeek.Moderation.Application.Features.Shop.UpdateShop;
 
 public class UpdateModerationCoffeeShopHandler(
     IModerationShopRepository repository,

@@ -15,8 +15,8 @@ public static class ClaimsPrincipalExtensions
             if (string.IsNullOrEmpty(userIdClaim))
                 throw new UnauthorizedAccessException("User ID claim is missing.");
 
-            if (!Guid.TryParse(userIdClaim, out var userId))
-                throw new UnauthorizedAccessException("User ID claim is invalid.");
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+                throw new UnauthorizedAccessException("User ID claim is invalid or missing.");
 
             return userId;
         }
@@ -36,6 +36,18 @@ public static class ClaimsPrincipalExtensions
                 return null;
 
             return userId;
+        }
+        
+        public string? GetUsername()
+        {
+            return user.FindFirst(ClaimTypes.Name)?.Value
+                   ?? user.FindFirst("preferred_username")?.Value;
+        }
+        
+        public string GetUsernameOrThrow()
+        {
+            var username = user.GetUsername();
+            return string.IsNullOrEmpty(username) ? throw new UnauthorizedAccessException("Username claim is missing.") : username;
         }
     }
 }

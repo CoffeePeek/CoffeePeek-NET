@@ -11,7 +11,7 @@ public sealed class ModerationCoffeeBeanShop : Entity<Guid>
 
     private ModerationCoffeeBeanShop()
     {
-        
+        //ef core
     }
     
     public ModerationCoffeeBeanShop(Guid shopId, Guid coffeeBeanId)

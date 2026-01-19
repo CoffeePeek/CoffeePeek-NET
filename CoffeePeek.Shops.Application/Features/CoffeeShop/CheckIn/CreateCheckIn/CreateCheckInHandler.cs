@@ -17,27 +17,27 @@ public class CreateCheckInHandler(
     IGenericRepository<Review> reviewsRepository,
     IUserVisitService userVisitService,
     IUnitOfWork unitOfWork,
-    IValidationStrategy<CreateCheckInRequest> validationStrategy,
+    IValidationStrategy<CreateCheckInCommand> validationStrategy,
     IOutboxEventPublisher outboxEventPublisher)
-    : IRequestHandler<CreateCheckInRequest, Response<CreateCheckInResponse>>
+    : IRequestHandler<CreateCheckInCommand, Response<CreateCheckInResponse>>
 {
-    public async Task<Response<CreateCheckInResponse>> Handle(CreateCheckInRequest request, CancellationToken cancellationToken)
+    public async Task<Response<CreateCheckInResponse>> Handle(CreateCheckInCommand command, CancellationToken cancellationToken)
     {
-        var validationResult = validationStrategy.Validate(request);
+        var validationResult = validationStrategy.Validate(command);
         if (!validationResult.IsValid)
         {
             return Response<CreateCheckInResponse>.Error(validationResult.ErrorMessage);
         }
 
-        var checkIn = Domain.Entities.CheckIn.Create(request.UserId, request.ShopId, request.Note);
+        var checkIn = Domain.Entities.CheckIn.Create(command.UserId, command.ShopId, command.Note);
 
         Guid? reviewId = null;
         var hasReview = false;
 
-        if (request.Review != null)
+        if (command.Review != null)
         {
-            var reviewCommand = request.Review;
-            var review = Review.Create(request.UserId, request.ShopId, reviewCommand.Header, reviewCommand.Comment,
+            var reviewCommand = command.Review;
+            var review = Review.Create(command.ShopId, command.UserId, command.UserName, reviewCommand.Header, reviewCommand.Comment,
                 reviewCommand.RatingCoffee, reviewCommand.RatingPlace, reviewCommand.RatingService);
 
             reviewsRepository.Add(review);
@@ -49,21 +49,21 @@ public class CreateCheckInHandler(
         checkInRepository.Add(checkIn);
         
         await userVisitService.RegisterVisitAsync(
-            request.UserId,
-            request.ShopId,
+            command.UserId,
+            command.ShopId,
             checkIn.CreatedAtUtc,
             hasReview,
             cancellationToken);
         
-        if (request.Review != null)
+        if (command.Review != null)
         {
-            await coffeeShopCacheService.InvalidateShopCacheAsync(request.ShopId, cancellationToken);
+            await coffeeShopCacheService.InvalidateShopCacheAsync(command.ShopId, cancellationToken);
         }
         
         await outboxEventPublisher.PublishAsync(new CheckinCreatedEvent
         {
-            UserId = request.UserId,
-            ShopId = request.ShopId,
+            UserId = command.UserId,
+            ShopId = command.ShopId,
             CreatedAt = checkIn.CreatedAtUtc
         }, cancellationToken);
 
@@ -71,8 +71,8 @@ public class CreateCheckInHandler(
         {
             await outboxEventPublisher.PublishAsync(new ReviewAddedEvent
             {
-                UserId = request.UserId,
-                ShopId = request.ShopId,
+                UserId = command.UserId,
+                ShopId = command.ShopId,
                 ReviewId = reviewId.Value,
                 CreatedAt = DateTime.UtcNow
             }, cancellationToken);

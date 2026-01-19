@@ -4,7 +4,7 @@ using CoffeePeek.Moderation.Domain.Repositories;
 using MapsterMapper;
 using MediatR;
 
-namespace Coffeepeek.Moderation.Application.Features.Shop.GetAllModerationShops;
+namespace CoffeePeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 
 public class GetAllModerationShopsHandler(IModerationShopRepository repository, IMapper mapper) 
     : IRequestHandler<GetAllModerationShopsQuery, Response<GetAllModerationShopsResponse>>

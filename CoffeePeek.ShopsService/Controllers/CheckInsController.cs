@@ -16,9 +16,9 @@ public class CheckInsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(Response<CreateCheckInResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Task<Response<CreateCheckInResponse>> CreateCheckIn([FromBody] CreateCheckInRequest request)
+    public Task<Response<CreateCheckInResponse>> CreateCheckIn([FromBody] CreateCheckInCommand command)
     {
-        var command = request with { UserId = HttpContext.User.GetUserIdOrThrow() };
+        command = command with { UserId = User.GetUserIdOrThrow(), UserName = User.GetUsernameOrThrow()};
         return mediator.Send(command);
     }
 

@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Enums;
-using CoffeePeek.Contract.Responses;
 using CoffeePeek.Moderation.Application.Features.Review.ChangeStatusModerationReview;
-using Coffeepeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 using CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
+using CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using MediatR;
@@ -16,7 +15,7 @@ namespace CoffeePeek.ModerationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ModerationReviewController(IMediator mediator) : ControllerBase
+public class ModerationReviewsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [Authorize(Policy = RoleConsts.Moderator)]
@@ -24,24 +23,41 @@ public class ModerationReviewController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     [Description("Get all moderation reviews")]
-    public async Task<Response<GetAllModerationReviewsResponse>> GetAllModerationReviews(
-        GetAllModerationReviewsQuery query)
+    public async Task<IActionResult> GetAllModerationReviews()
     {
-        return await mediator.Send(query);
+        return Ok(await mediator.Send(new GetAllModerationReviewsQuery()));
     }
 
     [HttpPost]
     [Authorize]
-    [ProducesResponseType(typeof(CreateEntityResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CreateEntityResponse), statusCode: StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     [Description("Create new moderation review")]
-    public async Task<CreateEntityResponse> SendReviewToModeration(SendReviewToModerationCommand command)
+    public async Task<IActionResult> SendReviewToModeration([FromBody] SendReviewToModerationCommand command)
     {
-        var commandWithUser = command with { UserId = User.GetUserIdOrThrow() };
-        return await mediator.Send(commandWithUser);
+        var commandWithUser = command with
+        {
+            UserId = User.GetUserIdOrThrow(), 
+            UserName = User.GetUsernameOrThrow()
+        };
+        return Ok(await mediator.Send(commandWithUser));
+    }
+    
+    [HttpPut("{reviewId:guid}")]
+    [ProducesResponseType(typeof(Response<UpdateCoffeeShopReviewResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateReview(
+        [FromBody] UpdateCoffeeShopReviewRequest request, Guid reviewId)
+    {
+        request = request with { UserId = User.GetUserIdOrThrow(), ReviewId = reviewId };
+        var response = await mediator.Send(request);
+
+        return response.IsSuccess ? Ok(response) : NotFound(response);
     }
 
     [HttpPut]

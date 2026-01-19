@@ -11,7 +11,7 @@ public class ModerationShopBrewMethod : Entity<Guid>
 
     private ModerationShopBrewMethod()
     {
-        
+        //ef core
     }
     
     public ModerationShopBrewMethod(Guid shopId, Guid brewMethodId)

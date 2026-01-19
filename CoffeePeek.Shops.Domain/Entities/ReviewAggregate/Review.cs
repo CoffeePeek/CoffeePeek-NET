@@ -7,9 +7,11 @@ public sealed partial class Review : Entity<Guid>
 {
     public string Header { get; private set; }
     public string Comment { get; private set; }
-    public Guid UserId { get; private set; }
     public Guid ShopId { get; private set; }
     public DateTime ReviewDate { get; private set; }
+    
+    public Guid UserId { get; private set; }
+    public string UserName { get; private set; }
 
     public bool IsSoftDelete { get; private set; }
 
@@ -25,23 +27,23 @@ public sealed partial class Review : Entity<Guid>
     {
     }
 
-    private Review(Guid shopId, Guid userId, string header, string comment)
+    private Review(Guid shopId, Guid userId, string userName, string header, string comment)
     {
         Id = Guid.NewGuid();
         ShopId = shopId;
         UserId = userId;
+        UserName = userName;
         Header = header;
         Comment = comment;
         ReviewDate = DateTime.UtcNow;
     }
 
-    private Review(Guid shopId, Guid userId, string header, string comment, int ratingCoffee, int ratingPlace,
+    private Review(Guid shopId, Guid userId, string userName, string header, string comment, int ratingCoffee, int ratingPlace,
         int ratingService)
-        : this(shopId, userId, header, comment)
+        : this(shopId, userId, userName, header, comment)
     {
         RatingCoffee = ratingCoffee;
         RatingPlace = ratingPlace;
         RatingService = ratingService;
     }
-    
 }

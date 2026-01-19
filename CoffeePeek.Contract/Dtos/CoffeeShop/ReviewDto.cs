@@ -4,6 +4,7 @@ public record ReviewDto
 {
     public Guid Id { get; init; }
     public Guid UserId { get; init; }
+    public string Username { get; init; }
 
     public string Header { get; init; }
     public string Comment { get; init; }

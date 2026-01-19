@@ -1,12 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shops.Domain;
+using CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
+using CoffeePeek.Moderation.Domain;
 using MediatR;
 
-namespace CoffeePeek.Shops.Application.Features.Review.UpdateCoffeeShopReview;
+namespace CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
 
 public record UpdateCoffeeShopReviewRequest(
-    Guid UserId,
+    [property:JsonIgnore]Guid UserId,
     Guid ReviewId,
     string Header,
     string Comment,

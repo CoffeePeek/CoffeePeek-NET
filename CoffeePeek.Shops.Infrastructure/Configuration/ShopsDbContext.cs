@@ -46,6 +46,7 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
 
             entity.Property(r => r.Header).HasMaxLength(BusinessConstants.MaxReviewHeaderLength);
             entity.Property(r => r.Comment).HasMaxLength(BusinessConstants.MaxReviewCommentLength);
+            entity.Property(r => r.UserName).IsRequired().HasMaxLength(30);
         });
         
         modelBuilder.Entity<CheckIn>(entity =>

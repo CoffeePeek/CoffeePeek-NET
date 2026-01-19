@@ -32,9 +32,11 @@ public class ModerationReviewApprovedConsumer(
             return;
         }
 
+        
         var review = Review.Create(
             reviewDto.ShopId,
             reviewDto.UserId,
+            reviewDto.UserName,
             reviewDto.Header,
             reviewDto.Comment,
             reviewDto.RatingCoffee,

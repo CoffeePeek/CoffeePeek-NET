@@ -1,11 +1,10 @@
-using Coffeepeek.Moderation.Application.Common.Models;
-using Coffeepeek.Moderation.Application.Features.CreateShop;
+using CoffeePeek.Moderation.Application.Common.Models;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 
-namespace Coffeepeek.Moderation.Application.Features.Shop.CreateShop;
+namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
 public class ModerationShopCreationService(
     IModerationShopRepository shopRepository,

@@ -7,7 +7,7 @@ using Mapster;
 using MapsterMapper;
 using MediatR;
 
-namespace Coffeepeek.Moderation.Application.Features.Review.GetAllModerationReviews;
+namespace CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 
 public class GetAllModerationReviewsHandler(IModerationReviewRepository repository, IMapper mapper)
     : IRequestHandler<GetAllModerationReviewsQuery, Response<GetAllModerationReviewsResponse>>

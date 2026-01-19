@@ -17,7 +17,6 @@ public sealed partial class ModerationShop
         return new ModerationShop
         {
             Id = Guid.NewGuid(),
-            CreatedAt = DateTime.UtcNow,
             Name = name,
             UserId = userId,
             CityId = cityId,
@@ -34,7 +33,7 @@ public sealed partial class ModerationShop
 
     public void AddPhoto(string fileName, string contentType, string storageKey, long length)
     {
-        var photo = new PhotoMetadata(fileName, contentType, storageKey, length, UserId, Id);
+        var photo = PhotoMetadata.Create(fileName, contentType, storageKey, length, UserId, Id);
         _shopPhotos.Add(photo);
     }
 
@@ -106,8 +105,17 @@ public sealed partial class ModerationShop
         ModerationStatus = ModerationStatus.Rejected;
         RejectedReason = reason;
     }
-    
-    
+
+    public void SetShopId(Guid shopId)
+    {
+        if (shopId == Guid.Empty)
+            throw new DomainException($"{nameof(shopId)} cannot be empty.");
+
+        if (ShopId == shopId)
+            return;
+
+        ShopId = shopId;
+    }
     
     private static void UpdateCollection<TJoinEntity>(
         List<TJoinEntity> currentCollection,

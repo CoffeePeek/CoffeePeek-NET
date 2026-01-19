@@ -3,6 +3,7 @@ using System;
 using CoffeePeek.Moderation.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoffeePeek.Moderation.Infrastructure.Migrations
 {
     [DbContext(typeof(ModerationDbContext))]
-    partial class ModerationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260119103753_addUserNameForReview")]
+    partial class addUserNameForReview
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,15 +293,9 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<Guid?>("ModerationReviewId")
-                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ModerationShopId")
                         .HasColumnType("uuid");
@@ -313,12 +310,10 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("UpdatedAtUtc")
+                    b.Property<DateTime>("UploadedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ModerationReviewId");
 
                     b.HasIndex("ModerationShopId");
 
@@ -494,20 +489,11 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
 
             modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.PhotoMetadata", b =>
                 {
-                    b.HasOne("CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate.ModerationReview", null)
-                        .WithMany("ReviewPhotos")
-                        .HasForeignKey("ModerationReviewId");
-
                     b.HasOne("CoffeePeek.Moderation.Domain.Entities.ModerationShop", null)
                         .WithMany("ShopPhotos")
                         .HasForeignKey("ModerationShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate.ModerationReview", b =>
-                {
-                    b.Navigation("ReviewPhotos");
                 });
 
             modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationShop", b =>

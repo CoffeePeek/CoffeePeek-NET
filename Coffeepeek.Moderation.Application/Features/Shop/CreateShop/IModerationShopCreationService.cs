@@ -1,7 +1,7 @@
-using Coffeepeek.Moderation.Application.Common.Models;
-using Coffeepeek.Moderation.Application.Features.Shop.CreateShop;
+using CoffeePeek.Moderation.Application.Common.Models;
+using CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
-namespace Coffeepeek.Moderation.Application.Features.CreateShop;
+namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
 public interface IModerationShopCreationService
 {

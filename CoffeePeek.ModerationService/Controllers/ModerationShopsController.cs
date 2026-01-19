@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
-using Coffeepeek.Moderation.Application.Features.Shop.CreateShop;
-using Coffeepeek.Moderation.Application.Features.Shop.GetAllModerationShops;
+using CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
+using CoffeePeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 using CoffeePeek.Moderation.Application.Features.Shop.UpdateModerationShopStatus;
-using Coffeepeek.Moderation.Application.UpdateShop;
+using CoffeePeek.Moderation.Application.Features.Shop.UpdateShop;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using FluentResults;
@@ -19,7 +19,7 @@ namespace CoffeePeek.ModerationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ModerationShopController(IMediator mediator) : ControllerBase
+public class ModerationShopsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [Authorize(Policy = RoleConsts.Moderator)]

@@ -1,8 +1,7 @@
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shared.Validation.Review;
-using CoffeePeek.Shops.Application.Features.Review.UpdateCoffeeShopReview;
 
-namespace CoffeePeek.Shops.Infrastructure.ValidationStrategy.Review;
+namespace CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
 
 public class ReviewUpdateValidationStrategy : BaseReviewValidationStrategy, IValidationStrategy<UpdateCoffeeShopReviewRequest>
 {

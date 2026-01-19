@@ -2,7 +2,7 @@ using System.ComponentModel;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Requests;
 using CoffeePeek.Contract.Responses;
-using Coffeepeek.Moderation.Application.Features.Shop.GenerateUploadUrl;
+using CoffeePeek.Moderation.Application.Features.Shop.GenerateUploadUrl;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

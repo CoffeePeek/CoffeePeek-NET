@@ -1,7 +1,5 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Validation;
@@ -26,7 +24,7 @@ public class GetCoffeeShopsHandler(
 {
     public async Task<Response<GetCoffeeShopsResponse>> Handle(GetCoffeeShopsQuery queryRequest, CancellationToken cancellationToken)
     {
-        var validationResult = validationStrategy.Validate(queryRequest);
+        var validationResult =  validationStrategy.Validate(queryRequest);
         if (!validationResult.IsValid)
         {
             return Response<GetCoffeeShopsResponse>.Error(validationResult.ErrorMessage);

@@ -1,5 +1,6 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Events.Account;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MediatR;
@@ -10,6 +11,7 @@ namespace CoffeePeek.Account.Application.Features.User.UpdateProfile;
 public class UpdateProfileHandler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
+    IOutboxEventPublisher outboxEventPublisher,
     ILogger<UpdateProfileHandler> logger)
     : IRequestHandler<UpdateProfileCommand, Response>
 {
@@ -23,10 +25,22 @@ public class UpdateProfileHandler(
             return Response.Error("User not found");
         }
 
+        var oldUserName = user.Username.Value;
         var userName = Username.Create(command.Username);
         var phoneNumber = PhoneNumber.Create(command.PhoneNumber);
         
         user.UpdateProfile(userName, phoneNumber, command.About);
+        
+        // Публикуем событие если UserName изменился
+        if (userName.Value != oldUserName)
+        {
+            await outboxEventPublisher.PublishAsync(new UserNameChangedEvent
+            {
+                UserId = user.Id,
+                NewUserName = userName.Value,
+                ChangedAt = DateTime.UtcNow
+            }, ct);
+        }
         
         await userRepository.Update(user, ct);
         await unitOfWork.SaveChangesAsync(ct);

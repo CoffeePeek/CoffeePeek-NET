@@ -24,12 +24,14 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         {
             entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.HasKey(mr => mr.Id);
+            entity.HasOne(mr => mr.ModerationShop);
             
             entity.HasIndex(mr => mr.ShopId);
             entity.HasIndex(mr => mr.UserId);
             entity.HasIndex(mr => mr.ModeratedBy);
             entity.HasIndex(mr => mr.ModerationStatus);
 
+            entity.Property(mr => mr.UserName).HasMaxLength(30);
             entity.Property(mr => mr.Header).HasMaxLength(BusinessConstants.MaxReviewHeaderLength);
             entity.Property(mr => mr.Comment).HasMaxLength(BusinessConstants.MaxReviewCommentLength);
             entity.Property(mr => mr.RejectedReason).HasMaxLength(BusinessConstants.MaxRejectReasonCommentLength);

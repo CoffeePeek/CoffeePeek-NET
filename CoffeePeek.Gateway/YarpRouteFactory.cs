@@ -21,7 +21,7 @@ public static class YarpRouteFactory
                 "UserReviews"
             ],
             "shops-cluster"),
-        new("moderation", ["Moderations", "ModerationReviews", "ModerationShops"], "moderation-cluster"),
+        new("moderation", ["Moderation", "ModerationReviews", "ModerationShops"], "moderation-cluster"),
         new("jobs", ["Vacancies"], "jobs-cluster")
     ];
 

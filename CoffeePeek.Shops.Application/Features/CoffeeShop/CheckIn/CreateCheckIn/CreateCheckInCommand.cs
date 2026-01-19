@@ -7,12 +7,10 @@ using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.CreateCheckIn;
 
-public record CreateCheckInRequest(
+public record CreateCheckInCommand(
+    [property: JsonIgnore] Guid UserId,
+    [property: JsonIgnore] string UserName,
     [Required] Guid ShopId,
     [MaxLength(BusinessConstants.MaxCheckInNoteLength)]
     string Note,
-    CheckInReviewCommand? Review) : IRequest<Response<CreateCheckInResponse>>
-{
-    [JsonIgnore]
-    public Guid UserId { get; init; }
-}
+    CheckInReviewCommand? Review) : IRequest<Response<CreateCheckInResponse>>;

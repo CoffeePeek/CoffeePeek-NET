@@ -1,15 +1,15 @@
-using CoffeePeek.Contract.Abstract;
-using Coffeepeek.Moderation.Application.Abstractions;
+using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Application.Common;
-using Coffeepeek.Moderation.Application.Features.CreateShop;
-using Coffeepeek.Moderation.Application.Features.Review.SendReviewToModeration;
 using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
-using Coffeepeek.Moderation.Application.Features.Shop.CreateShop;
-using Coffeepeek.Moderation.Application.Features.Shop.GetAllModerationShops;
+using CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
+using CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
+using CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
+using CoffeePeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Moderation.Infrastructure;
+using CoffeePeek.Moderation.Infrastructure.Consumers;
 using CoffeePeek.Moderation.Infrastructure.Mapper;
 using CoffeePeek.Moderation.Infrastructure.Services;
 using CoffeePeek.Shared.Extensions.Configuration;
@@ -62,7 +62,11 @@ builder.Services.AddScoped<IModerationReviewRepository, ModerationReviewReposito
 
 builder.Services.AddScoped<IStorageService, MinIOStorageService>();
 
-builder.Services.AddTransient<IValidationStrategy<SendReviewToModerationCommand>, SendReviewToModerationValidationStrategy>();
+builder.Services.AddTransient<IAsyncValidationStrategy<SendReviewToModerationCommand>, SendReviewToModerationValidationStrategy>();
+
+// Validation
+
+builder.Services.AddTransient<IValidationStrategy<UpdateCoffeeShopReviewRequest>, ReviewUpdateValidationStrategy>();
 
 // Mapster
 builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
@@ -100,7 +104,10 @@ builder.Services.AddAuthorization(options =>
 });
 
 // RabbitMQ для публикации событий
-builder.Services.AddMessagingModule();
+builder.Services.AddMessagingModule(configureConsumers: x =>
+{
+    x.AddConsumer<ShopCreatedEventConsumer>();
+});
 
 // Outbox Event Publisher
 builder.Services.AddOutboxEventPublisher<OutboxEvent, ModerationDbContext>();

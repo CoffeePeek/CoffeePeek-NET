@@ -14,7 +14,7 @@ COPY ["CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj", "Coffe
 COPY ["CoffePeek.ServiceDefaults/CoffePeek.ServiceDefaults.csproj", "CoffePeek.ServiceDefaults/"]
 COPY ["CoffeePeek.Account.Domain/CoffeePeek.Account.Domain.csproj", "CoffeePeek.Account.Domain/"]
 COPY ["CoffeePeek.Moderation.Domain/CoffeePeek.Moderation.Domain.csproj", "CoffeePeek.Moderation.Domain/"]
-COPY ["Coffeepeek.Moderation.Application/Coffeepeek.Moderation.Application.csproj", "Coffeepeek.Moderation.Application/"]
+COPY ["CoffeePeek.Moderation.Application/CoffeePeek.Moderation.Application.csproj", "CoffeePeek.Moderation.Application/"]
 COPY ["CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj", "CoffeePeek.Shops.Infrastructure/"]
 COPY ["CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj", "CoffeePeek.Account.Infrastructure/"]
 COPY ["CoffeePeek.Account.Application/CoffeePeek.Account.Application.csproj", "CoffeePeek.Account.Application/"]

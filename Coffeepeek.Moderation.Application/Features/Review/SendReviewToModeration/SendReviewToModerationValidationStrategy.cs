@@ -1,46 +1,44 @@
-using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
+using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shared.Validation.Review;
 
-namespace Coffeepeek.Moderation.Application.Features.Review.SendReviewToModeration;
+namespace CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
 
-public class SendReviewToModerationValidationStrategy : BaseReviewValidationStrategy,
-    IValidationStrategy<SendReviewToModerationCommand>
+public class SendReviewToModerationValidationStrategy(IGenericRepository<ModerationShop> shopRepository) : BaseReviewValidationStrategy,
+    IAsyncValidationStrategy<SendReviewToModerationCommand>
 {
-    public ValidationResult Validate(SendReviewToModerationCommand command)
+    public async Task<ValidationResult> ValidateAsync(SendReviewToModerationCommand command, CancellationToken ct = default)
     {
-        var userIdValidation = ValidateUserId(command.UserId);
-        if (!userIdValidation.IsValid)
+        var syncResult = ValidateSyncProps(command);
+        if (!syncResult.IsValid) 
+            return syncResult;
+
+        var shop = await shopRepository.FirstOrDefaultAsNoTrackingAsync(x => x.ShopId == command.ShopId, ct);
+
+        if (shop == null)
         {
-            return userIdValidation;
+            return ValidationResult.Invalid("Coffee shop not found");
         }
 
-        var headerValidation = ValidateHeader(command.Header);
-        if (!headerValidation.IsValid)
+        return ValidationResult.Valid;
+    }
+    
+    private static ValidationResult ValidateSyncProps(SendReviewToModerationCommand command)
+    {
+        var validations = new List<ValidationResult>
         {
-            return headerValidation;
-        }
+            ValidateUserId(command.UserId),
+            ValidateHeader(command.Header),
+            ValidateComment(command.Comment)
+        };
 
-        var commentValidation = ValidateComment(command.Comment);
-        if (!commentValidation.IsValid)
-        {
-            return commentValidation;
-        }
+        var firstError = validations.FirstOrDefault(v => !v.IsValid);
+        if (firstError != null) return firstError;
 
-        if (!IsValidRating(command.RatingCoffee))
-        {
-            return ValidationResult.Invalid($"RatingCoffee must be between {MinRating} and {MaxRating}");
-        }
-
-        if (!IsValidRating(command.RatingService))
-        {
-            return ValidationResult.Invalid($"RatingService must be between {MinRating} and {MaxRating}");
-        }
-
-        if (!IsValidRating(command.RatingPlace))
-        {
-            return ValidationResult.Invalid($"RatingPlace must be between {MinRating} and {MaxRating}");
-        }
+        if (!IsValidRating(command.RatingCoffee)) return ValidationResult.Invalid("RatingCoffee invalid");
+        if (!IsValidRating(command.RatingService)) return ValidationResult.Invalid("RatingService invalid");
+        if (!IsValidRating(command.RatingPlace)) return ValidationResult.Invalid("RatingPlace invalid");
 
         return ValidationResult.Valid;
     }

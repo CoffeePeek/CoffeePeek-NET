@@ -21,7 +21,7 @@ public class UserRegisteredEventHandler(
 
             var message = new EmailMessage
             {
-                From = "Coffeepeek.by <info@coffeepeek.by>",
+                From = "CoffeePeek.by <info@coffeepeek.by>",
                 To = notification.Email,
                 Subject = "Perfectly roasted beans are waiting for you! ☕",
                 HtmlBody = templateService.GetConfirmationHtml(notification.Username, confirmationUrl)

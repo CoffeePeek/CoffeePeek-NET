@@ -1,20 +1,17 @@
 using System.Net;
 using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
+using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Validation;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Shops.Application.Features.Review.UpdateCoffeeShopReview;
+namespace CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
 
 public class UpdateCoffeeShopReviewRequestHandler(
-    IReviewRepository reviewRepository,
-    IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> shopsRepository,
+    IGenericRepository<ModerationReview> reviewRepository,
     IUnitOfWork unitOfWork,
-    IValidationStrategy<UpdateCoffeeShopReviewRequest> validationStrategy,
-    IRedisService redisService)
+    IValidationStrategy<UpdateCoffeeShopReviewRequest> validationStrategy)
     : IRequestHandler<UpdateCoffeeShopReviewRequest, Response<UpdateCoffeeShopReviewResponse>>
 {
     public async Task<Response<UpdateCoffeeShopReviewResponse>> Handle(UpdateCoffeeShopReviewRequest request,
@@ -27,7 +24,7 @@ public class UpdateCoffeeShopReviewRequestHandler(
                 validationResult.ErrorMessage);
         }
 
-        var review = await reviewRepository.GetById(request.ReviewId, cancellationToken);
+        var review = await reviewRepository.FirstOrDefaultAsync(x => x.Id == request.ReviewId, cancellationToken);
 
         if (review == null)
         {
@@ -49,22 +46,6 @@ public class UpdateCoffeeShopReviewRequestHandler(
         reviewRepository.Update(review);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await InvalidateShopCacheAsync(review.ShopId, cancellationToken);
-
         return Response<UpdateCoffeeShopReviewResponse>.Success(new UpdateCoffeeShopReviewResponse(review.Id));
-    }
-
-    private async Task InvalidateShopCacheAsync(Guid shopId, CancellationToken cancellationToken)
-    {
-        var cityId = await shopsRepository.QueryAsNoTracking()
-            .Where(s => s.Id == shopId)
-            .Select(s => s.Location.CityId)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        await redisService.RemoveAsync(CacheKey.Shop.Detail(shopId));
-        if (cityId != Guid.Empty)
-        {
-            await redisService.RemoveByPattern(CacheKey.Shop.ListByCityPattern(cityId));
-        }
     }
 }

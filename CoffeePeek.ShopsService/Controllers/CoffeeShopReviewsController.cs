@@ -1,13 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure;
-using CoffeePeek.Shops.Application.Features.CoffeeShop.CreateCoffeeShopReview;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.DeleteReviewFromCoffeeShop;
 using CoffeePeek.Shops.Application.Features.Review.CanCreateCoffeeShopReview;
 using CoffeePeek.Shops.Application.Features.Review.GetAllReviewsByShopId;
 using CoffeePeek.Shops.Application.Features.Review.GetReviewById;
-using CoffeePeek.Shops.Application.Features.Review.UpdateCoffeeShopReview;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -69,40 +66,6 @@ public class CoffeeShopReviewsController(IMediator mediator) : ControllerBase
         var response = await mediator.Send(query);
 
         return Ok(response);
-    }
-
-    [HttpPost]
-    [ProducesResponseType(typeof(Response<CreateCoffeeShopReviewResponse>), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> CreateReview(
-        Guid shopId,
-        [FromBody] CreateCoffeeShopReviewCommand command)
-    {
-        if (shopId == Guid.Empty)
-            return BadRequest(Response<CreateCoffeeShopReviewResponse>.Error("Invalid shop ID"));
-
-        command.UserId = User.GetUserIdOrThrow();
-
-        var response = await mediator.Send(command);
-
-        return response.IsSuccess
-            ? CreatedAtAction(nameof(GetReview), new { shopId, reviewId = response.Data?.ReviewId }, response)
-            : StatusCode(StatusCodes.Status409Conflict, response);
-    }
-
-    [HttpPut("{reviewId:guid}")]
-    [ProducesResponseType(typeof(Response<UpdateCoffeeShopReviewResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateReview(
-        [FromBody] UpdateCoffeeShopReviewRequest request, Guid reviewId)
-    {
-        request = request with { UserId = User.GetUserIdOrThrow(), ReviewId = reviewId };
-        var response = await mediator.Send(request);
-
-        return response.IsSuccess ? Ok(response) : NotFound(response);
     }
 
     [HttpDelete("{reviewId:guid}")]

@@ -18,10 +18,11 @@ public class JWTTokenService(IOptions<JWTOptions> options) : IJWTTokenService
     {
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Name, user.Username),
             new(JwtRegisteredClaimNames.Email, user.Credentials.Email),
-            new(JwtRegisteredClaimNames.Locale, device),
-            new(JwtRegisteredClaimNames.Address, ipAddress),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.PreferredUsername, user.Username),
             new(JwtRegisteredClaimNames.EmailVerified, user.Credentials.Email),
         };
         claims.AddRange(user.Roles.Select(ur => new Claim(ClaimTypes.Role, ur.Name)));

@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Account.Infrastr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Account.Application", "CoffeePeek.Account.Application\CoffeePeek.Account.Application.csproj", "{CE5E9229-E679-42C1-9626-0E160A635C49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coffeepeek.Moderation.Application", "Coffeepeek.Moderation.Application\Coffeepeek.Moderation.Application.csproj", "{BDB92CEA-3E91-445D-AEEF-34D5222213F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Moderation.Application", "CoffeePeek.Moderation.Application\CoffeePeek.Moderation.Application.csproj", "{BDB92CEA-3E91-445D-AEEF-34D5222213F5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeePeek.Moderation.Infrastructure", "CoffeePeek.Moderation.Infrastructure\CoffeePeek.Moderation.Infrastructure.csproj", "{04BA88F2-39E4-4233-9B84-2C0A67EDA59B}"
 EndProject

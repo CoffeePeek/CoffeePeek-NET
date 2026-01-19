@@ -9,7 +9,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Response = CoffeePeek.Contract.Abstract.Response;
 
-namespace Coffeepeek.Moderation.Application.Features.Shop.UpdateModerationShopStatus;
+namespace CoffeePeek.Moderation.Application.Features.Shop.UpdateModerationShopStatus;
 
 public class UpdateModerationCoffeeShopStatusHandler(
     IModerationShopRepository repository,

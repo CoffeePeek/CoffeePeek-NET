@@ -80,6 +80,7 @@ builder.Services.AddMessagingModule(configureConsumers: x =>
 {
     x.AddConsumer<ModerationShopApprovedConsumer>();
     x.AddConsumer<ModerationReviewApprovedConsumer>();
+    x.AddConsumer<UserNameChangedEventConsumer>();
 });
 
 // Outbox Event Publisher

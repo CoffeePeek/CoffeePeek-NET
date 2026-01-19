@@ -1,15 +1,13 @@
 using CoffeePeek.Contract.Abstract;
-using Coffeepeek.Moderation.Application.Abstractions;
-using Coffeepeek.Moderation.Application.Common.Models;
-using Coffeepeek.Moderation.Application.Features.CreateShop;
+using CoffeePeek.Moderation.Application.Abstractions;
+using CoffeePeek.Moderation.Application.Common.Models;
+using CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Repositories;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Coffeepeek.Moderation.Application.Features.Shop.CreateShop;
+namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
 public class SendCoffeeShopToModerationHandler(
     IModerationShopRepository repository,

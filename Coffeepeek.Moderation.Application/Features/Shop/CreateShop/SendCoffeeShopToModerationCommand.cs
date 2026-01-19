@@ -5,11 +5,9 @@ using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Enums;
-using CoffeePeek.Contract.Responses;
-using FluentResults;
 using MediatR;
 
-namespace Coffeepeek.Moderation.Application.Features.Shop.CreateShop;
+namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
 public record SendCoffeeShopToModerationCommand : IRequest<Response<SendCoffeeShopToModerationResponse>>
 {
