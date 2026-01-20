@@ -5,7 +5,6 @@ using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Extensions.Logging;
-using CoffeePeek.Shared.Extensions.Outbox;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
@@ -21,7 +20,6 @@ using CoffeePeek.Shops.Infrastructure.Extensions;
 using CoffeePeek.Shops.Infrastructure.Services;
 using CoffePeek.ServiceDefaults;
 using Mapster;
-using OutboxEvent = CoffeePeek.Shops.Domain.Entities.OutboxEvent;
 using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,20 +73,18 @@ builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<ICreateShopFromModerationService, CreateShopFromModerationService>();
 builder.Services.AddScoped<ICoffeeShopCacheService, CoffeeShopCacheService>();
 
-// Messaging for publishing events
-builder.Services.AddMessagingModule(configureConsumers: x =>
-{
-    x.AddConsumer<ModerationShopApprovedConsumer>();
-    x.AddConsumer<ModerationReviewApprovedConsumer>();
-    x.AddConsumer<UserNameChangedEventConsumer>();
-});
-
-// Outbox Event Publisher
-builder.Services.AddOutboxEventPublisher<OutboxEvent, ShopsDbContext>();
-
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ShopsDb);
-builder.Services.AddEfCoreData<ShopsDbContext, OutboxEvent>(dbOptions.ConnectionString);
+builder.Services.AddEfCoreData<ShopsDbContext>(dbOptions.ConnectionString);
+
+// CAP for event publishing and consuming
+builder.Services.AddCapModule<ShopsDbContext>(dbOptions, "shops-service");
+
+// Register CAP handlers
+builder.Services.AddScoped<ModerationShopApprovedHandler>();
+builder.Services.AddScoped<ModerationReviewApprovedHandler>();
+builder.Services.AddScoped<UserNameChangedHandler>();
+
 builder.Services.AddGenericRepository<CoffeeShop, ShopsDbContext>();
 builder.Services.AddGenericRepository<ShopPhoto, ShopsDbContext>();
 builder.Services.AddGenericRepository<City, ShopsDbContext>();
@@ -119,13 +115,13 @@ app.UseExceptionHandler();
 
 app.MapDefaultEndpoints();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 // Swagger documentation
 app.UseSwaggerDocumentation();
 
 app.UseHttpsRedirection();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 

@@ -1,10 +1,13 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Contract.Responses.CoffeeShop;
+using CoffeePeek.Shared.Extensions.CAP;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+using DotNetCore.CAP;
 using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.CreateCheckIn;
@@ -18,7 +21,7 @@ public class CreateCheckInHandler(
     IUserVisitService userVisitService,
     IUnitOfWork unitOfWork,
     IValidationStrategy<CreateCheckInCommand> validationStrategy,
-    IOutboxEventPublisher outboxEventPublisher)
+    ICapPublisher capPublisher)
     : IRequestHandler<CreateCheckInCommand, Response<CreateCheckInResponse>>
 {
     public async Task<Response<CreateCheckInResponse>> Handle(CreateCheckInCommand command, CancellationToken cancellationToken)
@@ -59,25 +62,22 @@ public class CreateCheckInHandler(
         {
             await coffeeShopCacheService.InvalidateShopCacheAsync(command.ShopId, cancellationToken);
         }
-        
-        await outboxEventPublisher.PublishAsync(new CheckinCreatedEvent
+
+        await capPublisher.PublishAsync(new CheckinCreatedEvent
         {
             UserId = command.UserId,
             ShopId = command.ShopId,
             CreatedAt = checkIn.CreatedAtUtc
-        }, cancellationToken);
+        }, cancellationToken: cancellationToken);
 
         if (reviewId.HasValue)
         {
-            await outboxEventPublisher.PublishAsync(new ReviewAddedEvent
-            {
-                UserId = command.UserId,
-                ShopId = command.ShopId,
-                ReviewId = reviewId.Value,
-                CreatedAt = DateTime.UtcNow
-            }, cancellationToken);
+            await capPublisher.PublishAsync(
+                name:CapEventNames.Shops.ReviewAdded,
+                contentObj: new ReviewAddedEvent(command.UserId, command.ShopId, reviewId.Value),
+                cancellationToken: cancellationToken);
         }
-        
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Response<CreateCheckInResponse>.Success(new CreateCheckInResponse(checkIn.Id, reviewId));

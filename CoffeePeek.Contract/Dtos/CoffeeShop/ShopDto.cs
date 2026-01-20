@@ -30,5 +30,5 @@ public record ShopDto
     public EquipmentDto[]? Equipments { get; set; }
     public BrewMethodDto[]? BrewMethods { get; set; }
     public ShopContactDto? ShopContact { get; set; }
-    public List<ScheduleDto>? Schedules { get; set; }
+    public ScheduleDto[]? Schedules { get; set; }
 }

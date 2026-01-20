@@ -14,13 +14,6 @@ public class SendReviewToModerationValidationStrategy(IGenericRepository<Moderat
         if (!syncResult.IsValid) 
             return syncResult;
 
-        var shop = await shopRepository.FirstOrDefaultAsNoTrackingAsync(x => x.ShopId == command.ShopId, ct);
-
-        if (shop == null)
-        {
-            return ValidationResult.Invalid("Coffee shop not found");
-        }
-
         return ValidationResult.Valid;
     }
     

@@ -2,10 +2,12 @@ using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
-using CoffeePeek.Contract.Responses;
 using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
+using CoffeePeek.Shared.Extensions.CAP;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Constants;
+using DotNetCore.CAP;
 using MapsterMapper;
 using MediatR;
 
@@ -14,7 +16,8 @@ namespace CoffeePeek.Moderation.Application.Features.Review.ChangeStatusModerati
 public class ChangeStatusModerationReviewHandler(
     IModerationReviewRepository repository, 
     IUnitOfWork unitOfWork,
-    IMapper mapper)
+    IMapper mapper,
+    ICapPublisher capPublisher)
     : IRequestHandler<ChangeStatusModerationReviewCommand, UpdateEntityResponse<ModerationStatus>>
 {
     public async Task<UpdateEntityResponse<ModerationStatus>> Handle(ChangeStatusModerationReviewCommand request,
@@ -32,7 +35,10 @@ public class ChangeStatusModerationReviewHandler(
             case ModerationStatus.Approved:
                 moderationReview.Approve(request.UserId);
                 var reviewDto = mapper.Map<ModerationReviewDto>(moderationReview);
-                moderationReview.AddDomainEvent(new ModerationReviewApprovedEvent(reviewDto));
+                await capPublisher.PublishAsync(
+                    name: CapEventNames.Moderation.ReviewApproved,
+                    contentObj: new ModerationReviewApprovedEvent(reviewDto),
+                    cancellationToken: cancellationToken);
                 break;
             case ModerationStatus.Rejected:
                 moderationReview.Reject(request.RejectReason!, request.UserId);

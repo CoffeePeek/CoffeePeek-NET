@@ -34,12 +34,13 @@ public partial class ModerationReview : Entity<Guid>
     {
     }
 
-    internal ModerationReview(Guid userId, Guid shopId, string userName, string header, string comment,
+    internal ModerationReview(Guid userId, Guid shopId, Guid moderationShopId, string userName, string header, string comment,
         int ratingCoffee, int ratingPlace, int ratingService, List<PhotoMetadata> photos)
     {
         Id = Guid.NewGuid();
         UserId = userId;
         ShopId = shopId;
+        ModerationShopId = moderationShopId;
         UserName = userName;
         Header = header;
         Comment = comment;

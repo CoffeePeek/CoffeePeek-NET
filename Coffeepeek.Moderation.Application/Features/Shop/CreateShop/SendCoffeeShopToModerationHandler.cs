@@ -3,7 +3,6 @@ using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Application.Common.Models;
 using CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 using CoffeePeek.Moderation.Domain.Entities;
-using CoffeePeek.Moderation.Domain.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

@@ -1,5 +1,4 @@
 using CoffeePeek.Moderation.Domain.Entities;
-using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +12,7 @@ public class ModerationShopRepository(ModerationDbContext context) : IModeration
         return await ShopRepository.AnyAsync(spec.Criteria, ct);
     }
 
-    public async Task<ModerationShop?> GetByIdWithDetails(Guid moderationShopId, CancellationToken ct = default)
+    public async Task<ModerationShop?> GetByIdWithOutDetails(Guid moderationShopId, CancellationToken ct = default)
     {
         return await ShopRepository.FirstOrDefaultAsync(x => x.Id == moderationShopId , ct);
     }
@@ -33,7 +32,7 @@ public class ModerationShopRepository(ModerationDbContext context) : IModeration
             .ToListAsync();
     }
 
-    public async Task<ModerationShop?> GetByIdAsync(Guid id)
+    public async Task<ModerationShop?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         return await ShopRepository
             .Include(s => s.Contact)

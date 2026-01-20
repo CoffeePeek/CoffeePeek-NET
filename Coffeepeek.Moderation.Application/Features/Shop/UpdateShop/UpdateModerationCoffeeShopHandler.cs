@@ -1,7 +1,7 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Moderation.Application.Abstractions;
-using CoffeePeek.Moderation.Domain.Repositories;
+using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MapsterMapper;
 using MediatR;
@@ -22,7 +22,7 @@ public class UpdateModerationCoffeeShopHandler(
         CancellationToken ct)
     {
         var moderationShopDto = command.ModerationShopDto;
-        var shop = await repository.GetByIdWithDetails(command.ModerationShopDto.Id, ct);
+        var shop = await repository.GetByIdWithOutDetails(command.ModerationShopDto.Id, ct);
 
         if (shop == null || shop.UserId != command.UserId)
         {

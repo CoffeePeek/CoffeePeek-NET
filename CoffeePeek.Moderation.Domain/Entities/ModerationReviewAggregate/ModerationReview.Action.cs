@@ -5,7 +5,7 @@ namespace CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 
 public partial class ModerationReview
 {
-    public static ModerationReview Create(Guid userId, Guid shopId, string userName, string header, string comment,
+    public static ModerationReview Create(Guid userId, Guid shopId, Guid moderationShopId, string userName, string header, string comment,
         int ratingPlace, int ratingService, int ratingCoffee, List<PhotoMetadata> photos)
     {
         if (shopId == Guid.Empty)
@@ -13,6 +13,9 @@ public partial class ModerationReview
 
         if (userId == Guid.Empty)
             throw new DomainException($"{nameof(userId)} cannot be empty.");
+        
+        if (moderationShopId == Guid.Empty)
+            throw new DomainException($"{nameof(moderationShopId)} cannot be empty.");
 
         if (string.IsNullOrWhiteSpace(header))
             throw new DomainException("Review header is required.");
@@ -40,7 +43,7 @@ public partial class ModerationReview
             throw new DomainException(
                 $"{nameof(ratingService)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
 
-        return new ModerationReview(userId, shopId, userName, header, comment, ratingCoffee, ratingPlace, ratingService,
+        return new ModerationReview(userId, shopId, moderationShopId, userName, header, comment, ratingCoffee, ratingPlace, ratingService,
             photos);
     }
 

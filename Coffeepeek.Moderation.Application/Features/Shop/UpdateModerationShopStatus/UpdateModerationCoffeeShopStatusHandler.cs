@@ -1,9 +1,11 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
-using CoffeePeek.Moderation.Application.Features.Shop.UpdateModerationShopStatus;
-using CoffeePeek.Moderation.Domain.Repositories;
+using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Shared.Extensions.CAP;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Constants;
+using DotNetCore.CAP;
 using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -15,7 +17,8 @@ public class UpdateModerationCoffeeShopStatusHandler(
     IModerationShopRepository repository,
     IUnitOfWork unitOfWork,
     IMapper mapper,
-    ILogger<UpdateModerationCoffeeShopStatusHandler> logger) 
+    ICapPublisher capPublisher,
+    ILogger<UpdateModerationCoffeeShopStatusHandler> logger)
     : IRequestHandler<UpdateModerationCoffeeShopStatusCommand, Response>
 {
     public async Task<Response> Handle(UpdateModerationCoffeeShopStatusCommand command, CancellationToken ct)
@@ -31,12 +34,19 @@ public class UpdateModerationCoffeeShopStatusHandler(
         if (command.ModerationStatus == ModerationStatus.Approved)
         {
             shop.Approve();
-            
-            // Create event with DTO for Outbox
+
+            using var trans = unitOfWork.BeginTransactionAsync(ct);
             var shopDto = mapper.Map<ShopDto>(shop);
-            shop.AddDomainEvent(new ModerationShopApprovedEvent(shop.UserId, shopDto));
             
-            logger.LogInformation("Shop {ShopId} approved.", command.Id);
+            await capPublisher.PublishAsync(
+                name: CapEventNames.Moderation.ShopApproved,
+                contentObj: new ModerationShopApprovedEvent(shop.UserId, shopDto),
+                callbackName: CapEventNames.Moderation.CallBack.ShopCompleted,
+                cancellationToken: ct);
+
+            await unitOfWork.SaveChangesAsync(ct);
+            
+            await unitOfWork.CommitTransactionAsync(ct);
         }
         else if (command.ModerationStatus == ModerationStatus.Rejected)
         {

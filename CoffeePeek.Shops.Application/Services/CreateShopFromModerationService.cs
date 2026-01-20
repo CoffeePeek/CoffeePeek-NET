@@ -1,5 +1,4 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Domain.Entities;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
@@ -15,16 +14,15 @@ public class CreateShopFromModerationService(
     IGenericRepository<Roaster> roasterRepository,
     IGenericRepository<BrewMethod> brewMethodRepository,
     IUnitOfWork unitOfWork,
-    IOutboxEventPublisher outboxEventPublisher,
     ILogger<CreateShopFromModerationService> logger) : ICreateShopFromModerationService
 {
-    public async Task CreateShopFromApprovedEventAsync(ShopDto shopDto, Guid creatorId, Guid moderationId, CancellationToken cancellationToken = default)
+    public async Task<Guid> CreateShopFromApprovedEventAsync(ShopDto shopDto, Guid creatorId, Guid moderationId, CancellationToken cancellationToken = default)
     {
         var exists = await shopRepository.AnyAsync(x => x.ModerationId == moderationId, cancellationToken);
         if (exists)
         {
             logger.LogInformation("Shop with ModerationId {ModerationId} already exists, skipping creation", moderationId);
-            return;
+            throw new InvalidOperationException($"Shop with ModerationId {moderationId} already exists");
         }
 
         var shop = new CoffeeShop(creatorId, shopDto.Name, shopDto.PriceRange, moderationId);
@@ -68,6 +66,14 @@ public class CreateShopFromModerationService(
             shop.SetBeans(coffeeBeans);
         }
 
+        if (shopDto.Schedules is { Length: > 0 })
+        {
+            var schedules = shopDto.Schedules
+                .Select(x => ShopSchedule.Create(x.DayOfWeek, x.IsClosed, x.Intervals))
+                .ToList();
+            shop.AddSchedule(schedules);
+        }
+
         if (shopDto.Photos is { Length: > 0 })
         {
             var photos = shopDto.Photos.Select(p => new ShopPhoto(
@@ -82,16 +88,13 @@ public class CreateShopFromModerationService(
         }
 
         await shopRepository.AddAsync(shop, cancellationToken);
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await outboxEventPublisher.PublishAsync(new ShopCreatedEvent
-        {
-            ShopId = shop.Id,
-            ModerationId = moderationId,
-            CreatedAt = DateTime.UtcNow
-        }, cancellationToken);
+        logger.LogInformation("Shop {ShopId} successfully created from moderation event {ModerationId}", shop.Id,
+            moderationId);
 
-        logger.LogInformation("Shop {ShopId} successfully created from moderation event {ModerationId}", shop.Id, moderationId);
+        return shop.Id;
     }
 
     private async Task<List<T>> GetValidEntitiesAsync<T>(

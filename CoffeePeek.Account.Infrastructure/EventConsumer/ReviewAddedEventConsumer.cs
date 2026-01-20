@@ -1,20 +1,22 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using MassTransit;
+using CoffeePeek.Shared.Infrastructure.Constants;
+using DotNetCore.CAP;
 
 namespace CoffeePeek.Auth.Infrastructure.EventConsumer;
 
-public class ReviewAddedEventConsumer(IUserRepository userRepository, IUnitOfWork unitOfWork) : IConsumer<ReviewAddedEvent>
+public class ReviewAddedHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) : ICapSubscribe
 {
-    public async Task Consume(ConsumeContext<ReviewAddedEvent> context)
+    [CapSubscribe(CapEventNames.Shops.ReviewAdded)]
+    public async Task Handle(ReviewAddedEvent @event, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetById(context.Message.UserId);
+        var user = await userRepository.GetById(@event.UserId, cancellationToken);
 
         if (user == null) return;
 
         user.Statistics.IncrementReviews();
 
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

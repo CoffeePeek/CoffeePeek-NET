@@ -1,29 +1,28 @@
 using CoffeePeek.Contract.Events.Account;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
-using MassTransit;
+using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
-public class UserNameChangedEventConsumer(
+public class UserNameChangedHandler(
     IGenericRepository<Review> reviewRepository,
     IUnitOfWork unitOfWork,
-    ILogger<UserNameChangedEventConsumer> logger)
-    : IConsumer<UserNameChangedEvent>
+    ILogger<UserNameChangedHandler> logger) : ICapSubscribe
 {
-    public async Task Consume(ConsumeContext<UserNameChangedEvent> context)
+    [CapSubscribe(CapEventNames.Account.UserNameChanged)]
+    public async Task Handle(UserNameChangedEvent @event, CancellationToken cancellationToken)
     {
-        var @event = context.Message;
-        
         logger.LogInformation("Received UserNameChangedEvent for UserId: {UserId}, NewUserName: {NewUserName}",
             @event.UserId, @event.NewUserName);
 
         var reviews = await reviewRepository
             .Query()
             .Where(r => r.UserId == @event.UserId)
-            .ToListAsync(context.CancellationToken);
+            .ToListAsync(cancellationToken);
 
         if (reviews.Count == 0)
         {
@@ -36,7 +35,7 @@ public class UserNameChangedEventConsumer(
             review.UpdateUserName(@event.NewUserName);
         }
 
-        await unitOfWork.SaveChangesAsync(context.CancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         
         logger.LogInformation("Updated {Count} reviews with new UserName for UserId: {UserId}",
             reviews.Count, @event.UserId);

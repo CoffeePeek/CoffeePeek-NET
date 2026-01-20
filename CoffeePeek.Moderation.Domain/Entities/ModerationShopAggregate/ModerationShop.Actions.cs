@@ -134,4 +134,12 @@ public sealed partial class ModerationShop
 
         currentCollection.AddRange(idsToAdd.Select(createFunc));
     }
+
+    public void AddShopId(Guid shopId)
+    {
+        if (shopId == Guid.Empty) 
+            return;
+        
+        ShopId = shopId;
+    }
 }

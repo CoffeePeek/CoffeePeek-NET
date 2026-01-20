@@ -1,8 +1,9 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Events.Account;
-using CoffeePeek.Contract.Responses;
+using CoffeePeek.Shared.Extensions.CAP;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using DotNetCore.CAP;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -11,7 +12,7 @@ namespace CoffeePeek.Account.Application.Features.User.UpdateProfile;
 public class UpdateProfileHandler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
-    IOutboxEventPublisher outboxEventPublisher,
+    ICapPublisher capPublisher,
     ILogger<UpdateProfileHandler> logger)
     : IRequestHandler<UpdateProfileCommand, Response>
 {
@@ -28,20 +29,19 @@ public class UpdateProfileHandler(
         var oldUserName = user.Username.Value;
         var userName = Username.Create(command.Username);
         var phoneNumber = PhoneNumber.Create(command.PhoneNumber);
-        
+
         user.UpdateProfile(userName, phoneNumber, command.About);
-        
-        // Публикуем событие если UserName изменился
+
         if (userName.Value != oldUserName)
         {
-            await outboxEventPublisher.PublishAsync(new UserNameChangedEvent
+            await capPublisher.PublishAsync(new UserNameChangedEvent
             {
                 UserId = user.Id,
                 NewUserName = userName.Value,
                 ChangedAt = DateTime.UtcNow
-            }, ct);
+            }, cancellationToken: ct);
         }
-        
+
         await userRepository.Update(user, ct);
         await unitOfWork.SaveChangesAsync(ct);
 

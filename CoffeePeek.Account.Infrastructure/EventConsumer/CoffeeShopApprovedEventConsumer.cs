@@ -1,35 +1,35 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using MassTransit;
+using CoffeePeek.Shared.Infrastructure.Constants;
+using DotNetCore.CAP;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Auth.Infrastructure.EventConsumer;
 
-public class ModerationShopApprovedAccountConsumer(
+public class ModerationShopApprovedAccountHandler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
-    ILogger<ModerationShopApprovedAccountConsumer> logger)
-    : IConsumer<ModerationShopApprovedEvent>
+    ILogger<ModerationShopApprovedAccountHandler> logger) : ICapSubscribe
 {
-    public async Task Consume(ConsumeContext<ModerationShopApprovedEvent> context)
+    [CapSubscribe(CapEventNames.Moderation.ShopApproved)]
+    public async Task Handle(ModerationShopApprovedEvent @event, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Received ModerationShopApprovedEvent for UserId: {UserId}", context.Message.UserId);
+        logger.LogInformation("Received ModerationShopApprovedEvent for UserId: {UserId}", @event.UserId);
 
-        var user = await userRepository.GetById(context.Message.UserId);
+        var user = await userRepository.GetById(@event.UserId, cancellationToken);
 
         if (user == null)
         {
-            logger.LogWarning("User not found");
-            return;
+            throw new InvalidOperationException("User not found");
         }
 
         user.Statistics.IncrementAddedShops();
 
         logger.LogInformation("Updated UserStatistics for UserId: {UserId}. New AddedShopsCount: {AddedShopsCount}",
-            context.Message.UserId, user.Statistics.AddedShopsCount);
+            @event.UserId, user.Statistics.AddedShopsCount);
 
-        await unitOfWork.SaveChangesAsync(context.CancellationToken);
-        logger.LogInformation("UserStatistics saved successfully for UserId: {UserId}", context.Message.UserId);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        logger.LogInformation("UserStatistics saved successfully for UserId: {UserId}", @event.UserId);
     }
 }

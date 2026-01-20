@@ -1,22 +1,22 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using MassTransit;
+using CoffeePeek.Shared.Infrastructure.Constants;
+using DotNetCore.CAP;
 
 namespace CoffeePeek.Auth.Infrastructure.EventConsumer;
 
 //TODO move business logic from consumer
-public class CheckinCreatedEventConsumer(IUserRepository userRepository, IUnitOfWork unitOfWork) : IConsumer<CheckinCreatedEvent>
+public class CheckinCreatedHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) : ICapSubscribe
 {
-    public async Task Consume(ConsumeContext<CheckinCreatedEvent> context)
+    [CapSubscribe(CapEventNames.Shops.CheckinCreated)]
+    public async Task Handle(CheckinCreatedEvent @event, CancellationToken cancellationToken)
     {
-        var @event = context.Message;
-
         var user = await userRepository.GetById(@event.UserId);
         if (user == null) return;
 
         user.Statistics.IncrementCheckIn();
 
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

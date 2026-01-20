@@ -3,7 +3,6 @@ using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using Microsoft.EntityFrameworkCore;
-using OutboxEvent = CoffeePeek.Account.Domain.Entities.OutboxEvent;
 
 namespace CoffeePeek.Auth.Infrastructure.Configuration;
 
@@ -11,7 +10,6 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
 {
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Role> Roles { get; set; }
-    public DbSet<OutboxEvent> OutboxEvents { get; set; }
     
     public DbSet<User> Users { get; set; }
     public DbSet<PhotoMetadata> Photos { get; set; }

@@ -77,6 +77,9 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.Property<Guid?>("ModeratedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("ModerationShopId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("ModerationStatus")
                         .HasColumnType("integer");
 
@@ -111,6 +114,8 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
 
                     b.HasIndex("ModeratedBy");
 
+                    b.HasIndex("ModerationShopId");
+
                     b.HasIndex("ModerationStatus");
 
                     b.HasIndex("ShopId");
@@ -128,9 +133,6 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
 
                     b.Property<Guid>("CityId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -153,6 +155,9 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.Property<string>("RejectedReason")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -252,34 +257,6 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.ToTable("ModerationRoasterShops");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.OutboxEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("EventType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Payload")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Processed")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("ProcessedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OutboxEvents");
-                });
-
             modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.PhotoMetadata", b =>
                 {
                     b.Property<Guid>("Id")
@@ -330,6 +307,17 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.HasOne("CoffeePeek.Moderation.Domain.Entities.ModerationShop", "ModerationShop")
                         .WithMany("ModerationCoffeeBeanShops")
                         .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ModerationShop");
+                });
+
+            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate.ModerationReview", b =>
+                {
+                    b.HasOne("CoffeePeek.Moderation.Domain.Entities.ModerationShop", "ModerationShop")
+                        .WithMany()
+                        .HasForeignKey("ModerationShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

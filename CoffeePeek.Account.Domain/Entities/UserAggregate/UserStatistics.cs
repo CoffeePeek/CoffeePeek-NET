@@ -18,8 +18,17 @@ public partial record UserStatistics
     }
     
     public static UserStatistics Empty() => new(0, 0, 0);
-    
-    public UserStatistics IncrementReviews() => this with { ReviewCount = ReviewCount + 1 };
-    public UserStatistics IncrementCheckIn() => this with { CheckInCount = CheckInCount + 1 };
-    public UserStatistics IncrementAddedShops() => this with { AddedShopsCount = AddedShopsCount + 1 };
+
+    public void IncrementReviews()
+    {
+        ReviewCount += 1;
+    }
+    public void IncrementCheckIn()
+    {
+        CheckInCount += 1;
+    }
+    public void IncrementAddedShops()
+    {
+        AddedShopsCount += 1;
+    }
 }

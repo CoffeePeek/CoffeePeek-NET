@@ -41,7 +41,7 @@ public class RedisService(IConnectionMultiplexer redis) : IRedisService
         
             if (!string.IsNullOrEmpty(cachedValue))
             {
-                //return JsonSerializer.Deserialize<T>(cachedValue);
+                return JsonSerializer.Deserialize<T>(cachedValue);
             }
 
             var result = await factory();

@@ -1,5 +1,4 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Models;
 using CoffeePeek.Shared.Infrastructure.Options;
 using CoffeePeek.Shared.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +10,14 @@ public static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddEfCoreData<TDbContext, TOutboxEvent>(string connectionString,
+        public IServiceCollection AddEfCoreData<TDbContext>(string connectionString,
             Action<DbContextOptionsBuilder>? additionalOptions = null)
             where TDbContext : DbContext
-            where TOutboxEvent : OutboxEvent, new()
         {
             services.AddDbContext<TDbContext>(options =>
             {
                 options.UseNpgsql(connectionString)
-                    .AddInterceptors(new OutboxInterceptor<TOutboxEvent>(), new AuditInterceptor());
+                    .AddInterceptors(new AuditInterceptor());
                 additionalOptions?.Invoke(options);
             });
 
@@ -28,12 +26,11 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
-        public IServiceCollection AddEfCoreData<TDbContext, TOutboxEvent>(PostgresCpOptions dbOptions,
+        public IServiceCollection AddEfCoreData<TDbContext>(PostgresCpOptions dbOptions,
             Action<DbContextOptionsBuilder>? additionalOptions = null)
             where TDbContext : DbContext
-            where TOutboxEvent : OutboxEvent, new()
         {
-            return services.AddEfCoreData<TDbContext, TOutboxEvent>(dbOptions.ConnectionString, additionalOptions);
+            return services.AddEfCoreData<TDbContext>(dbOptions.ConnectionString, additionalOptions);
         }
 
         public IServiceCollection AddGenericRepository<TEntity, TDbContext>()

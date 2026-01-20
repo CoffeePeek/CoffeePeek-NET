@@ -137,5 +137,10 @@ public sealed class CoffeeShop : Entity<Guid>
         _coffeeBeans.AddRange(beans);
     }
     
+    public void AddSchedule(List<ShopSchedule> schedule)
+    {
+        _schedules.AddRange(schedule);
+    }
+    
     #endregion
 }
