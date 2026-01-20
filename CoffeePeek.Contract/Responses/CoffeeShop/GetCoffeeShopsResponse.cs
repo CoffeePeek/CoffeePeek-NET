@@ -7,12 +7,8 @@ public class GetCoffeeShopsResponse
 {
     public ShortShopDto[] CoffeeShops { get; set; }
 
-    [JsonIgnore]
     public int CurrentPage { get; set; }
-    [JsonIgnore]
     public int PageSize { get; set; }
-    [JsonIgnore]
     public int TotalItems { get; set; }
-    [JsonIgnore]
     public int TotalPages { get; set; }
 }
