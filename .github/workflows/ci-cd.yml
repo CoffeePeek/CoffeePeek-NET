@@ -107,7 +107,7 @@ jobs:
 
 
   apply_migrations:
-    needs: build_and_push_images
+    # needs: build_and_push_images
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     steps:
@@ -127,6 +127,8 @@ jobs:
   
       - name: Apply Migrations
         env:
+          PostgresCpOptions__ConnectionString: ${{ secrets.DB_CONNECTION_ACCOUNT }}
+          
           DB_CONN_ACCOUNT: ${{ secrets.DB_CONNECTION_ACCOUNT }}
           DB_CONN_SHOPS: ${{ secrets.DB_CONNECTION_SHOPS }}
           DB_CONN_JOBS: ${{ secrets.DB_CONNECTION_JOBS }}
