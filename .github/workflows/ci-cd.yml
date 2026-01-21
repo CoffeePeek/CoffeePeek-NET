@@ -134,7 +134,7 @@ jobs:
           DB_CONN_JOBS: ${{ secrets.DB_CONNECTION_JOBS }}
           DB_CONN_MODERATION: ${{ secrets.DB_CONNECTION_MODERATION }}
         run: |
-          dotnet build CoffeePeek-NET.sln
+          dotnet build CoffeePeek-NET.slnx
           
           echo "--- Applying AccountService migrations ---"
           export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_ACCOUNT }}"
