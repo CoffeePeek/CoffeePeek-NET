@@ -133,6 +133,9 @@ jobs:
           DB_CONN_MODERATION: ${{ secrets.DB_CONNECTION_MODERATION }}
         run: |
           echo "Applying AccountService migrations..."
+          
+          dotnet build CoffeePeek.AccountService/CoffeePeek.AccountService.csproj
+          
           cd CoffeePeek.AccountService
           dotnet ef database update \
           --context AccountDbContext \
