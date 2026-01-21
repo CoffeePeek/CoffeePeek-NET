@@ -1,5 +1,7 @@
-﻿using CoffeePeek.Account.Domain.Aggregates;
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+﻿using CoffeePeek.Account.Domain.Entities;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
+using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Exceptions;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
@@ -19,7 +21,7 @@ public class UpdateUserAvatarRequestHandler(
         if (string.IsNullOrWhiteSpace(request.UploadedPhoto.FileName))
             throw new ValidationException("File name cannot be empty");
 
-        var user = await userRepository.GetById(request.UserId) 
+        var user = await userRepository.GetById(request.UserId, cancellationToken) 
                    ?? throw new NotFoundException($"User with ID {request.UserId} not found");
 
         var fileExists = await storageService.ExistsAsync(request.UploadedPhoto.StorageKey);

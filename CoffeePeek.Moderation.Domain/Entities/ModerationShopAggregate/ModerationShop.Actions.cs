@@ -1,4 +1,3 @@
-using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Extensions.Exceptions;
 
@@ -18,7 +17,6 @@ public sealed partial class ModerationShop
         return new ModerationShop
         {
             Id = Guid.NewGuid(),
-            CreatedAt = DateTime.UtcNow,
             Name = name,
             UserId = userId,
             CityId = cityId,
@@ -31,12 +29,11 @@ public sealed partial class ModerationShop
     public void SetLocation(ModerationLocation moderationLocation)
     {
         Location = moderationLocation;
-        LocationId = moderationLocation.Id;
     }
 
     public void AddPhoto(string fileName, string contentType, string storageKey, long length)
     {
-        var photo = new PhotoMetadata(fileName, contentType, storageKey, length, UserId, Id);
+        var photo = PhotoMetadata.Create(fileName, contentType, storageKey, length, UserId, Id);
         _shopPhotos.Add(photo);
     }
 
@@ -50,16 +47,23 @@ public sealed partial class ModerationShop
 
     public void UpdateContacts(string? phone, string? instagram, string? email, string? site)
     {
-        ModerationShopContact ??= ModerationShopContact.Create(Id, phone, instagramLink: instagram, email, site);
-        ModerationShopContact.Update(phone, email, instagram, site);
+        Contact = ModerationShopContact.Create(phone, instagramLink: instagram, email, site);
     }
 
-    public void UpdateSchedules(IEnumerable<ScheduleDto> dtos)
+    public void UpdateSchedules(IEnumerable<(DayOfWeek DayOfWeek, List<(TimeSpan OpenTime, TimeSpan CloseTime)> Intervals)> schedules)
     {
         _schedules.Clear();
-        foreach (var dto in dtos)
+    
+        foreach (var schedule in schedules)
         {
-            _schedules.Add(new ModerationShopSchedule(dto.DayOfWeek, dto.Intervals));
+            var intervals = schedule.Intervals
+                .Select(i => new ModerationShopScheduleInterval(i.OpenTime, i.CloseTime))
+                .ToList()
+                .AsReadOnly();
+        
+            var isClosed = schedule.Intervals.Count == 0;
+        
+            _schedules.Add(new ModerationShopSchedule(schedule.DayOfWeek, isClosed, intervals));
         }
     }
 
@@ -101,8 +105,17 @@ public sealed partial class ModerationShop
         ModerationStatus = ModerationStatus.Rejected;
         RejectedReason = reason;
     }
-    
-    
+
+    public void SetShopId(Guid shopId)
+    {
+        if (shopId == Guid.Empty)
+            throw new DomainException($"{nameof(shopId)} cannot be empty.");
+
+        if (ShopId == shopId)
+            return;
+
+        ShopId = shopId;
+    }
     
     private static void UpdateCollection<TJoinEntity>(
         List<TJoinEntity> currentCollection,
@@ -120,5 +133,13 @@ public sealed partial class ModerationShop
         var idsToAdd = newIdSet.Where(id => !currentIdSet.Contains(id));
 
         currentCollection.AddRange(idsToAdd.Select(createFunc));
+    }
+
+    public void AddShopId(Guid shopId)
+    {
+        if (shopId == Guid.Empty) 
+            return;
+        
+        ShopId = shopId;
     }
 }

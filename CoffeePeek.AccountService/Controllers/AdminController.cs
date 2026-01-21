@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.Account.Application.Features.Admin.ChangeRole;
 using CoffeePeek.Account.Application.Features.Admin.InvalidateCache;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Cache;

@@ -6,7 +6,8 @@ namespace CoffeePeek.Shared.Infrastructure.Persistence.Data;
 
 public class AuditInterceptor : SaveChangesInterceptor
 {
-    public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData,
+        InterceptionResult<int> result, CancellationToken ct = default)
     {
         var entries = eventData.Context!.ChangeTracker
             .Entries<IAuditableEntity>()
@@ -15,12 +16,13 @@ public class AuditInterceptor : SaveChangesInterceptor
         foreach (var entry in entries)
         {
             var now = DateTime.UtcNow;
-            
-            if (entry.State == EntityState.Added) 
+
+            if (entry.State == EntityState.Added)
                 entry.Entity.CreatedAtUtc = now;
-            
+
             entry.Entity.UpdatedAtUtc = now;
         }
-        return base.SavingChanges(eventData, result);
+
+        return base.SavingChangesAsync(eventData, result, ct);
     }
 }

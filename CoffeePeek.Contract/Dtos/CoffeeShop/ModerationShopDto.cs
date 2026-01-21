@@ -17,7 +17,6 @@ public class ModerationShopDto
     public Guid? CityId { get; set; }
     public Guid UserId { get; set; }
     public ModerationStatus ModerationStatus { get; set; }
-    public ShopStatus Status { get; set; }
     public ShopContactDto? ShopContact { get; set; }
     public List<ScheduleDto> Schedules { get; set; }
     public List<Guid> EquipmentIds { get; set; }

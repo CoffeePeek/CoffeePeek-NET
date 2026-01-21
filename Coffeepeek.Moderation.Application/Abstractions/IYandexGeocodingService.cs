@@ -1,6 +1,6 @@
-using Coffeepeek.Moderation.Application.Common.Models;
+using CoffeePeek.Moderation.Application.Common.Models;
 
-namespace Coffeepeek.Moderation.Application.Abstractions;
+namespace CoffeePeek.Moderation.Application.Abstractions;
 
 public interface IYandexGeocodingService
 {

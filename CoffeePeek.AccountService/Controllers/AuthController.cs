@@ -1,13 +1,12 @@
 ﻿using CoffeePeek.Account.Application.Features.Auth.CheckUserExistsByEmail;
 using CoffeePeek.Account.Application.Features.Auth.Login;
 using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
+using CoffeePeek.Account.Application.Features.Auth.RefreshToken;
 using CoffeePeek.Account.Application.Features.Login;
 using CoffeePeek.Account.Application.Features.Logout;
-using CoffeePeek.Account.Application.Features.RefreshToken;
 using CoffeePeek.Account.Application.Features.User.RegisterUser;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.Auth;
-using CoffeePeek.Contract.Responses.Login;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure;
 using MediatR;
@@ -42,7 +41,7 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("refresh")]
-    public Task<Response<GetRefreshTokenResponse>> RefreshToken([FromQuery] string refreshToken)
+    public Task<Response<RefreshTokenResponse>> RefreshToken([FromQuery] string refreshToken)
     {
         if (string.IsNullOrEmpty(refreshToken))
             throw new UnauthorizedException("Refresh token missing");

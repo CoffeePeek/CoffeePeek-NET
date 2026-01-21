@@ -83,6 +83,18 @@ public record CacheKey(
             Description: "User favorite shops",
             Service: "ShopsService");
         
+        public static CacheKey Visited(Guid userId) => new(
+            Key: $"shop:visited:{userId}",
+            DefaultTtl: TimeSpan.FromHours(1),
+            Description: "User visited shops",
+            Service: "ShopsService");
+        
+        public static CacheKey VisitStatistics(Guid userId) => new(
+            Key: $"shop:visit-stats:{userId}",
+            DefaultTtl: TimeSpan.FromHours(1),
+            Description: "User visit statistics",
+            Service: "ShopsService");
+        
         public static CacheKey Search(string searchHash) => new(
             Key: $"shop:search:{searchHash}",
             DefaultTtl: TimeSpan.FromMinutes(5),

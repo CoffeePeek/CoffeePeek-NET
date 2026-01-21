@@ -22,7 +22,6 @@
       <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj"
                         IsAspireProjectResource="false" />
       <ProjectReference Include="..\CoffeePeek.ShopsService\CoffeePeek.ShopsService.csproj" />
-      <ProjectReference Include="..\OutboxBackgroundService\OutboxBackgroundService.csproj" />
     </ItemGroup>
 
 </Project>

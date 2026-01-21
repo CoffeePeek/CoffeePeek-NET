@@ -1,13 +1,35 @@
-﻿namespace CoffeePeek.Moderation.Domain.Entities;
+﻿using CoffeePeek.Shared.Infrastructure.Abstract;
 
-public class PhotoMetadata(string fileName, string contentType, string storageKey, long sizeBytes, Guid ownerId, Guid moderationShopId)
+namespace CoffeePeek.Moderation.Domain.Entities;
+
+public sealed class PhotoMetadata : Entity<Guid>
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public string FileName { get; private set; } = fileName;
-    public string ContentType { get; private set; } = contentType;
-    public string StorageKey { get; private set; } = storageKey;
-    public long SizeBytes { get; private set; } = sizeBytes;
-    public Guid OwnerId { get; private set; } = ownerId;
-    public Guid ModerationShopId { get; private set; } = moderationShopId;
-    public DateTime UploadedAt { get; private set; } = DateTime.UtcNow;
+    public string FileName { get; private set; } 
+    public string ContentType { get; private set; } 
+    public string StorageKey { get; private set; } 
+    public long SizeBytes { get; private set; }
+    public Guid OwnerId { get; private set; } 
+    public Guid ModerationShopId { get; private set; }
+
+    private PhotoMetadata()
+    {
+        //ef core
+    }
+
+    private PhotoMetadata(string fileName, string contentType, string storageKey, long sizeBytes, Guid ownerId,
+        Guid moderationShopId)
+    {
+        Id = Guid.NewGuid();
+        FileName = fileName;
+        ContentType = contentType;
+        StorageKey = storageKey;
+        SizeBytes = sizeBytes;
+        OwnerId = ownerId;
+        ModerationShopId = moderationShopId;
+    }
+    
+    public static PhotoMetadata Create(string fileName, string contentType, string storageKey, long sizeBytes, Guid ownerId, Guid moderationShopId)
+    {
+        return new PhotoMetadata(fileName, contentType, storageKey, sizeBytes, ownerId, moderationShopId);
+    }
 }

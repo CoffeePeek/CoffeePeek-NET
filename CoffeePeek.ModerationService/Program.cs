@@ -1,14 +1,13 @@
-using Coffeepeek.Moderation.Application.Abstractions;
+using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Application.Common;
-using Coffeepeek.Moderation.Application.Features.CreateShop;
-using CoffeePeek.Moderation.Application.Features.CreateShop;
-using Coffeepeek.Moderation.Application.Features.Review.SendReviewToModeration;
 using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
-using Coffeepeek.Moderation.Application.Features.Shop.GetAllModerationShops;
+using CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
+using CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
+using CoffeePeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
-using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Moderation.Infrastructure;
+using CoffeePeek.Moderation.Infrastructure.Consumers;
 using CoffeePeek.Moderation.Infrastructure.Mapper;
 using CoffeePeek.Moderation.Infrastructure.Services;
 using CoffeePeek.Shared.Extensions.Configuration;
@@ -18,12 +17,10 @@ using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
-using CoffeePeek.Shared.Extensions.Outbox;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using CoffeePeek.Shared.Validation;
 using CoffePeek.ServiceDefaults;
 using Minio;
-using OutboxEvent = CoffeePeek.Moderation.Domain.Entities.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +39,7 @@ builder.Services.AddSwaggerModule("Coffee Peek ModerationService");
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ModerationDb);
-builder.Services.AddEfCoreData<ModerationDbContext, OutboxEvent>(dbOptions);
+builder.Services.AddEfCoreData<ModerationDbContext>(dbOptions);
 
 builder.Services.AddGenericRepository<ModerationShop, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopContact, ModerationDbContext>();
@@ -61,7 +58,11 @@ builder.Services.AddScoped<IModerationReviewRepository, ModerationReviewReposito
 
 builder.Services.AddScoped<IStorageService, MinIOStorageService>();
 
-builder.Services.AddTransient<IValidationStrategy<SendReviewToModerationCommand>, SendReviewToModerationValidationStrategy>();
+builder.Services.AddTransient<IAsyncValidationStrategy<SendReviewToModerationCommand>, SendReviewToModerationValidationStrategy>();
+
+// Validation
+
+builder.Services.AddTransient<IValidationStrategy<UpdateCoffeeShopReviewRequest>, ReviewUpdateValidationStrategy>();
 
 // Mapster
 builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
@@ -88,18 +89,17 @@ builder.Services.AddMediatRModule(typeof(GetAllModerationShopsHandler));
 
 // JWT Authentication
 builder.Services.AddJwtAuthModule();
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin));
-    options.AddPolicy(RoleConsts.Merchant, policy => policy.RequireRole(RoleConsts.Merchant));
-    options.AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
-});
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
+    .AddPolicy(RoleConsts.Owner, policy => policy.RequireRole(RoleConsts.Owner))
+    .AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User))
+    .AddPolicy(RoleConsts.Moderator, policy => policy.RequireRole(RoleConsts.Moderator))
+    .AddPolicy(RoleConsts.Employee, policy => policy.RequireRole(RoleConsts.Employee))
+    .AddPolicy(RoleConsts.Roaster, policy => policy.RequireRole(RoleConsts.Roaster));
 
-// RabbitMQ для публикации событий
-builder.Services.AddMessagingModule();
-
-// Outbox Event Publisher
-builder.Services.AddOutboxEventPublisher<OutboxEvent, ModerationDbContext>();
+// CAP for event publishing and consuming
+builder.Services.AddCapModule<ModerationDbContext>(dbOptions, "moderation-service");
+builder.Services.AddScoped<ModerationShopApproveCompleteHandler>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();

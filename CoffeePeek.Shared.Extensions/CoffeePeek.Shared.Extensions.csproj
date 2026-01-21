@@ -7,7 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR" Version="14.0.0" />
+      <PackageReference Include="FluentResults" Version="4.0.0" />
+      <PackageReference Include="FluentResults.Extensions.AspNetCore" Version="0.2.0" />
+      <PackageReference Include="MediatR" Version="13.1.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
@@ -26,9 +28,13 @@
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
       <PackageReference Include="MassTransit" Version="8.5.7" />
       <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.7" />
+      <PackageReference Include="DotNetCore.CAP" Version="10.0.1" />
+      <PackageReference Include="DotNetCore.CAP.PostgreSql" Version="10.0.1" />
+      <PackageReference Include="DotNetCore.CAP.RedisStreams" Version="10.0.1" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shared.Infrastructure\CoffeePeek.Shared.Infrastructure.csproj" />
     </ItemGroup>
 

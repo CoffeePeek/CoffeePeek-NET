@@ -1,18 +1,18 @@
 namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 
-public class ReviewDto
+public record ReviewDto
 {
-    public Guid UserId { get; set; }
+    public Guid Id { get; init; }
+    public Guid UserId { get; init; }
+    public string Username { get; init; }
 
-    public string Header { get; set; }
-    public string Comment { get; set; }
+    public string Header { get; init; }
+    public string Comment { get; init; }
 
-    public int RatingCoffee { get; set; }
-    public int RatingService { get; set; }
-    public int RatingPlace { get; set; }
+    public int RatingCoffee { get; init; }
+    public int RatingService { get; init; }
+    public int RatingPlace { get; init; }
 
-    public DateTime CreatedAt { get; set; }
-
-    public string ShopName { get; set; }
+    public DateTime CreatedAt { get; init; }
 }
 

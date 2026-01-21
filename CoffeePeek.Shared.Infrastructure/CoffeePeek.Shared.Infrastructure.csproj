@@ -7,7 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR" Version="14.0.0" />
+      <PackageReference Include="DotNetCore.CAP" Version="10.0.1" />
+      <PackageReference Include="DotNetCore.CAP.Dashboard" Version="10.0.1" />
+      <PackageReference Include="DotNetCore.CAP.PostgreSql" Version="10.0.1" />
+      <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="10.0.1" />
+      <PackageReference Include="DotNetCore.CAP.RedisStreams" Version="10.0.1" />
+      <PackageReference Include="MediatR" Version="13.1.0" />
       <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
       <PackageReference Include="Minio" Version="7.0.0" />

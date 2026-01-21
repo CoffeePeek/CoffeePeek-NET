@@ -1,7 +1,9 @@
 ﻿using CoffeePeek.Account.Application.Common;
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Account.Domain.Repositories;
+using CoffeePeek.Account.Application.Features.User.RegisterUser;
+using CoffeePeek.Account.Domain.Entities.RoleAggregate;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
@@ -9,7 +11,7 @@ using CoffeePeek.Shared.Infrastructure.Constants;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeePeek.Account.Application.Features.User.RegisterUser;
+namespace CoffeePeek.Account.Application.Features.Auth.RegisterUser;
 
 public class RegisterUserHandler(
     IUserRepository userRepository,
@@ -30,7 +32,8 @@ public class RegisterUserHandler(
             }
 
             var passwordHash = passwordHasher.HashPassword(request.Password);
-            var user = CoffeePeek.Account.Domain.Aggregates.UserAggregate.User.Register(request.Email, request.UserName, passwordHash);
+            
+            var user = Domain.Entities.UserAggregate.User.Register(request.Email, request.UserName, passwordHash);
 
             var defaultRole = await roleRepository.GetRoleAsync(RoleConsts.User)
                               ?? throw new DomainException("Default role not found");

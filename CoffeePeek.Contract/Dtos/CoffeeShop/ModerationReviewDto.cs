@@ -2,11 +2,12 @@
 
 namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 
-public class ModerationReviewDto
+public record ModerationReviewDto
 {
     public string Header { get; init; }
     public string Comment { get;init; }
     public Guid UserId { get; init; }
+    public string UserName { get; init; }
     public Guid ShopId { get;init; }
 
     public int RatingCoffee { get; init; }

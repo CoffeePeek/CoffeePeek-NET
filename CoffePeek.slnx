@@ -1,0 +1,51 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/CoffeePeek/">
+    <Project Path="CoffeePeek.Gateway/CoffeePeek.Gateway.csproj" />
+  </Folder>
+  <Folder Name="/CoffeePeek/CoffeePeek.Account/">
+    <Project Path="CoffeePeek.Account.Application/CoffeePeek.Account.Application.csproj" />
+    <Project Path="CoffeePeek.Account.Domain/CoffeePeek.Account.Domain.csproj" />
+    <Project Path="CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj" />
+    <Project Path="CoffeePeek.AccountService/CoffeePeek.AccountService.csproj" />
+  </Folder>
+  <Folder Name="/CoffeePeek/CoffeePeek.Account/Tests/">
+    <Project Path="CoffeePeek.Account.Domain.Tests/CoffeePeek.Account.Domain.Tests.csproj" />
+    <Project Path="CoffeePeek.Account.Infrastructure.Tests/CoffeePeek.Account.Infrastructure.Tests.csproj" />
+  </Folder>
+  <Folder Name="/CoffeePeek/CoffeePeek.JobVacancies/">
+    <Project Path="CoffeePeek.JobVacancies.Application/CoffeePeek.JobVacancies.Application.csproj" />
+    <Project Path="CoffeePeek.JobVacancies.Domain/CoffeePeek.JobVacancies.Domain.csproj" />
+    <Project Path="CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj" />
+    <Project Path="CoffeePeek.JobVacancies/CoffeePeek.JobVacancies.csproj" />
+  </Folder>
+  <Folder Name="/CoffeePeek/CoffeePeek.Moderation/">
+    <Project Path="CoffeePeek.Moderation.Application/CoffeePeek.Moderation.Application.csproj" />
+    <Project Path="CoffeePeek.Moderation.Domain/CoffeePeek.Moderation.Domain.csproj" />
+    <Project Path="CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj" />
+    <Project Path="CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj" />
+  </Folder>
+  <Folder Name="/CoffeePeek/CoffeePeek.Shops/">
+    <Project Path="CoffeePeek.Shops.Application/CoffeePeek.Shops.Application.csproj" />
+    <Project Path="CoffeePeek.Shops.Domain/CoffeePeek.Shops.Domain.csproj" />
+    <Project Path="CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj" />
+    <Project Path="CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj" />
+  </Folder>
+  <Folder Name="/CoffeePeek/Shared/">
+    <Project Path="CoffeePeek.Contract/CoffeePeek.Contract.csproj" />
+    <Project Path="CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj" />
+    <Project Path="CoffeePeek.Shared.Infrastructure/CoffeePeek.Shared.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".github/workflows/ci-cd.yml" />
+    <File Path="docker-compose.local.yml" />
+    <File Path="openapi.json" />
+  </Folder>
+  <Project Path="CoffeePeek.Shared.Validation/CoffeePeek.Shared.Validation.csproj" />
+  <Project Path="CoffePeek.AppHost/CoffePeek.AppHost.csproj" />
+  <Project Path="CoffePeek.ServiceDefaults/CoffePeek.ServiceDefaults.csproj" />
+</Solution>

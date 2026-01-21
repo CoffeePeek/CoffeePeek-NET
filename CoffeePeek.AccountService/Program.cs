@@ -1,18 +1,19 @@
+using CoffeePeek.Account.Application;
 using CoffeePeek.Account.Application.Common;
 using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Application.Features.Auth.Login;
 using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 using CoffeePeek.Account.Application.Mapper;
-using CoffeePeek.Account.Domain.Aggregates;
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Account.Domain.Repositories;
+using CoffeePeek.Account.Domain.Entities;
+using CoffeePeek.Account.Domain.Entities.RoleAggregate;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Auth.Infrastructure;
+using CoffeePeek.Auth.Infrastructure.Configuration;
 using CoffeePeek.Auth.Infrastructure.EventConsumer;
-using CoffeePeek.Auth.Infrastructure.ExternalServices;
 using CoffeePeek.Auth.Infrastructure.Identity;
-using CoffeePeek.Auth.Infrastructure.Persistent;
-using CoffeePeek.Auth.Infrastructure.Persistent.Repositories;
+using CoffeePeek.Auth.Infrastructure.Repositories;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
@@ -20,7 +21,6 @@ using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
-using CoffeePeek.Shared.Extensions.Outbox;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using CoffePeek.ServiceDefaults;
@@ -28,7 +28,6 @@ using Minio;
 using Resend;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
 using JWTTokenService = CoffeePeek.Auth.Infrastructure.Identity.JWTTokenService;
-using OutboxEvent = CoffeePeek.Account.Domain.Events.OutboxEvent;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,9 +56,8 @@ builder.Services.AddAuthorization(options =>
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.AccountDb);
-builder.Services.AddEfCoreData<AccountDbContext, OutboxEvent>(dbOptions);
+builder.Services.AddEfCoreData<AccountDbContext>(dbOptions);
 builder.Services.AddGenericRepository<UserCredential, AccountDbContext>();
-builder.Services.AddGenericRepository<OutboxEvent, AccountDbContext>();
 builder.Services.AddGenericRepository<Role, AccountDbContext>();
 builder.Services.AddGenericRepository<UserStatistics, AccountDbContext>();
 builder.Services.AddGenericRepository<User, AccountDbContext>();
@@ -73,13 +71,13 @@ builder.Services.Configure<ResendClientOptions>( o =>
 } );
 builder.Services.AddTransient<IResend, ResendClient>();
 
-// Messaging - only consumers for external service events (Shops)
-builder.Services.AddMessagingModule(x =>
-{   
-    x.AddConsumer<CheckinCreatedEventConsumer>();
-    x.AddConsumer<ReviewAddedEventConsumer>();
-    x.AddConsumer<ModerationShopApprovedAccountConsumer>();
-});
+// CAP for event publishing and consuming
+builder.Services.AddCapModule<AccountDbContext>(dbOptions, "account-service");
+
+// Register CAP handlers
+builder.Services.AddScoped<CheckinCreatedHandler>();
+builder.Services.AddScoped<ReviewAddedHandler>();
+builder.Services.AddScoped<ModerationShopApprovedAccountHandler>();
 
 // Mapster
 builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
@@ -87,7 +85,6 @@ builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
 // Application Services
 builder.Services.AddScoped<IJWTTokenService, JWTTokenService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
-builder.Services.AddScoped<IUserCredentialsRepository, UserCredentialsRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -101,14 +98,6 @@ builder.Services.AddSingleton<EmailExistenceFilter>(_ =>
 });
 
 builder.Services.AddSingleton<IEmailTemplateService, EmailTemplateService>();
-
-builder.Services.AddScoped<UserQueries>();
-builder.Services.AddScoped<IUserQueries>(provider =>
-{
-    var baseService = provider.GetRequiredService<UserQueries>();
-    var redisService = provider.GetRequiredService<IRedisService>();
-    return new CachedUserQueries(baseService, redisService);
-});
 
 builder.Services.AddScoped<UserRepository>(); 
 
@@ -146,9 +135,6 @@ builder.Services.AddMediatRModule(
     typeof(LoginUserHandler)
 );
 
-// Outbox Event Publisher
-builder.Services.AddOutboxEventPublisher<OutboxEvent, AccountDbContext>();
-
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -160,11 +146,11 @@ app.UseExceptionHandler();
 
 app.MapDefaultEndpoints();
 
-// Swagger documentation
-app.UseSwaggerDocumentation();
-
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Swagger documentation
+app.UseSwaggerDocumentation();
 
 app.MapControllers();
 

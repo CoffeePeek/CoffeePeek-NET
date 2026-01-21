@@ -1,6 +1,8 @@
-﻿using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Microsoft.EntityFrameworkCore;
-using OutboxEvent = CoffeePeek.Shops.Domain.Entities.OutboxEvent;
 using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Infrastructure.Configuration;
@@ -8,38 +10,27 @@ namespace CoffeePeek.Shops.Infrastructure.Configuration;
 public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContext(options)
 {
     public virtual DbSet<BrewMethod> BrewMethods { get; set; }
-    public virtual DbSet<ShopBrewMethod> ShopBrewMethods { get; set; }
     
     public virtual DbSet<CoffeeBean> CoffeeBeans { get; set; }
-    public virtual DbSet<CoffeeBeanShop> CoffeeBeanShops { get; set; }
     
     public virtual DbSet<Equipment> Equipments { get; set; }
-    public virtual DbSet<ShopEquipment> ShopEquipments { get; set; }
     
     public virtual DbSet<Review> Reviews { get; set; }
     public virtual DbSet<CheckIn> CheckIns { get; set; }
     
     public virtual DbSet<Roaster> Roasters { get; set; }
-    public virtual DbSet<RoasterShop> RoasterShops { get; set; }
     
-    public virtual DbSet<ShopSchedule> ShopSchedules { get; set; }
-    public virtual DbSet<ShopScheduleInterval> ShopScheduleIntervals { get; set; }
+    public virtual DbSet<UserFavorite> UserFavorites { get; set; }
+    public virtual DbSet<UserVisit> UserVisits { get; set; }
+    public virtual DbSet<CoffeeShop> Shops { get; set; }
     
-    public virtual DbSet<FavoriteShop> FavoriteShops { get; set; }
-    public virtual DbSet<Shop> Shops { get; set; }
-    
-    public virtual DbSet<ShopContact> ShopContacts { get; set; }
     public virtual DbSet<ShopPhoto> ShopPhotos { get; set; }
     
     public virtual DbSet<City> Cities { get; set; }
-    
-    public virtual DbSet<Location> Locations { get; set; }
-    
-    public virtual DbSet<OutboxEvent> OutboxEvents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfiguration(new CoffeeShopConfiguration());
 
         modelBuilder.Entity<Review>(entity =>
         {
@@ -50,39 +41,9 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
             
             entity.HasIndex(r => r.UserId);
 
-            entity.Property(r => r.Header).HasMaxLength(100);
-            entity.Property(r => r.Comment).HasMaxLength(2000);
-        });
-        modelBuilder.Entity<ShopContact>(entity =>
-        {
-            entity.HasOne(sc => sc.Shop)
-                .WithOne(s => s.ShopContact)
-                .HasForeignKey<ShopContact>(sc => sc.ShopId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        modelBuilder.Entity<Location>(entity =>
-        {
-            entity.HasOne(sc => sc.Shop)
-                .WithOne(s => s.Location)
-                .HasForeignKey<Location>(sc => sc.ShopId)
-                .OnDelete(DeleteBehavior.Cascade);
-            
-            // Spatial index for efficient geographical queries
-            entity.HasIndex(l => new { l.Latitude, l.Longitude });
-        });
-
-        modelBuilder.Entity<Shop>(orb =>
-        {
-            orb.HasIndex(s => s.LocationId);
-            orb.HasIndex(s => s.ShopContactId);
-            orb.HasKey(s => s.Id);
-    
-            var navigationPhotos = orb.Metadata.FindNavigation(nameof(Shop.ShopPhotos));
-            navigationPhotos?.SetPropertyAccessMode(PropertyAccessMode.Field);
-
-            var navigationSchedules = orb.Metadata.FindNavigation(nameof(Shop.Schedules));
-            navigationSchedules?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            entity.Property(r => r.Header).HasMaxLength(BusinessConstants.MaxReviewHeaderLength);
+            entity.Property(r => r.Comment).HasMaxLength(BusinessConstants.MaxReviewCommentLength);
+            entity.Property(r => r.UserName).IsRequired().HasMaxLength(30);
         });
         
         modelBuilder.Entity<CheckIn>(entity =>
@@ -90,9 +51,9 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
             entity.HasKey(c => c.Id);
             entity.HasIndex(c => c.UserId);
             entity.HasIndex(c => c.ShopId);
-            entity.HasIndex(c => new { c.UserId, c.ShopId, c.CreatedAt });
+            entity.HasIndex(c => new { c.UserId, c.ShopId });
             
-            entity.HasOne(c => c.Shop)
+            entity.HasOne(c => c.CoffeeShop)
                 .WithMany(s => s.CheckIns)
                 .HasForeignKey(c => c.ShopId)
                 .OnDelete(DeleteBehavior.Cascade);
@@ -102,7 +63,40 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
                 .HasForeignKey(c => c.ReviewId)
                 .OnDelete(DeleteBehavior.SetNull);
                 
-            entity.Property(c => c.Note).HasMaxLength(500);
+            entity.Property(c => c.Note).HasMaxLength(BusinessConstants.MaxCheckInNoteLength);
+        });
+
+        modelBuilder.Entity<UserFavorite>(entity =>
+        {
+            entity.HasIndex(f => new { f.UserId, f.CoffeeShopId }).IsUnique();
+
+            entity.HasIndex(f => f.UserId);
+
+            entity.HasIndex(f => f.CoffeeShopId);
+
+            entity.Property(f => f.UserId).IsRequired();
+            entity.Property(f => f.CoffeeShopId).IsRequired();
+        });
+
+        modelBuilder.Entity<UserVisit>(entity =>
+        {
+            entity.HasKey(v => v.Id);
+
+            entity.HasIndex(v => new { v.UserId, v.ShopId }).IsUnique();
+
+            entity.HasIndex(v => v.UserId);
+
+            entity.HasIndex(v => new { v.UserId, v.LastVisitedAt });
+
+            entity.HasIndex(v => new { v.UserId, v.VisitCount });
+            
+            entity.Property(v => v.UserId).IsRequired();
+            entity.Property(v => v.ShopId).IsRequired();
+            entity.Property(v => v.FirstVisitedAt).IsRequired();
+            entity.Property(v => v.LastVisitedAt).IsRequired();
+            entity.Property(v => v.VisitCount).IsRequired().HasDefaultValue(1);
+            entity.Property(v => v.HasReview).IsRequired().HasDefaultValue(false);
+            entity.Property(v => v.Note).HasMaxLength(BusinessConstants.MaxVisitNoteLength);
         });
     }
 }
