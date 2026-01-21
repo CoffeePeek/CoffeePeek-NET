@@ -134,37 +134,40 @@ jobs:
           DB_CONN_JOBS: ${{ secrets.DB_CONNECTION_JOBS }}
           DB_CONN_MODERATION: ${{ secrets.DB_CONNECTION_MODERATION }}
         run: |
-          echo "Applying AccountService migrations..."
+          dotnet build CoffeePeek-NET.sln
           
-          dotnet build CoffeePeek.AccountService/CoffeePeek.AccountService.csproj
+          echo "--- Applying AccountService migrations ---"
+          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_ACCOUNT }}"
+          dotnet ef database update \
+            --context AccountDbContext \
+            --project CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj \
+            --startup-project CoffeePeek.AccountService/CoffeePeek.AccountService.csproj \
+            --connection "${{ secrets.DB_CONNECTION_ACCOUNT }}" \
+            --no-build
           
-          cd CoffeePeek.AccountService
+          echo "--- Applying ShopsService migrations ---"
+          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_SHOPS }}"
           dotnet ef database update \
-          --context AccountDbContext \
-          --project ../CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj \
-          --startup-project CoffeePeek.AccountService.csproj \
-          --connection "$DB_CONN_ACCOUNT"
-
-          cd ../CoffeePeek.ShopsService
-          echo "Applying ShopsService migrations..."
-          dotnet ef database update \
-          --context ShopsDbContext \
-          --project ../CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj \
-          --startup-project CoffeePeek.ShopsService.csproj \
-          --connection "$DB_CONN_SHOPS"
+            --context ShopsDbContext \
+            --project CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj \
+            --startup-project CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj \
+            --connection "${{ secrets.DB_CONNECTION_SHOPS }}" \
+            --no-build
           
-          cd ../CoffeePeek.ModerationService
-          echo "Applying ModerationService migrations..."
+          echo "--- Applying ModerationService migrations ---"
+          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_MODERATION }}"
           dotnet ef database update \
-          --context ModerationDbContext \
-          --project ../CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj \
-          --startup-project CoffeePeek.ModerationService.csproj \
-          --connection "$DB_CONN_MODERATION"
+            --context ModerationDbContext \
+            --project CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj \
+            --startup-project CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj \
+            --connection "${{ secrets.DB_CONNECTION_MODERATION }}" \
+            --no-build
           
-          cd ../CoffeePeek.JobVacancies
-          echo "Applying JobsService migrations..."
+          echo "--- Applying JobsService migrations ---"
+          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_JOBS }}"
           dotnet ef database update \
-          --context JobVacanciesDbContext \
-          --project ../CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj \
-          --startup-project CoffeePeek.JobVacancies.csproj \
-          --connection "$DB_CONN_JOBS"
+            --context JobVacanciesDbContext \
+            --project CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj \
+            --startup-project CoffeePeek.JobVacancies/CoffeePeek.JobVacancies.csproj \
+            --connection "${{ secrets.DB_CONNECTION_JOBS }}" \
+            --no-build
