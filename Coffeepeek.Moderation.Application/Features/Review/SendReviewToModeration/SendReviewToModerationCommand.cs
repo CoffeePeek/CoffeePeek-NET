@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Dtos;
+using CoffeePeek.Moderation.Domain;
 using MediatR;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
@@ -17,7 +18,9 @@ public record SendReviewToModerationCommand(
     [Range(BusinessConstants.MinReviewRate, BusinessConstants.MaxReviewRate)]
     int RatingPlace,
     [Range(BusinessConstants.MinReviewRate, BusinessConstants.MaxReviewRate)]
-    int RatingCoffee) : IRequest<CreateEntityResponse>
+    int RatingCoffee,
+    List<UploadedPhotoDto>? Photos) : IRequest<CreateEntityResponse>
 {
-    [JsonIgnore] public Guid UserId { get; set; }
+    [JsonIgnore] public Guid UserId { get; init; }
+    [JsonIgnore] public string? UserName { get; init; }
 }

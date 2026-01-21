@@ -12,7 +12,7 @@ WORKDIR /src
 COPY ["CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj", "CoffeePeek.ModerationService/"]
 COPY ["CoffePeek.ServiceDefaults/CoffePeek.ServiceDefaults.csproj", "CoffePeek.ServiceDefaults/"]
 COPY ["CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj", "CoffeePeek.Moderation.Infrastructure/"]
-COPY ["Coffeepeek.Moderation.Application/Coffeepeek.Moderation.Application.csproj", "Coffeepeek.Moderation.Application/"]
+COPY ["CoffeePeek.Moderation.Application/CoffeePeek.Moderation.Application.csproj", "CoffeePeek.Moderation.Application/"]
 COPY ["CoffeePeek.Moderation.Domain/CoffeePeek.Moderation.Domain.csproj", "CoffeePeek.Moderation.Domain/"]
 COPY ["CoffeePeek.Contract/CoffeePeek.Contract.csproj", "CoffeePeek.Contract/"]
 COPY ["CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj", "CoffeePeek.Shared.Extensions/"]

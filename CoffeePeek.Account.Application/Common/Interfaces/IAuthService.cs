@@ -1,4 +1,4 @@
-using CoffeePeek.Contract.Dtos.Auth;
+using CoffeePeek.Account.Application.Common.Models;
 
 namespace CoffeePeek.Account.Application.Common.Interfaces;
 

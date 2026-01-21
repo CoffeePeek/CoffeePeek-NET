@@ -1,38 +1,22 @@
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Auth.Infrastructure.Persistent;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Events.Shops;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Constants;
+using DotNetCore.CAP;
 
 namespace CoffeePeek.Auth.Infrastructure.EventConsumer;
 
-public class CheckinCreatedEventConsumer(AccountDbContext dbContext) : IConsumer<CheckinCreatedEvent>
+//TODO move business logic from consumer
+public class CheckinCreatedHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) : ICapSubscribe
 {
-    public async Task Consume(ConsumeContext<CheckinCreatedEvent> context)
+    [CapSubscribe(CapEventNames.Shops.CheckinCreated)]
+    public async Task Handle(CheckinCreatedEvent @event, CancellationToken cancellationToken)
     {
-        var @event = context.Message;
+        var user = await userRepository.GetById(@event.UserId);
+        if (user == null) return;
 
-        var statistics = await dbContext.UserStatistics
-            .FirstOrDefaultAsync(s => s.UserId == @event.UserId);
+        user.Statistics.IncrementCheckIn();
 
-        if (statistics == null)
-        {
-            statistics = new UserStatistics
-            {
-                UserId = @event.UserId,
-                CheckInCount = 1,
-                ReviewCount = 0,
-                AddedShopsCount = 0,
-                UpdatedAt = DateTime.UtcNow
-            };
-            dbContext.UserStatistics.Add(statistics);
-        }
-        else
-        {
-            statistics.CheckInCount++;
-            statistics.UpdatedAt = DateTime.UtcNow;
-        }
-
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

@@ -1,9 +1,8 @@
 using CoffeePeek.Account.Application.Common.Interfaces;
-using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
+using CoffeePeek.Account.Application.Common.Models;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Contract.Dtos.Auth;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.Auth;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Options;
@@ -32,12 +31,12 @@ public class GoogleLoginHandler(
             payload.Subject,
             ct);
 
-        var accessToken = tokenService.GenerateAccessToken(user.UserCredential, request.DeviceName, request.IpAddress);
+        var accessToken = tokenService.GenerateAccessToken(user, request.DeviceName, request.IpAddress);
         var refreshToken = tokenService.GenerateRefreshToken();
 
         var authResult = new AuthResult() { AccessToken = accessToken, RefreshToken = refreshToken };
 
-        user.UserCredential.AddSession(
+        user.AddSession(
             authResult.RefreshToken,
             ttl: TimeSpan.FromDays(options.Value.AccessTokenLifetimeMinutes),
             request.DeviceName,
@@ -45,13 +44,13 @@ public class GoogleLoginHandler(
 
         await unitOfWork.SaveChangesAsync(ct);
 
-        await redisService.SetAsync(CacheKey.Auth.Credentials(user.UserCredential.Id), user.UserCredential);
+        await redisService.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
 
         return Response<GoogleLoginResponse>.Success(new GoogleLoginResponse
         {
             AccessToken = authResult.AccessToken,
             RefreshToken = authResult.RefreshToken,
-            User = new GoogleLoginUserDto { Email = user.UserCredential.Email, AvatarUrl = payload.Picture }
+            User = new GoogleLoginUser { Email = user.Credentials.Email, AvatarUrl = payload.Picture }
         });
     }
 }

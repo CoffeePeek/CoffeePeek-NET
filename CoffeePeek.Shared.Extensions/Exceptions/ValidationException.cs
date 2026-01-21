@@ -1,6 +1,7 @@
+using CoffeePeek.Shared.Extensions.Exceptions;
 using Microsoft.AspNetCore.Http;
 
-namespace CoffeePeek.Shared.Extensions.Exceptions;
+namespace CoffeePeek.Contract.Exceptions;
 
 public class ValidationException : BaseException
 {

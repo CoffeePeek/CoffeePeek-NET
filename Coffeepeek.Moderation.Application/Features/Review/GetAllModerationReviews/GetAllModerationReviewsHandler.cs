@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
+﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
@@ -6,7 +7,7 @@ using Mapster;
 using MapsterMapper;
 using MediatR;
 
-namespace Coffeepeek.Moderation.Application.Features.Review.GetAllModerationReviews;
+namespace CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 
 public class GetAllModerationReviewsHandler(IModerationReviewRepository repository, IMapper mapper)
     : IRequestHandler<GetAllModerationReviewsQuery, Response<GetAllModerationReviewsResponse>>

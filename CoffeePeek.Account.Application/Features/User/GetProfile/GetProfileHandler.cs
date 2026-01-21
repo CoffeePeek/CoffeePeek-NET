@@ -1,23 +1,25 @@
-using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.User;
 using MapsterMapper;
 using MediatR;
 
 namespace CoffeePeek.Account.Application.Features.User.GetProfile;
 
-public class GetProfileHandler(IUserQueries userQueries, IMapper mapper) 
+public class GetProfileHandler(IUserRepository userRepository, IMapper mapper) 
     : IRequestHandler<GetProfileCommand, Response<UserProfileResponse>>
 {
     public async Task<Response<UserProfileResponse>> Handle(GetProfileCommand command, CancellationToken ct)
     {
-        var userDto = await userQueries.GetProfileByIdAsync(command.UserId, ct);
+        var user = await userRepository.GetById(command.UserId, ct);
 
-        if (userDto == null)
+        if (user == null)
         {
             return Response<UserProfileResponse>.Error("User not found.");
         }
-        var result = mapper.Map<UserProfileResponse>(userDto);
+        
+        
+        var result = mapper.Map<UserProfileResponse>(user);
         
         return Response<UserProfileResponse>.Success(result);
     }

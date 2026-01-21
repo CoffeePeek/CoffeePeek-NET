@@ -1,14 +1,13 @@
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Responses;
-using Coffeepeek.Moderation.Application.Abstractions;
-using Coffeepeek.Moderation.Application.UpdateShop;
-using CoffeePeek.Moderation.Domain.Repositories;
+using CoffeePeek.Moderation.Application.Abstractions;
+using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Coffeepeek.Moderation.Application.Features.UpdateShop;
+namespace CoffeePeek.Moderation.Application.Features.Shop.UpdateShop;
 
 public class UpdateModerationCoffeeShopHandler(
     IModerationShopRepository repository,
@@ -23,7 +22,7 @@ public class UpdateModerationCoffeeShopHandler(
         CancellationToken ct)
     {
         var moderationShopDto = command.ModerationShopDto;
-        var shop = await repository.GetByIdWithDetails(command.ModerationShopDto.Id, ct);
+        var shop = await repository.GetByIdWithOutDetails(command.ModerationShopDto.Id, ct);
 
         if (shop == null || shop.UserId != command.UserId)
         {
@@ -47,7 +46,9 @@ public class UpdateModerationCoffeeShopHandler(
                 moderationShopDto.ShopContact.SiteLink);
         }
 
-        if (moderationShopDto.Schedules != null) shop.UpdateSchedules(moderationShopDto.Schedules);
+        if (moderationShopDto.Schedules != null)
+            shop.UpdateSchedules(moderationShopDto.Schedules.Select(s =>
+                (s.DayOfWeek, s.Intervals.Select(i => (i.OpenTime, i.CloseTime)).ToList())));
         
         shop.UpdateRelations(
             moderationShopDto.EquipmentIds, 

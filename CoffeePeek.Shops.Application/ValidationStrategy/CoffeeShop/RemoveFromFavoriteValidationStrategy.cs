@@ -1,8 +1,7 @@
-using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Shared.Validation;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop.Favorite;
+using CoffeePeek.Shops.Application.Features.Favorite.RemoveFromFavorite;
 
-namespace CoffeePeek.Shops.Infrastructure.ValidationStrategy.CoffeeShop;
+namespace CoffeePeek.Shops.Application.ValidationStrategy.CoffeeShop;
 
 public class RemoveFromFavoriteValidationStrategy : IValidationStrategy<RemoveFromFavoriteCommand>
 {

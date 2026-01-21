@@ -17,6 +17,5 @@ public static class AppResources
     public const string JobVacanciesService = "coffeepeek-jobvacancies";
     public const string ShopsService = "coffeepeek-shopsservice";
     public const string ModerationService = "coffeepeek-moderationservice";
-    public const string OutboxBackgroundService = "outboxbackgroundservice";
     public const string Gateway = "coffeepeek-gateway";
 }

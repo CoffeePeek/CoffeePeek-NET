@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Contract.Responses.Auth;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.RefreshToken;
+namespace CoffeePeek.Account.Application.Features.Auth.RefreshToken;
 
 public class RefreshTokenCommand(
     string refreshToken,
     string deviceName = "unknown",
-    string ipAddress = "unknown") : IRequest<Response<GetRefreshTokenResponse>>
+    string ipAddress = "unknown") : IRequest<Response<RefreshTokenResponse>>
 {
     [Required]
     public string RefreshToken { get; } = refreshToken;

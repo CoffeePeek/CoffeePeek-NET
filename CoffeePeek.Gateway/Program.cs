@@ -44,7 +44,7 @@ app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Gateway API");
 
-    foreach (var service in YarpRouteFactory.Servicess)
+    foreach (var service in YarpRouteFactory.ServicesList)
     {
         options.SwaggerEndpoint(
             $"/swagger/{service.Id}/v1/swagger.json", 

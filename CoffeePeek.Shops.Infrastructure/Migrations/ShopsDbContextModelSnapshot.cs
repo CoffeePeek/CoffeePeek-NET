@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace CoffeePeek.ShopsService.Migrations
+namespace CoffeePeek.Shops.Infrastructure.Migrations
 {
     [DbContext(typeof(ShopsDbContext))]
     partial class ShopsDbContextModelSnapshot : ModelSnapshot
@@ -49,7 +49,7 @@ namespace CoffeePeek.ShopsService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Note")
@@ -62,6 +62,9 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -73,7 +76,7 @@ namespace CoffeePeek.ShopsService.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("UserId", "ShopId", "CreatedAt");
+                    b.HasIndex("UserId", "ShopId");
 
                     b.ToTable("CheckIns");
                 });
@@ -89,7 +92,8 @@ namespace CoffeePeek.ShopsService.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -120,240 +124,10 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.ToTable("CoffeeBeans");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeBeanShop", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CoffeeBeanId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CoffeeBeanId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("CoffeeBeanShops");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Equipment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Equipments");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.FavoriteShop", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("FavoriteShops");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Location", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsAddressValidated")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal?>("Latitude")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal?>("Longitude")
-                        .HasColumnType("numeric");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ShopId")
-                        .IsUnique();
-
-                    b.HasIndex("Latitude", "Longitude");
-
-                    b.ToTable("Locations");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.OutboxEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("EventType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Payload")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Processed")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("ProcessedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OutboxEvents");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Header")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("IsSoftDelete")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("RatingCoffee")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RatingPlace")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RatingService")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ShopId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Roaster", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roasters");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.RoasterShop", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("RoasterId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoasterId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("RoasterShops");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Shop", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CityId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAtUtc")
@@ -363,129 +137,38 @@ namespace CoffeePeek.ShopsService.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("LocationId")
-                        .HasColumnType("uuid");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<Guid?>("ModerationId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("PriceRange")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("ShopContactId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("ShopContactId");
 
                     b.ToTable("Shops");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopBrewMethod", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.ShopPhoto", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("BrewMethodId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BrewMethodId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("ShopBrewMethods");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopContact", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
-
-                    b.Property<string>("InstagramLink")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("SiteLink")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ShopId")
-                        .IsUnique();
-
-                    b.ToTable("ShopContacts");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopEquipment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("EquipmentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EquipmentId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("ShopEquipments");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopPhoto", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("CoffeeShopId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("ContentType")
@@ -526,12 +209,12 @@ namespace CoffeePeek.ShopsService.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("CoffeeShopId");
 
                     b.ToTable("ShopPhotos");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopSchedule", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.UserVisit", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -540,11 +223,20 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("FirstVisitedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsClosed")
-                        .HasColumnType("boolean");
+                    b.Property<bool>("HasReview")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("LastVisitedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<Guid>("ShopId")
                         .HasColumnType("uuid");
@@ -552,39 +244,215 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("VisitCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ShopId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("ShopSchedules");
+                    b.HasIndex("UserId", "LastVisitedAt");
+
+                    b.HasIndex("UserId", "ShopId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "VisitCount");
+
+                    b.ToTable("UserVisits");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopScheduleInterval", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Equipment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<TimeSpan>("CloseTime")
-                        .HasColumnType("interval");
-
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<TimeSpan>("OpenTime")
-                        .HasColumnType("interval");
-
-                    b.Property<Guid>("ScheduleId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ScheduleId");
+                    b.ToTable("Equipments");
+                });
 
-                    b.ToTable("ShopScheduleIntervals");
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Header")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsSoftDelete")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("RatingCoffee")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RatingPlace")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RatingService")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ReviewDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ShopId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShopId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Roaster", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roasters");
+                });
+
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate.UserFavorite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CoffeeShopId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CoffeeShopId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "CoffeeShopId")
+                        .IsUnique();
+
+                    b.ToTable("UserFavorites");
+                });
+
+            modelBuilder.Entity("CoffeeShopBrewMethods", b =>
+                {
+                    b.Property<Guid>("BrewMethodId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CoffeeShopId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("BrewMethodId", "CoffeeShopId");
+
+                    b.HasIndex("CoffeeShopId");
+
+                    b.ToTable("CoffeeShopBrewMethods");
+                });
+
+            modelBuilder.Entity("CoffeeShopCoffeeBeans", b =>
+                {
+                    b.Property<Guid>("CoffeeBeanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CoffeeShopId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CoffeeBeanId", "CoffeeShopId");
+
+                    b.HasIndex("CoffeeShopId");
+
+                    b.ToTable("CoffeeShopCoffeeBeans");
+                });
+
+            modelBuilder.Entity("CoffeeShopEquipments", b =>
+                {
+                    b.Property<Guid>("CoffeeShopId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EquipmentId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CoffeeShopId", "EquipmentId");
+
+                    b.HasIndex("EquipmentId");
+
+                    b.ToTable("CoffeeShopEquipments");
+                });
+
+            modelBuilder.Entity("CoffeeShopRoasters", b =>
+                {
+                    b.Property<Guid>("CoffeeShopId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RoasterId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CoffeeShopId", "RoasterId");
+
+                    b.HasIndex("RoasterId");
+
+                    b.ToTable("CoffeeShopRoasters");
                 });
 
             modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CheckIn", b =>
@@ -594,61 +462,173 @@ namespace CoffeePeek.ShopsService.Migrations
                         .HasForeignKey("ReviewId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", "CoffeeShop")
                         .WithMany("CheckIns")
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("CoffeeShop");
+
                     b.Navigation("Review");
-
-                    b.Navigation("Shop");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeBeanShop", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeBean", "CoffeeBean")
-                        .WithMany("CoffeeBeanShops")
-                        .HasForeignKey("CoffeeBeanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.OwnsOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.Location", "Location", b1 =>
+                        {
+                            b1.Property<Guid>("CoffeeShopId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Address")
+                                .IsRequired()
+                                .HasMaxLength(500)
+                                .HasColumnType("character varying(500)")
+                                .HasColumnName("Address");
+
+                            b1.Property<Guid>("CityId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("CityId");
+
+                            b1.Property<bool>("IsAddressValidated")
+                                .HasColumnType("boolean")
+                                .HasColumnName("IsAddressValidated");
+
+                            b1.Property<decimal?>("Latitude")
+                                .HasPrecision(18, 10)
+                                .HasColumnType("numeric(18,10)")
+                                .HasColumnName("Latitude");
+
+                            b1.Property<decimal?>("Longitude")
+                                .HasPrecision(18, 10)
+                                .HasColumnType("numeric(18,10)")
+                                .HasColumnName("Longitude");
+
+                            b1.HasKey("CoffeeShopId");
+
+                            b1.HasIndex("Latitude", "Longitude");
+
+                            b1.ToTable("Shops");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CoffeeShopId");
+                        });
+
+                    b.OwnsOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.ShopContact", "Contact", b1 =>
+                        {
+                            b1.Property<Guid>("CoffeeShopId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Email")
+                                .HasMaxLength(255)
+                                .HasColumnType("character varying(255)")
+                                .HasColumnName("Email");
+
+                            b1.Property<string>("InstagramLink")
+                                .HasMaxLength(255)
+                                .HasColumnType("character varying(255)")
+                                .HasColumnName("InstagramLink");
+
+                            b1.Property<string>("PhoneNumber")
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("PhoneNumber");
+
+                            b1.Property<string>("SiteLink")
+                                .HasMaxLength(2048)
+                                .HasColumnType("character varying(2048)")
+                                .HasColumnName("SiteLink");
+
+                            b1.HasKey("CoffeeShopId");
+
+                            b1.ToTable("Shops");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CoffeeShopId");
+                        });
+
+                    b.OwnsMany("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.ShopSchedule", "Schedules", b1 =>
+                        {
+                            b1.Property<Guid>("CoffeeShopId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<int>("DayOfWeek")
+                                .HasColumnType("integer")
+                                .HasColumnName("DayOfWeek");
+
+                            b1.Property<bool>("IsClosed")
+                                .HasColumnType("boolean")
+                                .HasColumnName("IsClosed");
+
+                            b1.HasKey("CoffeeShopId", "Id");
+
+                            b1.ToTable("ShopSchedule");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CoffeeShopId");
+
+                            b1.OwnsMany("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.ShopScheduleInterval", "Intervals", b2 =>
+                                {
+                                    b2.Property<Guid>("ShopScheduleCoffeeShopId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<int>("ShopScheduleId")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("integer");
+
+                                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b2.Property<int>("Id"));
+
+                                    b2.Property<TimeSpan>("CloseTime")
+                                        .HasColumnType("interval")
+                                        .HasColumnName("CloseTime");
+
+                                    b2.Property<TimeSpan>("OpenTime")
+                                        .HasColumnType("interval")
+                                        .HasColumnName("OpenTime");
+
+                                    b2.HasKey("ShopScheduleCoffeeShopId", "ShopScheduleId", "Id");
+
+                                    b2.ToTable("ShopScheduleInterval");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("ShopScheduleCoffeeShopId", "ShopScheduleId");
+                                });
+
+                            b1.Navigation("Intervals");
+                        });
+
+                    b.Navigation("Contact")
                         .IsRequired();
 
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
-                        .WithMany("CoffeeBeanShops")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.Navigation("Location")
                         .IsRequired();
 
-                    b.Navigation("CoffeeBean");
-
-                    b.Navigation("Shop");
+                    b.Navigation("Schedules");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.FavoriteShop", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.ShopPhoto", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
-                        .WithMany()
-                        .HasForeignKey("ShopId")
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", "CoffeeShop")
+                        .WithMany("ShopPhotos")
+                        .HasForeignKey("CoffeeShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Location", b =>
-                {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
-                        .WithOne("Location")
-                        .HasForeignKey("CoffeePeek.Shops.Domain.Entities.Location", "ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Shop");
+                    b.Navigation("CoffeeShop");
                 });
 
             modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", "Shop")
                         .WithMany("Reviews")
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -657,153 +637,73 @@ namespace CoffeePeek.ShopsService.Migrations
                     b.Navigation("Shop");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.RoasterShop", b =>
+            modelBuilder.Entity("CoffeeShopBrewMethods", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Roaster", "Roaster")
-                        .WithMany("RoasterShops")
-                        .HasForeignKey("RoasterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
-                        .WithMany("RoasterShops")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Roaster");
-
-                    b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopBrewMethod", b =>
-                {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.BrewMethod", "BrewMethod")
-                        .WithMany("ShopBrewMethods")
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.BrewMethod", null)
+                        .WithMany()
                         .HasForeignKey("BrewMethodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
-                        .WithMany("ShopBrewMethods")
-                        .HasForeignKey("ShopId")
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", null)
+                        .WithMany()
+                        .HasForeignKey("CoffeeShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CoffeeShopCoffeeBeans", b =>
+                {
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeBean", null)
+                        .WithMany()
+                        .HasForeignKey("CoffeeBeanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("BrewMethod");
-
-                    b.Navigation("Shop");
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", null)
+                        .WithMany()
+                        .HasForeignKey("CoffeeShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopContact", b =>
+            modelBuilder.Entity("CoffeeShopEquipments", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
-                        .WithOne("ShopContact")
-                        .HasForeignKey("CoffeePeek.Shops.Domain.Entities.ShopContact", "ShopId")
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", null)
+                        .WithMany()
+                        .HasForeignKey("CoffeeShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopEquipment", b =>
-                {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Equipment", "Equipment")
-                        .WithMany("ShopEquipments")
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Equipment", null)
+                        .WithMany()
                         .HasForeignKey("EquipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
-                        .WithMany("ShopEquipments")
-                        .HasForeignKey("ShopId")
+            modelBuilder.Entity("CoffeeShopRoasters", b =>
+                {
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", null)
+                        .WithMany()
+                        .HasForeignKey("CoffeeShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Equipment");
-
-                    b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopPhoto", b =>
-                {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
-                        .WithMany("ShopPhotos")
-                        .HasForeignKey("ShopId")
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Roaster", null)
+                        .WithMany()
+                        .HasForeignKey("RoasterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Shop");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopSchedule", b =>
-                {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Shop", "Shop")
-                        .WithMany("Schedules")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Shop");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopScheduleInterval", b =>
-                {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.ShopSchedule", "Schedule")
-                        .WithMany("Intervals")
-                        .HasForeignKey("ScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Schedule");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.BrewMethod", b =>
-                {
-                    b.Navigation("ShopBrewMethods");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeBean", b =>
-                {
-                    b.Navigation("CoffeeBeanShops");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Equipment", b =>
-                {
-                    b.Navigation("ShopEquipments");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Roaster", b =>
-                {
-                    b.Navigation("RoasterShops");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Shop", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", b =>
                 {
                     b.Navigation("CheckIns");
 
-                    b.Navigation("CoffeeBeanShops");
-
-                    b.Navigation("Location");
-
                     b.Navigation("Reviews");
 
-                    b.Navigation("RoasterShops");
-
-                    b.Navigation("Schedules");
-
-                    b.Navigation("ShopBrewMethods");
-
-                    b.Navigation("ShopContact");
-
-                    b.Navigation("ShopEquipments");
-
                     b.Navigation("ShopPhotos");
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopSchedule", b =>
-                {
-                    b.Navigation("Intervals");
                 });
 #pragma warning restore 612, 618
         }

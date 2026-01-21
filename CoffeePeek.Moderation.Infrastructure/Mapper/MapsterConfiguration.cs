@@ -1,7 +1,4 @@
 ﻿using CoffeePeek.Contract.Dtos;
-using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Dtos.Contact;
-using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Moderation.Domain.Entities;
 using Mapster;
 using MapsterMapper;

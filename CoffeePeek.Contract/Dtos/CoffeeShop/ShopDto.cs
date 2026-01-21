@@ -17,14 +17,18 @@ public record ShopDto
     public int ReviewCount { get; set; }
     public ReviewDto[] Reviews { get; set; }
 
-    public bool IsOpen { get; set; }
+    public bool IsFavorite { get; init; }
+    public bool IsVisited { get; init; }
+    public bool IsNew { get; init; }
+    public bool IsOpen { get; init; }
+    
     public PriceRange PriceRange { get; set; }
     
     public LocationDto? Location { get; set; }
-    public BeansDto[]? Beans { get; set; }
+    public BeansDto[]? CoffeeBeans { get; set; }
     public RoasterDto[]? Roasters { get; set; }
     public EquipmentDto[]? Equipments { get; set; }
     public BrewMethodDto[]? BrewMethods { get; set; }
     public ShopContactDto? ShopContact { get; set; }
-    public List<ScheduleDto>? Schedules { get; set; }
+    public ScheduleDto[]? Schedules { get; set; }
 }

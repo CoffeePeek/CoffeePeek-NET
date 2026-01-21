@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.JobVacancies.Application.Commands;
 using CoffeePeek.JobVacancies.Application.Models.Responses;

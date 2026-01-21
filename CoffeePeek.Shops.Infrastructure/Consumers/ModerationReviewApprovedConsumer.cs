@@ -1,29 +1,33 @@
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Events.Shops;
+using CoffeePeek.Shared.Extensions.CAP;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
-using MassTransit;
+using CoffeePeek.Shops.Infrastructure.Configuration;
+using DotNetCore.CAP;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
-public class ModerationReviewApprovedConsumer(
+public class ModerationReviewApprovedHandler(
     IGenericRepository<Review> reviewRepository,
     IUnitOfWork unitOfWork,
-    IOutboxEventPublisher outboxEventPublisher,
-    ILogger<ModerationReviewApprovedConsumer> logger)
-    : IConsumer<ModerationReviewApprovedEvent>
+    ICapPublisher capPublisher,
+    ILogger<ModerationReviewApprovedHandler> logger) : ICapSubscribe
 {
-    public async Task Consume(ConsumeContext<ModerationReviewApprovedEvent> context)
+    [CapSubscribe(CapEventNames.Moderation.ReviewApproved)]
+    public async Task Handle(ModerationReviewApprovedEvent @event, CancellationToken cancellationToken)
     {
-        var reviewDto = context.Message.Review;
+        var reviewDto = @event.Review;
         
         logger.LogInformation("Received ModerationReviewApprovedEvent for UserId: {UserId}, ShopId: {ShopId}", 
             reviewDto.UserId, reviewDto.ShopId);
 
         var existingReview = await reviewRepository
             .FirstOrDefaultAsync(r => r.ShopId == reviewDto.ShopId && r.UserId == reviewDto.UserId, 
-                context.CancellationToken);
+                cancellationToken);
 
         if (existingReview != null)
         {
@@ -31,10 +35,11 @@ public class ModerationReviewApprovedConsumer(
                 reviewDto.UserId, reviewDto.ShopId);
             return;
         }
-
+        
         var review = Review.Create(
             reviewDto.ShopId,
             reviewDto.UserId,
+            reviewDto.UserName,
             reviewDto.Header,
             reviewDto.Comment,
             reviewDto.RatingCoffee,
@@ -43,17 +48,20 @@ public class ModerationReviewApprovedConsumer(
 
         reviewRepository.Add(review);
 
-        await unitOfWork.SaveChangesAsync(context.CancellationToken);
-        
-        await outboxEventPublisher.PublishAsync(new ReviewAddedEvent
-        {
-            UserId = reviewDto.UserId,
-            ShopId = reviewDto.ShopId,
-            ReviewId = review.Id,
-            CreatedAt = review.ReviewDate
-        }, context.CancellationToken);
 
-        logger.LogInformation("Review created successfully for UserId: {UserId}, ShopId: {ShopId}, ReviewId: {ReviewId}",
+        using var trans = unitOfWork.BeginTransactionAsync(cancellationToken);
+            
+        await capPublisher.PublishAsync(
+            name: CapEventNames.Shops.ReviewAdded,
+            contentObj: new ReviewAddedEvent(reviewDto.UserId, reviewDto.ShopId, review.Id),
+            cancellationToken: cancellationToken);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+            
+        await unitOfWork.CommitTransactionAsync(cancellationToken);
+
+        logger.LogInformation(
+            "Review created successfully for UserId: {UserId}, ShopId: {ShopId}, ReviewId: {ReviewId}",
             reviewDto.UserId, reviewDto.ShopId, review.Id);
     }
 }

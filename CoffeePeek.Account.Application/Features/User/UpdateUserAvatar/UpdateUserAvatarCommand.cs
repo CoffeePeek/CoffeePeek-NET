@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
-using CoffeePeek.Account.Domain.Aggregates;
+using CoffeePeek.Account.Domain.Entities;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Responses;
 using MediatR;

@@ -24,4 +24,9 @@ public abstract class Entity<TId> : IEntity, IAuditableEntity
     {
         _domainEvents.Clear();
     }
+    
+    public IReadOnlyCollection<IDomainEvent> GetDomainEvents()
+    {
+        return DomainEvents;
+    }
 }

@@ -1,11 +1,11 @@
-using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
-using CoffeePeek.Account.Domain.Repositories;
+using CoffeePeek.Account.Domain.Entities.RoleAggregate;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Shared.Infrastructure.Constants;
 
 namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 
-using User = Domain.Aggregates.UserAggregate.User;
+using User = Domain.Entities.UserAggregate.User;
 
 public class ExternalAuthService(
     IUserRepository userRepository,
@@ -19,7 +19,7 @@ public class ExternalAuthService(
 
         if (user != null)
         {
-            user.UserCredential.LinkExternalProvider(provider, providerId);
+            user.Credentials.LinkExternalProvider(provider, providerId);
             return user;
         }
 

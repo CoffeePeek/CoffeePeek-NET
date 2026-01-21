@@ -1,9 +1,9 @@
-﻿using CoffeePeek.Account.Domain.Aggregates.UserAggregate;
+﻿using CoffeePeek.Account.Domain.Entities.UserAggregate;
 
 namespace CoffeePeek.Account.Application.Common.Interfaces;
 
 public interface IJWTTokenService
 {
-    string GenerateAccessToken(UserCredential user, string device, string ipAddress);
+    string GenerateAccessToken(User user, string device, string ipAddress);
     string GenerateRefreshToken();
 }

@@ -1,13 +1,9 @@
-using CoffeePeek.Contract.Constants;
-using Coffeepeek.Moderation.Application.Common.Models;
-using Coffeepeek.Moderation.Application.Features.CreateShop;
-using Coffeepeek.Moderation.Application.Features.Shop.CreateShop;
+using CoffeePeek.Moderation.Application.Common.Models;
 using CoffeePeek.Moderation.Domain.Entities;
-using CoffeePeek.Moderation.Domain.Repositories;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 
-namespace CoffeePeek.Moderation.Application.Features.CreateShop;
+namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
 public class ModerationShopCreationService(
     IModerationShopRepository shopRepository,
@@ -30,13 +26,14 @@ public class ModerationShopCreationService(
 
         if (geocodingResult != null)
         {
-            var location = new ModerationLocation(shop.Id, command.NotValidatedAddress, lat: geocodingResult.Latitude, lon: geocodingResult.Longitude);
+            var location = new ModerationLocation(command.NotValidatedAddress, lat: geocodingResult.Latitude, lon: geocodingResult.Longitude);
             shop.SetLocation(location);
         }
 
         if (command.Schedules != null)
         {
-            shop.UpdateSchedules(command.Schedules);
+            var schedules = command.Schedules.Select(s => (s.DayOfWeek, s.Intervals.Select(i => (i.OpenTime, i.CloseTime)).ToList()));
+            shop.UpdateSchedules(schedules);
         }
         
         shop.UpdateRelations(

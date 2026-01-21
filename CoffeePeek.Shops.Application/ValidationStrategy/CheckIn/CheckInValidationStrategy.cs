@@ -1,15 +1,15 @@
-using CoffeePeek.Contract.Requests.CoffeeShop;
 using CoffeePeek.Shared.Validation;
-using CoffeePeek.Shops.Application.Commands.CoffeeShop;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.CreateCheckIn;
 using CoffeePeek.Shops.Domain;
 
 namespace CoffeePeek.Shops.Application.ValidationStrategy.CheckIn;
 
-public class CheckInValidationStrategy : IValidationStrategy<CreateCheckInRequest>
+public class CheckInValidationStrategy : IValidationStrategy<CreateCheckInCommand>
 {
     private const int MaxNoteLength = BusinessConstants.MaxCheckInNoteLength;
 
-    public ValidationResult Validate(CreateCheckInRequest entity)
+    public ValidationResult Validate(CreateCheckInCommand entity)
     {
         if (entity.UserId == Guid.Empty)
         {
@@ -26,42 +26,40 @@ public class CheckInValidationStrategy : IValidationStrategy<CreateCheckInReques
             return ValidationResult.Invalid($"Note must not exceed {MaxNoteLength} characters");
         }
 
-        if (entity.Review != null)
+        if (entity.Review == null) return ValidationResult.Valid;
+        if (string.IsNullOrWhiteSpace(entity.Review.Header))
         {
-            if (string.IsNullOrWhiteSpace(entity.Review.Header))
-            {
-                return ValidationResult.Invalid("Review Header is required");
-            }
+            return ValidationResult.Invalid("Review Header is required");
+        }
 
-            if (entity.Review.Header.Length is < 3 or > 70)
-            {
-                return ValidationResult.Invalid("Review Header must be between 3 and 70 characters");
-            }
+        if (entity.Review.Header.Length is < 3 or > 70)
+        {
+            return ValidationResult.Invalid("Review Header must be between 3 and 70 characters");
+        }
 
-            if (string.IsNullOrWhiteSpace(entity.Review.Comment))
-            {
-                return ValidationResult.Invalid("Review Comment is required");
-            }
+        if (string.IsNullOrWhiteSpace(entity.Review.Comment))
+        {
+            return ValidationResult.Invalid("Review Comment is required");
+        }
 
-            if (entity.Review.Comment.Length is < 10 or > 2000)
-            {
-                return ValidationResult.Invalid("Review Comment must be between 10 and 2000 characters");
-            }
+        if (entity.Review.Comment.Length is < 10 or > 2000)
+        {
+            return ValidationResult.Invalid("Review Comment must be between 10 and 2000 characters");
+        }
 
-            if (entity.Review.RatingCoffee is < 1 or > 5)
-            {
-                return ValidationResult.Invalid("RatingCoffee must be between 1 and 5");
-            }
+        if (entity.Review.RatingCoffee is < 1 or > 5)
+        {
+            return ValidationResult.Invalid("RatingCoffee must be between 1 and 5");
+        }
 
-            if (entity.Review.RatingPlace is < 1 or > 5)
-            {
-                return ValidationResult.Invalid("RatingPlace must be between 1 and 5");
-            }
+        if (entity.Review.RatingPlace is < 1 or > 5)
+        {
+            return ValidationResult.Invalid("RatingPlace must be between 1 and 5");
+        }
 
-            if (entity.Review.RatingService is < 1 or > 5)
-            {
-                return ValidationResult.Invalid("RatingService must be between 1 and 5");
-            }
+        if (entity.Review.RatingService is < 1 or > 5)
+        {
+            return ValidationResult.Invalid("RatingService must be between 1 and 5");
         }
 
         return ValidationResult.Valid;

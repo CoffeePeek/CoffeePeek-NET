@@ -15,12 +15,7 @@
 
     <ItemGroup>
       <PackageReference Include="Mapster" Version="7.4.0" />
-      <PackageReference Include="MediatR" Version="14.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Commands\" />
-      <Folder Include="Features\" />
+      <PackageReference Include="MediatR" Version="13.1.0" />
     </ItemGroup>
 
 </Project>

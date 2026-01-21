@@ -1,17 +1,21 @@
+using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Shared.Extensions.Exceptions;
 
 namespace CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 
 public partial class ModerationReview
 {
-    public static ModerationReview Create(Guid userId, Guid shopId, string header, string comment, int ratingPlace,
-        int ratingService, int ratingCoffee)
+    public static ModerationReview Create(Guid userId, Guid shopId, Guid moderationShopId, string userName, string header, string comment,
+        int ratingPlace, int ratingService, int ratingCoffee, List<PhotoMetadata> photos)
     {
         if (shopId == Guid.Empty)
             throw new DomainException($"{nameof(shopId)} cannot be empty.");
 
         if (userId == Guid.Empty)
             throw new DomainException($"{nameof(userId)} cannot be empty.");
+        
+        if (moderationShopId == Guid.Empty)
+            throw new DomainException($"{nameof(moderationShopId)} cannot be empty.");
 
         if (string.IsNullOrWhiteSpace(header))
             throw new DomainException("Review header is required.");
@@ -38,8 +42,9 @@ public partial class ModerationReview
         if (ratingService is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
             throw new DomainException(
                 $"{nameof(ratingService)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
-        
-        return new ModerationReview(userId, shopId, header, comment, ratingCoffee, ratingPlace, ratingService);
+
+        return new ModerationReview(userId, shopId, moderationShopId, userName, header, comment, ratingCoffee, ratingPlace, ratingService,
+            photos);
     }
 
     public void Approve(Guid moderatorId)
@@ -82,5 +87,51 @@ public partial class ModerationReview
         ModeratedAt = DateTime.UtcNow;
         ModeratedBy = moderatorId;
         ModerationStatus = Contract.Enums.ModerationStatus.Pending;
+    }
+
+    public void UpdateHeader(string header)
+    {
+        if (header == Header)
+        {
+            return;
+        }
+        
+        if (header.Length is < BusinessConstants.MinReviewHeaderLength or > BusinessConstants.MaxReviewHeaderLength)
+        {
+            throw new DomainException(
+                $"{nameof(header)} header must be between {BusinessConstants.MinReviewHeaderLength} and {BusinessConstants.MaxReviewHeaderLength} characters.");
+        }
+        
+        Header = header;
+    }
+
+    public void UpdateComment(string comment)
+    {
+        if (comment.Length is < BusinessConstants.MinReviewCommentLength or > BusinessConstants.MaxReviewCommentLength)
+        {
+            throw new DomainException(
+                $"{nameof(comment)} must be between {BusinessConstants.MinReviewCommentLength} and {BusinessConstants.MaxReviewCommentLength} characters.");
+        }
+        
+        Comment = comment;
+    }
+
+    public void UpdateRating(int ratingCoffee, int ratingPlace, int ratingService)
+    {
+        if (ratingCoffee is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
+            throw new DomainException(
+                $"{nameof(ratingCoffee)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
+
+        if (ratingPlace is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
+            throw new DomainException(
+                $"{nameof(ratingPlace)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
+
+        if (ratingService is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
+            throw new DomainException(
+                $"{nameof(ratingService)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
+
+        RatingCoffee = ratingCoffee;
+        RatingPlace = ratingPlace;
+        RatingService = ratingService;
     }
 }
