@@ -138,27 +138,6 @@ services:
       redis:
         condition: service_healthy
 
-  authservice-outbox:
-    build:
-      context: .
-      dockerfile: OutboxBackgroundService/OutboxBackgroundService.Dockerfile
-    container_name: coffeepeek-authservice-outbox
-    environment:
-      - ASPNETCORE_URLS=http://+:80
-      - DOTNET_RUNNING_IN_CONTAINER=true
-      - PostgresCpOptions__ConnectionString=Host=postgres-auth;Port=5432;Database=coffeepeek_auth;Username=postgres;Password=postgres;SslMode=Disable
-      - RabbitMqOptions__HostName=rabbitmq
-      - RabbitMqOptions__Username=admin
-      - RabbitMqOptions__Password=admin
-      - RabbitMqOptions__Port=5672
-    depends_on:
-      postgres-auth:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      authservice:
-        condition: service_started
-
   userservice:
     build:
       context: .
