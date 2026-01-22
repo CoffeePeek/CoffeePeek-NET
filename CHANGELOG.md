@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Исправлена привязка маршрутов в Gateway (YARP) для поддержки версионированных эндпоинтов.
 
-## [v0.1.0] - 2026-01-22
+## [v0.1.1] - 2026-01-22
 
 ### Added
 - Начало ведения `Changelog.md`
