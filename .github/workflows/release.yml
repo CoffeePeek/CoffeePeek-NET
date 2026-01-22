@@ -1,4 +1,4 @@
-﻿name: Release from Changelog
+﻿name: Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  release:
+  create-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,17 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Extract Release Notes
-        id: extract_release_notes
-        uses: fregante/extract-release-notes@v2
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Create Release from Changelog
+        uses: fregante/release-with-changelog@v3
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          body: ${{ steps.extract_release_notes.outputs.body }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
