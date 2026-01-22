@@ -15,19 +15,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Extract Changelog Section
-        id: changelog_reader
-        uses: say8425/changelog-reader-action@v3
-        with:
-          version: ${{ github.ref_name }}
-          path: ./CHANGELOG.md
+      - name: Extract Release Notes
+        id: extract_release_notes
+        uses: fregante/extract-release-notes@v2
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
-          body: ${{ steps.changelog_reader.outputs.log }}
+          body: ${{ steps.extract_release_notes.outputs.body }}
           draft: false
           prerelease: false
         env:
