@@ -37,7 +37,7 @@ builder.ConfigureEnvironment();
 builder.Services.AddControllersModule();
 
 // Swagger
-builder.Services.AddSwaggerModule("CoffeePeek.ShopsService Service");
+builder.Services.AddSwaggerModule("Shops Service");
 
 // MediatR
 builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());

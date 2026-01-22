@@ -16,7 +16,7 @@ builder.ConfigureEnvironment();
 builder.Services.AddReverseProxy().LoadFromMemory(YarpConfig.GetRoutes(), YarpConfig.GetClusters());
 
 builder.Services.AddResponseCaching();
-builder.Services.AddSwaggerModule("CoffeePeek Gateway API");
+builder.Services.AddSwaggerModule("CoffeePeek Gateway");
 builder.Services.AddCorsModule();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -46,10 +46,10 @@ app.UseSwaggerUI(options =>
 
     foreach (var service in YarpRouteFactory.ServicesList)
     {
-        options.SwaggerEndpoint(
-            $"/swagger/{service.Id}/v1/swagger.json", 
-            $"{service.Id.ToUpper()} Service"
-        );
+        foreach (var version in service.Versions)
+        {
+            options.SwaggerEndpoint($"/swagger/{service.Id}/v{version}/swagger.json", $"{service.Id.ToUpper()} v{version} Service");
+        }
     }
 });
 

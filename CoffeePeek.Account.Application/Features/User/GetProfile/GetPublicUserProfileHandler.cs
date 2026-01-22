@@ -1,6 +1,7 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Shared.Extensions.Exceptions;
 using MapsterMapper;
 using MediatR;
 
@@ -15,7 +16,7 @@ public class GetPublicUserProfileHandler(IUserRepository userRepository, IMapper
 
         if (user == null)
         {
-            return Response<UserProfileResponse>.Error("User not found.");
+            throw new NotFoundException("User not found");
         }
 
         var result = mapper.Map<UserProfileResponse>(user);

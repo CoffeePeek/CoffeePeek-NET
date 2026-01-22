@@ -13,9 +13,9 @@ namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ProducesErrorResponseType(typeof(ErrorResponse))]
 public class FavoriteShopsController(IMediator mediator) : ControllerBase
 {
-    
     [HttpGet("all")]
     [Authorize]
     [ProducesResponseType(typeof(Response<GetAllFavoritesResponse>), StatusCodes.Status200OK)]

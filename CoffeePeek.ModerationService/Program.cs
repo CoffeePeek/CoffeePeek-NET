@@ -35,7 +35,7 @@ builder.ConfigureEnvironment();
 
 // Controllers and Swagger
 builder.Services.AddControllersModule();
-builder.Services.AddSwaggerModule("Coffee Peek ModerationService");
+builder.Services.AddSwaggerModule("CoffeePeek Moderation");
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ModerationDb);

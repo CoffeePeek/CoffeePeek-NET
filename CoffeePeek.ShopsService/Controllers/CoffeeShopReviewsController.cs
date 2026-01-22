@@ -8,18 +8,22 @@ using CoffeePeek.Shops.Application.Features.Review.GetReviewById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Authorize]
 [Route("api/[controller]")]
+[ProducesErrorResponseType(typeof(ErrorResponse))]
 public class CoffeeShopReviewsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetAllReviewsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation(Summary = "Get reviews for coffee shop")]
     public async Task<IActionResult> GetReviews(
         [FromQuery] Guid shopId,
         [FromQuery] int pageNumber = 1,
@@ -45,6 +49,8 @@ public class CoffeeShopReviewsController(IMediator mediator) : ControllerBase
     [HttpGet("{reviewId:guid}")]
     [ProducesResponseType(typeof(Response<GetReviewByIdResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation(Summary = "Get review by ID")]
     public async Task<IActionResult> GetReview(Guid shopId, Guid reviewId)
     {
         var query = new GetReviewByIdQuery(reviewId);
@@ -56,6 +62,8 @@ public class CoffeeShopReviewsController(IMediator mediator) : ControllerBase
     [HttpGet("can-create")]
     [ProducesResponseType(typeof(Response<CanCreateCoffeeShopReviewResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation(Summary = "Check if user can create review for coffee shop")]
     public async Task<IActionResult> CanCreateReview([FromQuery] Guid shopId)
     {
         if (shopId == Guid.Empty)
@@ -72,6 +80,8 @@ public class CoffeeShopReviewsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation(Summary = "Delete review by ID")]
     public async Task<IActionResult> DeleteReview(Guid shopId, Guid reviewId)
     {
         var command = new DeleteReviewFromCoffeeShopCommand(reviewId);

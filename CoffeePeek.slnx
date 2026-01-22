@@ -4,6 +4,15 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/CoffeePeek.Development/">
+    <Project Path="CoffePeek.AppHost/CoffePeek.AppHost.csproj" />
+    <Project Path="CoffePeek.ServiceDefaults/CoffePeek.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/CoffeePeek.Development/Docs/">
+    <File Path="docs/adr/0001-api-versioning-strategy.md" />
+    <File Path="docs/adr/template.md" />
+    <File Path="docs/domain-map.md" />
+  </Folder>
   <Folder Name="/CoffeePeek/">
     <Project Path="CoffeePeek.Gateway/CoffeePeek.Gateway.csproj" />
   </Folder>
@@ -39,13 +48,11 @@
     <Project Path="CoffeePeek.Contract/CoffeePeek.Contract.csproj" />
     <Project Path="CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj" />
     <Project Path="CoffeePeek.Shared.Infrastructure/CoffeePeek.Shared.Infrastructure.csproj" />
+    <Project Path="CoffeePeek.Shared.Validation/CoffeePeek.Shared.Validation.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".github/workflows/ci-cd.yml" />
+    <File Path="CHANGELOG.md" />
     <File Path="docker-compose.local.yml" />
-    <File Path="openapi.json" />
   </Folder>
-  <Project Path="CoffeePeek.Shared.Validation/CoffeePeek.Shared.Validation.csproj" />
-  <Project Path="CoffePeek.AppHost/CoffePeek.AppHost.csproj" />
-  <Project Path="CoffePeek.ServiceDefaults/CoffePeek.ServiceDefaults.csproj" />
 </Solution>

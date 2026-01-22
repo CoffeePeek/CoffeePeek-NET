@@ -1,28 +1,32 @@
 ﻿using System.Collections.ObjectModel;
+using CoffeePeek.Shared.Infrastructure.Constants;
 using Yarp.ReverseProxy.Configuration;
 
 namespace CoffeePeek.Gateway;
 
 public static class YarpRouteFactory
 {
-    public record ServiceRoute(string Id, string[] Controllers, string ClusterId);
+    public record ServiceRoute(string Id, string[] Controllers, string ClusterId, string[] Versions);
 
+    private static string[] AllVersions => [ApiVersions.V1_0, ApiVersions.V2_0];
+    private static string[] DefaultVersions => [ApiVersions.V1_0];
+    
     private static readonly List<ServiceRoute> Services =
     [
-        new("account", ["Auth", "Users"], "account-cluster"),
+        new("account", ["Tokens", "Users"], "account-cluster", DefaultVersions),
         new("shops",
             [
                 "Catalogs",
-                    "CheckIns",
+                "CheckIns",
                 "CoffeeShops",
                 "CoffeeShopReviews",
                 "FavoriteCoffeeShops",
                 "Map",
                 "UserReviews"
             ],
-            "shops-cluster"),
-        new("moderation", ["Moderation", "ModerationReviews", "ModerationShops"], "moderation-cluster"),
-        new("jobs", ["Vacancies"], "jobs-cluster")
+            "shops-cluster", DefaultVersions),
+        new("moderation", ["Moderation", "ModerationReviews", "ModerationShops"], "moderation-cluster", DefaultVersions),
+        new("jobs", ["Vacancies"], "jobs-cluster", DefaultVersions)
     ];
 
     public static ReadOnlyCollection<ServiceRoute> ServicesList => Services.AsReadOnly();

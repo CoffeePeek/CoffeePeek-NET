@@ -14,16 +14,21 @@ using FluentResults.Extensions.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CoffeePeek.ModerationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ProducesErrorResponseType(typeof(ErrorResponse))]
 public class ModerationShopsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [Authorize(Policy = RoleConsts.Moderator)]
     [Description("Get all coffee shop reviews for moderation")]
+    [ProducesResponseType<Response<GetAllModerationShopsResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation("Get all coffee shops for moderation")]
     public async Task<Response<GetAllModerationShopsResponse>> GetAllModerationShops(CancellationToken ct)
     {
         var request = new GetAllModerationShopsQuery();
@@ -32,7 +37,10 @@ public class ModerationShopsController(IMediator mediator) : ControllerBase
 
     [HttpPost]
     [Description("Adds a new coffee shop to moderation")]
-    [ProducesResponseType(typeof(SendCoffeeShopToModerationResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType<Response<SendCoffeeShopToModerationResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation("Adds a new coffee shop to moderation")]
     public async Task<IActionResult> SendCoffeeShopToModeration(
         [FromBody] SendCoffeeShopToModerationCommand command, CancellationToken ct)
     {
@@ -45,7 +53,7 @@ public class ModerationShopsController(IMediator mediator) : ControllerBase
 
     [HttpPut]
     [Authorize(Policy = RoleConsts.Moderator)]
-    [Description("Updates a coffee shop to moderation")]
+    [SwaggerOperation("Updates a coffee shop to moderation")]
     public async Task<UpdateEntityResponse<ModerationShopDto>> UpdateModerationCoffeeShop(
         [FromForm] ModerationShopDto dto, CancellationToken ct)
     {
@@ -57,7 +65,7 @@ public class ModerationShopsController(IMediator mediator) : ControllerBase
 
     [HttpPut("status")]
     [Authorize(Policy = RoleConsts.Moderator)]
-    [Description("Updates a review coffee shop status")]
+    [SwaggerOperation("Updates a review coffee shop status")]
     public async Task<Response> UpdateModerationCoffeeShopStatus(
         [FromQuery, Required] Guid id,
         [FromQuery, Required] ModerationStatus status,

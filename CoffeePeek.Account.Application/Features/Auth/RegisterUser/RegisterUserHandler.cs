@@ -1,5 +1,4 @@
 ﻿using CoffeePeek.Account.Application.Common;
-using CoffeePeek.Account.Application.Features.User.RegisterUser;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
@@ -24,34 +23,26 @@ public class RegisterUserHandler(
 {
     public async Task<CreateEntityResponse> Handle(RegisterUserCommand request, CancellationToken ct)
     {
-        try
+        if (emailExistenceFilter.MightExist(request.Email) || !await userRepository.IsEmailUnique(request.Email, ct))
         {
-            if (emailExistenceFilter.MightExist(request.Email) || !await userRepository.IsEmailUnique(request.Email, ct))
-            {
-                return CreateEntityResponse.Error("Email already exists");
-            }
-
-            var passwordHash = passwordHasher.HashPassword(request.Password);
-            
-            var user = Domain.Entities.UserAggregate.User.Register(request.Email, request.UserName, passwordHash);
-
-            var defaultRole = await roleRepository.GetRoleAsync(RoleConsts.User)
-                              ?? throw new DomainException("Default role not found");
-            
-            user.AssignRole(defaultRole);
-
-            await userRepository.Add(user, ct);
-            await unitOfWork.SaveChangesAsync(ct);
-
-            emailExistenceFilter.Add(request.Email);
-
-            logger.LogInformation("User {Email} registered with ID {UserId}", request.Email, user.Id);
-            return CreateEntityResponse.Success();
+            throw new DomainException("Email already exists");
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Registration failed for {Email}", request.Email);
-            return CreateEntityResponse.Error("An internal error occurred during registration.");
-        }
+
+        var passwordHash = passwordHasher.HashPassword(request.Password);
+
+        var user = Domain.Entities.UserAggregate.User.Register(request.Email, request.UserName, passwordHash);
+
+        var defaultRole = await roleRepository.GetRoleAsync(RoleConsts.User)
+                          ?? throw new DomainException("Default role not found");
+
+        user.AssignRole(defaultRole);
+
+        await userRepository.Add(user, ct);
+        await unitOfWork.SaveChangesAsync(ct);
+
+        emailExistenceFilter.Add(request.Email);
+
+        logger.LogInformation("User {Email} registered with ID {UserId}", request.Email, user.Id);
+        return CreateEntityResponse.Success();
     }
 }

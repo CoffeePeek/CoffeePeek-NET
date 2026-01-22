@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using CoffeePeek.Contract.Abstract;
+﻿using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Moderation.Application.Features.Review.ChangeStatusModerationReview;
 using CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
@@ -10,11 +9,13 @@ using CoffeePeek.Shared.Infrastructure.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CoffeePeek.ModerationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ProducesErrorResponseType(typeof(ErrorResponse))]
 public class ModerationReviewsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
@@ -22,7 +23,7 @@ public class ModerationReviewsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    [Description("Get all moderation reviews")]
+    [SwaggerOperation("Get all moderation reviews" )]
     public async Task<IActionResult> GetAllModerationReviews()
     {
         return Ok(await mediator.Send(new GetAllModerationReviewsQuery()));
@@ -35,22 +36,24 @@ public class ModerationReviewsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    [Description("Create new moderation review")]
+    [SwaggerOperation("Create new moderation review")]
     public async Task<IActionResult> SendReviewToModeration([FromBody] SendReviewToModerationCommand command)
     {
         var commandWithUser = command with
         {
-            UserId = User.GetUserIdOrThrow(), 
+            UserId = User.GetUserIdOrThrow(),
             UserName = User.GetUsernameOrThrow()
         };
         return Ok(await mediator.Send(commandWithUser));
     }
-    
+
     [HttpPut("{reviewId:guid}")]
     [ProducesResponseType(typeof(Response<UpdateCoffeeShopReviewResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation("Update moderation review")]
     public async Task<IActionResult> UpdateReview(
         [FromBody] UpdateCoffeeShopReviewRequest request, Guid reviewId)
     {
@@ -61,16 +64,16 @@ public class ModerationReviewsController(IMediator mediator) : ControllerBase
     }
 
     [HttpPut]
-    [Authorize(Policy =  RoleConsts.Moderator)]
-    [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
+    [Authorize(Policy = RoleConsts.Moderator)]
+    [ProducesResponseType<UpdateEntityResponse<ModerationStatus>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    [Description("Change status of moderation review, when reject status need set reject reason")]
-    public async Task<UpdateEntityResponse<ModerationStatus>> ChangeStatusModerationReview(
+    [SwaggerOperation("Change status of moderation review, when reject status need set reject reason")]
+    public async Task<IActionResult> ChangeStatusModerationReview(
         ChangeStatusModerationReviewCommand command)
     {
         var commandWithUser = command with { UserId = User.GetUserIdOrThrow() };
-        return await mediator.Send(commandWithUser);
+        return Ok(await mediator.Send(commandWithUser));
     }
 }
