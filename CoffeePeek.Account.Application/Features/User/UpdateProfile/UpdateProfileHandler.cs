@@ -20,33 +20,47 @@ public class UpdateProfileHandler(
         UpdateProfileCommand command,
         CancellationToken ct)
     {
-        var user = await userRepository.GetById(command.UserId, ct);
-        if (user == null)
+        using var transaction = unitOfWork.BeginTransactionAsync(ct);
+        
+        try
         {
-            return Response.Error("User not found");
-        }
-
-        var oldUserName = user.Username.Value;
-        var userName = Username.Create(command.Username);
-        var phoneNumber = PhoneNumber.Create(command.PhoneNumber);
-
-        user.UpdateProfile(userName, phoneNumber, command.About);
-
-        if (userName.Value != oldUserName)
-        {
-            await capPublisher.PublishAsync(new UserNameChangedEvent
+            var user = await userRepository.GetById(command.UserId, ct);
+            if (user == null)
             {
-                UserId = user.Id,
-                NewUserName = userName.Value,
-                ChangedAt = DateTime.UtcNow
-            }, cancellationToken: ct);
+                return Response<UpdateProfileResponse>.Error("User not found");
+            }
+
+            var userName = Username.Create(command.Username);
+            var phoneNumber = PhoneNumber.Create(command.PhoneNumber);
+            
+            var oldUserName = user.Username.Value;
+
+            user.UpdateProfile(userName, phoneNumber, command.About);
+
+            if (userName.Value != oldUserName)
+            {
+                await capPublisher.PublishAsync(new UserNameChangedEvent
+                {
+                    UserId = user.Id,
+                    NewUserName = userName.Value,
+                    ChangedAt = DateTime.UtcNow
+                }, cancellationToken: ct); 
+            }
+
+            await userRepository.Update(user, ct);
+            await unitOfWork.SaveChangesAsync(ct);
+            
+            await unitOfWork.CommitTransactionAsync(ct);
+
+            logger.LogInformation("Profile updated for user {UserId}", user.Id);
+
+            return Response<UpdateProfileResponse>.Success(
+                new UpdateProfileResponse());
         }
-
-        await userRepository.Update(user, ct);
-        await unitOfWork.SaveChangesAsync(ct);
-
-        logger.LogInformation("Profile updated for user {UserId}", user.Id);
-
-        return Response.Success(null, "Profile updated successfully");
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating profile for user {UserId}", command.UserId);
+            return Response<UpdateProfileResponse>.Error("An error occurred while updating the profile");
+        }
     }
 }
