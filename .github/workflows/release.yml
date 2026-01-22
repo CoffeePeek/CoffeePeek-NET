@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  create-release:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,7 +15,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create Release from Changelog
-        uses: fregante/release-with-changelog@v3
+      - name: Build Changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          input: "CHANGELOG.md"
+          configurationJson: |
+            {
+              "template": "${{CHANGELOG}}",
+              "ignore_pre_releases": true
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ steps.build_changelog.outputs.changelog }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
