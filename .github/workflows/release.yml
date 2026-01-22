@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  release:
+  create-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,22 +15,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Changelog
-        id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v5
-        with:
-          input: "CHANGELOG.md"
-          configurationJson: |
-            {
-              "template": "${{CHANGELOG}}",
-              "ignore_pre_releases": true
-            }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract Release Notes
+        id: extract_notes
+        uses: ffurrer2/extract-release-notes@v2
 
-      - name: Create Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          body: ${{ steps.build_changelog.outputs.changelog }}
+          body: ${{ steps.extract_notes.outputs.release_notes }}
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
