@@ -35,7 +35,7 @@ public class GoogleLoginHandler(
             providerId: payload.Subject,
             ct);
 
-        var accessToken = tokenService.GenerateAccessToken(user, request.DeviceName, request.IpAddress);
+        var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken();
 
         var authResult = new AuthResult { AccessToken = accessToken, RefreshToken = refreshToken };

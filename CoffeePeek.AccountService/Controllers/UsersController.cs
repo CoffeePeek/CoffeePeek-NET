@@ -41,9 +41,11 @@ public class UsersController(IMediator mediator) : ControllerBase
     [SwaggerOperation("Check if user exists by email")]
     public async Task<IActionResult> CheckUser([FromQuery] string email)
     {
-        var request = new CheckUserExistsByEmailCommand(email);
-        var result = await mediator.Send(request);
-        return result.Data ? Ok(result) : NotFound(result);
+        var request = new CheckUserExistsByEmailQuery(email);
+        
+        var response = await mediator.Send(request);
+        
+        return response.Data ? Ok(response) : NotFound(response);
     }
 
     [HttpPost]

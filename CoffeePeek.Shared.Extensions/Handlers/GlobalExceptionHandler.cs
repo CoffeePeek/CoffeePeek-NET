@@ -28,8 +28,7 @@ public class GlobalExceptionHandler(
 
         var statusCode = GetStatusCode(exception);
 
-        var errorCode = (exception as BaseException)?.ErrorCode ?? "INTERNAL_SERVER_ERROR";
-        var errorResponse = new ErrorResponse(errorCode, GetSafeMessage(exception));
+        var errorResponse = new ErrorResponse(GetSafeMessage(exception));
 
 #if DEBUG
         errorResponse.StackTrace = exception.StackTrace;

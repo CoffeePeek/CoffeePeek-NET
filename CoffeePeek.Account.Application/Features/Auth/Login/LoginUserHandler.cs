@@ -24,7 +24,6 @@ public class LoginUserHandler(
 
         emailExistenceFilter.Add(request.Email);
 
-        return Response<LoginResponse>.Success(
-            new LoginResponse(result.AccessToken, result.RefreshToken));
+        return Response<LoginResponse>.Success(new LoginResponse(result.AccessToken, result.RefreshToken));
     }
 }

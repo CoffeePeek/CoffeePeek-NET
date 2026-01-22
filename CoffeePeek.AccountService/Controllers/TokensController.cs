@@ -28,11 +28,12 @@ public class TokensController(IMediator mediator) : ControllerBase
     {
         var deviceName = Request.Headers.UserAgent.ToString();
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-        var enriched = new LoginUserCommand(request.Email, request.Password, deviceName, ipAddress);
         
-        var result = await mediator.Send(enriched);
+        var command = new LoginUserCommand(request.Email, request.Password, deviceName, ipAddress);
         
-        return Ok(result);
+        var response = await mediator.Send(command);
+        
+        return Ok(response);
     }
 
     [HttpPost("google/login")]
@@ -54,16 +55,17 @@ public class TokensController(IMediator mediator) : ControllerBase
     }
     
     [HttpPut] 
+    [Authorize]
     [ProducesResponseType<Response<RefreshTokenResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation("Refresh token")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand command)
     {
         var deviceName = Request.Headers.UserAgent.ToString();
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-        var command = new RefreshTokenCommand(User.GetUserIdOrThrow(), request.RefreshToken, deviceName, ipAddress);
+        command = command with { UserId = User.GetUserIdOrThrow(), DeviceName = deviceName, IpAddress = ipAddress };
         
         var response = await mediator.Send(command);
         
@@ -79,7 +81,12 @@ public class TokensController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete()
     {
-        var request = new LogoutCommand(User.GetUserIdOrThrow(), User.GetUserRefreshTokenOrThrow());
+        if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
+        {
+            return BadRequest(new { message = "Refresh token is required" });
+        }
+        
+        var request = new LogoutCommand(User.GetUserIdOrThrow(), refreshToken);
 
         await mediator.Send(request);
         

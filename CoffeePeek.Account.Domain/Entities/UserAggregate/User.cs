@@ -27,7 +27,7 @@ public class User : Entity<Guid>
     // ReSharper disable once UnusedMember.Local
     private User() { }
 
-    public static User Register(string invalidEmail, string invalidUsername, string passwordHash)
+    public static User Register(string invalidEmail, string invalidUsername, string passwordHash, Role defaultRole)
     {
         Email email;
         Username userName;
@@ -35,6 +35,10 @@ public class User : Entity<Guid>
         {
             email = Email.Create(invalidEmail);
             userName = Username.Create(invalidUsername);
+        }
+        catch (DomainException)
+        {
+            throw;
         }
         catch
         {
@@ -52,7 +56,10 @@ public class User : Entity<Guid>
             Statistics = UserStatistics.Empty()
         };
 
+        user.AssignRole(defaultRole);
+        
         user.AddDomainEvent(new UserRegisteredInternalEvent(userId, email.Value, userName, token));
+        
         return user;
     }
 
@@ -79,9 +86,9 @@ public class User : Entity<Guid>
         _refreshTokens.Add(new RefreshToken(Id, token, ttl, device, ip));
     }
 
-    public void RotateRefreshToken(string oldToken, string newToken, TimeSpan ttl, string device, string ip)
+    public void RotateRefreshToken(string oldRefreshToken, string newRefreshToken, TimeSpan ttl, string device, string ip)
     {
-        var existing = _refreshTokens.FirstOrDefault(t => t.Token == oldToken);
+        var existing = _refreshTokens.FirstOrDefault(t => t.Token == oldRefreshToken);
         if (existing is not { IsActive: true })
         {
             RevokeAllSessions();
@@ -89,7 +96,7 @@ public class User : Entity<Guid>
         }
 
         existing.Revoke();
-        AddSession(newToken, ttl, device, ip);
+        AddSession(newRefreshToken, ttl, device, ip);
     }
 
     public void RevokeAllSessions() => _refreshTokens.ForEach(t => t.Revoke());

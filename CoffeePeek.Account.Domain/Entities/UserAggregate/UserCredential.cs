@@ -49,8 +49,7 @@ public partial record UserCredential
     
     public bool ValidatePassword(string password, IPasswordHasherService passwordHasher)
     {
-        passwordHasher.VerifyPassword(PasswordHash, password);
-        return true;
+        return passwordHasher.VerifyPassword(PasswordHash, password);;
     }
 
     public void LinkExternalProvider(string provider, string providerId)

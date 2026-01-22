@@ -29,13 +29,12 @@ public class RegisterUserHandler(
         }
 
         var passwordHash = passwordHasher.HashPassword(request.Password);
-
-        var user = Domain.Entities.UserAggregate.User.Register(request.Email, request.UserName, passwordHash);
-
+        
         var defaultRole = await roleRepository.GetRoleAsync(RoleConsts.User)
                           ?? throw new DomainException("Default role not found");
 
-        user.AssignRole(defaultRole);
+        var user = Domain.Entities.UserAggregate.User.Register(request.Email, invalidUsername:request.UserName, passwordHash,
+            defaultRole);
 
         await userRepository.Add(user, ct);
         await unitOfWork.SaveChangesAsync(ct);

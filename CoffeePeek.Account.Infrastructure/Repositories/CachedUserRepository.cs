@@ -27,9 +27,6 @@ public class CachedUserRepository(
         GetByProvider(string provider, string providerId, CancellationToken ct) =>
         decorated.GetByProvider(provider, providerId, ct);
 
-    public Task<bool> UserExistsByEmail(string requestEmail, CancellationToken cancellationToken)
-        => decorated.UserExistsByEmail(requestEmail, cancellationToken);
-
     public Task<User?> GetByEmailConfirmToken(string requestToken, CancellationToken cancellationToken)
         => decorated.GetByEmailConfirmToken(requestToken, cancellationToken);
 

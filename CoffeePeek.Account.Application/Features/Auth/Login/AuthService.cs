@@ -29,13 +29,16 @@ public class AuthService(
         }
 
         user.RevokeAllSessions();
-        var accessToken = jwtTokenService.GenerateAccessToken(user, device, ip);
+        var accessToken = jwtTokenService.GenerateAccessToken(user);
         var refreshToken = jwtTokenService.GenerateRefreshToken();
 
         var authResult = new AuthResult {AccessToken = accessToken, RefreshToken = refreshToken};
         
-        user.AddSession(authResult.AccessToken,
-            ttl:TimeSpan.FromMinutes(jwtOptions.Value.AccessTokenLifetimeMinutes), device, ip);
+        user.AddSession(
+            authResult.RefreshToken,
+            ttl:TimeSpan.FromMinutes(jwtOptions.Value.AccessTokenLifetimeMinutes), 
+            device,
+            ip);
 
         return authResult;
     }

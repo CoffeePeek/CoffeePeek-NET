@@ -1,6 +1,6 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
 
-namespace CoffeePeek.Account.Domain.Events;
+namespace CoffeePeek.Account.Domain.Entities.UserAggregate;
 
 public record UserRegisteredInternalEvent(
     Guid UserId, 

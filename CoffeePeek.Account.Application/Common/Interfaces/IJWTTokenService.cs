@@ -4,6 +4,6 @@ namespace CoffeePeek.Account.Application.Common.Interfaces;
 
 public interface IJWTTokenService
 {
-    string GenerateAccessToken(User user, string device, string ipAddress);
+    string GenerateAccessToken(User user);
     string GenerateRefreshToken();
 }

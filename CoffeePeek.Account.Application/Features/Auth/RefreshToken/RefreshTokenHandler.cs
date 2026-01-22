@@ -19,29 +19,24 @@ public class RefreshTokenHandler(
     public async Task<Response<RefreshTokenResponse>> Handle(RefreshTokenCommand request, CancellationToken ct)
     {
         var user = await repository.GetById(request.UserId, ct);
-        if (user == null) return Response<RefreshTokenResponse>.Error("User not found");
-
-        try 
+        if (user == null)
         {
-            var newRefreshTokenValue = tokenService.GenerateRefreshToken();
-            
-            user.RotateRefreshToken(
-                request.RefreshToken, 
-                newRefreshTokenValue, 
-                ttl: TimeSpan.FromDays(jwtOptions.Value.RefreshTokenLifetimeDays), 
-                request.DeviceName, 
-                request.IpAddress);
-
-            var accessToken = tokenService.GenerateAccessToken(user, request.DeviceName, request.IpAddress);
-
-            await unitOfWork.SaveChangesAsync(ct);
-
-            return Response<RefreshTokenResponse>.Success(new RefreshTokenResponse(accessToken, newRefreshTokenValue));
+            throw new NotFoundException("User not found");
         }
-        catch (DomainException ex)
-        {
-            await unitOfWork.SaveChangesAsync(ct); 
-            return Response<RefreshTokenResponse>.Error(ex.Message);
-        }
+
+        var newRefreshTokenValue = tokenService.GenerateRefreshToken();
+
+        user.RotateRefreshToken(
+            request.RefreshToken,
+            newRefreshTokenValue,
+            ttl: TimeSpan.FromDays(jwtOptions.Value.RefreshTokenLifetimeDays),
+            request.DeviceName,
+            request.IpAddress);
+        
+        var newAccessToken = tokenService.GenerateAccessToken(user);
+
+        await unitOfWork.SaveChangesAsync(ct);
+
+        return Response<RefreshTokenResponse>.Success(new RefreshTokenResponse(newAccessToken, newRefreshTokenValue));
     }
 }
