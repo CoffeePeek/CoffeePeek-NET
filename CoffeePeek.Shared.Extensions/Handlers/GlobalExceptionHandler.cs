@@ -31,11 +31,10 @@ public class GlobalExceptionHandler(
         var errorCode = (exception as BaseException)?.ErrorCode ?? "INTERNAL_SERVER_ERROR";
         var errorResponse = new ErrorResponse(errorCode, GetSafeMessage(exception));
 
-        if (environment.IsDevelopment())
-        {
-            errorResponse.StackTrace = exception.StackTrace;
-            errorResponse.InnerException = exception.InnerException?.Message;
-        }
+#if DEBUG
+        errorResponse.StackTrace = exception.StackTrace;
+        errorResponse.InnerException = exception.InnerException?.Message;
+#endif
 
         httpContext.Response.StatusCode = statusCode;
         
