@@ -17,7 +17,6 @@ public class GoogleLoginHandler(
     IExternalAuthService externalAuthService,
     IJWTTokenService tokenService,
     IUnitOfWork unitOfWork,
-    IRedisService redisService,
     IOptions<JWTOptions> options)
     : IRequestHandler<GoogleLoginCommand, Response<GoogleLoginResponse>>
 {
@@ -47,8 +46,6 @@ public class GoogleLoginHandler(
             request.IpAddress);
 
         await unitOfWork.SaveChangesAsync(ct);
-
-        await redisService.SetAsync(CacheKey.Auth.Credentials(user.Id), user);
 
         return Response<GoogleLoginResponse>.Success(new GoogleLoginResponse
         {

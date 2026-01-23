@@ -1,7 +1,6 @@
 using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Account.Domain.Events;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using FluentAssertions;
 using Xunit;
@@ -205,16 +204,12 @@ public class UserTests
     {
         // Arrange
         var user = User.Register("test@example.com", "testuser", "hash", Role.Create("User"));
-        var newUsername = Username.Create("newusername");
-        var newPhone = PhoneNumber.Create("+375447095174");
         const string newAbout = "New bio";
 
         // Act
-        user.UpdateProfile(newUsername, newPhone, newAbout);
+        user.UpdateAbout(newAbout);
 
         // Assert
-        user.Username.Should().Be(newUsername);
-        user.PhoneNumber.Should().Be(newPhone);
         user.About.Should().Be(newAbout);
     }
 

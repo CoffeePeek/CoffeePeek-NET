@@ -10,4 +10,8 @@
       <ProjectReference Include="..\CoffeePeek.Shops.Application\CoffeePeek.Shops.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Bogus" Version="35.6.5" />
+    </ItemGroup>
+
 </Project>

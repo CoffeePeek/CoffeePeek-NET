@@ -37,7 +37,7 @@ public class FavoriteShopsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public Task<CreateEntityResponse<Guid>> AddToFavorite([FromBody]Guid id)
     {
-        return mediator.Send(new AddToFavoriteCommand(id, User.GetUserIdOrThrow()));
+        return mediator.Send(new AddToFavoriteCommand(User.GetUserIdOrThrow(), id));
     }
     
     [HttpDelete()]
@@ -49,7 +49,7 @@ public class FavoriteShopsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public Task<UpdateEntityResponse<Guid>> RemoveFromFavorite([FromQuery]Guid id)
     {
-        var command = new RemoveFromFavoriteCommand(id, User.GetUserIdOrThrow());
+        var command = new RemoveFromFavoriteCommand(User.GetUserIdOrThrow(), id);
         return mediator.Send(command);
     }
 }

@@ -144,6 +144,11 @@ var app = builder.Build();
 // Middleware pipeline
 app.UseExceptionHandler();
 
+if (app.Environment.IsDevelopment())
+{
+    await CoffeePeek.Auth.Infrastructure.AccountDbInitializer.SeedAsync(app.Services);
+}
+
 app.MapDefaultEndpoints();
 
 app.UseAuthentication();

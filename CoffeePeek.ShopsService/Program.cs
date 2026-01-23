@@ -113,6 +113,11 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 
+if (app.Environment.IsDevelopment())
+{
+    await CoffeePeek.Shops.Infrastructure.ShopsDbInitializer.SeedAsync(app.Services);
+}
+
 app.MapDefaultEndpoints();
 
 app.UseAuthentication();

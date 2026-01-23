@@ -110,24 +110,8 @@ public class User : Entity<Guid>
         _roles.Add(role);
     }
 
-    public void RemoveRole(Guid roleId)
+    public void UpdateAbout(string about)
     {
-        var role = _roles.FirstOrDefault(r => r.Id == roleId);
-        if (role != null) _roles.Remove(role);
-    }
-
-    public void UpdateProfile(Username userName, PhoneNumber phoneNumber, string? about)
-    {
-        if (userName != Username)
-        {
-            Username = userName;
-        }
-        
-        if (phoneNumber != PhoneNumber)
-        {
-            PhoneNumber = phoneNumber;
-        }
-        
         if (about != About)
         {
             About = about;
@@ -139,15 +123,25 @@ public class User : Entity<Guid>
         IsSoftDelete = true;
     }
 
-    public void UpdatePhoto(PhotoMetadata photoMetadata)
+    public void UpdateAvatar(PhotoMetadata photoMetadata)
     {
         PhotoMetadata = photoMetadata;
     }
-
-    public void UpdateAvatar(PhotoMetadata photo)
+    
+    public void UpdatePhoneNumber(PhoneNumber phoneNumber)
     {
-        PhotoMetadata = photo;
-        PhotoMetadataId = photo.Id;
+        if (phoneNumber != PhoneNumber)
+        {
+            PhoneNumber = phoneNumber;
+        }
+    }
+    
+    public void UpdateUsername(Username userName)
+    {
+        if (userName != Username)
+        {
+            Username = userName;
+        }
     }
 
     public void SoftDelete()

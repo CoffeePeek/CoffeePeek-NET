@@ -30,9 +30,9 @@ public class CoffeeShopsController(IMediator mediator) : ControllerBase
         [FromQuery] Guid[]? beans = null,
         [FromQuery] Guid[]? brewMethods = null,
         [FromQuery] Contract.Enums.PriceRange? priceRange = null,
-        [FromQuery][Range(0, 5)] decimal? minRating = null,
-        [FromQuery][Range(1, int.MaxValue)] int page = 1,
-        [FromQuery][Range(1, 100)] int pageSize = 10)
+        [FromQuery] [Range(0, 5)] decimal? minRating = null,
+        [FromQuery] [Range(1, int.MaxValue)] int page = 1,
+        [FromQuery] [Range(1, 100)] int pageSize = 10)
     {
         page = Math.Max(1, page);
         pageSize = pageSize <= 0 ? 10 : Math.Min(pageSize, 100);

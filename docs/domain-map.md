@@ -8,6 +8,7 @@
 - **Ответственность**: Управление пользователями, аутентификация (JWT), профили.
 - **Ключевые сущности**: User, Role, PhotoMetadata.
 - **Интеграции**: Identity Provider — Выдает токены для всех остальных сервисов.
+- **Подробная документация**: [Account Service Docs](account-service.md)
 
     #### Login (`/api/token` `POST`)
     Все сессии отзываются в базе, и после чего создаётся новая сессия с новым access и refresh token.
@@ -22,13 +23,35 @@
     Проверяет существование сначала с Bloom Filter, а потом проверяет в БД существование такого email.
 
     ### Logout (`/api/tokens` `DELETE`)
-    
-    ### OAuthLogin
-    
+    Закрывает текущую сессию пользователя, использует куки `refreshToken`.
+
+    ### Get Profile (`/api/users/{id}` `GET`)
+    Получение публичного профиля пользователя по его ID.
+
+    ### Update Profile phone number(`/api/users/me/phone-number` `PATCH`)
+    ### Update Profile about (`/api/users/me/about` `PATCH`)
+    ### Update Profile username (`/api/users/me/username` `PATCH`)
+    ### Update Profile Avatar (`/api/users/me/avatar` `PUT`)
+    Обновление данных профиля текущего авторизованного пользователя.
+    ### Update Profile Email (`/api/users/me/email` `PATCH`)
+    Запрос на смену email. Требует последующего подтверждения.
+
+    ### Email Confirmation (`/api/users/me/email-confirmation` `POST`/`PUT`)
+    `POST` — Переотправка письма для подтверждения email.
+    `PUT` — Подтверждение email с использованием токена из письма.
+
+    ### Delete User (`/api/users/me/{id}` `DELETE`)
+    Удаление аккаунта пользователя.
+
+    ### OAuthLogin (`api/tokens/google/login` `POST`)
+    - Не тестировалось, непонятна реализация
     
 ### 2. Shops Context (CoffeePeek.ShopsService)
 - **Ответственность**: Каталог кофейных шопов, геопозиции, меню.
 - **Ключевые сущности**: CoffeeShop, Menu, Location.
+
+  #### Login (`/api/token` `POST`)
+  Все сессии отзываются в базе, и после чего создаётся новая сессия с новым access и refresh token.
 
 ### 3. Job Vacancies Context (CoffeePeek.JobVacancies)
 - **Ответственность**: Объявления о работе, отклики.

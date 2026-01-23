@@ -2,13 +2,12 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Exceptions;
-using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.User.UpdateUserAvatar;
+namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateAvatar;
 
 public class UpdateUserAvatarRequestHandler(
     IUserRepository userRepository,
@@ -36,7 +35,7 @@ public class UpdateUserAvatarRequestHandler(
             request.UploadedPhoto.Size);
         
         photoMetadataRepository.Add(photoMetadata);
-        user.UpdatePhoto(photoMetadata);
+        user.UpdateAvatar(photoMetadata);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         

@@ -1,6 +1,5 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -36,4 +35,3 @@ public class GetShopsInBoundsHandler(IGenericRepository<Domain.Entities.CoffeeSh
         return Response<GetShopsInBoundsResponse>.Success(response);
     }
 }
-

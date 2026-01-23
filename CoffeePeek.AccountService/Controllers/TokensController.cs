@@ -74,7 +74,7 @@ public class TokensController(IMediator mediator) : ControllerBase
 
     [HttpDelete]
     [Authorize]
-    [SwaggerOperation("Logout user and invalidate refresh token")]
+    [SwaggerOperation("Logout user and invalidate refresh token from cookies")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

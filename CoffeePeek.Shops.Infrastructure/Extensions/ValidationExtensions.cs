@@ -1,6 +1,5 @@
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.CreateCheckIn;
-using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShops;
 using CoffeePeek.Shops.Application.Features.Favorite.AddToFavorite;
 using CoffeePeek.Shops.Application.Features.Favorite.RemoveFromFavorite;
 using CoffeePeek.Shops.Application.ValidationStrategy.CheckIn;
@@ -13,7 +12,6 @@ public static class ValidationExtensions
 {
     public static IServiceCollection AddValidators(this IServiceCollection services)
     {
-        services.AddTransient<IValidationStrategy<GetCoffeeShopsQuery>, GetCoffeeShopsValidationStrategy>();
         services.AddTransient<IValidationStrategy<AddToFavoriteCommand>, AddToFavoriteValidationStrategy>();
         services.AddTransient<IValidationStrategy<RemoveFromFavoriteCommand>, RemoveFromFavoriteValidationStrategy>();
         services.AddTransient<IValidationStrategy<CreateCheckInCommand>, CheckInValidationStrategy>();

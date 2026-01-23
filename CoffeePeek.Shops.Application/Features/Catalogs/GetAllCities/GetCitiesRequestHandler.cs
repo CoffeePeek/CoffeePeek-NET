@@ -1,8 +1,9 @@
 using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Shops.Application.Features.Internal.GetAllCities;
 using CoffeePeek.Shops.Application.Services;
 using MediatR;
 
-namespace CoffeePeek.Shops.Application.Features.Internal.GetAllCities;
+namespace CoffeePeek.Shops.Application.Features.Catalogs.GetAllCities;
 
 public class GetCitiesRequestHandler(ICacheService cacheService) : IRequestHandler<GetCitiesCommand, Response<GetCitiesResponse>>
 {

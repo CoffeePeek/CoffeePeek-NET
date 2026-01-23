@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shops.Domain;
 using MediatR;
 

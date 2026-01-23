@@ -11,6 +11,7 @@ public class UserRepository(IGenericRepository<User> userRepository) : IUserRepo
         return await userRepository
             .Query()
             .Include(x => x.RefreshTokens)
+            .Include(x => x.Roles)
             .FirstOrDefaultAsync(c => c.Id == userId, ct);
     }
 

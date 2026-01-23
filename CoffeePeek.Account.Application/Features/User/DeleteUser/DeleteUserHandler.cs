@@ -1,4 +1,3 @@
-using CoffeePeek.Account.Application.Features.DeleteUser;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
@@ -8,10 +7,7 @@ using MediatR;
 
 namespace CoffeePeek.Account.Application.Features.User.DeleteUser;
 
-public class DeleteUserHandler(
-    IUserRepository userRepository,
-    IUnitOfWork unitOfWork,
-    IRedisService redisService) 
+public class DeleteUserHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) 
     : IRequestHandler<DeleteUserCommand, Response<bool>>
 {
     public async Task<Response<bool>> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
@@ -27,19 +23,7 @@ public class DeleteUserHandler(
         
         await userRepository.Update(user, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
-        await ClearUserCacheAsync(user.Id);
 
         return Response<bool>.Success(true);
     }
-    
-    private Task ClearUserCacheAsync(Guid userId)
-    {
-        return Task.WhenAll(
-            redisService.RemoveAsync(CacheKey.User.Profile(userId)), 
-            redisService.RemoveAsync(CacheKey.User.Entity(userId))
-            );
-    }
 }
-
-
