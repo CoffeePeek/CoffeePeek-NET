@@ -6,7 +6,6 @@ using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using LoginRequest = CoffeePeek.Account.Application.Features.Auth.Login.LoginRequest;

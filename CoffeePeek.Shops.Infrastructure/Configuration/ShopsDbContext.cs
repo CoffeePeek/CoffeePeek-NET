@@ -1,5 +1,6 @@
 using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,6 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     public virtual DbSet<Roaster> Roasters { get; set; }
     
     public virtual DbSet<UserFavorite> UserFavorites { get; set; }
-    public virtual DbSet<UserVisit> UserVisits { get; set; }
     public virtual DbSet<CoffeeShop> Shops { get; set; }
     
     public virtual DbSet<ShopPhoto> ShopPhotos { get; set; }
@@ -36,7 +36,7 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
         {
             entity.HasOne(r => r.Shop)
                 .WithMany(s => s.Reviews)
-                .HasForeignKey(r => r.ShopId)
+                .HasForeignKey(r => r.CoffeeShopId)
                 .OnDelete(DeleteBehavior.Cascade);
             
             entity.HasIndex(r => r.UserId);
@@ -44,6 +44,8 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
             entity.Property(r => r.Header).HasMaxLength(BusinessConstants.MaxReviewHeaderLength);
             entity.Property(r => r.Comment).HasMaxLength(BusinessConstants.MaxReviewCommentLength);
             entity.Property(r => r.UserName).IsRequired().HasMaxLength(30);
+
+            entity.OwnsOne<Rating>(r => r.Rating);
         });
         
         modelBuilder.Entity<CheckIn>(entity =>
@@ -64,6 +66,8 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
                 .OnDelete(DeleteBehavior.SetNull);
                 
             entity.Property(c => c.Note).HasMaxLength(BusinessConstants.MaxCheckInNoteLength);
+            
+            entity.OwnsOne<Rating>(r => r.Rating);
         });
 
         modelBuilder.Entity<UserFavorite>(entity =>
@@ -76,27 +80,6 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
 
             entity.Property(f => f.UserId).IsRequired();
             entity.Property(f => f.CoffeeShopId).IsRequired();
-        });
-
-        modelBuilder.Entity<UserVisit>(entity =>
-        {
-            entity.HasKey(v => v.Id);
-
-            entity.HasIndex(v => new { v.UserId, v.ShopId }).IsUnique();
-
-            entity.HasIndex(v => v.UserId);
-
-            entity.HasIndex(v => new { v.UserId, v.LastVisitedAt });
-
-            entity.HasIndex(v => new { v.UserId, v.VisitCount });
-            
-            entity.Property(v => v.UserId).IsRequired();
-            entity.Property(v => v.ShopId).IsRequired();
-            entity.Property(v => v.FirstVisitedAt).IsRequired();
-            entity.Property(v => v.LastVisitedAt).IsRequired();
-            entity.Property(v => v.VisitCount).IsRequired().HasDefaultValue(1);
-            entity.Property(v => v.HasReview).IsRequired().HasDefaultValue(false);
-            entity.Property(v => v.Note).HasMaxLength(BusinessConstants.MaxVisitNoteLength);
         });
     }
 }

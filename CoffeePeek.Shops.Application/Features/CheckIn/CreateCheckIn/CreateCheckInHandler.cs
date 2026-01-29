@@ -1,85 +1,85 @@
 using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Events.Shops;
-using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Extensions.CAP;
+using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Validation;
-using CoffeePeek.Shops.Application.Common;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using DotNetCore.CAP;
+using MapsterMapper;
 using MediatR;
 
-namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.CreateCheckIn;
+namespace CoffeePeek.Shops.Application.Features.CheckIn.CreateCheckIn;
 
 using Review = Domain.Entities.ReviewAggregate.Review;
 
 public class CreateCheckInHandler(
-    IGenericRepository<Domain.Entities.CheckIn> checkInRepository,
-    ICoffeeShopCacheService coffeeShopCacheService,
-    IGenericRepository<Review> reviewsRepository,
-    IUserVisitService userVisitService,
+    IGenericRepository<Domain.Entities.CheckInAggregate.CheckIn> checkInRepository,
+    IAsyncValidationStrategy<CreateCheckInCommand> validationStrategy,
     IUnitOfWork unitOfWork,
-    IValidationStrategy<CreateCheckInCommand> validationStrategy,
-    ICapPublisher capPublisher)
+    ICapPublisher capPublisher,
+    IMapper mapper)
     : IRequestHandler<CreateCheckInCommand, Response<CreateCheckInResponse>>
 {
-    public async Task<Response<CreateCheckInResponse>> Handle(CreateCheckInCommand command, CancellationToken cancellationToken)
+    public async Task<Response<CreateCheckInResponse>> Handle(CreateCheckInCommand command, CancellationToken ct)
     {
-        var validationResult = validationStrategy.Validate(command);
+        var validationResult = await validationStrategy.ValidateAsync(command, ct);
         if (!validationResult.IsValid)
         {
-            return Response<CreateCheckInResponse>.Error(validationResult.ErrorMessage);
+            throw new ValidationException(validationResult.ErrorMessage!);
         }
 
-        var checkIn = Domain.Entities.CheckIn.Create(command.UserId, command.ShopId, command.Note);
+        var checkIn = Domain.Entities.CheckInAggregate.CheckIn.Create(command.UserId, command.CoffeeShopId, command.VisitedAt);
 
-        Guid? reviewId = null;
-        var hasReview = false;
-
-        if (command.Review != null)
+        if (!string.IsNullOrEmpty(command.Note))
         {
-            var reviewCommand = command.Review;
-            var review = Review.Create(command.ShopId, command.UserId, command.UserName, reviewCommand.Header, reviewCommand.Comment,
-                reviewCommand.RatingCoffee, reviewCommand.RatingPlace, reviewCommand.RatingService);
-
-            reviewsRepository.Add(review);
-            checkIn.LinkReview(review.Id);
-            reviewId = review.Id;
-            hasReview = true;
+            checkIn.UpdateNote(command.Note);    
         }
 
-        checkInRepository.Add(checkIn);
-        
-        await userVisitService.RegisterVisitAsync(
-            command.UserId,
-            command.ShopId,
-            checkIn.CreatedAtUtc,
-            hasReview,
-            cancellationToken);
-        
-        if (command.Review != null)
+        if (command.Photos != null && command.Photos.Count != 0)
         {
-            await coffeeShopCacheService.InvalidateShopCacheAsync(command.ShopId, cancellationToken);
+            var photos = command.Photos.Select(x =>
+                new ShopPhoto(x.FileName, x.ContentType, x.StorageKey, x.Size, command.UserId));
+            checkIn.AddPhotos(photos);
         }
 
-        await capPublisher.PublishAsync(new CheckinCreatedEvent
-        {
-            UserId = command.UserId,
-            ShopId = command.ShopId,
-            CreatedAt = checkIn.CreatedAtUtc
-        }, cancellationToken: cancellationToken);
+        using var trans = unitOfWork.BeginTransactionAsync(ct);
 
-        if (reviewId.HasValue)
+        if (command.IsPublic)
         {
-            await capPublisher.PublishAsync(
-                name:CapEventNames.Shops.ReviewAdded,
-                contentObj: new ReviewAddedEvent(command.UserId, command.ShopId, reviewId.Value),
-                cancellationToken: cancellationToken);
+            try
+            {
+                var commentPreview = string.Join(" ",
+                    command.Note?.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(3) ?? []);
+
+                var review = Review.Create(command.CoffeeShopId,
+                    command.UserId, command.UserName,
+                    header: commentPreview,
+                    comment: command.Note!,
+                    ratingDto: command.Rating!);
+
+                await capPublisher.PublishAsync(new CheckinCreatedEvent
+                {
+                    UserId = command.UserId,
+                    ShopId = command.CoffeeShopId,
+                    CreatedAt = checkIn.CreatedAtUtc,
+                    ReviewDto = mapper.Map<ReviewDto>(review)
+                }, cancellationToken: ct);
+            }
+            catch (DomainException ex)
+            {
+                //ignore 
+            }
+
+            checkInRepository.Add(checkIn);
+
+            await unitOfWork.SaveChangesAsync(ct);
         }
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.CommitTransactionAsync(ct);
 
-        return Response<CreateCheckInResponse>.Success(new CreateCheckInResponse(checkIn.Id, reviewId));
+        return Response<CreateCheckInResponse>.Success(new CreateCheckInResponse(checkIn.Id));
     }
 }

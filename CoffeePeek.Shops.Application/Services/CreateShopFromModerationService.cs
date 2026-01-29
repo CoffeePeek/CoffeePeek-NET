@@ -81,8 +81,7 @@ public class CreateShopFromModerationService(
                 p.ContentType,
                 p.StorageKey,
                 p.SizeBytes,
-                p.OwnerId,
-                shop.Id)).ToArray();
+                p.OwnerId)).ToArray();
 
             shop.AddPhotos(photos);
         }

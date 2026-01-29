@@ -26,7 +26,7 @@ public class ModerationReviewApprovedHandler(
             reviewDto.UserId, reviewDto.ShopId);
 
         var existingReview = await reviewRepository
-            .FirstOrDefaultAsync(r => r.ShopId == reviewDto.ShopId && r.UserId == reviewDto.UserId, 
+            .FirstOrDefaultAsync(r => r.CoffeeShopId == reviewDto.ShopId && r.UserId == reviewDto.UserId, 
                 cancellationToken);
 
         if (existingReview != null)
@@ -42,9 +42,7 @@ public class ModerationReviewApprovedHandler(
             reviewDto.UserName,
             reviewDto.Header,
             reviewDto.Comment,
-            reviewDto.RatingCoffee,
-            reviewDto.RatingPlace,
-            reviewDto.RatingService);
+            reviewDto.Rating);
 
         reviewRepository.Add(review);
 

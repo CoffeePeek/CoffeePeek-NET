@@ -7,6 +7,7 @@ using CoffeePeek.Shops.Infrastructure.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Bogus;
+using CoffeePeek.Contract.Dtos;
 
 namespace CoffeePeek.Shops.Infrastructure;
 
@@ -84,17 +85,10 @@ public static class ShopsDbInitializer
                     userId == TestUserId ? "coffee_lover" : "admin", 
                     faker.Lorem.Sentence(3), 
                     faker.Lorem.Paragraph(), 
-                    faker.Random.Int(3, 5), 
-                    faker.Random.Int(3, 5), 
-                    faker.Random.Int(3, 5));
+                    new RatingDto { Place = faker.Random.Int(3, 5), Service = faker.Random.Int(3, 5), Coffee = faker.Random.Int(3, 5) }
+                    );
                 
                 context.Reviews.Add(review);
-
-                if (faker.Random.Bool(0.7f))
-                {
-                    var checkin = CheckIn.CreateWithReview(userId, shop.Id, review.Id, faker.Random.Bool() ? faker.Lorem.Sentence() : null);
-                    context.CheckIns.Add(checkin);
-                }
             }
         }
 

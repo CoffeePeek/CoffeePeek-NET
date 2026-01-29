@@ -47,7 +47,7 @@ public class UsersController(IMediator mediator) : ControllerBase
 
         var response = await mediator.Send(request);
 
-        return response.Data ? Ok(response) : NotFound(response);
+        return Ok(response);
     }
 
     [HttpPost]

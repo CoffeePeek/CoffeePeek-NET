@@ -1,5 +1,4 @@
 ﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
 using MediatR;
 using Newtonsoft.Json;
 

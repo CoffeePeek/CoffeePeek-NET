@@ -9,7 +9,6 @@ public sealed partial class ModerationShop
         string name,
         Guid userId,
         Guid cityId,
-        PriceRange priceRange,
         string? description)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new DomainException("Name is required");
@@ -20,7 +19,6 @@ public sealed partial class ModerationShop
             Name = name,
             UserId = userId,
             CityId = cityId,
-            PriceRange = priceRange,
             Description = description,
             ModerationStatus = ModerationStatus.Pending,
         };
@@ -141,5 +139,10 @@ public sealed partial class ModerationShop
             return;
         
         ShopId = shopId;
+    }
+
+    public void AddPriceRange(PriceRange priceRange)
+    {
+        PriceRange = priceRange;
     }
 }

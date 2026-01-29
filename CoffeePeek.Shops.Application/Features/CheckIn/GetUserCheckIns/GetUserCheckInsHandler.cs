@@ -1,14 +1,15 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.GetUserCheckIns;
 using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.GetUserCheckIns;
+namespace CoffeePeek.Shops.Application.Features.CheckIn.GetUserCheckIns;
 
 public class GetUserCheckInsHandler(
-    IGenericRepository<Domain.Entities.CheckIn> checkInRepository,
+    IGenericRepository<Domain.Entities.CheckInAggregate.CheckIn> checkInRepository,
     IMapper mapper)
     : IRequestHandler<GetUserCheckInsCommand, Response<GetUserCheckInsResponse>>
 {

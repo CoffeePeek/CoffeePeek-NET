@@ -51,9 +51,8 @@ public class UpdateModerationCoffeeShopStatusHandler(
         else if (command.ModerationStatus == ModerationStatus.Rejected)
         {
             shop.Reject("Rejected by moderator");
+            await unitOfWork.SaveChangesAsync(ct);
         }
-
-        await unitOfWork.SaveChangesAsync(ct);
 
         return Response.Success();
     }

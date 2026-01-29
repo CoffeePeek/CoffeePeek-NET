@@ -6,7 +6,7 @@ namespace CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 public partial class ModerationReview
 {
     public static ModerationReview Create(Guid userId, Guid shopId, Guid moderationShopId, string userName, string header, string comment,
-        int ratingPlace, int ratingService, int ratingCoffee, List<PhotoMetadata> photos)
+        RatingDto ratingDto, List<PhotoMetadata> photos)
     {
         if (shopId == Guid.Empty)
             throw new DomainException($"{nameof(shopId)} cannot be empty.");
@@ -30,21 +30,10 @@ public partial class ModerationReview
         if (comment.Length is < BusinessConstants.MinReviewCommentLength or > BusinessConstants.MaxReviewCommentLength)
             throw new DomainException(
                 $"{nameof(comment)} must be between {BusinessConstants.MinReviewCommentLength} and {BusinessConstants.MaxReviewCommentLength} characters.");
+        
+        var rating = Rating.Create(ratingDto.Place, ratingDto.Service, ratingDto.Coffee);
 
-        if (ratingCoffee is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
-            throw new DomainException(
-                $"{nameof(ratingCoffee)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
-
-        if (ratingPlace is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
-            throw new DomainException(
-                $"{nameof(ratingPlace)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
-
-        if (ratingService is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
-            throw new DomainException(
-                $"{nameof(ratingService)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
-
-        return new ModerationReview(userId, shopId, moderationShopId, userName, header, comment, ratingCoffee, ratingPlace, ratingService,
-            photos);
+        return new ModerationReview(userId, shopId, moderationShopId, userName, header, comment, rating, photos);
     }
 
     public void Approve(Guid moderatorId)
@@ -114,24 +103,5 @@ public partial class ModerationReview
         }
         
         Comment = comment;
-    }
-
-    public void UpdateRating(int ratingCoffee, int ratingPlace, int ratingService)
-    {
-        if (ratingCoffee is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
-            throw new DomainException(
-                $"{nameof(ratingCoffee)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
-
-        if (ratingPlace is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
-            throw new DomainException(
-                $"{nameof(ratingPlace)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
-
-        if (ratingService is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
-            throw new DomainException(
-                $"{nameof(ratingService)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
-
-        RatingCoffee = ratingCoffee;
-        RatingPlace = ratingPlace;
-        RatingService = ratingService;
     }
 }

@@ -20,16 +20,20 @@ public class ModerationShopCreationService(
             command.Name,
             command.UserId,
             command.CityId,
-            command.PriceRange,
             command.Description
         );
-
+        
         if (geocodingResult != null)
         {
             var location = new ModerationLocation(command.NotValidatedAddress, lat: geocodingResult.Latitude, lon: geocodingResult.Longitude);
             shop.SetLocation(location);
         }
 
+        if (command.PriceRange != null)
+        {
+            shop.AddPriceRange(command.PriceRange.Value);
+        }
+        
         if (command.Schedules != null)
         {
             var schedules = command.Schedules.Select(s => (s.DayOfWeek, s.Intervals.Select(i => (i.OpenTime, i.CloseTime)).ToList()));
