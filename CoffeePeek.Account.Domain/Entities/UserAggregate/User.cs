@@ -126,6 +126,7 @@ public class User : Entity<Guid>
     public void UpdateAvatar(PhotoMetadata photoMetadata)
     {
         PhotoMetadata = photoMetadata;
+        PhotoMetadataId = photoMetadata.Id;
     }
     
     public void UpdatePhoneNumber(PhoneNumber phoneNumber)
