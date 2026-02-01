@@ -39,12 +39,15 @@ public class ModerationReviewsController(IMediator mediator) : ControllerBase
     [SwaggerOperation("Create new moderation review")]
     public async Task<IActionResult> SendReviewToModeration([FromBody] SendReviewToModerationCommand command)
     {
-        var commandWithUser = command with
+        command = command with
         {
             UserId = User.GetUserIdOrThrow(),
             UserName = User.GetUsernameOrThrow()
         };
-        return Ok(await mediator.Send(commandWithUser));
+        
+        var response = await mediator.Send(command);
+        
+        return Ok(response);
     }
 
     [HttpPut("{reviewId:guid}")]
@@ -55,10 +58,10 @@ public class ModerationReviewsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation("Update moderation review")]
     public async Task<IActionResult> UpdateReview(
-        [FromBody] UpdateCoffeeShopReviewRequest request, Guid reviewId)
+        [FromBody] UpdateCoffeeShopReviewCommand command, Guid reviewId)
     {
-        request = request with { UserId = User.GetUserIdOrThrow(), ReviewId = reviewId };
-        var response = await mediator.Send(request);
+        command = command with { UserId = User.GetUserIdOrThrow(), ReviewId = reviewId };
+        var response = await mediator.Send(command);
 
         return response.IsSuccess ? Ok(response) : NotFound(response);
     }

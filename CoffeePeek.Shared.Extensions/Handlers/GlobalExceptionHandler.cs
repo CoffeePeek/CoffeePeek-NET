@@ -1,5 +1,4 @@
 ﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Exceptions;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -48,6 +47,7 @@ public class GlobalExceptionHandler(
         NotFoundException => StatusCodes.Status404NotFound,
         UnauthorizedException or UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
         ValidationException or DomainException => StatusCodes.Status400BadRequest,
+        ConflictException => StatusCodes.Status409Conflict,
         DatabaseException or NpgsqlException => StatusCodes.Status503ServiceUnavailable,
         _ => StatusCodes.Status500InternalServerError
     };

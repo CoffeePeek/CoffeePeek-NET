@@ -16,7 +16,7 @@ namespace CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 public class SearchCoffeeShopsHandler(
     IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> shopRepository,
     IUserFavoriteRepository favoriteRepository,
-    IUserVisitRepository visitRepository,
+    IUserCheckInRepository visitRepository,
     IMapper mapper,
     IRedisService redisService)
     : IRequestHandler<SearchCoffeeShopsQuery, Response<GetCoffeeShopsResponse>>
@@ -108,7 +108,7 @@ public class SearchCoffeeShopsHandler(
 
         if (queryRequest.MinRating.HasValue)
         {
-            query = query.Where(s => (decimal)s.Reviews.Average(r => r.RatingCoffee + r.RatingPlace + r.RatingService) >= queryRequest.MinRating.Value);
+            query = query.Where(s => s.Reviews.Average(r => r.Rating.AverageRating) >= queryRequest.MinRating.Value);
         }
 
         var totalCount = await query.CountAsync(cancellationToken);

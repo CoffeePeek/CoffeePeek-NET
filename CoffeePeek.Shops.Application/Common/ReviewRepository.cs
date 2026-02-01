@@ -23,7 +23,7 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
     public async Task<(bool, Guid?)> ExistsForCurrentUser(Guid shopId, Guid userId, CancellationToken ct)
     {
         var review = await reviewRepository
-            .FirstOrDefaultAsNoTrackingAsync(x => x.ShopId == shopId && x.UserId == userId, ct);
+            .FirstOrDefaultAsNoTrackingAsync(x => x.CoffeeShopId == shopId && x.UserId == userId, ct);
         
         return (review != null, review?.Id);
     }

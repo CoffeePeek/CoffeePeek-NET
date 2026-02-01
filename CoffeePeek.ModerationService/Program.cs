@@ -7,6 +7,7 @@ using CoffeePeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
 using CoffeePeek.Moderation.Infrastructure;
+using CoffeePeek.Moderation.Infrastructure.Configuration;
 using CoffeePeek.Moderation.Infrastructure.Consumers;
 using CoffeePeek.Moderation.Infrastructure.Mapper;
 using CoffeePeek.Moderation.Infrastructure.Services;
@@ -62,7 +63,7 @@ builder.Services.AddTransient<IAsyncValidationStrategy<SendReviewToModerationCom
 
 // Validation
 
-builder.Services.AddTransient<IValidationStrategy<UpdateCoffeeShopReviewRequest>, ReviewUpdateValidationStrategy>();
+builder.Services.AddTransient<IValidationStrategy<UpdateCoffeeShopReviewCommand>, ReviewUpdateValidationStrategy>();
 
 // Mapster
 builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
@@ -100,6 +101,7 @@ builder.Services.AddAuthorizationBuilder()
 // CAP for event publishing and consuming
 builder.Services.AddCapModule<ModerationDbContext>(dbOptions, "moderation-service");
 builder.Services.AddScoped<ModerationShopApproveCompleteHandler>();
+builder.Services.AddScoped<CheckInCreatedConsumer>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();

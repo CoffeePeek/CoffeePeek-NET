@@ -7,24 +7,28 @@ namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 
 public record CoffeeShopDetailsDto
 {
-    public Guid Id { get; set; }
-    public Guid CityId { get; set; }
-    public required string Name { get; set; }
-    public string? Description { get; set; }
-    public ShortPhotoMetadataDto[] Photos { get; set; }
-    
-    public decimal Rating { get; set; }
-    public int ReviewCount { get; set; }
-    public ReviewDto[] Reviews { get; set; }
+    public Guid Id { get; init; }
+    public Guid CityId { get; init; }
+    public required string Name { get; init; }
+    public string? Description { get; init; }
+    public ShortPhotoMetadataDto[] Photos { get; init; }
 
-    public bool IsOpen { get; set; }
-    public PriceRange PriceRange { get; set; }
-    
-    public LocationDto? Location { get; set; }
-    public BeansDto[]? CoffeeBeans { get; set; }
-    public RoasterDto[]? Roasters { get; set; }
-    public EquipmentDto[]? Equipments { get; set; }
-    public BrewMethodDto[]? BrewMethods { get; set; }
-    public ShopContactDto? ShopContact { get; set; }
-    public List<ScheduleDto>? Schedules { get; set; }
+    public decimal Rating { get; init; }
+    public int ReviewCount { get; init; }
+    public ReviewDto[] Reviews { get; init; }
+
+
+    public bool IsFavorite { get; init; }
+    public bool IsVisited { get; init; }
+    public bool IsOpen { get; init; }
+    public bool IsNew { get; init; }
+    public PriceRange PriceRange { get; init; }
+
+    public LocationDto? Location { get; init; }
+    public BeansDto[]? CoffeeBeans { get; init; }
+    public RoasterDto[]? Roasters { get; init; }
+    public EquipmentDto[]? Equipments { get; init; }
+    public BrewMethodDto[]? BrewMethods { get; init; }
+    public ShopContactDto? ShopContact { get; init; }
+    public List<ScheduleDto>? Schedules { get; init; }
 }

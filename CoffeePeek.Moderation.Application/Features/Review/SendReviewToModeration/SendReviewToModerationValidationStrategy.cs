@@ -1,20 +1,18 @@
-using CoffeePeek.Moderation.Domain.Entities;
-using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shared.Validation.Review;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
 
-public class SendReviewToModerationValidationStrategy(IGenericRepository<ModerationShop> shopRepository) : BaseReviewValidationStrategy,
+public class SendReviewToModerationValidationStrategy : BaseReviewValidationStrategy,
     IAsyncValidationStrategy<SendReviewToModerationCommand>
 {
-    public async Task<ValidationResult> ValidateAsync(SendReviewToModerationCommand command, CancellationToken ct = default)
+    public Task<ValidationResult> ValidateAsync(SendReviewToModerationCommand command, CancellationToken ct = default)
     {
         var syncResult = ValidateSyncProps(command);
         if (!syncResult.IsValid) 
-            return syncResult;
+            return Task.FromResult(syncResult);
 
-        return ValidationResult.Valid;
+        return Task.FromResult(ValidationResult.Valid);
     }
     
     private static ValidationResult ValidateSyncProps(SendReviewToModerationCommand command)
@@ -29,9 +27,9 @@ public class SendReviewToModerationValidationStrategy(IGenericRepository<Moderat
         var firstError = validations.FirstOrDefault(v => !v.IsValid);
         if (firstError != null) return firstError;
 
-        if (!IsValidRating(command.RatingCoffee)) return ValidationResult.Invalid("RatingCoffee invalid");
-        if (!IsValidRating(command.RatingService)) return ValidationResult.Invalid("RatingService invalid");
-        if (!IsValidRating(command.RatingPlace)) return ValidationResult.Invalid("RatingPlace invalid");
+        if (!IsValidRating(command.Rating.Place)) return ValidationResult.Invalid("RatingCoffee invalid");
+        if (!IsValidRating(command.Rating.Service)) return ValidationResult.Invalid("RatingService invalid");
+        if (!IsValidRating(command.Rating.Place)) return ValidationResult.Invalid("RatingPlace invalid");
 
         return ValidationResult.Valid;
     }

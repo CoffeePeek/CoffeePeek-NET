@@ -20,11 +20,9 @@ public class RemoveFromFavoriteHandler(
             return UpdateEntityResponse<Guid>.Error(validationResult.ErrorMessage);
         }
 
-        var res = await favoriteService.RemoveFromFavoritesAsync(request.UserId, request.CoffeeShopId,
+        await favoriteService.RemoveFromFavoritesAsync(request.UserId, request.CoffeeShopId,
             cancellationToken);
 
-        return !res.IsSuccess
-            ? UpdateEntityResponse<Guid>.Error(res.ErrorMessage)
-            : UpdateEntityResponse<Guid>.Success(request.CoffeeShopId, "Coffee shop removed from favorites");
+        return UpdateEntityResponse<Guid>.Success(request.CoffeeShopId, "Coffee shop removed from favorites");
     }
 }

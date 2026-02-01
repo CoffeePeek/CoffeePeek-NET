@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
+using CoffeePeek.Contract.Dtos.Yandex;
 using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Application.Common.Models;
-using CoffeePeek.Moderation.Infrastructure.External.Yandex;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

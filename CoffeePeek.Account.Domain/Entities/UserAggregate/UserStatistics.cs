@@ -9,12 +9,14 @@ public partial record UserStatistics
 
     private UserStatistics()
     {
-        
+        //ef core
     }
 
     internal UserStatistics(int checkInCount, int reviewCount, int addedShopsCount)
     {
-        
+        CheckInCount = checkInCount;
+        ReviewCount = reviewCount;
+        AddedShopsCount = addedShopsCount;
     }
     
     public static UserStatistics Empty() => new(0, 0, 0);

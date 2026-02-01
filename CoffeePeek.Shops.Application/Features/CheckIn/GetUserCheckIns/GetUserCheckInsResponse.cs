@@ -1,6 +1,6 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 
-namespace CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.GetUserCheckIns;
+namespace CoffeePeek.Shops.Application.Features.CheckIn.GetUserCheckIns;
 
 public record GetUserCheckInsResponse(
     CheckInDto[] CheckIns,

@@ -7,7 +7,7 @@ namespace CoffeePeek.Shops.Infrastructure.Services;
 public class UserFavoriteRepository(IGenericRepository<UserFavorite> repository) 
     : IUserFavoriteRepository
 {
-    public Task<bool> ExistsAsync(Guid userId, Guid coffeeShopId, CancellationToken ct = default)
+    public Task<bool> Exists(Guid userId, Guid coffeeShopId, CancellationToken ct = default)
     {
         return repository.AnyAsync(f => f.UserId == userId && f.CoffeeShopId == coffeeShopId, ct);
     }

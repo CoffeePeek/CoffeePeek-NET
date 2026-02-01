@@ -2,4 +2,7 @@
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 
-public sealed record GetCoffeeShopResponse(CoffeeShopDetailsDto ShopDto);
+public sealed class GetCoffeeShopResponse(CoffeeShopDetailsDto shopDto)
+{
+    public CoffeeShopDetailsDto ShopDto { get; set; } = shopDto;
+}

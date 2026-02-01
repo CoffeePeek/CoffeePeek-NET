@@ -7,20 +7,25 @@ using MediatR;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="UserId"></param>
+/// <param name="UserName"></param>
+/// <param name="ShopId"></param>
+/// <param name="Header"></param>
+/// <param name="Comment"></param>
+/// <param name="Rating"></param>
+/// <param name="Photos">Already loaded photos to S3</param>
+/// <param name="CheckInId">Property for creating review from checkIn</param>
 public record SendReviewToModerationCommand(
+    [property: JsonIgnore] Guid UserId,
+    [property: JsonIgnore] string UserName,
     Guid ShopId,
     [MaxLength(BusinessConstants.MaxReviewHeaderLength)]
     string Header,
     [MaxLength(BusinessConstants.MaxReviewCommentLength)]
     string Comment,
-    [Range(BusinessConstants.MinReviewRate, BusinessConstants.MaxReviewRate)]
-    int RatingService,
-    [Range(BusinessConstants.MinReviewRate, BusinessConstants.MaxReviewRate)]
-    int RatingPlace,
-    [Range(BusinessConstants.MinReviewRate, BusinessConstants.MaxReviewRate)]
-    int RatingCoffee,
-    List<UploadedPhotoDto>? Photos) : IRequest<CreateEntityResponse>
-{
-    [JsonIgnore] public Guid UserId { get; init; }
-    [JsonIgnore] public string? UserName { get; init; }
-}
+    RatingDto Rating,
+    ICollection<UploadedPhotoDto>? Photos,
+    [property: JsonIgnore] Guid? CheckInId = null) : IRequest<CreateEntityResponse>;

@@ -1,5 +1,4 @@
 using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
@@ -18,14 +17,12 @@ public class AddToFavoriteHandler(
         var validationResult = validationStrategy.Validate(request);
         if (!validationResult.IsValid)
         {
-            throw new DomainException(validationResult.ErrorMessage);
+            throw new ValidationException(validationResult.ErrorMessage);
         }
 
-        var res = await userFavoriteService.AddToFavoritesAsync(request.UserId, request.CoffeeShopId,
+        var id = await userFavoriteService.AddToFavoritesAsync(request.UserId, request.CoffeeShopId,
             cancellationToken);
 
-        return res.IsSuccess
-            ? CreateEntityResponse<Guid>.Success(res.Data, "Coffee shop added to favorites")
-            : CreateEntityResponse<Guid>.Error(res.ErrorMessage);
+        return CreateEntityResponse<Guid>.Success(id, "Coffee shop added to favorites");
     }
 }

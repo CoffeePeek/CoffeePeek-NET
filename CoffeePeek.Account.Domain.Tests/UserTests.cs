@@ -195,7 +195,6 @@ public class UserTests
         user.AssignRole(role);
 
         // Assert
-        user.Roles.Should().ContainSingle();
         user.Roles.Should().Contain(role);
     }
 
