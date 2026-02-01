@@ -36,14 +36,14 @@ public static class ShopsDbInitializer
 
         // 2. Кофейни
         var shops = new List<CoffeeShop>();
-        for (int i = 0; i < 50; i++)
+        for (var i = 0; i < 50; i++)
         {
             var shop = new CoffeeShop(AdminId, faker.Company.CompanyName() + " Coffee", faker.PickRandom<PriceRange>(), Guid.NewGuid());
             var city = faker.PickRandom(cities);
             
             // Координаты примерно вокруг Москвы или Питера
-            decimal lat = city.Name == "Москва" ? 55.7558m + (decimal)faker.Random.Double(-0.1, 0.1) : 59.9343m + (decimal)faker.Random.Double(-0.1, 0.1);
-            decimal lon = city.Name == "Москва" ? 37.6173m + (decimal)faker.Random.Double(-0.1, 0.1) : 30.3351m + (decimal)faker.Random.Double(-0.1, 0.1);
+            var lat = city.Name == "Москва" ? 55.7558m + (decimal)faker.Random.Double(-0.1, 0.1) : 59.9343m + (decimal)faker.Random.Double(-0.1, 0.1);
+            var lon = city.Name == "Москва" ? 37.6173m + (decimal)faker.Random.Double(-0.1, 0.1) : 30.3351m + (decimal)faker.Random.Double(-0.1, 0.1);
             
             shop.SetLocation(city.Id, faker.Address.StreetAddress(), lat, lon);
             shop.SetContact(faker.Internet.UserName(), faker.Internet.Email(), faker.Internet.Url(), faker.Phone.PhoneNumber());
@@ -61,7 +61,6 @@ public static class ShopsDbInitializer
             shop.SetBrewMethods(faker.PickRandom(brewMethods, faker.Random.Int(1, 3)));
             shop.SetBeans(faker.PickRandom(coffeeBeans, faker.Random.Int(1, 2)));
             shop.SetRoasters(faker.PickRandom(roasters, faker.Random.Int(1, 2)));
-            shop.SetEquipment(faker.PickRandom(equipments, faker.Random.Int(1, 3)));
 
             shops.Add(shop);
         }

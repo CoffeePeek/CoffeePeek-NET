@@ -10,11 +10,10 @@ namespace CoffeePeek.Shops.Infrastructure.Configuration;
 
 public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContext(options)
 {
+    //category
     public virtual DbSet<BrewMethod> BrewMethods { get; set; }
     
     public virtual DbSet<CoffeeBean> CoffeeBeans { get; set; }
-    
-    public virtual DbSet<Equipment> Equipments { get; set; }
     
     public virtual DbSet<Review> Reviews { get; set; }
     public virtual DbSet<CheckIn> CheckIns { get; set; }
@@ -27,6 +26,9 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     public virtual DbSet<ShopPhoto> ShopPhotos { get; set; }
     
     public virtual DbSet<City> Cities { get; set; }
+
+    public virtual DbSet<EquipmentCategory> EquipmentCategories { get; set; }
+    public virtual DbSet<Equipment> Equipments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,5 +83,15 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
             entity.Property(f => f.UserId).IsRequired();
             entity.Property(f => f.CoffeeShopId).IsRequired();
         });
+
+        modelBuilder.Entity<Equipment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.CategoryId);
+
+            entity.HasOne(e => e.Category);
+        });
+        
+        modelBuilder.Entity<EquipmentCategory>(entity => entity.HasKey(e => e.Id));
     }
 }

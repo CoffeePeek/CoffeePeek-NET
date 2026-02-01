@@ -30,7 +30,7 @@ define update_db
 		--context $(3)
 endef
 
-
+n := UpdEquipments
 # Account
 mig-acc:
 	$(call add_migration,$(ACCOUNT_INFRA),$(ACCOUNT_STARTUP),$(ACCOUNT_CONTEXT),$(n))
