@@ -27,7 +27,7 @@ public class User : Entity<Guid>
     // ReSharper disable once UnusedMember.Local
     private User() { }
 
-    public static User Register(string invalidEmail, string invalidUsername, string passwordHash)
+    public static User Register(string invalidEmail, string invalidUsername, string passwordHash, Role defaultRole)
     {
         Email email;
         Username userName;
@@ -35,6 +35,10 @@ public class User : Entity<Guid>
         {
             email = Email.Create(invalidEmail);
             userName = Username.Create(invalidUsername);
+        }
+        catch (DomainException)
+        {
+            throw;
         }
         catch
         {
@@ -52,7 +56,10 @@ public class User : Entity<Guid>
             Statistics = UserStatistics.Empty()
         };
 
+        user.AssignRole(defaultRole);
+        
         user.AddDomainEvent(new UserRegisteredInternalEvent(userId, email.Value, userName, token));
+        
         return user;
     }
 
@@ -79,9 +86,9 @@ public class User : Entity<Guid>
         _refreshTokens.Add(new RefreshToken(Id, token, ttl, device, ip));
     }
 
-    public void RotateRefreshToken(string oldToken, string newToken, TimeSpan ttl, string device, string ip)
+    public void RotateRefreshToken(string oldRefreshToken, string newRefreshToken, TimeSpan ttl, string device, string ip)
     {
-        var existing = _refreshTokens.FirstOrDefault(t => t.Token == oldToken);
+        var existing = _refreshTokens.FirstOrDefault(t => t.Token == oldRefreshToken);
         if (existing is not { IsActive: true })
         {
             RevokeAllSessions();
@@ -89,7 +96,7 @@ public class User : Entity<Guid>
         }
 
         existing.Revoke();
-        AddSession(newToken, ttl, device, ip);
+        AddSession(newRefreshToken, ttl, device, ip);
     }
 
     public void RevokeAllSessions() => _refreshTokens.ForEach(t => t.Revoke());
@@ -103,24 +110,8 @@ public class User : Entity<Guid>
         _roles.Add(role);
     }
 
-    public void RemoveRole(Guid roleId)
+    public void UpdateAbout(string about)
     {
-        var role = _roles.FirstOrDefault(r => r.Id == roleId);
-        if (role != null) _roles.Remove(role);
-    }
-
-    public void UpdateProfile(Username userName, PhoneNumber phoneNumber, string? about)
-    {
-        if (userName != Username)
-        {
-            Username = userName;
-        }
-        
-        if (phoneNumber != PhoneNumber)
-        {
-            PhoneNumber = phoneNumber;
-        }
-        
         if (about != About)
         {
             About = about;
@@ -132,15 +123,25 @@ public class User : Entity<Guid>
         IsSoftDelete = true;
     }
 
-    public void UpdatePhoto(PhotoMetadata photoMetadata)
+    public void UpdateAvatar(PhotoMetadata photoMetadata)
     {
         PhotoMetadata = photoMetadata;
     }
-
-    public void UpdateAvatar(PhotoMetadata photo)
+    
+    public void UpdatePhoneNumber(PhoneNumber phoneNumber)
     {
-        PhotoMetadata = photo;
-        PhotoMetadataId = photo.Id;
+        if (phoneNumber != PhoneNumber)
+        {
+            PhoneNumber = phoneNumber;
+        }
+    }
+    
+    public void UpdateUsername(Username userName)
+    {
+        if (userName != Username)
+        {
+            Username = userName;
+        }
     }
 
     public void SoftDelete()

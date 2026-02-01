@@ -37,6 +37,11 @@ public static class ClaimsPrincipalExtensions
 
             return userId;
         }
+
+        public string GetUserRefreshTokenOrThrow()
+        {
+            return user.FindFirst("refresh_token")?.Value ?? throw new UnauthorizedAccessException("Refresh token is missing.");
+        }
         
         public string? GetUsername()
         {

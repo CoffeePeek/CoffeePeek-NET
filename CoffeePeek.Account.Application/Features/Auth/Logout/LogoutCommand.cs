@@ -1,7 +1,5 @@
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
 using MediatR;
 
-namespace CoffeePeek.Account.Application.Features.Logout;
+namespace CoffeePeek.Account.Application.Features.Auth.Logout;
 
-public record LogoutCommand(Guid UserId, string RefreshToken) : IRequest<Response>;
+public record LogoutCommand(Guid UserId, string RefreshToken) : IRequest;

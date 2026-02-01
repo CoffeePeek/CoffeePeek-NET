@@ -1,10 +1,10 @@
 using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Shops.Application.Features.Catalogs.GetAllCities;
 using CoffeePeek.Shops.Application.Features.Internal.GetAllBeans;
 using CoffeePeek.Shops.Application.Features.Internal.GetAllBrewMethods;
 using CoffeePeek.Shops.Application.Features.Internal.GetAllCities;
 using CoffeePeek.Shops.Application.Features.Internal.GetAllEquipment;
 using CoffeePeek.Shops.Application.Features.Internal.GetAllRoasters;
-using CoffeePeek.Shops.Application.Features.Internal.GetUserStatistics;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,10 +12,12 @@ namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ProducesErrorResponseType(typeof(ErrorResponse))]
 public class CatalogsController(IMediator mediator) : ControllerBase
 {
     [HttpGet("cities")]
-    [ProducesResponseType(typeof(Response<GetCitiesResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType<Response<GetCitiesResponse>>(statusCode:StatusCodes.Status200OK)]
+    [ProducesResponseType( StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetCities()
     {
         var request = new GetCitiesCommand();
@@ -25,6 +27,7 @@ public class CatalogsController(IMediator mediator) : ControllerBase
 
     [HttpGet("beans")]
     [ProducesResponseType(typeof(Response<GetAllBeansResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType( StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetBeans()
     {
         var command = new GetAllBeansCommand();
@@ -34,6 +37,7 @@ public class CatalogsController(IMediator mediator) : ControllerBase
 
     [HttpGet("equipments")]
     [ProducesResponseType(typeof(Response<GetAllEquipmentResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType( StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetEquipment()
     {
         var command = new GetAllEquipmentCommand();
@@ -43,6 +47,7 @@ public class CatalogsController(IMediator mediator) : ControllerBase
 
     [HttpGet("roasters")]
     [ProducesResponseType(typeof(Response<GetAllRoastersResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType( StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetRoasters()
     {
         var command = new GetAllRoastersCommand();
@@ -52,6 +57,7 @@ public class CatalogsController(IMediator mediator) : ControllerBase
 
     [HttpGet("brew-methods")]
     [ProducesResponseType(typeof(Response<GetAllBrewMethodsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType( StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetBrewMethods()
     {
         var command = new GetAllBrewMethodsCommand();

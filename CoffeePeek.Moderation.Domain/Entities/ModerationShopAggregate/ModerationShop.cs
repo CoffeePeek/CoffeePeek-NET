@@ -7,7 +7,7 @@ public partial class ModerationShop : Entity<Guid>
 {
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
-    public PriceRange PriceRange { get; private set; }
+    public PriceRange? PriceRange { get; private set; }
     public ModerationStatus ModerationStatus { get; private set; }
     public string? RejectedReason { get; private set; }
     

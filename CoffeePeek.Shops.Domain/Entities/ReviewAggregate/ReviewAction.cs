@@ -1,3 +1,4 @@
+using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Shared.Extensions.Exceptions;
 
 namespace CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
@@ -5,10 +6,10 @@ namespace CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 public sealed partial class Review
 {
     public static Review Create(Guid shopId, Guid userId, string userName, string header,
-        string comment, int ratingCoffee, int ratingPlace, int ratingService)
+        string comment, RatingDto ratingDto)
     {
         if (shopId == Guid.Empty)
-            throw new DomainException($"{nameof(ShopId)} cannot be empty.");
+            throw new DomainException($"{nameof(CoffeeShopId)} cannot be empty.");
 
         if (userId == Guid.Empty)
             throw new DomainException($"{nameof(UserId)} cannot be empty.");
@@ -27,19 +28,9 @@ public sealed partial class Review
             throw new DomainException(
                 $"{nameof(comment)} must be between {BusinessConstants.MinReviewCommentLength} and {BusinessConstants.MaxReviewCommentLength} characters.");
 
-        if (ratingCoffee is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
-            throw new DomainException(
-                $"{nameof(ratingCoffee)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
-
-        if (ratingPlace is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
-            throw new DomainException(
-                $"{nameof(ratingPlace)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
-
-        if (ratingService is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
-            throw new DomainException(
-                $"{nameof(ratingService)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
-
-        return new Review(shopId, userId, userName, header, comment, ratingCoffee, ratingPlace, ratingService);
+        var rating = Rating.Create(ratingDto.Place, ratingDto.Service, ratingDto.Coffee);
+        
+        return new Review(shopId, userId, userName, header, comment, rating);
     }
 
     public void UpdateUserName(string userName)

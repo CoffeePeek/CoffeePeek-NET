@@ -36,7 +36,7 @@ builder.ConfigureEnvironment();
 builder.Services.AddControllersModule();
 
 // Swagger
-builder.Services.AddSwaggerModule("CoffeePeek Job vacancies API");
+builder.Services.AddSwaggerModule("CoffeePeek Vacancies");
 
 // Authentication & Authorization
 builder.Services.AddJwtAuthModule();

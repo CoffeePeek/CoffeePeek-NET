@@ -1,4 +1,5 @@
 using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Moderation.Infrastructure.Configuration;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using Microsoft.EntityFrameworkCore;
 
@@ -44,7 +45,7 @@ public class ModerationShopRepository(ModerationDbContext context) : IModeration
             .Include(s => s.ModerationCoffeeBeanShops)
             .Include(s => s.ModerationRoasterShops)
             .Include(s => s.ModerationShopBrewMethods)
-            .FirstOrDefaultAsync(s => s.Id == id);
+            .FirstOrDefaultAsync(s => s.Id == id, cancellationToken: ct);
     }
 
     public async Task AddAsync(ModerationShop shop)

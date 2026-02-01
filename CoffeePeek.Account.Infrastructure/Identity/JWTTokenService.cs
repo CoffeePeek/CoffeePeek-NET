@@ -14,7 +14,7 @@ public class JWTTokenService(IOptions<JWTOptions> options) : IJWTTokenService
 {
     private readonly JWTOptions _options = options.Value;
 
-    public string GenerateAccessToken(User user, string device, string ipAddress)
+    public string GenerateAccessToken(User user)
     {
         var claims = new List<Claim>
         {

@@ -8,6 +8,5 @@ public interface IUserRepository
     Task<bool> IsEmailUnique(string email, CancellationToken ct);
     Task<User?> GetByEmail(string email, CancellationToken ct);
     Task<User?> GetByProvider(string provider, string providerId, CancellationToken ct);
-    Task<bool> UserExistsByEmail(string requestEmail, CancellationToken cancellationToken);
     Task<User?> GetByEmailConfirmToken(string requestToken, CancellationToken cancellationToken);
 }

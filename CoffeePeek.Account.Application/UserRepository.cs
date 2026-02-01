@@ -8,7 +8,11 @@ public class UserRepository(IGenericRepository<User> userRepository) : IUserRepo
 {
     public async Task<User?> GetById(Guid userId, CancellationToken ct = default)
     {
-        return await userRepository.GetByIdAsync(userId, ct);
+        return await userRepository
+            .Query()
+            .Include(x => x.RefreshTokens)
+            .Include(x => x.Roles)
+            .FirstOrDefaultAsync(c => c.Id == userId, ct);
     }
 
     public async Task Add(User user, CancellationToken ct = default)
@@ -32,8 +36,9 @@ public class UserRepository(IGenericRepository<User> userRepository) : IUserRepo
     public Task<User?> GetByEmail(string email, CancellationToken ct)
     {
         return userRepository
-            .QueryAsNoTracking()
+            .Query()
             .Include(x => x.Roles)
+            .Include(x => x.RefreshTokens)
             .FirstOrDefaultAsync(c => c.Credentials.Email == email, ct);
     }
 
@@ -43,11 +48,6 @@ public class UserRepository(IGenericRepository<User> userRepository) : IUserRepo
             .QueryAsNoTracking()
             .Include(x => x.Credentials)
             .FirstOrDefaultAsync(x => x.Credentials.OAuthProvider == provider, cancellationToken: ct);
-    }
-
-    public Task<bool> UserExistsByEmail(string requestEmail, CancellationToken cancellationToken)
-    {
-        return userRepository.AnyAsync(c => c.Credentials.Email == requestEmail, cancellationToken);
     }
 
     public Task<User?> GetByEmailConfirmToken(string requestToken, CancellationToken cancellationToken)

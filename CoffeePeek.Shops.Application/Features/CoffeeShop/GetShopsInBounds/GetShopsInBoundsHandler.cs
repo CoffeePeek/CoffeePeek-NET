@@ -1,6 +1,5 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Responses.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -8,19 +7,19 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
 
 public class GetShopsInBoundsHandler(IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> shopRepository)
-    : IRequestHandler<GetShopsInBoundsRequest, Response<GetShopsInBoundsResponse>>
+    : IRequestHandler<GetShopsInBoundsQuery, Response<GetShopsInBoundsResponse>>
 {
-    public async Task<Response<GetShopsInBoundsResponse>> Handle(GetShopsInBoundsRequest request, CancellationToken cancellationToken)
+    public async Task<Response<GetShopsInBoundsResponse>> Handle(GetShopsInBoundsQuery query, CancellationToken cancellationToken)
     {
         var shops = await shopRepository
                 .QueryAsNoTracking()
                 .Where(s => s.Location != null &&
                              s.Location.Latitude.HasValue &&
                              s.Location.Longitude.HasValue &&
-                             s.Location.Latitude >= request.MinLat &&
-                             s.Location.Latitude <= request.MaxLat &&
-                             s.Location.Longitude >= request.MinLon &&
-                             s.Location.Longitude <= request.MaxLon)
+                             s.Location.Latitude >= query.MinLat &&
+                             s.Location.Latitude <= query.MaxLat &&
+                             s.Location.Longitude >= query.MinLon &&
+                             s.Location.Longitude <= query.MaxLon)
                 .Select(s => new MapShopDto
                 {
                     Id = s.Id,
@@ -36,4 +35,3 @@ public class GetShopsInBoundsHandler(IGenericRepository<Domain.Entities.CoffeeSh
         return Response<GetShopsInBoundsResponse>.Success(response);
     }
 }
-

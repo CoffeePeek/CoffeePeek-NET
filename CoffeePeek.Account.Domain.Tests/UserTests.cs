@@ -1,7 +1,6 @@
 using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Account.Domain.Events;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using FluentAssertions;
 using Xunit;
@@ -19,7 +18,7 @@ public class UserTests
         const string passwordHash = "hashed_password";
 
         // Act
-        var user = User.Register(email, username, passwordHash);
+        var user = User.Register(email, username, passwordHash, Role.Create("User"));
 
         // Assert
         user.Should().NotBeNull();
@@ -40,7 +39,7 @@ public class UserTests
         const string passwordHash = "hashed_password";
 
         // Act
-        var user = User.Register(email, username, passwordHash);
+        var user = User.Register(email, username, passwordHash, Role.Create("User"));
 
         // Assert
         var domainEvents = user.GetDomainEvents();
@@ -59,7 +58,7 @@ public class UserTests
     public void Register_WithInvalidParameters_ShouldThrowDomainException(string email, string username)
     {
         // Act
-        Action act = () => User.Register(email, username, "hash");
+        Action act = () => User.Register(email, username, "hash", Role.Create("User"));
 
         // Assert
         act.Should().Throw<DomainException>();
@@ -90,7 +89,7 @@ public class UserTests
     public void AddSession_ShouldAddRefreshToken()
     {
         // Arrange
-        var user = User.Register("test@example.com", "testuser", "hash");
+        var user = User.Register("test@example.com", "testuser", "hash", Role.Create("User"));
         const string token = "refresh_token_123";
         var ttl = TimeSpan.FromDays(7);
         const string device = "Chrome/Windows";
@@ -110,7 +109,7 @@ public class UserTests
     public void AddSession_WhenMaxSessionsReached_ShouldRevokeOldest()
     {
         // Arrange
-        var user = User.Register("test@example.com", "testuser", "hash");
+        var user = User.Register("test@example.com", "testuser", "hash", Role.Create("User"));
         var ttl = TimeSpan.FromDays(7);
         
         // Add max number of sessions (BusinessConstants.MaxActiveSessions)
@@ -134,7 +133,7 @@ public class UserTests
     public void RotateRefreshToken_WithValidToken_ShouldRevokeOldAndAddNew()
     {
         // Arrange
-        var user = User.Register("test@example.com", "testuser", "hash");
+        var user = User.Register("test@example.com", "testuser", "hash", Role.Create("User"));
         const string oldToken = "old_token";
         const string newToken = "new_token";
         var ttl = TimeSpan.FromDays(7);
@@ -155,7 +154,7 @@ public class UserTests
     public void RotateRefreshToken_WithInvalidToken_ShouldRevokeAllAndThrow()
     {
         // Arrange
-        var user = User.Register("test@example.com", "testuser", "hash");
+        var user = User.Register("test@example.com", "testuser", "hash", Role.Create("User"));
         user.AddSession("valid_token", TimeSpan.FromDays(7), "device", "ip");
 
         // Act
@@ -171,7 +170,7 @@ public class UserTests
     public void RevokeAllSessions_ShouldDeactivateAllTokens()
     {
         // Arrange
-        var user = User.Register("test@example.com", "testuser", "hash");
+        var user = User.Register("test@example.com", "testuser", "hash", Role.Create("User"));
         var ttl = TimeSpan.FromDays(7);
         
         user.AddSession("token1", ttl, "device", "ip");
@@ -189,7 +188,7 @@ public class UserTests
     public void AssignRole_ShouldAddRoleToUser()
     {
         // Arrange
-        var user = User.Register("test@example.com", "testuser", "hash");
+        var user = User.Register("test@example.com", "testuser", "hash", Role.Create("User"));
         var role = Role.Create("Admin");
 
         // Act
@@ -204,17 +203,13 @@ public class UserTests
     public void UpdateProfile_WithValidData_ShouldUpdateProfile()
     {
         // Arrange
-        var user = User.Register("test@example.com", "testuser", "hash");
-        var newUsername = Username.Create("newusername");
-        var newPhone = PhoneNumber.Create("+375447095174");
+        var user = User.Register("test@example.com", "testuser", "hash", Role.Create("User"));
         const string newAbout = "New bio";
 
         // Act
-        user.UpdateProfile(newUsername, newPhone, newAbout);
+        user.UpdateAbout(newAbout);
 
         // Assert
-        user.Username.Should().Be(newUsername);
-        user.PhoneNumber.Should().Be(newPhone);
         user.About.Should().Be(newAbout);
     }
 
@@ -222,7 +217,7 @@ public class UserTests
     public void UpdateAvatar_ShouldSetPhotoMetadata()
     {
         // Arrange
-        var user = User.Register("test@example.com", "testuser", "hash");
+        var user = User.Register("test@example.com", "testuser", "hash", Role.Create("User"));
         var photo = PhotoMetadata.Create("avatar.jpg", "image/jpeg", "key", 1024);
 
         // Act
@@ -237,7 +232,7 @@ public class UserTests
     public void SoftDelete_ShouldMarkUserAsDeleted()
     {
         // Arrange
-        var user = User.Register("test@example.com", "testuser", "hash");
+        var user = User.Register("test@example.com", "testuser", "hash", Role.Create("User"));
 
         // Act
         user.SoftDelete();
@@ -250,7 +245,7 @@ public class UserTests
     public void ConfirmEmail_ShouldUpdateCredentials()
     {
         // Arrange
-        var user = User.Register("test@example.com", "testuser", "hash");
+        var user = User.Register("test@example.com", "testuser", "hash",Role.Create("User"));
         var token = user.Credentials.EmailConfirmationToken;
 
         // Act
@@ -264,7 +259,7 @@ public class UserTests
     public void UpdateEmail_ShouldChangeEmailAndResetConfirmation()
     {
         // Arrange
-        var user = User.Register("old@example.com", "testuser", "hash");
+        var user = User.Register("old@example.com", "testuser", "hash",Role.Create("User"));
         user.ConfirmEmail(user.Credentials.EmailConfirmationToken!);
         const string newEmail = "new@example.com";
 

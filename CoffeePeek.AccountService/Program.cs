@@ -1,3 +1,5 @@
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using CoffeePeek.Account.Application;
 using CoffeePeek.Account.Application.Common;
 using CoffeePeek.Account.Application.Common.Interfaces;
@@ -13,7 +15,6 @@ using CoffeePeek.Auth.Infrastructure.Configuration;
 using CoffeePeek.Auth.Infrastructure.EventConsumer;
 using CoffeePeek.Auth.Infrastructure.Identity;
 using CoffeePeek.Auth.Infrastructure.Repositories;
-using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
@@ -24,6 +25,7 @@ using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using CoffePeek.ServiceDefaults;
+using Microsoft.OpenApi;
 using Minio;
 using Resend;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
@@ -43,16 +45,13 @@ builder.ConfigureEnvironment();
 builder.Services.AddControllersModule();
 
 // Swagger
-builder.Services.AddSwaggerModule("CoffeePeek.AccountService");
-
-// Authentication & Authorization
 builder.Services.AddJwtAuthModule();
 builder.Services.AddValidateOptions<JWTOptions>();
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin));
-    options.AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
-});
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
+    .AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
+
+builder.Services.AddSwaggerModule("CoffeePeek Account Service");
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.AccountDb);
@@ -86,6 +85,7 @@ builder.Services.AddSingleton(MapsterConfiguration.CreateMapper());
 builder.Services.AddScoped<IJWTTokenService, JWTTokenService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IQueryUserRepository, QueryUserRepository>();
 builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
@@ -143,6 +143,11 @@ var app = builder.Build();
 
 // Middleware pipeline
 app.UseExceptionHandler();
+
+if (app.Environment.IsDevelopment())
+{
+    await CoffeePeek.Auth.Infrastructure.AccountDbInitializer.SeedAsync(app.Services);
+}
 
 app.MapDefaultEndpoints();
 

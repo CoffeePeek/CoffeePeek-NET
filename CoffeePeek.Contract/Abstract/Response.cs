@@ -8,11 +8,6 @@ public class Response
     
     public object Data { get; set; }
     
-    public int StatusCode { get; set; }
-    public string ErrorCode {get; init;}
-    public List<string>? Errors { get; set; }
-    public string StackTrace { get; set; }
-    public string InnerException { get; set; }
 
     public Response() { }
 
@@ -26,14 +21,13 @@ public class Response
     /// <summary>
     /// Creates a successful response with data.
     /// </summary>
-    public static Response Success(object data = null, string message = null, int statusCode = 200)
+    public static Response Success(object data = null, string message = null)
     {
         return new Response
         {
             IsSuccess = true,
             Message = message ?? "Operation successful",
             Data = null,
-            StatusCode = statusCode
         };
     }
     
@@ -51,15 +45,13 @@ public class Response
     /// <summary>
     /// Creates an error response with message and optional validation errors.
     /// </summary>
-    public static Response Error(int statusCode, string message, List<string>? errors = null)
+    public static Response Error(int statusCode, string message)
     {
         return new Response
         {
             IsSuccess = false,
             Message = message,
             Data = null,
-            StatusCode =  statusCode,
-            Errors = errors
         };
     }
     

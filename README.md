@@ -6,18 +6,6 @@ This repository contains the back-end source code for the CoffeePeek application
 
 CoffeePeek is a comprehensive platform that allows users to discover coffee shops, view job vacancies, and share their experiences. The back-end is built using a microservices architecture to ensure scalability, resilience, and maintainability. Each service is responsible for a specific business domain, communicating with others through a well-defined API gateway.
 
-## Features
-
-The platform is composed of several services, each providing a distinct set of features:
-
-*   **API Gateway**: A single entry point for all client requests, routing them to the appropriate downstream service. It is implemented using YARP Reverse Proxy.
-*   **Authentication Service**: Handles user registration, login, and JWT-based authentication.
-*   **User Service**: Manages user profiles and related data.
-*   **Shops Service**: Provides functionality for listing coffee shops, viewing their details, and managing shop information.
-*   **Job Vacancies Service**: Allows coffee shops to post job openings and users to browse and apply for them.
-*   **Photo Service**: Manages photo uploads for users and shops.
-*   **Moderation Service**: Responsible for content moderation to ensure a safe and positive user experience.
-
 ## Tech Stack
 
 The project is built with a modern technology stack:

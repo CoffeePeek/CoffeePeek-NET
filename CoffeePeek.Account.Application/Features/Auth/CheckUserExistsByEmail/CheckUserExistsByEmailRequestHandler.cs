@@ -1,23 +1,25 @@
 ﻿using CoffeePeek.Account.Application.Common;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
+using CoffeePeek.Shared.Extensions.Exceptions;
 using MediatR;
 
 namespace CoffeePeek.Account.Application.Features.Auth.CheckUserExistsByEmail;
 
-public class CheckUserExistsByEmailRequestHandler(IUserRepository userRepository, EmailExistenceFilter emailExistenceFilter)
-    : IRequestHandler<CheckUserExistsByEmailCommand, Response<bool>>
+public class CheckUserExistsByEmailRequestHandler(IQueryUserRepository userRepository, EmailExistenceFilter emailExistenceFilter)
+    : IRequestHandler<CheckUserExistsByEmailQuery, Response<bool>>
 {
-    public async Task<Response<bool>> Handle(CheckUserExistsByEmailCommand request, CancellationToken cancellationToken)
+    public async Task<Response<bool>> Handle(CheckUserExistsByEmailQuery query, CancellationToken cancellationToken)
     {
-        if (emailExistenceFilter.MightExist(request.Email))
+        if (emailExistenceFilter.MightExist(query.Email))
         {
             return Response<bool>.Success(true, "Email exists");
         }
         
-        var userExists = await userRepository.UserExistsByEmail(request.Email, cancellationToken);
+        var userExists = await userRepository.UserExistsByEmail(query.Email, cancellationToken);
 
-        return Response<bool>.Success(userExists, userExists ? "Email exists" : "Email does not exist");
+        return userExists
+            ? Response<bool>.Success(true, "Email exists")
+            : throw new NotFoundException("Email does not exist");
     }
 }

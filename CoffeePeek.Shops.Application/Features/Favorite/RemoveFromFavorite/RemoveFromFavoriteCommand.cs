@@ -1,7 +1,8 @@
-﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
+﻿using System.Text.Json.Serialization;
+using CoffeePeek.Contract.Abstract;
 using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.Favorite.RemoveFromFavorite;
 
-public record RemoveFromFavoriteCommand(Guid CoffeeShopId, Guid UserId) : IRequest<UpdateEntityResponse<Guid>>;
+public record RemoveFromFavoriteCommand([property: JsonIgnore] Guid UserId, Guid CoffeeShopId)
+    : IRequest<UpdateEntityResponse<Guid>>;

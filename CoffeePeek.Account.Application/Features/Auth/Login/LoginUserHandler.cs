@@ -23,9 +23,7 @@ public class LoginUserHandler(
         await unitOfWork.SaveChangesAsync(ct);
 
         emailExistenceFilter.Add(request.Email);
-        //await cache.InvalidateUserAsync(request.Email);
 
-        return Response<LoginResponse>.Success(
-            new LoginResponse(result.AccessToken, result.RefreshToken));
+        return Response<LoginResponse>.Success(new LoginResponse(result.AccessToken, result.RefreshToken));
     }
 }

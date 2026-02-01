@@ -3,6 +3,7 @@ using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shops.Application.Features.Review.GetReviewsByUserId;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using IMediator = MediatR.IMediator;
 
 namespace CoffeePeek.ShopsService.Controllers;
@@ -10,11 +11,14 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/users/{userId:guid}/reviews")]
+[ProducesErrorResponseType(typeof(ErrorResponse))]
 public class UserReviewsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetReviewsByUserIdResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [SwaggerOperation("Get reviews for user")]
     public async Task<IActionResult> GetUserReviews(
         Guid userId,
         [FromQuery] int pageNumber = 1,

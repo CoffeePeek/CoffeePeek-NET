@@ -1,5 +1,4 @@
 ﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Exceptions;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -27,19 +26,13 @@ public class GlobalExceptionHandler(
             exception.Message, traceId);
 
         var statusCode = GetStatusCode(exception);
-        
-        var errorResponse = new Response
-        {
-            StatusCode = statusCode,
-            Message = GetSafeMessage(exception),
-            ErrorCode = (exception as BaseException)?.ErrorCode ?? "INTERNAL_SERVER_ERROR"
-        };
 
-        if (environment.IsDevelopment())
-        {
-            errorResponse.StackTrace = exception.StackTrace;
-            errorResponse.InnerException = exception.InnerException?.Message;
-        }
+        var errorResponse = new ErrorResponse(GetSafeMessage(exception));
+
+#if DEBUG
+        errorResponse.StackTrace = exception.StackTrace;
+        errorResponse.InnerException = exception.InnerException?.Message;
+#endif
 
         httpContext.Response.StatusCode = statusCode;
         
@@ -54,6 +47,7 @@ public class GlobalExceptionHandler(
         NotFoundException => StatusCodes.Status404NotFound,
         UnauthorizedException or UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
         ValidationException or DomainException => StatusCodes.Status400BadRequest,
+        ConflictException => StatusCodes.Status409Conflict,
         DatabaseException or NpgsqlException => StatusCodes.Status503ServiceUnavailable,
         _ => StatusCodes.Status500InternalServerError
     };

@@ -6,11 +6,13 @@ using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ProducesErrorResponseType(typeof(ErrorResponse))]
 public class CoffeeShopsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
@@ -18,6 +20,8 @@ public class CoffeeShopsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    [SwaggerOperation(Summary = "Search coffee shops", Description = "Search coffee shops by criteria")]
     public async Task<IActionResult> GetCoffeeShops(
         [FromQuery] Guid? cityId = null,
         [FromQuery] string? q = null,
@@ -26,9 +30,9 @@ public class CoffeeShopsController(IMediator mediator) : ControllerBase
         [FromQuery] Guid[]? beans = null,
         [FromQuery] Guid[]? brewMethods = null,
         [FromQuery] Contract.Enums.PriceRange? priceRange = null,
-        [FromQuery][Range(0, 5)] decimal? minRating = null,
-        [FromQuery][Range(1, int.MaxValue)] int page = 1,
-        [FromQuery][Range(1, 100)] int pageSize = 10)
+        [FromQuery] [Range(0, 5)] decimal? minRating = null,
+        [FromQuery] [Range(1, int.MaxValue)] int page = 1,
+        [FromQuery] [Range(1, 100)] int pageSize = 10)
     {
         page = Math.Max(1, page);
         pageSize = pageSize <= 0 ? 10 : Math.Min(pageSize, 100);
@@ -70,8 +74,9 @@ public class CoffeeShopsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    [SwaggerOperation(Summary = "Get coffee shop by ID")]
     public Task<Response<GetCoffeeShopResponse>> GetCoffeeShop(Guid id)
     {
-        return mediator.Send(new GetCoffeeShopQuery(id));
+        return mediator.Send(new GetCoffeeShopQuery(id, User.GetUserId()));
     }
 }

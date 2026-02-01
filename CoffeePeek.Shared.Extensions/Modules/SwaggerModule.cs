@@ -5,13 +5,8 @@ namespace CoffeePeek.Shared.Extensions.Modules;
 
 public static class SwaggerModule
 {
-    public static IServiceCollection AddSwaggerModule(
-        this IServiceCollection services,
-        string title,
-        string version = "v1")
+    public static void AddSwaggerModule(this IServiceCollection services, string title)
     {
-        services.AddSwagger(title, version);
-        return services;
+        services.AddSwagger(title);
     }
 }
-

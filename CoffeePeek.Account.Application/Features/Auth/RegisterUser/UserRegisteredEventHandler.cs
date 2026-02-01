@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Events;
 using MediatR;
 using Microsoft.Extensions.Configuration;

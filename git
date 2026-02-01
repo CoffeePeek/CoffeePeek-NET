@@ -1,0 +1,4 @@
+      PID    PPID    PGID     WINPID   TTY         UID    STIME COMMAND
+       68       1      68      22508  ?         197608 15:45:38 /usr/lib/gnupg/keyboxd
+      112     101     112      14436  cons0     197608 16:11:07 /usr/bin/PS
+      101       1     101      16048  cons0     197608 16:11:00 /usr/bin/bash

@@ -7,43 +7,38 @@ public sealed partial class Review : Entity<Guid>
 {
     public string Header { get; private set; }
     public string Comment { get; private set; }
-    public Guid ShopId { get; private set; }
-    public DateTime ReviewDate { get; private set; }
+    public Guid CoffeeShopId { get; private set; }
     
     public Guid UserId { get; private set; }
     public string UserName { get; private set; }
 
     public bool IsSoftDelete { get; private set; }
 
-    public int RatingCoffee { get; private set; }
-    public int RatingPlace { get; private set; }
-    public int RatingService { get; private set; }
-    public decimal AverageRating => (RatingCoffee + RatingPlace + RatingService) / 3m;
+    public Rating Rating { get; private set; }
     
     public CoffeeShop? Shop { get; private set; }
+    
+    private readonly List<ShopPhoto> _shopPhotos = [];
+    public IReadOnlyCollection<ShopPhoto> Photos => _shopPhotos.AsReadOnly();
 
     // ReSharper disable once UnusedMember.Local
     private Review()
     {
     }
 
-    private Review(Guid shopId, Guid userId, string userName, string header, string comment)
+    private Review(Guid coffeeShopId, Guid userId, string userName, string header, string comment)
     {
         Id = Guid.NewGuid();
-        ShopId = shopId;
+        CoffeeShopId = coffeeShopId;
         UserId = userId;
         UserName = userName;
         Header = header;
         Comment = comment;
-        ReviewDate = DateTime.UtcNow;
     }
 
-    private Review(Guid shopId, Guid userId, string userName, string header, string comment, int ratingCoffee, int ratingPlace,
-        int ratingService)
-        : this(shopId, userId, userName, header, comment)
+    private Review(Guid coffeeShopId, Guid userId, string userName, string header, string comment, Rating rating)
+        : this(coffeeShopId, userId, userName, header, comment)
     {
-        RatingCoffee = ratingCoffee;
-        RatingPlace = ratingPlace;
-        RatingService = ratingService;
+        Rating = rating;
     }
 }
