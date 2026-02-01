@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace CoffeePeek.Moderation.Infrastructure;
+﻿namespace CoffeePeek.Shared.Infrastructure.Abstract.S3;
 
 public class MinIOOptions
 {
-    [Required] public string BucketName { get; set; }
-    [Required] public string Endpoint { get; set; }
-    [Required] public string SecretKey { get; set; }
-    [Required] public string AccessKey { get; set; }
+    public string BucketName { get; set; } = null!;
+    public string Endpoint { get; set; } = null!;
+    public string SecretKey { get; set; } = null!;
+    public string AccessKey { get; set; } = null!;
 }

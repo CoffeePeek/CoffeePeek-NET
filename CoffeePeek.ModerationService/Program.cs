@@ -79,7 +79,7 @@ var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
 builder.Services
     .AddMinio(configureClient => 
         configureClient
-            .WithEndpoint(minIoOptions.Endpoint)
+            .WithEndpoint(new Uri(minIoOptions.Endpoint))
             .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
             .Build()
         );

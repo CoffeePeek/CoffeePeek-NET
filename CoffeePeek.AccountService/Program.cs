@@ -15,7 +15,6 @@ using CoffeePeek.Auth.Infrastructure.Configuration;
 using CoffeePeek.Auth.Infrastructure.EventConsumer;
 using CoffeePeek.Auth.Infrastructure.Identity;
 using CoffeePeek.Auth.Infrastructure.Repositories;
-using CoffeePeek.Moderation.Infrastructure;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Modules;
@@ -114,7 +113,7 @@ var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
 builder.Services
     .AddMinio(configureClient => 
         configureClient
-            .WithEndpoint(minIoOptions.Endpoint)
+            .WithEndpoint(new Uri(minIoOptions.Endpoint))
             .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
             .Build()
     );

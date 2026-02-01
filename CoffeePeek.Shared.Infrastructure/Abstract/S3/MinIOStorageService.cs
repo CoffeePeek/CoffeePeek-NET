@@ -1,5 +1,4 @@
-﻿using CoffeePeek.Moderation.Infrastructure;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.DataModel.Tags;
