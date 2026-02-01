@@ -14,7 +14,7 @@ public record SendCoffeeShopToModerationCommand : IRequest<Response<SendCoffeeSh
     [JsonIgnore] public Guid UserId { get; init; }
     
     [Required, MaxLength(55)]  public string Name { get; init; }
-    [Required] public string NotValidatedAddress { get; init; }
+    [Required] public string Address { get; init; }
     [Required] public Guid CityId { get; init; }
     
     public string? Description { get; init; }

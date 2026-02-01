@@ -22,17 +22,17 @@ public class SendCoffeeShopToModerationHandler(
         logger.LogInformation("Processing moderation request for shop: {ShopName} by user: {UserId}",
             command.Name, command.UserId);
 
-        var duplicateSpec = new DuplicateShopSpecification(command.Name, command.NotValidatedAddress);
+        var duplicateSpec = new DuplicateShopSpecification(command.Name, command.Address);
         if (await repository.Any(duplicateSpec, ct))
         {
             logger.LogWarning("Duplicate shop detected: {Name} at {Address}",
-                command.Name, command.NotValidatedAddress);
+                command.Name, command.Address);
 
             return Response<SendCoffeeShopToModerationResponse>.Error(
                 "A coffee shop with that name and address is already located on the edge.");
         }
 
-        var geocodingResult = await TryGeocodeAsync(command.NotValidatedAddress, ct);
+        var geocodingResult = await TryGeocodeAsync(command.Address, ct);
 
         var shopId = await creationService.Create(command, geocodingResult, ct);
 

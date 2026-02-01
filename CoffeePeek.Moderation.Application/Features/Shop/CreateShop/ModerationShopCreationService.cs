@@ -25,7 +25,7 @@ public class ModerationShopCreationService(
         
         if (geocodingResult != null)
         {
-            var location = new ModerationLocation(command.NotValidatedAddress, lat: geocodingResult.Latitude, lon: geocodingResult.Longitude);
+            var location = new ModerationLocation(command.Address, lat: geocodingResult.Latitude, lon: geocodingResult.Longitude);
             shop.SetLocation(location);
         }
 
