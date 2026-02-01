@@ -9,8 +9,6 @@ using CoffeePeek.Moderation.Application.Features.Shop.UpdateModerationShopStatus
 using CoffeePeek.Moderation.Application.Features.Shop.UpdateShop;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
-using FluentResults;
-using FluentResults.Extensions.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,9 +44,9 @@ public class ModerationShopsController(IMediator mediator) : ControllerBase
     {
         var commandWithUser = command with { UserId = User.GetUserIdOrThrow() };
 
-        var result =  await mediator.Send(commandWithUser, ct);
+        var response =  await mediator.Send(commandWithUser, ct);
         
-        return Ok(result);
+        return Ok(response);
     }
 
     [HttpPut]
