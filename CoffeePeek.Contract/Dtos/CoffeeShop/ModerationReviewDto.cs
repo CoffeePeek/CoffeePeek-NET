@@ -10,12 +10,11 @@ public record ModerationReviewDto
     public string UserName { get; init; }
     public Guid ShopId { get;init; }
 
-    public int RatingCoffee { get; init; }
-    public int RatingPlace { get; init; }
-    public int RatingService { get; init; }
+    public RatingDto Rating { get; init; }
 
     public string? RejectedReason  { get; init; }
     public Guid? ModeratedBy  { get; init; }
+    public DateTime CreatedAt { get; init; }
     public DateTime? ModeratedAt  { get; init; }
     public ModerationStatus ModerationStatus { get; init; }
 }

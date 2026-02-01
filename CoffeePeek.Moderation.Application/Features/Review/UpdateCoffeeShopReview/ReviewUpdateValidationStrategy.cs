@@ -3,9 +3,9 @@ using CoffeePeek.Shared.Validation.Review;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
 
-public class ReviewUpdateValidationStrategy : BaseReviewValidationStrategy, IValidationStrategy<UpdateCoffeeShopReviewRequest>
+public class ReviewUpdateValidationStrategy : BaseReviewValidationStrategy, IValidationStrategy<UpdateCoffeeShopReviewCommand>
 {
-    public ValidationResult Validate(UpdateCoffeeShopReviewRequest entity)
+    public ValidationResult Validate(UpdateCoffeeShopReviewCommand entity)
     {
         var userIdValidation = ValidateUserId(entity.UserId);
         if (!userIdValidation.IsValid)
@@ -25,18 +25,18 @@ public class ReviewUpdateValidationStrategy : BaseReviewValidationStrategy, IVal
             return commentValidation;
         }
 
-        if (!IsValidRating(entity.RatingCoffee))
+        if (!IsValidRating(entity.Rating.Coffee))
         {
             return ValidationResult.Invalid($"RatingCoffee must be a valid number between {MinRating} and {MaxRating}");
         }
 
-        if (!IsValidRating(entity.RatingService))
+        if (!IsValidRating(entity.Rating.Service))
         {
             return ValidationResult.Invalid($"RatingService must be a valid number between {MinRating} and {MaxRating}");
         }
 
         // ReSharper disable once ConvertIfStatementToReturnStatement
-        if (!IsValidRating(entity.RatingPlace))
+        if (!IsValidRating(entity.Rating.Place))
         {
             return ValidationResult.Invalid($"RatingPlace must be a valid number between {MinRating} and {MaxRating}");
         }

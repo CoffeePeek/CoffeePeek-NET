@@ -77,6 +77,6 @@ public class CoffeeShopsController(IMediator mediator) : ControllerBase
     [SwaggerOperation(Summary = "Get coffee shop by ID")]
     public Task<Response<GetCoffeeShopResponse>> GetCoffeeShop(Guid id)
     {
-        return mediator.Send(new GetCoffeeShopQuery(id));
+        return mediator.Send(new GetCoffeeShopQuery(id, User.GetUserId()));
     }
 }

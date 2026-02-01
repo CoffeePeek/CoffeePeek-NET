@@ -37,9 +37,10 @@ public class SendReviewToModerationHandler(
 
         if (request.Photos != null)
         {
-            photos = request.Photos.Select(x =>
-                    PhotoMetadata.Create(x.FileName, x.ContentType, x.StorageKey, x.Size, request.UserId,
-                        moderationShop.Id))
+            photos = request.Photos
+                .Select(x =>
+                    PhotoMetadata
+                        .Create(x.FileName, x.ContentType, x.StorageKey, x.Size, request.UserId, moderationShop.Id))
                 .ToList();
             
             await photosRepository.AddRangeAsync(photos, ct);
@@ -48,12 +49,10 @@ public class SendReviewToModerationHandler(
         var review = ModerationReview.Create(request.UserId,
             request.ShopId,
             moderationShopId:moderationShop.Id,
-            request.UserName!,
+            request.UserName,
             request.Header,
             request.Comment,
-            request.RatingPlace,
-            request.RatingService,                 
-            request.RatingCoffee,
+            request.Rating,
             photos);
 
         repository.Add(review);

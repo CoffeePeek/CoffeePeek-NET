@@ -11,21 +11,19 @@ namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
 public record SendCoffeeShopToModerationCommand : IRequest<Response<SendCoffeeShopToModerationResponse>>
 {
-    [Required, MaxLength(55)]
-    public string Name { get; set; }
-    [Required]
-    public string NotValidatedAddress { get; set; }
-    [JsonIgnore]
-    public Guid UserId { get; set; }
+    [JsonIgnore] public Guid UserId { get; init; }
     
-    public string? Description { get; set; }
-    public PriceRange PriceRange { get; set; }
-    [Required] public Guid CityId { get; set; }
-    public ShopContactDto? ShopContact { get; set; }
-    public List<ScheduleDto>? Schedules { get; set; }
-    public List<Guid>? EquipmentIds { get; set; }
-    public List<Guid>? CoffeeBeanIds { get; set; }
-    public List<Guid>? RoasterIds { get; set; }
-    public List<Guid>? BrewMethodIds { get; set; }
-    public List<UploadedPhotoDto>? ShopPhotos { get; set; }
+    [Required, MaxLength(55)]  public string Name { get; init; }
+    [Required] public string NotValidatedAddress { get; init; }
+    [Required] public Guid CityId { get; init; }
+    
+    public string? Description { get; init; }
+    public PriceRange? PriceRange { get; init; }
+    public ShopContactDto? ShopContact { get; init; }
+    public List<ScheduleDto>? Schedules { get; init; }
+    public List<Guid>? EquipmentIds { get; init; }
+    public List<Guid>? CoffeeBeanIds { get; init; }
+    public List<Guid>? RoasterIds { get; init; }
+    public List<Guid>? BrewMethodIds { get; init; }
+    public List<UploadedPhotoDto>? ShopPhotos { get; init; }
 }

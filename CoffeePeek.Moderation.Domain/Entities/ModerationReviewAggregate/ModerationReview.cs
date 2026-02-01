@@ -12,9 +12,7 @@ public partial class ModerationReview : Entity<Guid>
     public Guid ShopId { get; private set; }
     public Guid ModerationShopId { get; private set; }
 
-    public int RatingCoffee { get; private set; }
-    public int RatingPlace { get; private set; }
-    public int RatingService { get; private set; }
+    public Rating Rating { get; private set; }
 
     public string? RejectedReason { get; private set; }
     public Guid? ModeratedBy { get; private set; }
@@ -35,7 +33,7 @@ public partial class ModerationReview : Entity<Guid>
     }
 
     internal ModerationReview(Guid userId, Guid shopId, Guid moderationShopId, string userName, string header, string comment,
-        int ratingCoffee, int ratingPlace, int ratingService, List<PhotoMetadata> photos)
+        Rating rating, List<PhotoMetadata> photos)
     {
         Id = Guid.NewGuid();
         UserId = userId;
@@ -44,9 +42,7 @@ public partial class ModerationReview : Entity<Guid>
         UserName = userName;
         Header = header;
         Comment = comment;
-        RatingCoffee = ratingCoffee;
-        RatingPlace = ratingPlace;
-        RatingService = ratingService;
+        Rating = rating;
         ModerationStatus = ModerationStatus.Pending;
         
         if (photos.Count != 0)

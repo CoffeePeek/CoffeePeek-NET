@@ -17,6 +17,7 @@ public static class BusinessConstants
     #region CheckIn
     
     public const int MaxCheckInNoteLength = 500;
+    public const int MinPublicCheckinNoteLength = MinReviewHeaderLength;
     
     #endregion
 

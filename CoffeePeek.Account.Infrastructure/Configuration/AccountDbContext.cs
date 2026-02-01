@@ -10,13 +10,12 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
 {
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Role> Roles { get; set; }
-    
     public DbSet<User> Users { get; set; }
     public DbSet<PhotoMetadata> Photos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AccountDbContext).Assembly);
 
         modelBuilder.Entity<PhotoMetadata>(entity =>
         {

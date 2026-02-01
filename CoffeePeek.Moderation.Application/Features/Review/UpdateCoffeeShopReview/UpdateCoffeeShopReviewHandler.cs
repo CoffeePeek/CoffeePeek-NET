@@ -11,36 +11,36 @@ namespace CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopRevi
 public class UpdateCoffeeShopReviewRequestHandler(
     IGenericRepository<ModerationReview> reviewRepository,
     IUnitOfWork unitOfWork,
-    IValidationStrategy<UpdateCoffeeShopReviewRequest> validationStrategy)
-    : IRequestHandler<UpdateCoffeeShopReviewRequest, Response<UpdateCoffeeShopReviewResponse>>
+    IValidationStrategy<UpdateCoffeeShopReviewCommand> validationStrategy)
+    : IRequestHandler<UpdateCoffeeShopReviewCommand, Response<UpdateCoffeeShopReviewResponse>>
 {
-    public async Task<Response<UpdateCoffeeShopReviewResponse>> Handle(UpdateCoffeeShopReviewRequest request,
+    public async Task<Response<UpdateCoffeeShopReviewResponse>> Handle(UpdateCoffeeShopReviewCommand command,
         CancellationToken cancellationToken)
     {
-        var validationResult = validationStrategy.Validate(request);
+        var validationResult = validationStrategy.Validate(command);
         if (!validationResult.IsValid)
         {
             return Response<UpdateCoffeeShopReviewResponse>.Error(HttpStatusCode.BadRequest,
                 validationResult.ErrorMessage);
         }
 
-        var review = await reviewRepository.FirstOrDefaultAsync(x => x.Id == request.ReviewId, cancellationToken);
+        var review = await reviewRepository.FirstOrDefaultAsync(x => x.Id == command.ReviewId, cancellationToken);
 
         if (review == null)
         {
             return Response<UpdateCoffeeShopReviewResponse>.Error(HttpStatusCode.NotFound, "Review not found");
         }
 
-        if (review.UserId != request.UserId)
+        if (review.UserId != command.UserId)
         {
             return Response<UpdateCoffeeShopReviewResponse>.Error(HttpStatusCode.Forbidden,
                 "You are not authorized to update this review");
         }
 
 
-        review.UpdateHeader(request.Header);
-        review.UpdateComment(request.Comment);
-        review.UpdateRating(request.RatingCoffee, request.RatingPlace, request.RatingService);
+        review.UpdateHeader(command.Header);
+        review.UpdateComment(command.Comment);
+        review.Rating.UpdateRating(command.Rating.Place, command.Rating.Service, command.Rating.Coffee);
 
 
         reviewRepository.Update(review);

@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 
 namespace CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
@@ -60,7 +61,7 @@ public sealed class CoffeeShop : Entity<Guid>
     public bool IsNew => CreatedAtUtc > DateTime.UtcNow.AddDays(-BusinessConstants.ItNewEntityInDays);
     public bool IsOpen => IsOpenAt(DateTime.UtcNow);
     
-    public decimal Rating => Reviews.Count == 0 ? 0 : Reviews.Average(r => r.AverageRating);
+    public decimal Rating => Reviews.Count == 0 ? 0 : Reviews.Average(r => r.Rating.AverageRating);
 
     private bool IsOpenAt(DateTime dateTime)
     {

@@ -10,6 +10,8 @@ public partial class MapsterConfiguration
     private static void ConfigureModerationShop(TypeAdapterConfig config)
     {
         config.NewConfig<ModerationShop, ModerationShopDto>()
+            .Map(dest => dest.Address, src => src.Location.Address)
+            .Map(dest => dest.AddressIsValidated, src => src.Location.IsAddressValidated)
             .Map(dest => dest.ShopPhotos, src => src.ShopPhotos)
             .Map(dest => dest.ShopContact, src => src.Contact)
             .Map(d => d.EquipmentIds, s => s.ModerationShopEquipments.Select(x => x.EquipmentId))
