@@ -1,8 +1,11 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Events;
 using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Constants;
+using DotNetCore.CAP;
 using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -14,7 +17,8 @@ public class UpdateModerationCoffeeShopHandler(
     IUnitOfWork unitOfWork,
     IYandexGeocodingService geocodingService,
     IMapper mapper,
-    ILogger<UpdateModerationCoffeeShopHandler> logger) 
+    ICapPublisher capPublisher,
+    ILogger<UpdateModerationCoffeeShopHandler> logger)
     : IRequestHandler<UpdateModerationCoffeeShopCommand, UpdateEntityResponse<ModerationShopDto>>
 {
     public async Task<UpdateEntityResponse<ModerationShopDto>> Handle(
@@ -29,6 +33,9 @@ public class UpdateModerationCoffeeShopHandler(
             return UpdateEntityResponse<ModerationShopDto>.Error("Shop not found or access denied");
         }
 
+        // Store old photos for comparison
+        var oldPhotos = shop.ShopPhotos.ToList();
+
         shop.UpdateInfo(moderationShopDto.Name, moderationShopDto.Description, moderationShopDto.PriceRange, moderationShopDto.CityId);
 
         if (moderationShopDto.Address != null && moderationShopDto.Address != shop.Location?.Address)
@@ -40,23 +47,38 @@ public class UpdateModerationCoffeeShopHandler(
         if (moderationShopDto.ShopContact != null)
         {
             shop.UpdateContacts(
-                moderationShopDto.ShopContact.PhoneNumber, 
-                moderationShopDto.ShopContact.InstagramLink, 
-                moderationShopDto.ShopContact.Email, 
+                moderationShopDto.ShopContact.PhoneNumber,
+                moderationShopDto.ShopContact.InstagramLink,
+                moderationShopDto.ShopContact.Email,
                 moderationShopDto.ShopContact.SiteLink);
         }
 
         if (moderationShopDto.Schedules != null)
             shop.UpdateSchedules(moderationShopDto.Schedules.Select(s =>
                 (s.DayOfWeek, s.Intervals.Select(i => (i.OpenTime, i.CloseTime)).ToList())));
-        
+
         shop.UpdateRelations(
-            moderationShopDto.EquipmentIds, 
-            moderationShopDto.CoffeeBeanIds, 
-            moderationShopDto.RoasterIds, 
+            moderationShopDto.EquipmentIds,
+            moderationShopDto.CoffeeBeanIds,
+            moderationShopDto.RoasterIds,
             moderationShopDto.BrewMethodIds);
 
         await unitOfWork.SaveChangesAsync(ct);
+
+        // Publish PhotoReplacedEvent for removed photos
+        var newPhotoStorageKeys = moderationShopDto.ShopPhotos?.Select(p => p.StorageKey).ToHashSet() ?? [];
+        var removedPhotos = oldPhotos.Where(p => !newPhotoStorageKeys.Contains(p.StorageKey)).ToList();
+
+        foreach (var removedPhoto in removedPhotos)
+        {
+            await capPublisher.PublishAsync(CapEventNames.Media.PhotoReplaced, new PhotoReplacedEvent(
+                removedPhoto.Id,
+                removedPhoto.StorageKey,
+                Guid.Empty,
+                "Shop",
+                shop.Id,
+                DateTime.UtcNow), cancellationToken: ct);
+        }
 
         var result = mapper.Map<ModerationShopDto>(shop);
 

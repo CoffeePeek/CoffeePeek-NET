@@ -79,7 +79,7 @@ var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, datab
 builder.Services.AddEfCoreData<ShopsDbContext>(dbOptions.ConnectionString);
 
 // CAP for event publishing and consuming
-builder.Services.AddCapModule<ShopsDbContext>(dbOptions, "shops-service");
+builder.Services.AddCapModule<ShopsDbContext>(dbOptions, AppResources.ShopsService);
 
 // Register CAP handlers
 builder.Services.AddScoped<ModerationShopApprovedHandler>();

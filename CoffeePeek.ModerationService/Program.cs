@@ -18,10 +18,8 @@ using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
-using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using CoffeePeek.Shared.Validation;
 using CoffePeek.ServiceDefaults;
-using Minio;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,8 +55,6 @@ builder.Services.AddScoped<IModerationShopRepository, ModerationShopRepository>(
 builder.Services.AddScoped<IModerationShopCreationService, ModerationShopCreationService>();
 builder.Services.AddScoped<IModerationReviewRepository, ModerationReviewRepository>();
 
-builder.Services.AddScoped<IStorageService, MinIOStorageService>();
-
 builder.Services.AddTransient<IAsyncValidationStrategy<SendReviewToModerationCommand>, SendReviewToModerationValidationStrategy>();
 
 // Validation
@@ -76,15 +72,6 @@ builder.Services.AddHttpClient<IYandexGeocodingService, YandexGeocodingService>(
     client.Timeout = TimeSpan.FromSeconds(yandexOptions.TimeoutSeconds);
 }).AddResiliencePolicies(nameof(YandexGeocodingService));
 
-var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
-builder.Services
-    .AddMinio(configureClient => 
-        configureClient
-            .WithEndpoint(new Uri(minIoOptions.Endpoint))
-            .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
-            .Build()
-        );
-
 // MediatR
 builder.Services.AddMediatRModule(typeof(GetAllModerationShopsHandler));
 
@@ -99,7 +86,7 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Roaster, policy => policy.RequireRole(RoleConsts.Roaster));
 
 // CAP for event publishing and consuming
-builder.Services.AddCapModule<ModerationDbContext>(dbOptions, "moderation-service");
+builder.Services.AddCapModule<ModerationDbContext>(dbOptions, AppResources.ModerationService);
 builder.Services.AddScoped<ModerationShopApproveCompleteHandler>();
 builder.Services.AddScoped<CheckInCreatedConsumer>();
 

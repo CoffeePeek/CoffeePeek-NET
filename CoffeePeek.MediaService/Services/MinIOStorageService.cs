@@ -1,25 +1,25 @@
-﻿using Microsoft.Extensions.Options;
+﻿using CoffeePeek.MediaService.Configuration;
+using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.DataModel.Tags;
 using Minio.Exceptions;
 
-namespace CoffeePeek.Shared.Infrastructure.Abstract.S3;
+namespace CoffeePeek.MediaService.Services;
 
 public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions> options) : IStorageService
 {
     private const string IsPermanentTag = "is_permanent";
     private const int PresignedUrlExpirySeconds = 600;
     
-    private readonly string _bucketName = options.Value.BucketName;
 
     public async Task<(string UploadUrl, string StorageKey)> GetPresignedUploadUrlAsync(string fileName,
-        string contentType)
+        string contentType, BucketType bucketType)
     {
         var storageKey = $"{Guid.NewGuid()}{Path.GetExtension(fileName)}";
 
         var args = new PresignedPutObjectArgs()
-            .WithBucket(_bucketName)
+            .WithBucket(GetBucketName(bucketType))
             .WithObject(storageKey)
             .WithHeaders(new Dictionary<string, string> {
                 { "Content-Type", contentType },
@@ -32,7 +32,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
         return (url, storageKey);
     }
 
-    public async Task MarkAsPermanentAsync(string storageKey)
+    public async Task MarkAsPermanentAsync(string storageKey, BucketType bucketType)
     {
         var tags = new Dictionary<string, string>
         {
@@ -40,19 +40,19 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
         };
 
         var args = new SetObjectTagsArgs()
-            .WithBucket(_bucketName)
+            .WithBucket(GetBucketName(bucketType))
             .WithObject(storageKey)
             .WithTagging(Tagging.GetObjectTags(tags));
 
         await minioClient.SetObjectTagsAsync(args);
     }
 
-    public async Task<bool> ExistsAsync(string storageKey)
+    public async Task<bool> ExistsAsync(string storageKey, BucketType bucketType)
     {
         try
         {
             var args = new StatObjectArgs()
-                .WithBucket(_bucketName)
+                .WithBucket(GetBucketName(bucketType))
                 .WithObject(storageKey);
 
             await minioClient.StatObjectAsync(args);
@@ -64,12 +64,22 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
         }
     }
 
-    public async Task DeleteAsync(string storageKey)
+    public async Task DeleteAsync(string storageKey, BucketType bucketType)
     {
         var args = new RemoveObjectArgs()
-            .WithBucket(_bucketName)
+            .WithBucket(GetBucketName(bucketType))
             .WithObject(storageKey);
 
         await minioClient.RemoveObjectAsync(args);
+    }
+
+    private string GetBucketName(BucketType type)
+    {
+        return type switch
+        {
+            BucketType.User => options.Value.UserBucketName,
+            BucketType.Shop => options.Value.ShopBucketName,
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported bucket type")
+        };
     }
 }

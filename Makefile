@@ -14,6 +14,10 @@ JOBS_INFRA      := CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancie
 JOBS_STARTUP    := CoffeePeek.JobVacancies/CoffeePeek.JobVacancies.csproj
 JOBS_CONTEXT    := CoffeePeek.JobVacancies.Infrastructure.Configuration.JobVacanciesDbContext
 
+MEDIA_INFRA      := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
+MEDIA_STARTUP    := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
+MEDIA_CONTEXT    := CoffeePeek.MediaService.Data.MediaDbContext
+
 define add_migration
 	dotnet ef migrations add $(4) \
 		--project $(1) \
@@ -54,3 +58,9 @@ mig-jobs:
 	$(call add_migration,$(JOBS_INFRA),$(JOBS_STARTUP),$(JOBS_CONTEXT),$(n))
 up-jobs:
 	$(call update_db,$(JOBS_INFRA),$(JOBS_STARTUP),$(JOBS_CONTEXT))
+	
+# Media
+mig-media:
+	$(call add_migration,$(MEDIA_INFRA),$(MEDIA_STARTUP),$(MEDIA_CONTEXT),$(n))
+up-media:
+	$(call update_db,$(MEDIA_INFRA),$(MEDIA_STARTUP),$(MEDIA_CONTEXT))

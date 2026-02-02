@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Централизованное управление версиями API через `ApiVersions.cs`.
 - Поддержка версионирования через заголовок `X-Api-Version`.
 - Новая версия API `V2.0` для `UsersController` (регистрация, поиск, профиль).
@@ -15,11 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `ClaimsPrincipalExtensions` для безопасного извлечения `UserId`.
 - Реализован флоу Login с поддержкой JWT и Refresh токенов.
+- 
 ### Changed
+
 - Обновлен `AuthController`: переход на использование новых констант версионирования. Переход к REST-подходу, обновлены все эндпоинты.
 - Рефакторинг MediatR команд: `LoginRequest` и `RefreshTokenCommand` обновлены для поддержки новых контрактов.
 
 ### Fixed
+
 - Исправлена привязка маршрутов в Gateway (YARP) для поддержки версионированных эндпоинтов.
 
 ## [v0.1.0] - 2026-01-22
@@ -33,4 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.1.1] - 2026-01-23
 
 ### Fixed
+
 - Исправлена ошибка когда пользователь мог залогиниться с неправильным паролем
+
+### Added
+
+- MediaService для централизации всех фотографий

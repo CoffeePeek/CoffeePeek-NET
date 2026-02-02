@@ -20,9 +20,7 @@ using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using CoffePeek.ServiceDefaults;
-using Minio;
 using Resend;
 using JWTOptions = CoffeePeek.Shared.Infrastructure.Options.JWTOptions;
 using JWTTokenService = CoffeePeek.Auth.Infrastructure.Identity.JWTTokenService;
@@ -67,7 +65,7 @@ builder.Services.Configure<ResendClientOptions>( o =>
 builder.Services.AddTransient<IResend, ResendClient>();
 
 // CAP for event publishing and consuming
-builder.Services.AddCapModule<AccountDbContext>(dbOptions, "account-service");
+builder.Services.AddCapModule<AccountDbContext>(dbOptions, AppResources.AccountService);
 
 // Register CAP handlers
 builder.Services.AddScoped<CheckinCreatedHandler>();
@@ -104,17 +102,6 @@ builder.Services.AddScoped<IUserRepository>(provider =>
     
     return new CachedUserRepository(baseRepo, redisService);
 });
-
-builder.Services.AddScoped<IStorageService, MinIOStorageService>();
-var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
-builder.Services
-    .AddMinio(configureClient => 
-        configureClient
-            .WithEndpoint(new Uri(minIoOptions.Endpoint))
-            .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
-            .Build()
-    );
-
 
 // OAuth
 builder.Services.AddValidateOptions<OAuthGoogleOptions>();

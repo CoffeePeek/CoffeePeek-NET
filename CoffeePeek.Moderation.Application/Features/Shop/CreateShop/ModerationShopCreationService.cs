@@ -1,13 +1,11 @@
 using CoffeePeek.Moderation.Application.Common.Models;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 
 namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
 public class ModerationShopCreationService(
     IModerationShopRepository shopRepository,
-    IStorageService storageService,
     IUnitOfWork unitOfWork)
     : IModerationShopCreationService
 {
@@ -22,10 +20,11 @@ public class ModerationShopCreationService(
             command.CityId,
             command.Description
         );
-        
+
         if (geocodingResult != null)
         {
-            var location = new ModerationLocation(command.Address, lat: geocodingResult.Latitude, lon: geocodingResult.Longitude);
+            var location = new ModerationLocation(command.Address, lat: geocodingResult.Latitude,
+                lon: geocodingResult.Longitude);
             shop.SetLocation(location);
         }
 
@@ -33,25 +32,24 @@ public class ModerationShopCreationService(
         {
             shop.AddPriceRange(command.PriceRange.Value);
         }
-        
+
         if (command.Schedules != null)
         {
-            var schedules = command.Schedules.Select(s => (s.DayOfWeek, s.Intervals.Select(i => (i.OpenTime, i.CloseTime)).ToList()));
+            var schedules = command.Schedules.Select(s =>
+                (s.DayOfWeek, s.Intervals.Select(i => (i.OpenTime, i.CloseTime)).ToList()));
             shop.UpdateSchedules(schedules);
         }
-        
+
         shop.UpdateRelations(
-            command.EquipmentIds ?? [], 
+            command.EquipmentIds ?? [],
             command.CoffeeBeanIds ?? [],
             command.RoasterIds ?? [],
-                command.BrewMethodIds ?? []);
+            command.BrewMethodIds ?? []);
 
         if (command.ShopPhotos != null)
         {
             foreach (var photo in command.ShopPhotos)
             {
-                await storageService.MarkAsPermanentAsync(photo.StorageKey);
-            
                 shop.AddPhoto(photo.FileName, photo.ContentType, photo.StorageKey, photo.Size);
             }
         }

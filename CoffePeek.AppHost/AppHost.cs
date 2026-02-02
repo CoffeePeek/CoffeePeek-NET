@@ -22,11 +22,17 @@ var moderationService = builder
     .WithUrl("/swagger", "Swagger UI")
     .WithUrl("/cap", "Cap dashboard");
 
+var mediaService = builder
+    .AddProject<Projects.CoffeePeek_MediaService>(AppResources.MediaService)
+    .WithUrl("/swagger", "Swagger UI")
+    .WithUrl("/cap", "Cap dashboard");
+
 builder.AddProject<Projects.CoffeePeek_Gateway>(AppResources.Gateway)
     .WithReference(accountService)
     .WithReference(jobVacanciesService)
     .WithReference(shopsService)
     .WithReference(moderationService)
+    .WithReference(mediaService)
     .WithEnvironment("DOTNET_ASPIRE", "true")
     .WithEnvironment("DOTNET_ASPIRE_RUNNING", "true")
     .WithUrl("/swagger", "Swagger UI");
