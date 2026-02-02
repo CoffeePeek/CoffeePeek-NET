@@ -1,5 +1,7 @@
 using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Dtos.Shop;
+using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shops.Domain.Entities;
 using CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
@@ -50,6 +52,10 @@ public class MapsterConfiguration : IRegister
         
         config.NewConfig<CheckIn, CheckInDto>()
             .Map(dest => dest.ShopName, src => src.CoffeeShop.Name);
+        
+        config.NewConfig<Equipment, EquipmentDto>()
+            .Map(dest => dest.Model, src => src.ModelName)
+            .Map(dest => dest.Category, src => (EquipmentCategoryEnum)src.CategoryId);
     }
 }
 

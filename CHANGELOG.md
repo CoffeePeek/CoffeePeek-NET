@@ -40,6 +40,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Исправлена ошибка когда пользователь мог залогиниться с неправильным паролем
 
-### Added
+## [v0.1.2] - 2026-02-02
 
+### Changed
+
+-  Модель Equipment, для улучшения specialty, добавлены тесты для доменной сущности
 - MediaService для централизации всех фотографий

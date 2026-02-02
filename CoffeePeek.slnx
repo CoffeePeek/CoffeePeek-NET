@@ -40,6 +40,9 @@
     <Project Path="CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj" />
     <Project Path="CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj" />
   </Folder>
+  <Folder Name="/CoffeePeek/CoffeePeek.Shops/Tests/">
+    <Project Path="CoffeePeek.Shops.Domain.Tests/CoffeePeek.Shops.Domain.Tests.csproj" />
+  </Folder>
   <Folder Name="/CoffeePeek/Shared/">
     <Project Path="CoffeePeek.Contract/CoffeePeek.Contract.csproj" />
     <Project Path="CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj" />
