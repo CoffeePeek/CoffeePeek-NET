@@ -38,4 +38,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.1.2] - 2026-02-02
 
 ### Changed
+
 -  Модель Equipment, для улучшения specialty, добавлены тесты для доменной сущности

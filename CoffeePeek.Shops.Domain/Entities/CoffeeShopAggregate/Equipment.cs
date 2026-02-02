@@ -32,6 +32,7 @@ public class Equipment : Entity<Guid>
         Brand = brand;
         ModelName = modelName;
         Category = category;
+        CategoryId = category.Id;
         IsCustom = isCustom;
         IsPrimary = isPrimary;
         

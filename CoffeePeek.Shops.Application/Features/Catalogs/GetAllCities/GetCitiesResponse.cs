@@ -1,6 +1,6 @@
 using CoffeePeek.Contract.Dtos.Internal;
 
-namespace CoffeePeek.Shops.Application.Features.Internal.GetAllCities;
+namespace CoffeePeek.Shops.Application.Features.Catalogs.GetAllCities;
 
 public class GetCitiesResponse(CityDto[] cities)
 {

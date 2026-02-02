@@ -89,9 +89,16 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.CategoryId);
 
-            entity.HasOne(e => e.Category);
+            entity.HasOne(e => e.Category)
+                .WithMany()
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
         
-        modelBuilder.Entity<EquipmentCategory>(entity => entity.HasKey(e => e.Id));
+        modelBuilder.Entity<EquipmentCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(BusinessConstants.MaxEquipmentCategoryNameLength);
+        });
     }
 }

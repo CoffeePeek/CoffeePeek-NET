@@ -116,16 +116,16 @@ public sealed class CoffeeShop : Entity<Guid>
     
     public void AddEquipment(Equipment equipment)
     {
+        if (_equipments.Any(e => e.Brand == equipment.Brand && e.ModelName == equipment.ModelName))
+            return;
+        
         if (equipment.IsPrimary)
         {
-            foreach (var e in _equipments.Where(e => e.Category == equipment.Category))
+            foreach (var e in _equipments.Where(e => e.CategoryId == equipment.CategoryId))
             {
                 e.UnmarkAsPrimary();
             }
         }
-
-        if (_equipments.Any(e => e.Brand == equipment.Brand && e.ModelName == equipment.ModelName))
-            return; 
 
         _equipments.Add(equipment);
     }

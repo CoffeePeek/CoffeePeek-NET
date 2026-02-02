@@ -54,4 +54,6 @@ public static class BusinessConstants
     public const int MaxLocationLongitude = 180;
 
     #endregion
+    
+    public const int MaxEquipmentCategoryNameLength = 50;
 }
