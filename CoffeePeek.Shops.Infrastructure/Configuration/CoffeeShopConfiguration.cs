@@ -114,13 +114,13 @@ public class CoffeeShopConfiguration : IEntityTypeConfiguration<CoffeeShop>
 
         builder
             .HasMany(u => u.Equipments)
-            .WithMany(r => r.CoffeeShops)
+            .WithMany()
             .UsingEntity<Dictionary<string, object>>(
                 "CoffeeShopEquipments",
                 j => j.HasOne<Equipment>().WithMany().HasForeignKey("EquipmentId"),
                 j => j.HasOne<CoffeeShop>().WithMany().HasForeignKey("CoffeeShopId")
-                );
-        
+            );
+
         #endregion
     }
 }

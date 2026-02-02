@@ -114,10 +114,29 @@ public sealed class CoffeeShop : Entity<Guid>
         _shopPhotos.AddRange(photos);
     }
     
-    public void SetEquipment(IEnumerable<Equipment> equipments)
+    public void AddEquipment(Equipment equipment)
     {
-        _equipments.Clear();
-        _equipments.AddRange(equipments);
+        if (_equipments.Any(e => e.Brand == equipment.Brand && e.ModelName == equipment.ModelName))
+            return;
+        
+        if (equipment.IsPrimary)
+        {
+            foreach (var e in _equipments.Where(e => e.CategoryId == equipment.CategoryId))
+            {
+                e.UnmarkAsPrimary();
+            }
+        }
+
+        _equipments.Add(equipment);
+    }
+
+    public void RemoveEquipment(Guid equipmentId)
+    {
+        var equipment = _equipments.FirstOrDefault(e => e.Id == equipmentId);
+        if (equipment != null)
+        {
+            _equipments.Remove(equipment);
+        }
     }
     
     public void SetBrewMethods(IEnumerable<BrewMethod> methods)

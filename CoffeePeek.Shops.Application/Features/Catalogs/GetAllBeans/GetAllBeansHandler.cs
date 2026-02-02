@@ -2,7 +2,7 @@
 using CoffeePeek.Shops.Application.Services;
 using MediatR;
 
-namespace CoffeePeek.Shops.Application.Features.Internal.GetAllBeans;
+namespace CoffeePeek.Shops.Application.Features.Catalogs.GetAllBeans;
 
 public class GetAllBeansHandler(ICacheService cacheService) : IRequestHandler<GetAllBeansCommand, Response<GetAllBeansResponse>>
 {
