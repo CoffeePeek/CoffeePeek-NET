@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeePeek.Shops.Application.Features.CheckIn.GetUserCheckIns;
 
 public class GetUserCheckInsHandler(
-    IGenericRepository<Domain.Entities.CheckInAggregate.CheckIn> checkInRepository,
+    IGenericRepository<Domain.Aggregates.CheckInAggregate.CheckIn> checkInRepository,
     IMapper mapper)
     : IRequestHandler<GetUserCheckInsCommand, Response<GetUserCheckInsResponse>>
 {

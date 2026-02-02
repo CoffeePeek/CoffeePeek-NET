@@ -1,7 +1,7 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
-namespace CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 
 public sealed partial class CheckIn : Entity<Guid>
 {
@@ -15,7 +15,7 @@ public sealed partial class CheckIn : Entity<Guid>
     public Rating Rating { get; private set; }
 
     public CoffeeShop CoffeeShop { get; private set; }
-    public ReviewAggregate.Review Review { get; private set; }
+    public Entities.ReviewAggregate.Review Review { get; private set; }
     
     private readonly List<ShopPhoto> _shopPhotos = [];
     public IReadOnlyCollection<ShopPhoto> ShopPhotos => _shopPhotos.AsReadOnly();

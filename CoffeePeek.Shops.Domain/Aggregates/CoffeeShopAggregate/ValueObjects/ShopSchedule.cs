@@ -1,8 +1,10 @@
 ﻿using CoffeePeek.Contract.Dtos.Schedule;
+using CoffeePeek.Shops.Domain.Abstracts;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 
-namespace CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
-public record ShopSchedule
+public record ShopSchedule : ValueObjectBase
 {
     public DayOfWeek DayOfWeek { get; private set; }
     public bool IsClosed { get; private set; }

@@ -7,7 +7,7 @@ using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 namespace CoffeePeek.Shops.Application.ValidationStrategy.CheckIn;
 
 public class CheckInValidationStrategy(
-    IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> coffeeShopRepository)
+    IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> coffeeShopRepository)
     : IAsyncValidationStrategy<CreateCheckInCommand>
 {
     public async Task<ValidationResult> ValidateAsync(CreateCheckInCommand command, CancellationToken ct)

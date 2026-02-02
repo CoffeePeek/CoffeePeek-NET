@@ -1,8 +1,9 @@
 ﻿using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shops.Domain.Abstracts;
 
-namespace CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
-public record Location
+public record Location : ValueObjectBase
 {
     public string Address { get; init; } = null!;
     public bool IsAddressValidated { get; init; }
@@ -43,5 +44,15 @@ public record Location
         };
     }
     
-    public Location WithCity(Guid newCityId) => this with { CityId = newCityId };
+    public Location WithCity(Guid newCityId)
+    {
+        return new Location
+        {
+            CityId = newCityId,
+            Address = this.Address,
+            IsAddressValidated = this.IsAddressValidated,
+            Latitude = this.Latitude,
+            Longitude = this.Longitude
+        };
+    }
 }

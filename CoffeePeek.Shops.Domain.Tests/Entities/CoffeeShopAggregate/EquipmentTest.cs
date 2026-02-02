@@ -1,4 +1,7 @@
-﻿using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+﻿using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Enums;
+using CoffeePeek.Shops.Domain.CoffeeShopAggregate.Enums;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using JetBrains.Annotations;
 using FluentAssertions;
 

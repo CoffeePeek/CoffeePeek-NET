@@ -1,8 +1,9 @@
 ﻿using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Microsoft.EntityFrameworkCore;
+using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 
 namespace CoffeePeek.Shops.Infrastructure.Services;
 

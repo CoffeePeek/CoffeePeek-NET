@@ -10,8 +10,9 @@ using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
@@ -21,6 +22,7 @@ using CoffeePeek.Shops.Infrastructure.Extensions;
 using CoffeePeek.Shops.Infrastructure.Services;
 using CoffePeek.ServiceDefaults;
 using Mapster;
+using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 var builder = WebApplication.CreateBuilder(args);

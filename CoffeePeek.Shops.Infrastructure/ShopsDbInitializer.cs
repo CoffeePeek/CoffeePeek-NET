@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Bogus;
 using CoffeePeek.Contract.Dtos;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
 namespace CoffeePeek.Shops.Infrastructure;
 

@@ -1,6 +1,7 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Validation;
+using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using MediatR;
 

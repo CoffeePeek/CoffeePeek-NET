@@ -1,12 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Shared.Extensions.Exceptions;
+﻿using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shops.Domain.Abstracts;
 
-namespace CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
-public record ShopContact
+public record ShopContact : ValueObjectBase
 {
     public string? InstagramLink { get; private set; }
-    [EmailAddress] public string? Email { get; private set; }
+    public string? Email { get; private set; }
     public string? SiteLink { get; private set; }
     public string? PhoneNumber { get; private set; }
 

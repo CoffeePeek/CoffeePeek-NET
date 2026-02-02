@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 
-namespace CoffeePeek.Shops.Domain.Entities;
+namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
 public sealed class ShopPhoto : Entity<Guid>
 {

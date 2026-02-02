@@ -1,4 +1,4 @@
-﻿namespace CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
+﻿namespace CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 
 public interface IUserCheckInRepository
 {

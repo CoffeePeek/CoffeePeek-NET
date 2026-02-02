@@ -1,17 +1,18 @@
 ﻿using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
-namespace CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 
 public partial class CheckIn
 {
     #region Factory Methods
 
-    public static CheckIn Create(Guid userId, Guid shopId, DateTime visitedAt)
+    public static Aggregates.CheckInAggregate.CheckIn Create(Guid userId, Guid shopId, DateTime visitedAt)
     {
         if (userId == Guid.Empty) throw new DomainException("UserId is required.");
         if (shopId == Guid.Empty) throw new DomainException("ShopId is required.");
 
-        return new CheckIn(userId, shopId, visitedAt);
+        return new Aggregates.CheckInAggregate.CheckIn(userId, shopId, visitedAt);
     }
 
     #endregion

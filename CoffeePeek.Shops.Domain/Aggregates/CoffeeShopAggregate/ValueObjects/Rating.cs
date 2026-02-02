@@ -1,8 +1,9 @@
 ﻿using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shops.Domain.Abstracts;
 
-namespace CoffeePeek.Shops.Domain.Entities;
+namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
-public record Rating
+public record Rating : ValueObjectBase
 {
     public int Place { get; private set; }
     public int Service { get; private set; }

@@ -1,5 +1,6 @@
 using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
 namespace CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 

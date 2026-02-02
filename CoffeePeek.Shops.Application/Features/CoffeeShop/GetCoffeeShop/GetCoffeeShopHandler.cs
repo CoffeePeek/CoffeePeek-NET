@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Mapster;
 using MapsterMapper;
@@ -11,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 
 public class GetCoffeeShopHandler(
-    IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> shopRepository,
+    IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> shopRepository,
     IUserFavoriteRepository favoriteRepository,
     IUserCheckInRepository checkInRepository,
     IMapper mapper,

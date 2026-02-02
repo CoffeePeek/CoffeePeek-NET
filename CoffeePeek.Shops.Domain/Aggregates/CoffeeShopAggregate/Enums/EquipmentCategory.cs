@@ -1,6 +1,6 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
 
-namespace CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Enums;
 
 public class EquipmentCategory : Entity<int>
 {
