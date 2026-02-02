@@ -4,7 +4,8 @@ using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.Catalogs.GetAllEquipment;
 
-public class GetAllEquipmentHandler(ICacheService cacheService) : IRequestHandler<GetAllEquipmentCommand, Response<GetAllEquipmentResponse>>
+public class GetAllEquipmentHandler(ICacheService cacheService) 
+    : IRequestHandler<GetAllEquipmentCommand, Response<GetAllEquipmentResponse>>
 {
     public async Task<Response<GetAllEquipmentResponse>> Handle(GetAllEquipmentCommand request, CancellationToken cancellationToken)
     {
