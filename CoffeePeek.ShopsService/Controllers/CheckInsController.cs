@@ -12,7 +12,7 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class CheckInsController(IMediator mediator) : ControllerBase
+public class CheckInsController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
     [HttpPost]
     [ProducesResponseType(typeof(Response<CreateCheckInResponse>), StatusCodes.Status200OK)]
@@ -21,7 +21,7 @@ public class CheckInsController(IMediator mediator) : ControllerBase
     [SwaggerOperation("Create check-in for coffee shop")]
     public Task<Response<CreateCheckInResponse>> CreateCheckIn([FromBody] CreateCheckInCommand command)
     {
-        command = command with { UserId = User.GetUserIdOrThrow(), UserName = User.GetUsernameOrThrow()};
+        command = command with { UserId = userContext.GetUserIdOrThrow(), UserName = userContext.GetUsernameOrThrow() };
         return mediator.Send(command);
     }
 
@@ -36,7 +36,7 @@ public class CheckInsController(IMediator mediator) : ControllerBase
         pageNumber = Math.Max(1, pageNumber);
         pageSize = pageSize <= 0 ? 10 : Math.Min(pageSize, 100);
 
-        var userId = User.GetUserIdOrThrow();
+        var userId = userContext.GetUserIdOrThrow();
         var response = await mediator.Send(new GetUserCheckInsCommand(userId, pageNumber, pageSize));
 
         if (response is { IsSuccess: true, Data: not null })

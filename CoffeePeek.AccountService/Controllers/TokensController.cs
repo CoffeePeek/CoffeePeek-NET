@@ -15,23 +15,23 @@ namespace CoffeePeek.AccountService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class TokensController(IMediator mediator) : ControllerBase
+public class TokensController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
-    [HttpPost] 
+    [HttpPost]
     [ProducesResponseType<Response<LoginResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation(Summary = "Login user and get token")]
-    public async Task<IActionResult> Create([FromBody] LoginRequest request) 
+    public async Task<IActionResult> Create([FromBody] LoginRequest request)
     {
         var deviceName = Request.Headers.UserAgent.ToString();
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-        
+
         var command = new LoginUserCommand(request.Email, request.Password, deviceName, ipAddress);
-        
+
         var response = await mediator.Send(command);
-        
+
         return Ok(response);
     }
 
@@ -47,13 +47,13 @@ public class TokensController(IMediator mediator) : ControllerBase
             DeviceName = Request.Headers.UserAgent.ToString(),
             IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown"
         };
-        
+
         var response = await mediator.Send(command);
 
         return Ok(response);
     }
-    
-    [HttpPut] 
+
+    [HttpPut]
     [Authorize]
     [ProducesResponseType<Response<RefreshTokenResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -64,10 +64,10 @@ public class TokensController(IMediator mediator) : ControllerBase
         var deviceName = Request.Headers.UserAgent.ToString();
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-        command = command with { UserId = User.GetUserIdOrThrow(), DeviceName = deviceName, IpAddress = ipAddress };
-        
+        command = command with { UserId = userContext.GetUserIdOrThrow(), DeviceName = deviceName, IpAddress = ipAddress };
+
         var response = await mediator.Send(command);
-        
+
         return Ok(response);
     }
 
@@ -84,11 +84,11 @@ public class TokensController(IMediator mediator) : ControllerBase
         {
             return BadRequest(new { message = "Refresh token is required" });
         }
-        
-        var request = new LogoutCommand(User.GetUserIdOrThrow(), refreshToken);
+
+        var request = new LogoutCommand(userContext.GetUserIdOrThrow(), refreshToken);
 
         await mediator.Send(request);
-        
+
         return NoContent();
     }
 }

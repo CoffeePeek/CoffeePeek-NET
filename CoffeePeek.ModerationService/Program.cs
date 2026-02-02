@@ -78,7 +78,7 @@ builder.Services.AddHttpClient<IYandexGeocodingService, YandexGeocodingService>(
 
 var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
 builder.Services
-    .AddMinio(configureClient => 
+    .AddMinio(configureClient =>
         configureClient
             .WithEndpoint(new Uri(minIoOptions.Endpoint))
             .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
@@ -88,8 +88,8 @@ builder.Services
 // MediatR
 builder.Services.AddMediatRModule(typeof(GetAllModerationShopsHandler));
 
-// JWT Authentication
-builder.Services.AddJwtAuthModule();
+// Authorization policies (JWT validation happens in Gateway)
+builder.Services.AddHeaderUserContext();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
     .AddPolicy(RoleConsts.Owner, policy => policy.RequireRole(RoleConsts.Owner))
@@ -111,9 +111,6 @@ var app = builder.Build();
 app.UseExceptionHandler();
 
 app.MapDefaultEndpoints();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseSwaggerDocumentation();
 

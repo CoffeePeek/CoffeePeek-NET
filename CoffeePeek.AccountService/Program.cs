@@ -41,13 +41,15 @@ builder.ConfigureEnvironment();
 builder.Services.AddControllersModule();
 
 // Swagger
-builder.Services.AddJwtAuthModule();
-builder.Services.AddValidateOptions<JWTOptions>();
+builder.Services.AddSwaggerModule("CoffeePeek Account Service");
+
+// User context for reading claims from headers (set by Gateway)
+builder.Services.AddHeaderUserContext();
+
+// Authorization policies (JWT validation happens in Gateway)
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
     .AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
-
-builder.Services.AddSwaggerModule("CoffeePeek Account Service");
 
 // Database
 var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.AccountDb);
@@ -60,10 +62,10 @@ builder.Services.AddGenericRepository<PhotoMetadata, AccountDbContext>();
 
 // Resend
 builder.Services.AddHttpClient<ResendClient>();
-builder.Services.Configure<ResendClientOptions>( o =>
+builder.Services.Configure<ResendClientOptions>(o =>
 {
     o.ApiToken = builder.Configuration["ResendApi"]!;
-} );
+});
 builder.Services.AddTransient<IResend, ResendClient>();
 
 // CAP for event publishing and consuming
@@ -85,30 +87,30 @@ builder.Services.AddScoped<IQueryUserRepository, QueryUserRepository>();
 builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-builder.Services.AddSingleton<EmailExistenceFilter>(_ => 
+builder.Services.AddSingleton<EmailExistenceFilter>(_ =>
 {
-    const int expectedCount = 1000000; 
+    const int expectedCount = 1000000;
     const double errorRate = 0.01;
-    
+
     return new EmailExistenceFilter(expectedCount, errorRate);
 });
 
 builder.Services.AddSingleton<IEmailTemplateService, EmailTemplateService>();
 
-builder.Services.AddScoped<UserRepository>(); 
+builder.Services.AddScoped<UserRepository>();
 
-builder.Services.AddScoped<IUserRepository>(provider => 
+builder.Services.AddScoped<IUserRepository>(provider =>
 {
     var baseRepo = provider.GetRequiredService<UserRepository>();
-    var redisService = provider.GetRequiredService<IRedisService>(); 
-    
+    var redisService = provider.GetRequiredService<IRedisService>();
+
     return new CachedUserRepository(baseRepo, redisService);
 });
 
 builder.Services.AddScoped<IStorageService, MinIOStorageService>();
 var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
 builder.Services
-    .AddMinio(configureClient => 
+    .AddMinio(configureClient =>
         configureClient
             .WithEndpoint(new Uri(minIoOptions.Endpoint))
             .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
@@ -146,9 +148,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapDefaultEndpoints();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 // Swagger documentation
 app.UseSwaggerDocumentation();

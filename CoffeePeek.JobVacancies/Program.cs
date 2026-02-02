@@ -38,9 +38,8 @@ builder.Services.AddControllersModule();
 // Swagger
 builder.Services.AddSwaggerModule("CoffeePeek Vacancies");
 
-// Authentication & Authorization
-builder.Services.AddJwtAuthModule();
-builder.Services.AddValidateOptions<JWTOptions>();
+// Authorization (JWT validation happens in Gateway)
+builder.Services.AddHeaderUserContext();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin));
@@ -102,9 +101,6 @@ app.UseCors();
 
 // Swagger documentation
 app.UseSwaggerDocumentation();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 app.UseHangfireDashboard();

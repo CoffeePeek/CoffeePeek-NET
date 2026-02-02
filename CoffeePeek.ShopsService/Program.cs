@@ -46,10 +46,8 @@ builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
 // MediatR
 builder.Services.AddMediatRModule(typeof(GetCoffeeShopHandler));
 
-// JWT Authentication
-builder.Services.AddJwtAuthModule();
-
-// Authorization policies
+// Authorization policies (JWT validation happens in Gateway)
+builder.Services.AddHeaderUserContext();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
     .AddPolicy(RoleConsts.Owner, policy => policy.RequireRole(RoleConsts.Owner))
@@ -118,9 +116,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapDefaultEndpoints();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 // Swagger documentation
 app.UseSwaggerDocumentation();

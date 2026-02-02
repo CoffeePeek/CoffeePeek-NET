@@ -16,14 +16,14 @@ namespace CoffeePeek.ModerationService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class ModerationReviewsController(IMediator mediator) : ControllerBase
+public class ModerationReviewsController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
     [HttpGet]
     [Authorize(Policy = RoleConsts.Moderator)]
     [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    [SwaggerOperation("Get all moderation reviews" )]
+    [SwaggerOperation("Get all moderation reviews")]
     public async Task<IActionResult> GetAllModerationReviews()
     {
         return Ok(await mediator.Send(new GetAllModerationReviewsQuery()));
@@ -41,12 +41,12 @@ public class ModerationReviewsController(IMediator mediator) : ControllerBase
     {
         command = command with
         {
-            UserId = User.GetUserIdOrThrow(),
-            UserName = User.GetUsernameOrThrow()
+            UserId = userContext.GetUserIdOrThrow(),
+            UserName = userContext.GetUsernameOrThrow()
         };
-        
+
         var response = await mediator.Send(command);
-        
+
         return Ok(response);
     }
 
@@ -60,7 +60,7 @@ public class ModerationReviewsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> UpdateReview(
         [FromBody] UpdateCoffeeShopReviewCommand command, Guid reviewId)
     {
-        command = command with { UserId = User.GetUserIdOrThrow(), ReviewId = reviewId };
+        command = command with { UserId = userContext.GetUserIdOrThrow(), ReviewId = reviewId };
         var response = await mediator.Send(command);
 
         return response.IsSuccess ? Ok(response) : NotFound(response);
@@ -76,7 +76,7 @@ public class ModerationReviewsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> ChangeStatusModerationReview(
         ChangeStatusModerationReviewCommand command)
     {
-        var commandWithUser = command with { UserId = User.GetUserIdOrThrow() };
+        var commandWithUser = command with { UserId = userContext.GetUserIdOrThrow() };
         return Ok(await mediator.Send(commandWithUser));
     }
 }

@@ -13,7 +13,12 @@ builder.AddSerilogLogging();
 
 builder.ConfigureEnvironment();
 
-builder.Services.AddReverseProxy().LoadFromMemory(YarpConfig.GetRoutes(), YarpConfig.GetClusters());
+// JWT Authentication for Gateway
+builder.Services.AddGatewayJwtAuth();
+
+builder.Services.AddReverseProxy()
+    .LoadFromMemory(YarpConfig.GetRoutes(), YarpConfig.GetClusters())
+    .AddTransforms<ClaimsToHeadersTransformProvider>();
 
 builder.Services.AddResponseCaching();
 builder.Services.AddSwaggerModule("CoffeePeek Gateway");
@@ -30,10 +35,14 @@ app.UseExceptionHandler();
 
 app.UseCors();
 
+// Authentication & Authorization middleware
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseResponseCaching();
 app.ConfigureCustomCaching();
 
-    
+
 // Gateway self health check
 app.MapGet("/health/gateway", () => Results.Ok(new { status = "healthy", service = "Gateway", timestamp = DateTime.UtcNow }))
     .WithName("GatewayHealthCheck")

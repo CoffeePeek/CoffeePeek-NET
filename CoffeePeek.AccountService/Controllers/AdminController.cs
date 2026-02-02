@@ -14,17 +14,17 @@ namespace CoffeePeek.AccountService.Controllers;
 [ApiController]
 [Route("api/admin/account")]
 [Authorize(Policy = RoleConsts.Admin)]
-public class AdminController(IMediator mediator) : ControllerBase
+public class AdminController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
     [HttpPut("role")]
     [SwaggerOperation(Summary = "Change role of user")]
     public Task<Response> ChangeRole([FromQuery] Guid userIdOfChange, [FromQuery] Guid roleId)
     {
-        return mediator.Send(new ChangeRoleCommand(User.GetUserIdOrThrow(), userIdOfChange, roleId));
+        return mediator.Send(new ChangeRoleCommand(userContext.GetUserIdOrThrow(), userIdOfChange, roleId));
     }
 
     [HttpDelete("cache")]
-    [ProducesResponseType(typeof(Response<InvalidateCacheResponse>), StatusCodes.Status200OK)] 
+    [ProducesResponseType(typeof(Response<InvalidateCacheResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [SwaggerOperation(Summary = "Invalidate cache")]
     public async Task<Response<InvalidateCacheResponse>> InvalidateCache(
