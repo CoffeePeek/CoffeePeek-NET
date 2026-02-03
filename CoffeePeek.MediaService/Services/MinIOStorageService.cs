@@ -13,7 +13,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
     private const int PresignedUrlExpirySeconds = 600;
     
 
-    public async Task<(string UploadUrl, string StorageKey)> GetPresignedUploadUrlAsync(string fileName,
+    public async Task<(string UploadUrl, string StorageKey)> GetPresignedUploadUrl(string fileName,
         string contentType, BucketType bucketType)
     {
         var storageKey = $"{Guid.NewGuid()}{Path.GetExtension(fileName)}";
@@ -32,7 +32,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
         return (url, storageKey);
     }
 
-    public async Task MarkAsPermanentAsync(string storageKey, BucketType bucketType)
+    public async Task MarkAsPermanent(string storageKey, BucketType bucketType)
     {
         var tags = new Dictionary<string, string>
         {
@@ -47,7 +47,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
         await minioClient.SetObjectTagsAsync(args);
     }
 
-    public async Task<bool> ExistsAsync(string storageKey, BucketType bucketType)
+    public async Task<bool> Exists(string storageKey, BucketType bucketType)
     {
         try
         {
@@ -64,7 +64,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
         }
     }
 
-    public async Task DeleteAsync(string storageKey, BucketType bucketType)
+    public async Task Delete(string storageKey, BucketType bucketType)
     {
         var args = new RemoveObjectArgs()
             .WithBucket(GetBucketName(bucketType))

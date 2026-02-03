@@ -27,6 +27,8 @@ public class UpdateUserAvatarRequestHandler(
         var oldPhotoId = user.PhotoMetadataId;
         var oldStorageKey = user.PhotoMetadata?.StorageKey;
 
+        await unitOfWork.BeginTransactionAsync(cancellationToken);
+        
         var photoMetadata = PhotoMetadata.Create(request.UploadedPhoto.FileName,
             request.UploadedPhoto.ContentType,
             request.UploadedPhoto.StorageKey,
@@ -34,8 +36,6 @@ public class UpdateUserAvatarRequestHandler(
 
         photoMetadataRepository.Add(photoMetadata);
         user.UpdateAvatar(photoMetadata);
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         if (oldPhotoId.HasValue && !string.IsNullOrEmpty(oldStorageKey))
         {
@@ -47,6 +47,11 @@ public class UpdateUserAvatarRequestHandler(
                 user.Id,
                 DateTime.UtcNow), cancellationToken: cancellationToken);
         }
+        
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        await unitOfWork.CommitTransactionAsync(cancellationToken);
+        
 
         return UpdateEntityResponse<PhotoMetadata>.Success(user.PhotoMetadata!, "Photo updated successfully");
     }

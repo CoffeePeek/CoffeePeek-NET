@@ -33,9 +33,6 @@ public class UpdateModerationCoffeeShopHandler(
             return UpdateEntityResponse<ModerationShopDto>.Error("Shop not found or access denied");
         }
 
-        // Store old photos for comparison
-        var oldPhotos = shop.ShopPhotos.ToList();
-
         shop.UpdateInfo(moderationShopDto.Name, moderationShopDto.Description, moderationShopDto.PriceRange, moderationShopDto.CityId);
 
         if (moderationShopDto.Address != null && moderationShopDto.Address != shop.Location?.Address)
@@ -62,24 +59,34 @@ public class UpdateModerationCoffeeShopHandler(
             moderationShopDto.CoffeeBeanIds,
             moderationShopDto.RoasterIds,
             moderationShopDto.BrewMethodIds);
-
-        await unitOfWork.SaveChangesAsync(ct);
-
+        
+        
         // Publish PhotoReplacedEvent for removed photos
-        var newPhotoStorageKeys = moderationShopDto.ShopPhotos?.Select(p => p.StorageKey).ToHashSet() ?? [];
-        var removedPhotos = oldPhotos.Where(p => !newPhotoStorageKeys.Contains(p.StorageKey)).ToList();
-
-        foreach (var removedPhoto in removedPhotos)
+        if (moderationShopDto.ShopPhotos is not null)
         {
-            await capPublisher.PublishAsync(CapEventNames.Media.PhotoReplaced, new PhotoReplacedEvent(
-                removedPhoto.Id,
-                removedPhoto.StorageKey,
-                Guid.Empty,
-                "Shop",
-                shop.Id,
-                DateTime.UtcNow), cancellationToken: ct);
+            // Store old photos for comparison
+            var oldPhotos = shop.ShopPhotos.ToList();
+            
+            var newPhotoStorageKeys = moderationShopDto.ShopPhotos
+                .Select(p => p.StorageKey)
+                .ToHashSet();
+            var removedPhotos = oldPhotos
+                .Where(p => !newPhotoStorageKeys.Contains(p.StorageKey))
+                .ToList();
+
+            foreach (var removedPhoto in removedPhotos)
+            {
+                await capPublisher.PublishAsync(CapEventNames.Media.PhotoReplaced, new PhotoReplacedEvent(
+                    removedPhoto.Id,
+                    removedPhoto.StorageKey,
+                    Guid.Empty,
+                    "Shop",
+                    shop.Id,
+                    DateTime.UtcNow), cancellationToken: ct);
+            }
         }
 
+        await unitOfWork.SaveChangesAsync(ct);
         var result = mapper.Map<ModerationShopDto>(shop);
 
         logger.LogInformation("Shop {ShopId} updated by user {UserId}", shop.Id, command.UserId);

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CoffeePeek.MediaService.Configuration;
 
 namespace CoffeePeek.MediaService.Data;
 
@@ -44,10 +45,10 @@ public class PhotoMetadata
     /// <summary>
     /// Checks if this photo is scheduled for deletion and the delay has passed.
     /// </summary>
-    public bool IsReadyForDeletion =>
+    public bool IsReadyForDeletion(DateTime utcNow) =>
         Status == PhotoStatus.PendingDeletion &&
         ScheduledDeletionAt.HasValue &&
-        ScheduledDeletionAt.Value <= DateTime.UtcNow;
+        ScheduledDeletionAt.Value <= utcNow;
 }
 
 public enum PhotoStatus
@@ -60,12 +61,6 @@ public enum PhotoStatus
 }
 
 public enum OwnerType
-{
-    User,
-    Shop
-}
-
-public enum BucketType
 {
     User,
     Shop

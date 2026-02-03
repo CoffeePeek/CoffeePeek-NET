@@ -53,7 +53,7 @@ public class PhotoCleanupService(
             try
             {
                 // Delete from MinIO
-                await storageService.DeleteAsync(photo.StorageKey, (Configuration.BucketType)(int)photo.BucketType);
+                await storageService.Delete(photo.StorageKey, (Configuration.BucketType)(int)photo.BucketType, ct);
 
                 // Mark as deleted in database
                 photo.Status = PhotoStatus.Deleted;
@@ -89,7 +89,7 @@ public class PhotoCleanupService(
 
         try
         {
-            await storageService.DeleteAsync(photo.StorageKey, (Configuration.BucketType)(int)photo.BucketType);
+            await storageService.Delete(photo.StorageKey, (Configuration.BucketType)(int)photo.BucketType);
             photo.Status = PhotoStatus.Deleted;
             photo.DeletedAt = DateTime.UtcNow;
             await dbContext.SaveChangesAsync(ct);

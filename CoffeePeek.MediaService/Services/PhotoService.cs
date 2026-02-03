@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Events;
+using CoffeePeek.MediaService.Configuration;
 using CoffeePeek.MediaService.Data;
 using CoffeePeek.MediaService.Requests;
 using CoffeePeek.MediaService.Responses;
@@ -16,7 +17,7 @@ public class PhotoService(
     public async Task<Response<GenerateUploadUrlResponse>> GenerateUserAvatarUploadUrl(UploadUrlRequest request,
         CancellationToken ct)
     {
-        var (url, key) = await storageService.GetPresignedUploadUrlAsync(request.FileName, request.ContentType, Configuration.BucketType.User);
+        var (url, key) = await storageService.GetPresignedUploadUrl(request.FileName, request.ContentType, BucketType.User, ct);
 
         var photoMetadata = new PhotoMetadata
         {
@@ -31,11 +32,15 @@ public class PhotoService(
             Status = PhotoStatus.Pending,
             UploadedAt = DateTime.UtcNow
         };
-
-        dbContext.Photos.Add(photoMetadata);
-        await dbContext.SaveChangesAsync(ct);
-
-        await PublishPhotoUploadedEvent(photoMetadata);
+        
+        await using (var transaction = await dbContext.Database.BeginTransactionAsync(ct))
+        {
+            dbContext.Photos.Add(photoMetadata);
+            await PublishPhotoUploadedEvent(photoMetadata);
+            await dbContext.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+        }
+        
 
         var result = new GenerateUploadUrlResponse(photoMetadata.Id, url, key);
 
@@ -49,7 +54,7 @@ public class PhotoService(
 
         foreach (var req in requests)
         {
-            var (url, key) = await storageService.GetPresignedUploadUrlAsync(req.FileName, req.ContentType, Configuration.BucketType.Shop);
+            var (url, key) = await storageService.GetPresignedUploadUrl(req.FileName, req.ContentType, Configuration.BucketType.Shop);
 
             var photoMetadata = new PhotoMetadata
             {
@@ -114,7 +119,7 @@ public class PhotoService(
             return Response<object>.Error("Photo not found");
         }
 
-        await storageService.DeleteAsync(photo.StorageKey, (Configuration.BucketType)(int)photo.BucketType);
+        await storageService.Delete(photo.StorageKey, (Configuration.BucketType)(int)photo.BucketType);
 
         photo.Status = PhotoStatus.Deleted;
         await dbContext.SaveChangesAsync(ct);

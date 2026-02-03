@@ -2,12 +2,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.MediaService.Data;
 
-public class MediaDbContext : DbContext
+public class MediaDbContext(DbContextOptions<MediaDbContext> options) : DbContext(options)
 {
-    public MediaDbContext(DbContextOptions<MediaDbContext> options) : base(options)
-    {
-    }
-
     public DbSet<PhotoMetadata> Photos => Set<PhotoMetadata>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -21,7 +17,7 @@ public class MediaDbContext : DbContext
             entity.HasIndex(p => p.StorageKey).IsUnique();
 
             entity.Property(p => p.FileName).IsRequired().HasMaxLength(255);
-            entity.Property(p => p.ContentType).IsRequired().HasMaxLength(50);
+            entity.Property(p => p.ContentType).IsRequired().HasMaxLength(100);
             entity.Property(p => p.SizeBytes).IsRequired();
             entity.Property(p => p.BucketType).IsRequired().HasConversion<string>().HasMaxLength(20);
             entity.Property(p => p.Status).IsRequired().HasConversion<string>().HasMaxLength(20);

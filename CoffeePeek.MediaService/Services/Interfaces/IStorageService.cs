@@ -4,9 +4,9 @@ namespace CoffeePeek.MediaService.Services;
 
 public interface IStorageService
 {
-    Task<(string UploadUrl, string StorageKey)> GetPresignedUploadUrlAsync(string fileName, string contentType, BucketType bucketType);
+    Task<(string UploadUrl, string StorageKey)> GetPresignedUploadUrl(string fileName, string contentType, BucketType bucketType, CancellationToken ct = default);
     
-    Task MarkAsPermanentAsync(string storageKey, BucketType bucketType);
-    Task<bool> ExistsAsync(string uploadedPhotoStorageKey, BucketType bucketType);
-    Task DeleteAsync(string oldStorageKey, BucketType bucketType);
+    Task MarkAsPermanent(string storageKey, BucketType bucketType, CancellationToken ct = default);
+    Task<bool> Exists(string uploadedPhotoStorageKey, BucketType bucketType, CancellationToken ct = default);
+    Task Delete(string oldStorageKey, BucketType bucketType, CancellationToken ct = default);
 }
