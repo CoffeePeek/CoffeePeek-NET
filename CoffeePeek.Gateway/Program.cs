@@ -1,8 +1,8 @@
 using CoffeePeek.Gateway;
 using CoffeePeek.Gateway.Extensions;
 using CoffeePeek.Shared.Extensions.Handlers;
-using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Logging;
+using CoffeePeek.Shared.Extensions.Modules;
 using CoffePeek.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);

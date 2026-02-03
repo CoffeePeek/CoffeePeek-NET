@@ -29,9 +29,13 @@ public static class ClaimsTransformationExtensions
         if (!string.IsNullOrEmpty(email))
             headers[XUserEmail] = email;
 
-        var role = user.FindFirst(ClaimTypes.Role)?.Value;
-        if (!string.IsNullOrEmpty(role))
-            headers[XUserRole] = role;
+        var roles = user.FindAll(ClaimTypes.Role)
+            .Select(r => r.Value)
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .Distinct()
+            .ToArray();
+        if (roles.Length > 0)
+            headers[XUserRole] = string.Join(",", roles);
 
         return headers;
     }

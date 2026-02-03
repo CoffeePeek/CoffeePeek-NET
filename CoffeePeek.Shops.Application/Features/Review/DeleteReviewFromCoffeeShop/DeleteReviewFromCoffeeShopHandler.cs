@@ -1,11 +1,9 @@
 using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using MediatR;
 
-namespace CoffeePeek.Shops.Application.Features.CoffeeShop.DeleteReviewFromCoffeeShop;
+namespace CoffeePeek.Shops.Application.Features.Review.DeleteReviewFromCoffeeShop;
 
 public class DeleteReviewFromCoffeeShopHandler(IGenericRepository<Domain.Entities.ReviewAggregate.Review> reviewRepository, IUnitOfWork unitOfWork)
     : IRequestHandler<DeleteReviewFromCoffeeShopCommand, Response>

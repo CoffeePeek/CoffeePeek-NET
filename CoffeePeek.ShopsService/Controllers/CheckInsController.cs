@@ -2,7 +2,6 @@ using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shops.Application.Features.CheckIn.CreateCheckIn;
 using CoffeePeek.Shops.Application.Features.CheckIn.GetUserCheckIns;
-using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.GetUserCheckIns;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

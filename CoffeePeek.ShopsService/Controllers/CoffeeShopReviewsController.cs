@@ -1,7 +1,7 @@
 ﻿using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Infrastructure;
-using CoffeePeek.Shops.Application.Features.CoffeeShop.DeleteReviewFromCoffeeShop;
 using CoffeePeek.Shops.Application.Features.Review.CanCreateCoffeeShopReview;
+using CoffeePeek.Shops.Application.Features.Review.DeleteReviewFromCoffeeShop;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

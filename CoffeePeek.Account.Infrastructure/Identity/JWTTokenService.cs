@@ -8,7 +8,7 @@ using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace CoffeePeek.Auth.Infrastructure.Identity;
+namespace CoffeePeek.Account.Infrastructure.Identity;
 
 public class JWTTokenService(IOptions<JWTOptions> options) : IJWTTokenService
 {

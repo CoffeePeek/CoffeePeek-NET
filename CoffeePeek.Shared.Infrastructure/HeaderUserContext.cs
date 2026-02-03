@@ -13,28 +13,27 @@ public interface IUserContext
     bool IsAuthenticated { get; }
 }
 
-public class HeaderUserContext : IUserContext
+public class HeaderUserContext(IHttpContextAccessor httpContextAccessor) : IUserContext
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
     public const string XUserId = "X-User-Id";
     public const string XUserName = "X-User-Name";
     public const string XUserRole = "X-User-Role";
     public const string XUserEmail = "X-User-Email";
 
-    public HeaderUserContext(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
-
-    public bool IsAuthenticated => !string.IsNullOrEmpty(GetUserId()?.ToString());
+    public bool IsAuthenticated => GetUserId() is { } id && id != Guid.Empty;
 
     public Guid? GetUserId()
     {
-        var httpContext = _httpContextAccessor.HttpContext;
+        var httpContext = httpContextAccessor.HttpContext;
         if (httpContext == null)
             return null;
 
+        
+        // Fallback to claims (if JWT is still present)
+        var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(userIdClaim) && Guid.TryParse(userIdClaim, out var claimUserId))
+            return claimUserId;
+        
         // First try to get from headers (from Gateway)
         if (httpContext.Request.Headers.TryGetValue(XUserId, out var userIdHeader))
         {
@@ -42,25 +41,18 @@ public class HeaderUserContext : IUserContext
                 return userId;
         }
 
-        // Fallback to claims (if JWT is still present)
-        var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!string.IsNullOrEmpty(userIdClaim) && Guid.TryParse(userIdClaim, out var claimUserId))
-            return claimUserId;
-
         return null;
     }
 
     public Guid GetUserIdOrThrow()
     {
         var userId = GetUserId();
-        if (userId == null)
-            throw new UnauthorizedAccessException("User ID is missing.");
-        return userId.Value;
+        return userId ?? throw new UnauthorizedAccessException("User ID is missing.");
     }
 
     public string? GetUsername()
     {
-        var httpContext = _httpContextAccessor.HttpContext;
+        var httpContext = httpContextAccessor.HttpContext;
         if (httpContext == null)
             return null;
 
@@ -73,8 +65,7 @@ public class HeaderUserContext : IUserContext
         }
 
         // Fallback to claims
-        return httpContext.User.FindFirst(ClaimTypes.Name)?.Value
-               ?? httpContext.User.FindFirst("preferred_username")?.Value;
+        return httpContext.User.FindFirstValue(ClaimTypes.Name);
     }
 
     public string GetUsernameOrThrow()
@@ -87,7 +78,7 @@ public class HeaderUserContext : IUserContext
 
     public string? GetUserRole()
     {
-        var httpContext = _httpContextAccessor.HttpContext;
+        var httpContext = httpContextAccessor.HttpContext;
         if (httpContext == null)
             return null;
 

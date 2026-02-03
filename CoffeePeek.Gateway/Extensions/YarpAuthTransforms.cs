@@ -16,35 +16,16 @@ public class ClaimsToHeadersTransformProvider : ITransformProvider
 
     public void Apply(TransformBuilderContext context)
     {
-        context.AddRequestTransform(async transformContext =>
+        context.AddRequestTransform(transformContext =>
         {
-            var user = transformContext.HttpContext.User;
+            var headers = ClaimsTransformationExtensions.ExtractClaimsAsHeaders(transformContext.HttpContext.User);
 
-            if (user.Identity?.IsAuthenticated == true)
+            foreach (var (key, value) in headers)
             {
-                var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (!string.IsNullOrEmpty(userId))
-                    transformContext.ProxyRequest.Headers.TryAddWithoutValidation(
-                        ClaimsTransformationExtensions.XUserId, userId);
-
-                var userName = user.FindFirst(ClaimTypes.Name)?.Value
-                               ?? user.FindFirst("preferred_username")?.Value;
-                if (!string.IsNullOrEmpty(userName))
-                    transformContext.ProxyRequest.Headers.TryAddWithoutValidation(
-                        ClaimsTransformationExtensions.XUserName, userName);
-
-                var email = user.FindFirst(ClaimTypes.Email)?.Value;
-                if (!string.IsNullOrEmpty(email))
-                    transformContext.ProxyRequest.Headers.TryAddWithoutValidation(
-                        ClaimsTransformationExtensions.XUserEmail, email);
-
-                var role = user.FindFirst(ClaimTypes.Role)?.Value;
-                if (!string.IsNullOrEmpty(role))
-                    transformContext.ProxyRequest.Headers.TryAddWithoutValidation(
-                        ClaimsTransformationExtensions.XUserRole, role);
+                transformContext.ProxyRequest.Headers.TryAddWithoutValidation(key, value);
             }
 
-            await Task.CompletedTask;
+            return ValueTask.CompletedTask;
         });
     }
 }

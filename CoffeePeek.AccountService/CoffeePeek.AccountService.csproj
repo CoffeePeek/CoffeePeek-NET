@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Account.Infrastructure\CoffeePeek.Account.Infrastructure.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Account.Persistence\CoffeePeek.Account.Persistence.csproj" />
       <ProjectReference Include="..\CoffePeek.ServiceDefaults\CoffePeek.ServiceDefaults.csproj" />
     </ItemGroup>
 

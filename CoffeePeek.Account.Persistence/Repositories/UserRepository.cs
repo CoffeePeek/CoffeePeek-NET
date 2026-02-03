@@ -2,7 +2,7 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Account.Application;
+namespace CoffeePeek.Account.Persistence.Repositories;
 
 public class UserRepository(IGenericRepository<User> userRepository) : IUserRepository
 {

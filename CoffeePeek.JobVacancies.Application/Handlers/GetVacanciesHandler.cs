@@ -5,7 +5,7 @@ using CoffeePeek.JobVacancies.Application.Models.Dtos;
 using CoffeePeek.JobVacancies.Application.Models.Responses;
 using CoffeePeek.JobVacancies.Domain.Repositories;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Persistence;
 using MapsterMapper;
 using MediatR;
 

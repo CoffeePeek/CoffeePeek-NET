@@ -11,15 +11,15 @@ using CoffeePeek.JobVacancies.Infrastructure.Services;
 using CoffeePeek.JobVacancies.Jobs;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
+using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Infrastructure.Options;
+using CoffePeek.ServiceDefaults;
 using Hangfire;
 using Hangfire.PostgreSql;
-using CoffeePeek.Shared.Extensions.Logging;
-using CoffePeek.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 

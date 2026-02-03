@@ -4,7 +4,7 @@ using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeePeek.Auth.Infrastructure.Configuration;
+namespace CoffeePeek.Account.Persistence.Configuration;
 
 public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbContext(options)
 {

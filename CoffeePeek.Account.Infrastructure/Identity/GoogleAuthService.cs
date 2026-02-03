@@ -3,7 +3,7 @@ using Google.Apis.Auth;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace CoffeePeek.Auth.Infrastructure.Identity;
+namespace CoffeePeek.Account.Infrastructure.Identity;
 
 public class GoogleAuthService(
     IOptions<OAuthGoogleOptions> options,

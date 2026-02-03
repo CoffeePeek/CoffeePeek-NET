@@ -3,7 +3,7 @@ using CoffeePeek.JobVacancies.Application.Services;
 using CoffeePeek.JobVacancies.Domain.Entities;
 using CoffeePeek.JobVacancies.Domain.Repositories;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Persistence;
 using MapsterMapper;
 using Microsoft.Extensions.Logging;
 

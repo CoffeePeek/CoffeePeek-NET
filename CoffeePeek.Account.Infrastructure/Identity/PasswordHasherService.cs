@@ -2,7 +2,7 @@
 using CoffeePeek.Account.Domain.Services;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace CoffeePeek.Auth.Infrastructure.Identity;
+namespace CoffeePeek.Account.Infrastructure.Identity;
 
 public class PasswordHasherService : IPasswordHasherService
 {

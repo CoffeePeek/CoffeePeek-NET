@@ -2,7 +2,6 @@ using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Cache;
 using MediatR;
 
 namespace CoffeePeek.Account.Application.Features.User.DeleteUser;

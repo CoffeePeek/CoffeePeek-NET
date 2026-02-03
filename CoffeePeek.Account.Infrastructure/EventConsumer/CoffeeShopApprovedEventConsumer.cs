@@ -5,7 +5,7 @@ using CoffeePeek.Shared.Infrastructure.Constants;
 using DotNetCore.CAP;
 using Microsoft.Extensions.Logging;
 
-namespace CoffeePeek.Auth.Infrastructure.EventConsumer;
+namespace CoffeePeek.Account.Infrastructure.EventConsumer;
 
 public class ModerationShopApprovedAccountHandler(
     IUserRepository userRepository,

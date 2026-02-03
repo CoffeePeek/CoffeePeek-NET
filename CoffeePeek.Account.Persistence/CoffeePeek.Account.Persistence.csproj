@@ -10,4 +10,9 @@
       <ProjectReference Include="..\CoffeePeek.Account.Application\CoffeePeek.Account.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Bogus" Version="35.6.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0" />
+    </ItemGroup>
+
 </Project>
