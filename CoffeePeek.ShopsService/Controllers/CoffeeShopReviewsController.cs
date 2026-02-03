@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.DeleteReviewFromCoffeeShop;
 using CoffeePeek.Shops.Application.Features.Review.CanCreateCoffeeShopReview;
@@ -15,6 +15,11 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class CoffeeShopReviewsController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Проверяет, может ли текущий пользователь создать отзыв для указанной кофейни.
+    /// </summary>
+    /// <param name="shopId">Идентификатор кофейни (GUID), передаваемый в строке запроса.</param>
+    /// <returns>Response&lt;CanCreateCoffeeShopReviewResponse&gt; с результатом проверки возможности создания отзыва.</returns>
     [HttpGet("can-create")]
     [ProducesResponseType(typeof(Response<CanCreateCoffeeShopReviewResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

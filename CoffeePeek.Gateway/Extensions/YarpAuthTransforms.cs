@@ -6,14 +6,27 @@ namespace CoffeePeek.Gateway.Extensions;
 
 public class ClaimsToHeadersTransformProvider : ITransformProvider
 {
+    /// <summary>
+    /// Выполняет проверку конфигурации маршрута для этого поставщика преобразований запросов.
+    /// </summary>
+    /// <param name="context">Контекст валидации маршрута, содержащий данные маршрута и коллекцию сообщений валидации.</param>
     public void ValidateRoute(TransformRouteValidationContext context)
     {
     }
 
+    /// <summary>
+    /// Выполняет проверку конфигурации кластера для этого провайдера преобразований.
+    /// В настоящий момент проверка не выполняется.
+    /// </summary>
+    /// <param name="context">Контекст валидации, содержащий данные и ошибки валидации для кластера.</param>
     public void ValidateCluster(TransformClusterValidationContext context)
     {
     }
 
+    /// <summary>
+    /// Регистрирует трансформацию исходящих запросов, которая при аутентифицированном пользователе добавляет значения определённых claim в заголовки проксируемого запроса.
+    /// </summary>
+    /// <param name="context">Контекст построителя трансформаций, используемый для добавления трансформации запроса. Добавляемые заголовки: NameIdentifier -> XUserId, Name или preferred_username -> XUserName, Email -> XUserEmail, Role -> XUserRole.</param>
     public void Apply(TransformBuilderContext context)
     {
         context.AddRequestTransform(async transformContext =>

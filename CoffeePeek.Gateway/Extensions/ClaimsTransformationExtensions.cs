@@ -9,6 +9,18 @@ public static class ClaimsTransformationExtensions
     public const string XUserRole = "X-User-Role";
     public const string XUserEmail = "X-User-Email";
 
+    /// <summary>
+    /// Формирует словарь HTTP-заголовков на основе утверждений (claims) текущего пользователя.
+    /// </summary>
+    /// <param name="user">Объект пользователя (ClaimsPrincipal). Если пользователь не аутентифицирован, будет возвращён пустой словарь.</param>
+    /// <returns>Словарь, где ключи — имена заголовков и значения — соответствующие значения утверждений. Пустой словарь возвращается, если пользователь не аутентифицирован или соответствующие утверждения отсутствуют.</returns>
+    /// <remarks>
+    /// Соответствие утверждений и заголовков:
+    /// - `ClaimTypes.NameIdentifier` → X-User-Id
+    /// - `ClaimTypes.Name` или `preferred_username` → X-User-Name
+    /// - `ClaimTypes.Email` → X-User-Email
+    /// - `ClaimTypes.Role` → X-User-Role
+    /// </remarks>
     public static Dictionary<string, string> ExtractClaimsAsHeaders(ClaimsPrincipal user)
     {
         var headers = new Dictionary<string, string>();

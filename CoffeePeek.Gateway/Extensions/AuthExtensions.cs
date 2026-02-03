@@ -8,6 +8,10 @@ namespace CoffeePeek.Gateway.Extensions;
 
 public static class AuthExtensions
 {
+    /// <summary>
+    /// Настраивает JWT Bearer-аутентификацию и добавляет службы авторизации в коллекцию сервисов.
+    /// </summary>
+    /// <returns>Тот же экземпляр <see cref="IServiceCollection"/>, расширенный зарегистрированными службами аутентификации и авторизации.</returns>
     public static IServiceCollection AddGatewayJwtAuth(this IServiceCollection services)
     {
         var authOptions = services.AddValidateOptions<JWTOptions>();

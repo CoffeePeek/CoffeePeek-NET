@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Account.Application.Features.Admin.ChangeRole;
+using CoffeePeek.Account.Application.Features.Admin.ChangeRole;
 using CoffeePeek.Account.Application.Features.Admin.InvalidateCache;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Infrastructure;
@@ -16,6 +16,12 @@ namespace CoffeePeek.AccountService.Controllers;
 [Authorize(Policy = RoleConsts.Admin)]
 public class AdminController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Изменяет роль указанного пользователя.
+    /// </summary>
+    /// <param name="userIdOfChange">Идентификатор пользователя, роль которого нужно изменить.</param>
+    /// <param name="roleId">Идентификатор новой роли, присваиваемой пользователю.</param>
+    /// <returns>`Response` с результатом операции: `Response` указывает на успех при успешной смене роли или содержит информацию об ошибке в противном случае.</returns>
     [HttpPut("role")]
     [SwaggerOperation(Summary = "Change role of user")]
     public Task<Response> ChangeRole([FromQuery] Guid userIdOfChange, [FromQuery] Guid roleId)
@@ -23,6 +29,12 @@ public class AdminController(IMediator mediator, IUserContext userContext) : Con
         return mediator.Send(new ChangeRoleCommand(userContext.GetUserIdOrThrow(), userIdOfChange, roleId));
     }
 
+    /// <summary>
+    /// Инициирует инвалидирование кэша для указанной категории или для всех категорий.
+    /// </summary>
+    /// <param name="category">Имя категории кэша для инвалидирования; <c>null</c> означает отсутствие фильтра по категории.</param>
+    /// <param name="all">Если <c>true</c>, инвалидируются все категории кэша.</param>
+    /// <returns>Ответ, содержащий результат операции инвалидирования кэша.</returns>
     [HttpDelete("cache")]
     [ProducesResponseType(typeof(Response<InvalidateCacheResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]

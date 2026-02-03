@@ -14,6 +14,11 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class CheckInsController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Создаёт запись о чекине в кофейне, используя данные из переданной команды и текущего пользователя.
+    /// </summary>
+    /// <param name="command">Команда с данными для создания чекина. Поля UserId и UserName будут перезаписаны значениями из текущего пользовательского контекста.</param>
+    /// <returns>Response с данными CreateCheckInResponse, содержащий результат операции создания чекина.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(Response<CreateCheckInResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -25,6 +30,12 @@ public class CheckInsController(IMediator mediator, IUserContext userContext) : 
         return mediator.Send(command);
     }
 
+    /// <summary>
+    /// Возвращает список чек‑инов текущего пользователя с поддержкой постраничной навигации.
+    /// </summary>
+    /// <param name="pageNumber">Номер страницы — берётся из заголовка "X-Page-Number"; нормализуется до значения не меньше 1.</param>
+    /// <param name="pageSize">Размер страницы — берётся из заголовка "X-Page-Size"; если значение &lt;= 0 устанавливается 10, максимальное значение 100.</param>
+    /// <returns>HTTP 200 с объектом Response&lt;GetUserCheckInsResponse&gt;, содержащим чек‑ины текущего пользователя; при успешном результате в ответ добавляются заголовки пагинации.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetUserCheckInsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

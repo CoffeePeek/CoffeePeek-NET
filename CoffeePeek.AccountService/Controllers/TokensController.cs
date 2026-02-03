@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Account.Application.Features.Auth.Login;
+using CoffeePeek.Account.Application.Features.Auth.Login;
 using CoffeePeek.Account.Application.Features.Auth.Logout;
 using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 using CoffeePeek.Account.Application.Features.Auth.RefreshToken;
@@ -17,6 +17,11 @@ namespace CoffeePeek.AccountService.Controllers;
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class TokensController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Аутентифицирует пользователя по учетным данным из тела запроса и возвращает ответ с токеном авторизации.
+    /// </summary>
+    /// <param name="request">Объект с электронной почтой и паролем пользователя из тела запроса.</param>
+    /// <returns>Response&lt;LoginResponse&gt; с JWT и/или данными обновления сессии.</returns>
     [HttpPost]
     [ProducesResponseType<Response<LoginResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -35,6 +40,11 @@ public class TokensController(IMediator mediator, IUserContext userContext) : Co
         return Ok(response);
     }
 
+    /// <summary>
+    /// Выполняет аутентификацию через OAuth Google и возвращает результат входа.
+    /// </summary>
+    /// <param name="request">Команда входа по Google; поле DeviceName и IpAddress будут заполнены из заголовка User-Agent и IP-адреса подключения запроса.</param>
+    /// <returns>Объект Response&lt;GoogleLoginResponse&gt; с данными входа и токенами при успешной аутентификации.</returns>
     [HttpPost("google/login")]
     [ProducesResponseType<Response<GoogleLoginResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -53,6 +63,11 @@ public class TokensController(IMediator mediator, IUserContext userContext) : Co
         return Ok(response);
     }
 
+    /// <summary>
+    /// Обновляет refresh-токен и возвращает новый набор токенов.
+    /// </summary>
+    /// <param name="command">Команда обновления токена; перед отправкой в команду устанавливаются текущий UserId (из IUserContext), DeviceName (User-Agent) и IpAddress.</param>
+    /// <returns>Response&lt;RefreshTokenResponse&gt; с обновлёнными токенами и соответствующими метаданными.</returns>
     [HttpPut]
     [Authorize]
     [ProducesResponseType<Response<RefreshTokenResponse>>(StatusCodes.Status200OK)]
@@ -71,6 +86,10 @@ public class TokensController(IMediator mediator, IUserContext userContext) : Co
         return Ok(response);
     }
 
+    /// <summary>
+    /// Выполняет выход пользователя и аннулирует refresh-токен, хранящийся в cookie.
+    /// </summary>
+    /// <returns>IActionResult: 204 No Content при успешном аннулировании токена; 400 Bad Request если cookie "refreshToken" отсутствует; возможны 401, 404 или 500 в соответствующих ошибочных случаях.</returns>
     [HttpDelete]
     [Authorize]
     [SwaggerOperation("Logout user and invalidate refresh token from cookies")]

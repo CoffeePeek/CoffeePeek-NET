@@ -5,11 +5,33 @@ namespace CoffeePeek.Shared.Infrastructure;
 
 public interface IUserContext
 {
-    Guid? GetUserId();
-    Guid GetUserIdOrThrow();
-    string? GetUsername();
-    string GetUsernameOrThrow();
-    string? GetUserRole();
+    /// <summary>
+/// Получает идентификатор текущего пользователя из контекста запроса, если он доступен.
+/// </summary>
+/// <returns>Идентификатор пользователя в виде `Guid`, или `null`, если идентификатор отсутствует.</returns>
+Guid? GetUserId();
+    /// <summary>
+/// Получает идентификатор текущего пользователя и требует его наличия.
+/// </summary>
+/// <returns>Идентификатор пользователя.</returns>
+/// <exception cref="System.UnauthorizedAccessException">Если идентификатор пользователя отсутствует.</exception>
+Guid GetUserIdOrThrow();
+    /// <summary>
+/// Возвращает текущее имя пользователя, если оно доступно.
+/// </summary>
+/// <returns>Имя пользователя, или `null`, если имя недоступно.</returns>
+string? GetUsername();
+    /// <summary>
+/// Получает имя пользователя из HTTP-заголовков или claims; если имя отсутствует, генерирует исключение.
+/// </summary>
+/// <returns>Строка с именем пользователя.</returns>
+/// <exception cref="System.UnauthorizedAccessException">Если имя пользователя не найдено в заголовках и claims.</exception>
+string GetUsernameOrThrow();
+    /// <summary>
+/// Возвращает роль текущего пользователя, если она доступна.
+/// </summary>
+/// <returns>Строка роли пользователя, или <c>null</c>, если роль отсутствует.</returns>
+string? GetUserRole();
     bool IsAuthenticated { get; }
 }
 
@@ -22,6 +44,9 @@ public class HeaderUserContext : IUserContext
     public const string XUserRole = "X-User-Role";
     public const string XUserEmail = "X-User-Email";
 
+    /// <summary>
+    /// Инициализирует новый экземпляр <see cref="HeaderUserContext"/> и сохраняет предоставленный <see cref="IHttpContextAccessor"/> для доступа к текущему HTTP-контексту.
+    /// </summary>
     public HeaderUserContext(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
@@ -29,6 +54,13 @@ public class HeaderUserContext : IUserContext
 
     public bool IsAuthenticated => !string.IsNullOrEmpty(GetUserId()?.ToString());
 
+    /// <summary>
+    /// Получает идентификатор пользователя из текущего HTTP-контекста.
+    /// </summary>
+    /// <remarks>
+    /// Предпочтительно извлекает значение из заголовка X-User-Id; при отсутствии заголовка пытается получить значение из клейма ClaimTypes.NameIdentifier.
+    /// </remarks>
+    /// <returns>Идентификатор пользователя как `Guid`, или `null`, если значение недоступно.</returns>
     public Guid? GetUserId()
     {
         var httpContext = _httpContextAccessor.HttpContext;
@@ -50,6 +82,11 @@ public class HeaderUserContext : IUserContext
         return null;
     }
 
+    /// <summary>
+    /// Получает идентификатор пользователя или выбрасывает исключение при его отсутствии.
+    /// </summary>
+    /// <returns>Идентификатор пользователя.</returns>
+    /// <exception cref="UnauthorizedAccessException">Бросается, если идентификатор пользователя отсутствует.</exception>
     public Guid GetUserIdOrThrow()
     {
         var userId = GetUserId();
@@ -58,6 +95,10 @@ public class HeaderUserContext : IUserContext
         return userId.Value;
     }
 
+    /// <summary>
+    /// Получает имя пользователя, сначала пытаясь прочитать заголовок X-User-Name, затем — соответствующие claims.
+    /// </summary>
+    /// <returns>`null`, если HTTP-контекст отсутствует или имя пользователя не найдено; иначе значение имени пользователя.</returns>
     public string? GetUsername()
     {
         var httpContext = _httpContextAccessor.HttpContext;
@@ -77,6 +118,11 @@ public class HeaderUserContext : IUserContext
                ?? httpContext.User.FindFirst("preferred_username")?.Value;
     }
 
+    /// <summary>
+    /// Получает имя пользователя из текущего HTTP-контекста или выбрасывает исключение, если оно отсутствует.
+    /// </summary>
+    /// <returns>Имя пользователя из контекста.</returns>
+    /// <exception cref="UnauthorizedAccessException">Выбрасывается, если имя пользователя отсутствует (сообщение: "Username is missing.").</exception>
     public string GetUsernameOrThrow()
     {
         var username = GetUsername();
@@ -85,6 +131,11 @@ public class HeaderUserContext : IUserContext
         return username;
     }
 
+    /// <summary>
+    /// Получает роль текущего пользователя.
+    /// Предпочитает значение заголовка X-User-Role; при его отсутствии возвращает значение претензии ClaimTypes.Role.
+    /// </summary>
+    /// <returns>Строка с ролью пользователя, или <c>null</c>, если роль не обнаружена.</returns>
     public string? GetUserRole()
     {
         var httpContext = _httpContextAccessor.HttpContext;

@@ -13,6 +13,11 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class FavoriteCoffeeShopsController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Добавляет кофейню в список избранного текущего пользователя по её идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор кофейни, которую нужно добавить в избранное.</param>
+    /// <returns>Ответ 201 Created с телом CreateEntityResponse&lt;Guid&gt;, содержащим идентификатор созданной записи избранного.</returns>
     [HttpPost]
     [Authorize]
     [ProducesResponseType(typeof(CreateEntityResponse<Guid>), StatusCodes.Status201Created)]
@@ -29,6 +34,11 @@ public class FavoriteCoffeeShopsController(IMediator mediator, IUserContext user
         return Created(response.EntityId.ToString(), response);
     }
 
+    /// <summary>
+    /// Удаляет кофейню из списка избранного текущего пользователя.
+    /// </summary>
+    /// <param name="id">Идентификатор кофейни, которую нужно удалить из избранного.</param>
+    /// <returns>Ответ HTTP с кодом 204 No Content при успешном удалении.</returns>
     [HttpDelete]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

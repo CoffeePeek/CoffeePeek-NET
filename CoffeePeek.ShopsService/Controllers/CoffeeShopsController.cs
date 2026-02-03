@@ -15,6 +15,20 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class CoffeeShopsController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Ищет кофейни по заданным фильтрам и параметрам пагинации; при успешном результате добавляет заголовки, описывающие пагинацию.
+    /// </summary>
+    /// <param name="cityId">Идентификатор города для фильтрации результатов (необязательно).</param>
+    /// <param name="q">Строка поиска по названию или описанию кофейн (необязательно).</param>
+    /// <param name="roasters">Список идентификаторов ростеров для фильтрации (необязательно).</param>
+    /// <param name="equipments">Список идентификаторов оборудования для фильтрации (необязательно).</param>
+    /// <param name="beans">Список идентификаторов сортов кофе для фильтрации (необязательно).</param>
+    /// <param name="brewMethods">Список идентификаторов методов заваривания для фильтрации (необязательно).</param>
+    /// <param name="priceRange">Диапазон цен для фильтрации (необязательно).</param>
+    /// <param name="minRating">Минимальный рейтинг кафе; значение в диапазоне 0–5 (необязательно).</param>
+    /// <param name="page">Номер страницы результатов, минимум 1.</param>
+    /// <param name="pageSize">Количество элементов на страницу, от 1 до 100.</param>
+    /// <returns>200 OK с объектом Response&lt;GetCoffeeShopsResponse&gt; при успешном выполнении; в зависимости от ситуации может вернуть 400, 404, 500 или 503.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetCoffeeShopsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -68,6 +82,11 @@ public class CoffeeShopsController(IMediator mediator, IUserContext userContext)
         }
     }
 
+    /// <summary>
+    /// Возвращает информацию о кофейне по её идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор кофейни (GUID).</param>
+    /// <returns>`Response<GetCoffeeShopResponse>` с данными кофейни при успешном запросе, в противном случае ответ с соответствующей ошибкой.</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(Response<GetCoffeeShopResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

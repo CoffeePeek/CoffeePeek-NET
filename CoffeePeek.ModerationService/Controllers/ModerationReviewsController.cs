@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Moderation.Application.Features.Review.ChangeStatusModerationReview;
 using CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
@@ -18,6 +18,10 @@ namespace CoffeePeek.ModerationService.Controllers;
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class ModerationReviewsController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Получает все модерационные отзывы.
+    /// </summary>
+    /// <returns>HTTP 200 с объектом Response&lt;GetAllModerationReviewsResponse&gt;, содержащим список модерационных отзывов.</returns>
     [HttpGet]
     [Authorize(Policy = RoleConsts.Moderator)]
     [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
@@ -29,6 +33,11 @@ public class ModerationReviewsController(IMediator mediator, IUserContext userCo
         return Ok(await mediator.Send(new GetAllModerationReviewsQuery()));
     }
 
+    /// <summary>
+    /// Отправляет созданный пользователем запрос на модерацию отзыва и создаёт запись модерации от имени текущего пользователя.
+    /// </summary>
+    /// <param name="command">Команда с данными отзыва для отправки на модерацию (тело запроса).</param>
+    /// <returns>`CreateEntityResponse` с идентификатором созданной сущности модерации.</returns>
     [HttpPost]
     [Authorize]
     [ProducesResponseType(typeof(CreateEntityResponse), statusCode: StatusCodes.Status200OK)]
@@ -50,6 +59,12 @@ public class ModerationReviewsController(IMediator mediator, IUserContext userCo
         return Ok(response);
     }
 
+    /// <summary>
+    /// Обновляет модерационный отзыв с указанным идентификатором от имени текущего пользователя.
+    /// </summary>
+    /// <param name="command">Данные обновления отзыва.</param>
+    /// <param name="reviewId">Идентификатор отзыва, который требуется обновить.</param>
+    /// <returns>HTTP 200 с Response&lt;UpdateCoffeeShopReviewResponse&gt; при успешном обновлении; HTTP 404 с ответом, если отзыв не найден.</returns>
     [HttpPut("{reviewId:guid}")]
     [ProducesResponseType(typeof(Response<UpdateCoffeeShopReviewResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,6 +81,11 @@ public class ModerationReviewsController(IMediator mediator, IUserContext userCo
         return response.IsSuccess ? Ok(response) : NotFound(response);
     }
 
+    /// <summary>
+    /// Изменяет статус модируемого отзыва; при установке статуса отвергнутого требуется указать причину отклонения.
+    /// </summary>
+    /// <param name="command">Команда с идентификатором отзыва и новым значением статуса; поле UserId заполняется текущим пользователем из контекста.</param>
+    /// <returns>UpdateEntityResponse&lt;ModerationStatus&gt; с результатом операции и итоговым статусом модерации.</returns>
     [HttpPut]
     [Authorize(Policy = RoleConsts.Moderator)]
     [ProducesResponseType<UpdateEntityResponse<ModerationStatus>>(StatusCodes.Status200OK)]
