@@ -85,16 +85,6 @@ jobs:
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.moderationservice:dev
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.moderationservice:${{ steps.vars.outputs.TAG }}
 
-      - name: Build and push JobVacancies image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: CoffeePeek.JobVacancies/JobVacancies.Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.jobvacancies:dev
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.jobvacancies:${{ steps.vars.outputs.TAG }}
-
       - name: Build and push MediaService image
         uses: docker/build-push-action@v6
         with:
@@ -140,7 +130,6 @@ jobs:
           
           DB_CONN_ACCOUNT: ${{ secrets.DB_CONNECTION_ACCOUNT }}
           DB_CONN_SHOPS: ${{ secrets.DB_CONNECTION_SHOPS }}
-          DB_CONN_JOBS: ${{ secrets.DB_CONNECTION_JOBS }}
           DB_CONN_MODERATION: ${{ secrets.DB_CONNECTION_MODERATION }}
           DB_CONN_MEDIA: ${{ secrets.DB_CONNECTION_MEDIA }}
         run: |
@@ -171,15 +160,6 @@ jobs:
             --project CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj \
             --startup-project CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj \
             --connection "${{ secrets.DB_CONNECTION_MODERATION }}" \
-            --no-build
-          
-          echo "--- Applying JobsService migrations ---"
-          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_JOBS }}"
-          dotnet ef database update \
-            --context JobVacanciesDbContext \
-            --project CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj \
-            --startup-project CoffeePeek.JobVacancies/CoffeePeek.JobVacancies.csproj \
-            --connection "${{ secrets.DB_CONNECTION_JOBS }}" \
             --no-build
           
           echo "--- Applying MediaService migrations ---"

@@ -4,7 +4,9 @@ using CoffeePeek.MediaService.Data;
 using CoffeePeek.MediaService.Handlers;
 using CoffeePeek.MediaService.Services;
 using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Modules;
+using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Minio;
@@ -21,8 +23,10 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerModule("CoffeePeek Media Service");
 
 // Add authentication and authorization
-builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();
+builder.Services.AddHeaderUserContext();
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
+    .AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
 
 // Add services
 builder.Services.AddScoped<IStorageService, MinIOStorageService>();
@@ -33,7 +37,7 @@ builder.Services.AddScoped<PhotoCleanupService>();
 builder.Services.AddScoped<PhotoReplacedEventHandler>();
 
 // Add background job
-builder.Services.AddHostedService<PhotoCleanupBackgroundJob>();
+//builder.Services.AddHostedService<PhotoCleanupBackgroundJob>();
 
 // Configure MinIO
 var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
@@ -46,10 +50,22 @@ builder.Services
     );
 
 
-// Add DbContext and CAP Module
-var postgresOptions = builder.Services.AddValidateOptions<PostgresCpOptions>();
-builder.Services.AddDbContext<MediaDbContext>(options => options.UseNpgsql(postgresOptions.ConnectionString));
-builder.Services.AddCapModule<MediaDbContext>(postgresOptions, AppResources.ShopsService);
+string connectionString;
+if (builder.Configuration["DOTNET_ASPIRE"] == "true")
+{
+    builder.AddNpgsqlDbContext<MediaDbContext>(AppResources.MediaDb);
+    connectionString = builder.Configuration.GetConnectionString(AppResources.MediaDb);
+}
+else
+{
+    connectionString = builder.Services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+    builder.Services.AddDbContext<MediaDbContext>(opt => opt.UseNpgsql(connectionString));
+}
+
+builder.Services.AddCapModule(connectionString, AppResources.MediaService);
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -66,9 +82,6 @@ app.UseSwaggerUI(options =>
 });
 
 app.UseHttpsRedirection();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 

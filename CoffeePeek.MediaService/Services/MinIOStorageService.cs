@@ -14,7 +14,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
     
 
     public async Task<(string UploadUrl, string StorageKey)> GetPresignedUploadUrl(string fileName,
-        string contentType, BucketType bucketType)
+        string contentType, BucketType bucketType, CancellationToken ct = default)
     {
         var storageKey = $"{Guid.NewGuid()}{Path.GetExtension(fileName)}";
 
@@ -32,7 +32,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
         return (url, storageKey);
     }
 
-    public async Task MarkAsPermanent(string storageKey, BucketType bucketType)
+    public async Task MarkAsPermanent(string storageKey, BucketType bucketType, CancellationToken ct = default)
     {
         var tags = new Dictionary<string, string>
         {
@@ -44,10 +44,10 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
             .WithObject(storageKey)
             .WithTagging(Tagging.GetObjectTags(tags));
 
-        await minioClient.SetObjectTagsAsync(args);
+        await minioClient.SetObjectTagsAsync(args, ct);
     }
 
-    public async Task<bool> Exists(string storageKey, BucketType bucketType)
+    public async Task<bool> Exists(string storageKey, BucketType bucketType, CancellationToken ct = default)
     {
         try
         {
@@ -55,7 +55,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
                 .WithBucket(GetBucketName(bucketType))
                 .WithObject(storageKey);
 
-            await minioClient.StatObjectAsync(args);
+            await minioClient.StatObjectAsync(args, ct);
             return true;
         }
         catch (MinioException)
@@ -64,13 +64,13 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
         }
     }
 
-    public async Task Delete(string storageKey, BucketType bucketType)
+    public async Task Delete(string storageKey, BucketType bucketType, CancellationToken ct = default)
     {
         var args = new RemoveObjectArgs()
             .WithBucket(GetBucketName(bucketType))
             .WithObject(storageKey);
 
-        await minioClient.RemoveObjectAsync(args);
+        await minioClient.RemoveObjectAsync(args, ct);
     }
 
     private string GetBucketName(BucketType type)

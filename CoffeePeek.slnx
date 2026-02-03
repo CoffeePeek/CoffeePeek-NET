@@ -23,12 +23,6 @@
     <Project Path="CoffeePeek.Account.Domain.Tests/CoffeePeek.Account.Domain.Tests.csproj" />
     <Project Path="CoffeePeek.Account.Infrastructure.Tests/CoffeePeek.Account.Infrastructure.Tests.csproj" />
   </Folder>
-  <Folder Name="/CoffeePeek/CoffeePeek.JobVacancies/">
-    <Project Path="CoffeePeek.JobVacancies.Application/CoffeePeek.JobVacancies.Application.csproj" />
-    <Project Path="CoffeePeek.JobVacancies.Domain/CoffeePeek.JobVacancies.Domain.csproj" />
-    <Project Path="CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj" />
-    <Project Path="CoffeePeek.JobVacancies/CoffeePeek.JobVacancies.csproj" />
-  </Folder>
   <Folder Name="/CoffeePeek/CoffeePeek.Moderation/">
     <Project Path="CoffeePeek.Moderation.Application/CoffeePeek.Moderation.Application.csproj" />
     <Project Path="CoffeePeek.Moderation.Domain/CoffeePeek.Moderation.Domain.csproj" />

@@ -16,8 +16,7 @@ public static class ServiceCollectionExtensions
         {
             services.AddDbContext<TDbContext>(options =>
             {
-                options.UseNpgsql(connectionString)
-                    .AddInterceptors(new AuditInterceptor());
+                options.UseNpgsql(connectionString).AddInterceptors(new AuditInterceptor());
                 additionalOptions?.Invoke(options);
             });
 

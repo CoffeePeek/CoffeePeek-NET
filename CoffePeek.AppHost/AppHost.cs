@@ -2,34 +2,45 @@ using CoffeePeek.Shared.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var postgres = builder.AddPostgres("postgres")
+    .WithImageTag("17.7")
+    .WithDataBindMount("./postgres-data");
+
+var accountDb = postgres.AddDatabase(AppResources.AccountDb);
+var shopsDb = postgres.AddDatabase(AppResources.ShopsDb);
+var moderationDb = postgres.AddDatabase(AppResources.ModerationDb);
+var mediaDb = postgres.AddDatabase(AppResources.MediaDb);
+
 var accountService = builder
     .AddProject<Projects.CoffeePeek_AccountService>(AppResources.AccountService)
-    .WithUrl("/swagger", "Swagger UI")
-    .WithUrl("/cap", "Cap dashboard");
-
-var jobVacanciesService = builder
-    .AddProject<Projects.CoffeePeek_JobVacancies>(AppResources.JobVacanciesService)
+    .WithReference(accountDb)
+    .WithEnvironment("DOTNET_ASPIRE", "true")
     .WithUrl("/swagger", "Swagger UI")
     .WithUrl("/cap", "Cap dashboard");
 
 var shopsService = builder
     .AddProject<Projects.CoffeePeek_ShopsService>(AppResources.ShopsService)
+    .WithReference(shopsDb)
+    .WithEnvironment("DOTNET_ASPIRE", "true")
     .WithUrl("/swagger", "Swagger UI")
     .WithUrl("/cap", "Cap dashboard");
 
 var moderationService = builder
     .AddProject<Projects.CoffeePeek_ModerationService>(AppResources.ModerationService)
+    .WithReference(moderationDb)
+    .WithEnvironment("DOTNET_ASPIRE", "true")
     .WithUrl("/swagger", "Swagger UI")
     .WithUrl("/cap", "Cap dashboard");
 
 var mediaService = builder
     .AddProject<Projects.CoffeePeek_MediaService>(AppResources.MediaService)
+    .WithReference(mediaDb)
+    .WithEnvironment("DOTNET_ASPIRE", "true")
     .WithUrl("/swagger", "Swagger UI")
     .WithUrl("/cap", "Cap dashboard");
 
 builder.AddProject<Projects.CoffeePeek_Gateway>(AppResources.Gateway)
     .WithReference(accountService)
-    .WithReference(jobVacanciesService)
     .WithReference(shopsService)
     .WithReference(moderationService)
     .WithReference(mediaService)

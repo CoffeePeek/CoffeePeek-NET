@@ -120,16 +120,16 @@ public class UsersController(IMediator mediator, IUserContext userContext) : Con
         return Accepted(response);
     }
 
-    [HttpPut("me/avatar")]
+    [HttpPatch("me/avatar")]
     [Authorize]
     [ProducesResponseType<UpdateEntityResponse<PhotoMetadata>>(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation("Update user avatar")]
-    public async Task<IActionResult> UpdateAvatar([FromBody] UploadedPhotoDto dto)
+    public async Task<IActionResult> UpdateAvatar([FromBody] UpdateUserAvatarCommand command)
     {
-        var command = new UpdateUserAvatarCommand(userContext.GetUserIdOrThrow(), dto);
+        command = command with { UserId = userContext.GetUserIdOrThrow() };
         var response = await mediator.Send(command);
 
         return Accepted(response);

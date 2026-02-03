@@ -24,7 +24,6 @@ public static class YarpClusterFactory
         new("shops-cluster", "SHOPS", AppResources.ShopsService),
         new("moderation-cluster", "MODERATION", AppResources.ModerationService),
         new("media-cluster", "MEDIA", AppResources.MediaService),
-        new("jobs-cluster", "JOBS", AppResources.JobVacanciesService)
     ];
 
 

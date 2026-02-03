@@ -18,8 +18,12 @@ using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Infrastructure.Options;
 using CoffeePeek.Shared.Validation;
 using CoffePeek.ServiceDefaults;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Persistence.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,8 +41,21 @@ builder.Services.AddControllersModule();
 builder.Services.AddSwaggerModule("CoffeePeek Moderation");
 
 // Database
-var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ModerationDb);
-builder.Services.AddEfCoreData<ModerationDbContext>(dbOptions);
+string connectionString;
+if (builder.Configuration["DOTNET_ASPIRE"] == "true")
+{
+    connectionString = builder.Configuration.GetConnectionString(AppResources.ModerationDb) ?? throw new InvalidOperationException("Connection string not found");
+    builder.AddNpgsqlDbContext<ModerationDbContext>(AppResources.ModerationDb, configureDbContextOptions: opt => 
+        opt.AddInterceptors(new AuditInterceptor()));
+}
+else
+{
+    connectionString = builder.Services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+    builder.Services.AddDbContext<ModerationDbContext>(opt => opt.UseNpgsql(connectionString).AddInterceptors(new AuditInterceptor()));
+}
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork<ModerationDbContext>>();
+builder.Services.AddCapModule(connectionString, AppResources.MediaService);
 
 builder.Services.AddGenericRepository<ModerationShop, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopContact, ModerationDbContext>();
@@ -86,7 +103,6 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Roaster, policy => policy.RequireRole(RoleConsts.Roaster));
 
 // CAP for event publishing and consuming
-builder.Services.AddCapModule<ModerationDbContext>(dbOptions, AppResources.ModerationService);
 builder.Services.AddScoped<ModerationShopApproveCompleteHandler>();
 builder.Services.AddScoped<CheckInCreatedConsumer>();
 
@@ -99,6 +115,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseExceptionHandler();
+
+if (app.Environment.IsDevelopment())
+{
+    await app.ApplyMigrations<ModerationDbContext>();
+    //await CoffeePeek.Moderation.Infrastructure.ModerationDbContext.SeedAsync(app.Services);
+}
 
 app.MapDefaultEndpoints();
 

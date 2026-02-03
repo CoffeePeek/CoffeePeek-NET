@@ -1,6 +1,8 @@
 ﻿using CoffeePeek.Account.Application;
 using CoffeePeek.Account.Infrastructure;
 using CoffeePeek.Account.Persistence;
+using CoffeePeek.Account.Persistence.Configuration;
+using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffePeek.ServiceDefaults;
@@ -24,18 +26,19 @@ public static class InfrastructureExtensions
         return builder;
     }
 
-    public static WebApplication UseApplication(this WebApplication app)
+    public static async Task<WebApplication> UseApplication(this WebApplication app)
     {
+        app.UseExceptionHandler();
+
         app.UseAuthentication();
         app.UseAuthorization();
         
-        app.UseExceptionHandler();
-
         if (app.Environment.IsDevelopment())
         {
+             await app.ApplyMigrations<AccountDbContext>();
             //AccountDbInitializer.SeedAsync(app.Services);
         }
-
+        
         app.MapDefaultEndpoints();
 
         app.UseSwaggerDocumentation();

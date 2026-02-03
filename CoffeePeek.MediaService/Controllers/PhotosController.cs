@@ -12,7 +12,7 @@ namespace CoffeePeek.MediaService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class PhotoController(IPhotoService photoService) : ControllerBase
+public class PhotosController(IPhotoService photoService, IUserContext userContext) : ControllerBase
 {
     [HttpPost("avatar")]
     [Description("Get url for presigned upload avatar photo")]
@@ -22,7 +22,7 @@ public class PhotoController(IPhotoService photoService) : ControllerBase
     [SwaggerOperation(Summary = "Generate presigned upload urls")]
     public async Task<IActionResult> GenerateUploadUrl([FromBody] UploadUrlRequest request, CancellationToken ct)
     {
-        request = request with { OwnerId = User.GetUserIdOrThrow() };
+        request = request with { OwnerId = userContext.GetUserIdOrThrow() };
         var response = await photoService.GenerateUserAvatarUploadUrl(request, ct);
         return Ok(response);
     }
@@ -35,7 +35,7 @@ public class PhotoController(IPhotoService photoService) : ControllerBase
     [SwaggerOperation(Summary = "Generate presigned upload urls")]
     public async Task<IActionResult> GenerateUploadUrls([FromBody] List<UploadUrlRequest> requests, CancellationToken ct)
     {
-        var ownerId = User.GetUserIdOrThrow();
+        var ownerId = userContext.GetUserIdOrThrow();
         requests = requests.Select(x => x with { OwnerId = ownerId }).ToList();
         
         var response = await photoService.GenerateShopUploadUrls(requests, ct);

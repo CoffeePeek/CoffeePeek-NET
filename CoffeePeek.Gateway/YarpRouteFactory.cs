@@ -26,7 +26,7 @@ public static class YarpRouteFactory
             ],
             "shops-cluster", DefaultVersions),
         new("moderation", ["Moderation", "ModerationReviews", "ModerationShops"], "moderation-cluster", DefaultVersions),
-        new("media", ["Photo"], "media-cluster", DefaultVersions),
+        new("media", ["Photos"], "media-cluster", DefaultVersions),
         new("jobs", ["Vacancies"], "jobs-cluster", DefaultVersions)
     ];
 

@@ -6,6 +6,7 @@ using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Infrastructure.Options;
 using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Mapper;
@@ -20,7 +21,10 @@ using CoffeePeek.Shops.Infrastructure.Consumers;
 using CoffeePeek.Shops.Infrastructure.Extensions;
 using CoffeePeek.Shops.Infrastructure.Services;
 using CoffePeek.ServiceDefaults;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Persistence.Data;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,11 +77,21 @@ builder.Services.AddScoped<ICreateShopFromModerationService, CreateShopFromModer
 builder.Services.AddScoped<ICoffeeShopCacheService, CoffeeShopCacheService>();
 
 // Database
-var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ShopsDb);
-builder.Services.AddEfCoreData<ShopsDbContext>(dbOptions.ConnectionString);
+string connectionString;
+if (builder.Configuration["DOTNET_ASPIRE"] == "true")
+{
+    connectionString = builder.Configuration.GetConnectionString(AppResources.ShopsDb) ?? throw new InvalidOperationException("Connection string not found");
+    builder.AddNpgsqlDbContext<ShopsDbContext>(AppResources.ShopsDb, configureDbContextOptions: opt => 
+        opt.AddInterceptors(new AuditInterceptor()));
+}
+else
+{
+    connectionString = builder.Services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+    builder.Services.AddDbContext<ShopsDbContext>(opt => opt.UseNpgsql(connectionString).AddInterceptors(new AuditInterceptor()));
+}
 
-// CAP for event publishing and consuming
-builder.Services.AddCapModule<ShopsDbContext>(dbOptions, AppResources.ShopsService);
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork<ShopsDbContext>>();
+builder.Services.AddCapModule(connectionString, AppResources.ShopsService);
 
 // Register CAP handlers
 builder.Services.AddScoped<ModerationShopApprovedHandler>();
@@ -108,14 +122,12 @@ builder.Services.AddScoped<IUserCheckInRepository, UserCheckInRepository>();
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
-    await CoffeePeek.Shops.Infrastructure.ShopsDbInitializer.SeedAsync(app.Services);
+    await app.ApplyMigrations<ShopsDbContext>();
+    //await CoffeePeek.Shops.Infrastructure.ShopsDbInitializer.SeedAsync(app.Services);
 }
 
 app.MapDefaultEndpoints();

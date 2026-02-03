@@ -38,7 +38,7 @@ public static class DependencyInjection
         });
         
         // 4. Event Bus (CAP)
-        services.AddCapModule<AccountDbContext>(dbOptions, "account-service");
+        services.AddCapModule(dbOptions.ConnectionString, AppResources.AccountService);
         
         return services;
     }

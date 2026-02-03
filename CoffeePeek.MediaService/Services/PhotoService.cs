@@ -4,6 +4,7 @@ using CoffeePeek.MediaService.Configuration;
 using CoffeePeek.MediaService.Data;
 using CoffeePeek.MediaService.Requests;
 using CoffeePeek.MediaService.Responses;
+using CoffeePeek.Shared.Extensions.Exceptions;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using DotNetCore.CAP;
 
@@ -17,6 +18,11 @@ public class PhotoService(
     public async Task<Response<GenerateUploadUrlResponse>> GenerateUserAvatarUploadUrl(UploadUrlRequest request,
         CancellationToken ct)
     {
+        if (request.SizeBytes > 5 * 1024 * 1024 ) // > 5MB
+        {
+             throw new ValidationException("File size should be less than 5MB");
+        }
+        
         var (url, key) = await storageService.GetPresignedUploadUrl(request.FileName, request.ContentType, BucketType.User, ct);
 
         var photoMetadata = new PhotoMetadata

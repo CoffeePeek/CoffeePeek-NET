@@ -5,6 +5,7 @@ using CoffeePeek.Account.Infrastructure.EventConsumer;
 using CoffeePeek.Account.Infrastructure.Identity;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Modules;
+using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Resend;
 
@@ -14,6 +15,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
+        services.AddValidateOptions<JWTOptions>();
+        
         // 1. Domain Services (реализации интерфейсов из Domain)
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();
         services.AddScoped<IJWTTokenService, JWTTokenService>();

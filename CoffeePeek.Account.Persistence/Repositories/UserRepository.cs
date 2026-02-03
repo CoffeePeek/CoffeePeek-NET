@@ -12,6 +12,7 @@ public class UserRepository(IGenericRepository<User> userRepository) : IUserRepo
             .Query()
             .Include(x => x.RefreshTokens)
             .Include(x => x.Roles)
+            .Include(x => x.PhotoMetadata)
             .FirstOrDefaultAsync(c => c.Id == userId, ct);
     }
 
