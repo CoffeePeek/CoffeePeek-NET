@@ -1,7 +1,7 @@
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shops.Application.Services;
 using DotNetCore.CAP;
 using Microsoft.Extensions.Logging;
 

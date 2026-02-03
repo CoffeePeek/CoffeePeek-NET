@@ -1,7 +1,7 @@
 ﻿using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 
-namespace CoffeePeek.Auth.Infrastructure.Repositories;
+namespace CoffeePeek.Account.Persistence.Repositories;
 
 public class RoleRepository(IGenericRepository<Role> roleRepository) : IRoleRepository
 {

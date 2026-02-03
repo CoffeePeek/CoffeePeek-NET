@@ -1,7 +1,7 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

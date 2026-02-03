@@ -13,7 +13,7 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class CoffeeShopsController(IMediator mediator) : ControllerBase
+public class CoffeeShopsController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetCoffeeShopsResponse>), StatusCodes.Status200OK)]
@@ -30,15 +30,15 @@ public class CoffeeShopsController(IMediator mediator) : ControllerBase
         [FromQuery] Guid[]? beans = null,
         [FromQuery] Guid[]? brewMethods = null,
         [FromQuery] Contract.Enums.PriceRange? priceRange = null,
-        [FromQuery] [Range(0, 5)] decimal? minRating = null,
-        [FromQuery] [Range(1, int.MaxValue)] int page = 1,
-        [FromQuery] [Range(1, 100)] int pageSize = 10)
+        [FromQuery][Range(0, 5)] decimal? minRating = null,
+        [FromQuery][Range(1, int.MaxValue)] int page = 1,
+        [FromQuery][Range(1, 100)] int pageSize = 10)
     {
         page = Math.Max(1, page);
         pageSize = pageSize <= 0 ? 10 : Math.Min(pageSize, 100);
 
         var query = new SearchCoffeeShopsQuery(
-            UserId: User.GetUserId(),
+            UserId: userContext.GetUserId(),
             Query: q,
             CityId: cityId,
             Roasters: roasters,
@@ -58,7 +58,7 @@ public class CoffeeShopsController(IMediator mediator) : ControllerBase
         }
 
         return Ok(response);
-        
+
         void AddPaginationHeaders(GetCoffeeShopsResponse data)
         {
             Response.Headers.TryAdd("X-Total-Count", data.TotalItems.ToString());
@@ -77,6 +77,6 @@ public class CoffeeShopsController(IMediator mediator) : ControllerBase
     [SwaggerOperation(Summary = "Get coffee shop by ID")]
     public Task<Response<GetCoffeeShopResponse>> GetCoffeeShop(Guid id)
     {
-        return mediator.Send(new GetCoffeeShopQuery(id, User.GetUserId()));
+        return mediator.Send(new GetCoffeeShopQuery(id, userContext.GetUserId()));
     }
 }

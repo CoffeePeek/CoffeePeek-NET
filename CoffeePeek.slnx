@@ -18,6 +18,7 @@
     <Project Path="CoffeePeek.Account.Application/CoffeePeek.Account.Application.csproj" />
     <Project Path="CoffeePeek.Account.Domain/CoffeePeek.Account.Domain.csproj" />
     <Project Path="CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj" />
+    <Project Path="CoffeePeek.Account.Persistence/CoffeePeek.Account.Persistence.csproj" />
     <Project Path="CoffeePeek.AccountService/CoffeePeek.AccountService.csproj" />
   </Folder>
   <Folder Name="/CoffeePeek/CoffeePeek.Account/Tests/">

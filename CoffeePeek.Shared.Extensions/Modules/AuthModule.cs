@@ -1,45 +1,18 @@
-using System.Text;
-using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Infrastructure.Options;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using CoffeePeek.Shared.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CoffeePeek.Shared.Extensions.Modules;
 
 public static class AuthModule
 {
-    public static IServiceCollection AddJwtAuthModule(this IServiceCollection services)
+    /// <summary>
+    /// Adds user context service that reads user info from headers (set by Gateway)
+    /// Use this in downstream services that receive requests through the Gateway
+    /// </summary>
+    public static IServiceCollection AddHeaderUserContext(this IServiceCollection services)
     {
-        var authOptions = services.AddValidateOptions<JWTOptions>();
-
-        var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-        
-        services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = !isDevelopment;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOptions.SecretKey)),
-                    ValidIssuer = authOptions.Issuer,
-                    ValidAudience = authOptions.Audience,
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
-
-        services.AddAuthorization();
-
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserContext, HeaderUserContext>();
         return services;
     }
 }

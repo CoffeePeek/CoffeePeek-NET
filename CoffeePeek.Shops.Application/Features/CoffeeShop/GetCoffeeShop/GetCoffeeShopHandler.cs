@@ -1,7 +1,7 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Persistence;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Mapster;
 using MapsterMapper;

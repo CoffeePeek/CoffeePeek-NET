@@ -1,4 +1,4 @@
-using CoffeePeek.Auth.Infrastructure.Identity;
+using CoffeePeek.Account.Infrastructure.Identity;
 using FluentAssertions;
 
 namespace CoffeePeek.Account.Infrastructure.Tests;

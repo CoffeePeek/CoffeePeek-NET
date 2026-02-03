@@ -1,12 +1,12 @@
-﻿using CoffeePeek.Account.Domain.Entities.RoleAggregate;
+﻿using Bogus;
+using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Auth.Infrastructure.Configuration;
+using CoffeePeek.Account.Persistence.Configuration;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Bogus;
 
-namespace CoffeePeek.Auth.Infrastructure;
+namespace CoffeePeek.Account.Persistence;
 
 public static class AccountDbInitializer
 {

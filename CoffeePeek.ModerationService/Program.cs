@@ -13,12 +13,12 @@ using CoffeePeek.Moderation.Infrastructure.Mapper;
 using CoffeePeek.Moderation.Infrastructure.Services;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
+using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Infrastructure.Abstract.S3;
+using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Validation;
 using CoffePeek.ServiceDefaults;
 using Minio;
@@ -78,7 +78,7 @@ builder.Services.AddHttpClient<IYandexGeocodingService, YandexGeocodingService>(
 
 var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
 builder.Services
-    .AddMinio(configureClient => 
+    .AddMinio(configureClient =>
         configureClient
             .WithEndpoint(new Uri(minIoOptions.Endpoint))
             .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
@@ -88,8 +88,8 @@ builder.Services
 // MediatR
 builder.Services.AddMediatRModule(typeof(GetAllModerationShopsHandler));
 
-// JWT Authentication
-builder.Services.AddJwtAuthModule();
+// Authorization policies (JWT validation happens in Gateway)
+builder.Services.AddHeaderUserContext();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
     .AddPolicy(RoleConsts.Owner, policy => policy.RequireRole(RoleConsts.Owner))
@@ -108,12 +108,12 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseExceptionHandler();
 
 app.MapDefaultEndpoints();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseSwaggerDocumentation();
 

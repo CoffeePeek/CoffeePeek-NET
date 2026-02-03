@@ -1,6 +1,6 @@
 ﻿using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
-using JetBrains.Annotations;
 using FluentAssertions;
+using JetBrains.Annotations;
 
 namespace CoffeePeek.Shops.Domain.Tests.Entities.CoffeeShopAggregate;
 

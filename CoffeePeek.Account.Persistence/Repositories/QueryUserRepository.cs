@@ -1,7 +1,7 @@
 ﻿using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 
-namespace CoffeePeek.Account.Application.Common;
+namespace CoffeePeek.Account.Persistence.Repositories;
 
 public class QueryUserRepository(IGenericRepository<User> userRepository) : IQueryUserRepository
 {

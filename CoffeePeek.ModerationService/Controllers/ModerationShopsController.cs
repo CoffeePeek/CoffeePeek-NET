@@ -19,7 +19,7 @@ namespace CoffeePeek.ModerationService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class ModerationShopsController(IMediator mediator) : ControllerBase
+public class ModerationShopsController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
     [HttpGet]
     [Authorize(Policy = RoleConsts.Moderator)]
@@ -42,10 +42,10 @@ public class ModerationShopsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> SendCoffeeShopToModeration(
         [FromBody] SendCoffeeShopToModerationCommand command, CancellationToken ct)
     {
-        var commandWithUser = command with { UserId = User.GetUserIdOrThrow() };
+        var commandWithUser = command with { UserId = userContext.GetUserIdOrThrow() };
 
-        var response =  await mediator.Send(commandWithUser, ct);
-        
+        var response = await mediator.Send(commandWithUser, ct);
+
         return Ok(response);
     }
 
@@ -55,7 +55,7 @@ public class ModerationShopsController(IMediator mediator) : ControllerBase
     public async Task<UpdateEntityResponse<ModerationShopDto>> UpdateModerationCoffeeShop(
         [FromForm] ModerationShopDto dto, CancellationToken ct)
     {
-        var userId = User.GetUserIdOrThrow();
+        var userId = userContext.GetUserIdOrThrow();
         var command = new UpdateModerationCoffeeShopCommand(dto, userId);
 
         return await mediator.Send(command, ct);
@@ -69,7 +69,7 @@ public class ModerationShopsController(IMediator mediator) : ControllerBase
         [FromQuery, Required] ModerationStatus status,
         CancellationToken ct)
     {
-        var request = new UpdateModerationCoffeeShopStatusCommand(User.GetUserIdOrThrow(),id, status);
+        var request = new UpdateModerationCoffeeShopStatusCommand(userContext.GetUserIdOrThrow(), id, status);
 
         return await mediator.Send(request, ct);
     }
