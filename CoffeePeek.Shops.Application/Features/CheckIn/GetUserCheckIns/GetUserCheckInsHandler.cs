@@ -1,7 +1,6 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Application.Features.CoffeeShop.CheckIn.GetUserCheckIns;
 using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

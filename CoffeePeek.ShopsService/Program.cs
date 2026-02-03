@@ -2,9 +2,9 @@ using System.Reflection;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
+using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
-using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
@@ -46,10 +46,8 @@ builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
 // MediatR
 builder.Services.AddMediatRModule(typeof(GetCoffeeShopHandler));
 
-// JWT Authentication
-builder.Services.AddJwtAuthModule();
-
-// Authorization policies
+// Authorization policies (JWT validation happens in Gateway)
+builder.Services.AddHeaderUserContext();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
     .AddPolicy(RoleConsts.Owner, policy => policy.RequireRole(RoleConsts.Owner))
@@ -110,6 +108,9 @@ builder.Services.AddScoped<IUserCheckInRepository, UserCheckInRepository>();
 
 var app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
@@ -118,9 +119,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapDefaultEndpoints();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 // Swagger documentation
 app.UseSwaggerDocumentation();

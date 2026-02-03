@@ -1,7 +1,6 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.JobVacancies.Application.Features.Admin.InvalidateCache;
-using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

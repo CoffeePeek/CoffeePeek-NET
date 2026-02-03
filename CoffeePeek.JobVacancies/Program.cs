@@ -11,15 +11,15 @@ using CoffeePeek.JobVacancies.Infrastructure.Services;
 using CoffeePeek.JobVacancies.Jobs;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
+using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Infrastructure.Options;
+using CoffePeek.ServiceDefaults;
 using Hangfire;
 using Hangfire.PostgreSql;
-using CoffeePeek.Shared.Extensions.Logging;
-using CoffePeek.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,9 +38,8 @@ builder.Services.AddControllersModule();
 // Swagger
 builder.Services.AddSwaggerModule("CoffeePeek Vacancies");
 
-// Authentication & Authorization
-builder.Services.AddJwtAuthModule();
-builder.Services.AddValidateOptions<JWTOptions>();
+// Authorization (JWT validation happens in Gateway)
+builder.Services.AddHeaderUserContext();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin));
@@ -94,6 +93,9 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseExceptionHandler();
 
 app.MapDefaultEndpoints();
@@ -102,9 +104,6 @@ app.UseCors();
 
 // Swagger documentation
 app.UseSwaggerDocumentation();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 app.UseHangfireDashboard();

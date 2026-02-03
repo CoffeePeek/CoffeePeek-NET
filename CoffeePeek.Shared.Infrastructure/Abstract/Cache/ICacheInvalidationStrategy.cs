@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Shared.Infrastructure.Cache;
+﻿using CoffeePeek.Shared.Infrastructure.Persistence;
 
 namespace CoffeePeek.Shared.Infrastructure.Abstract;
 

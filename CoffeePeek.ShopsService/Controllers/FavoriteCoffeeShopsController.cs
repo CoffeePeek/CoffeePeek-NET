@@ -11,7 +11,7 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class FavoriteCoffeeShopsController(IMediator mediator) : ControllerBase
+public class FavoriteCoffeeShopsController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
     [HttpPost]
     [Authorize]
@@ -23,12 +23,12 @@ public class FavoriteCoffeeShopsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> AddToFavorite([FromQuery] Guid id)
     {
-        var command = new AddToFavoriteCommand(User.GetUserIdOrThrow(), id);
+        var command = new AddToFavoriteCommand(userContext.GetUserIdOrThrow(), id);
         var response = await mediator.Send(command);
 
         return Created(response.EntityId.ToString(), response);
     }
-    
+
     [HttpDelete]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -38,7 +38,7 @@ public class FavoriteCoffeeShopsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> RemoveFromFavorite([FromQuery] Guid id)
     {
-        var command = new RemoveFromFavoriteCommand(User.GetUserIdOrThrow(), id);
+        var command = new RemoveFromFavoriteCommand(userContext.GetUserIdOrThrow(), id);
         await mediator.Send(command);
 
         return NoContent();

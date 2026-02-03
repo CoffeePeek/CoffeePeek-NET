@@ -44,5 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
--  Модель Equipment, для улучшения specialty, добавлены тесты для доменной сущности
+- Модель Equipment, для улучшения specialty, добавлены тесты для доменной сущности 
+- Разделена логика DI в AccountService, добавлен Persistance layer
+- Вынесена логика проверки Auth в Gateway
 - MediaService для централизации всех фотографий

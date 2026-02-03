@@ -1,8 +1,8 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Cache;
+using CoffeePeek.Shared.Infrastructure.Persistence;
 
-namespace CoffeePeek.Auth.Infrastructure.Repositories;
+namespace CoffeePeek.Account.Persistence.Repositories;
 
 public class CachedUserRepository(
     IUserRepository decorated,
