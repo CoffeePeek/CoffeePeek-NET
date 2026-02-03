@@ -25,13 +25,6 @@ public static class ServiceCollectionExtensions
             return services;
         }
 
-        public IServiceCollection AddEfCoreData<TDbContext>(PostgresCpOptions dbOptions,
-            Action<DbContextOptionsBuilder>? additionalOptions = null)
-            where TDbContext : DbContext
-        {
-            return services.AddEfCoreData<TDbContext>(dbOptions.ConnectionString, additionalOptions);
-        }
-
         public IServiceCollection AddGenericRepository<TEntity, TDbContext>()
             where TEntity : class
             where TDbContext : DbContext

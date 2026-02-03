@@ -17,7 +17,7 @@ namespace CoffeePeek.MediaService.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FileName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    ContentType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    ContentType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     StorageKey = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     SizeBytes = table.Column<long>(type: "bigint", nullable: false),
                     UploadedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),

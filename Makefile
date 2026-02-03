@@ -1,6 +1,6 @@
-﻿ACCOUNT_INFRA   := CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj
+﻿ACCOUNT_INFRA   := CoffeePeek.Account.Persistence/CoffeePeek.Account.Persistence.csproj 
 ACCOUNT_STARTUP := CoffeePeek.AccountService/CoffeePeek.AccountService.csproj
-ACCOUNT_CONTEXT := CoffeePeek.Auth.Infrastructure.Configuration.AccountDbContext
+ACCOUNT_CONTEXT := CoffeePeek.Account.Persistence.Configuration.AccountDbContext
 
 SHOPS_INFRA     := CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj 
 SHOPS_STARTUP   := CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj 
@@ -17,6 +17,8 @@ JOBS_CONTEXT    := CoffeePeek.JobVacancies.Infrastructure.Configuration.JobVacan
 MEDIA_INFRA      := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
 MEDIA_STARTUP    := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
 MEDIA_CONTEXT    := CoffeePeek.MediaService.Data.MediaDbContext
+
+n := InitialCreate
 
 define add_migration
 	dotnet ef migrations add $(4) \

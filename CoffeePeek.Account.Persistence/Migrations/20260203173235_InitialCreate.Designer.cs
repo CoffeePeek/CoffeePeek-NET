@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace CoffeePeek.Auth.Infrastructure.Migrations
+namespace CoffeePeek.Account.Persistence.Migrations
 {
     [DbContext(typeof(AccountDbContext))]
-    [Migration("20260120104506_rmOutbox")]
-    partial class rmOutbox
+    [Migration("20260203173235_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

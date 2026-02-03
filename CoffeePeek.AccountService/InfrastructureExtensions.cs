@@ -20,13 +20,13 @@ public static class InfrastructureExtensions
         builder.Services
             .AddApplication()
             .AddInfrastructure()
-            .AddPersistence()
+            .AddPersistence(builder.Configuration, builder)
             .AddPresentation();
         
         return builder;
     }
 
-    public static async Task<WebApplication> UseApplication(this WebApplication app)
+    public static async Task UseApplication(this WebApplication app)
     {
         app.UseExceptionHandler();
 
@@ -44,6 +44,5 @@ public static class InfrastructureExtensions
         app.UseSwaggerDocumentation();
 
         app.MapControllers();
-        return app;
     }
 }

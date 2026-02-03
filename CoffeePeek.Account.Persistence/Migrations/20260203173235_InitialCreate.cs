@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace CoffeePeek.Auth.Infrastructure.Migrations
+namespace CoffeePeek.Account.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -11,22 +11,6 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "OutboxEvents",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    EventType = table.Column<string>(type: "text", nullable: false),
-                    Payload = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Processed = table.Column<bool>(type: "boolean", nullable: false),
-                    ProcessedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OutboxEvents", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Photos",
                 columns: table => new
@@ -103,7 +87,6 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
                     IsRevoked = table.Column<bool>(type: "boolean", nullable: false),
                     DeviceName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     IpAddress = table.Column<string>(type: "character varying(70)", maxLength: 70, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
@@ -174,9 +157,6 @@ namespace CoffeePeek.Auth.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "OutboxEvents");
-
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
 
