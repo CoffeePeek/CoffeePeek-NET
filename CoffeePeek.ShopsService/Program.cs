@@ -108,6 +108,9 @@ builder.Services.AddScoped<IUserCheckInRepository, UserCheckInRepository>();
 
 var app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())

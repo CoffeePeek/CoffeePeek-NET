@@ -93,6 +93,9 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseExceptionHandler();
 
 app.MapDefaultEndpoints();

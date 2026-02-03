@@ -26,6 +26,7 @@ public static class InfrastructureExtensions
 
     public static WebApplication UseApplication(this WebApplication app)
     {
+        app.UseAuthentication();
         app.UseAuthorization();
         
         app.UseExceptionHandler();
@@ -35,8 +36,6 @@ public static class InfrastructureExtensions
             //AccountDbInitializer.SeedAsync(app.Services);
         }
 
-        app.UseAuthorization();
-        
         app.MapDefaultEndpoints();
 
         app.UseSwaggerDocumentation();
