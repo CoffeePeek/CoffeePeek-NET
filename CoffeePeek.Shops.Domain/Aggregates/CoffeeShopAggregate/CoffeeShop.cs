@@ -1,9 +1,11 @@
 ﻿using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
+using CoffeePeek.Shops.Domain.Entities;
 using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
+using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 
-namespace CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
 public sealed class CoffeeShop : Entity<Guid>
 {
@@ -35,12 +37,6 @@ public sealed class CoffeeShop : Entity<Guid>
 
     private readonly List<BrewMethod> _brewMethods = [];
     public IReadOnlyCollection<BrewMethod> BrewMethods => _brewMethods.AsReadOnly();
-    
-    private readonly List<Review> _reviews = [];
-    public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
-    
-    private readonly List<CheckIn> _checkIns = [];
-    public IReadOnlyCollection<CheckIn> CheckIns => _checkIns.AsReadOnly();
 
     // ReSharper disable once UnusedMember.Local
     private CoffeeShop()
@@ -61,8 +57,6 @@ public sealed class CoffeeShop : Entity<Guid>
     public bool IsNew => CreatedAtUtc > DateTime.UtcNow.AddDays(-BusinessConstants.ItNewEntityInDays);
     public bool IsOpen => IsOpenAt(DateTime.UtcNow);
     
-    public decimal Rating => Reviews.Count == 0 ? 0 : Reviews.Average(r => r.Rating.AverageRating);
-
     private bool IsOpenAt(DateTime dateTime)
     {
         switch (Status)

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Shared.Extensions.Exceptions;
 
-namespace CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
 public record ShopContact
 {

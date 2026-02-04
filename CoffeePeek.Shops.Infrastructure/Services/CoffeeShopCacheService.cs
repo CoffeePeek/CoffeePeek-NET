@@ -1,6 +1,7 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Persistence;
 using CoffeePeek.Shops.Application.Common;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using Microsoft.EntityFrameworkCore;

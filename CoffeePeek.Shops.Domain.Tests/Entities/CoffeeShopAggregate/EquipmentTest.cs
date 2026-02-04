@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+﻿using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using FluentAssertions;
 using JetBrains.Annotations;
 

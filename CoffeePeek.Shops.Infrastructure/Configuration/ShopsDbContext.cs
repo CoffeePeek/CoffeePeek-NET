@@ -1,9 +1,11 @@
 using CoffeePeek.Shops.Domain;
+using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Microsoft.EntityFrameworkCore;
+using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Infrastructure.Configuration;

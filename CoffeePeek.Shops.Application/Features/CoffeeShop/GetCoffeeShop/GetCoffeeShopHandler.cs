@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 
 public class GetCoffeeShopHandler(
-    IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> shopRepository,
+    IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> shopRepository,
     IUserFavoriteRepository favoriteRepository,
     IUserCheckInRepository checkInRepository,
     IMapper mapper,
@@ -30,7 +30,6 @@ public class GetCoffeeShopHandler(
                 var shop = await shopRepository
                     .QueryAsNoTracking()
                     .Include(x => x.ShopPhotos)
-                    .Include(x => x.Reviews)
                     .Include(x => x.Equipments)
                     .Include(x => x.CoffeeBeans)
                     .Include(x => x.Roasters)
@@ -40,6 +39,7 @@ public class GetCoffeeShopHandler(
                     .Include(x => x.Schedules)
                     .FirstOrDefaultAsync(x => x.Id == queryRequest.Id, cancellationToken);
 
+                //TODO add review search CP-
                 var shopDto = shop?.Adapt<CoffeeShopDetailsDto>(mapper.Config);
 
                 return shopDto == null

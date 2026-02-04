@@ -10,10 +10,7 @@ public record Rating
     
     public decimal AverageRating => (Coffee + Place + Service) / 3m;
 
-    private Rating()
-    {
-        //ef core
-    }
+    private Rating() { }
     
     internal Rating(int place, int service, int coffee)
     {

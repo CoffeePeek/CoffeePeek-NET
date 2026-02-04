@@ -11,7 +11,7 @@ public static class MigrationExtensions
     {
         try 
         {
-            using var scope = app.ApplicationServices.CreateAsyncScope();
+            await using var scope = app.ApplicationServices.CreateAsyncScope();
             var serviceProvider = scope.ServiceProvider;
             
             // Try to get IDbContextFactory first (for DbContextPool from Aspire)

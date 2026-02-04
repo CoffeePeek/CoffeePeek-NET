@@ -1,11 +1,10 @@
 ﻿using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shops.Domain.Entities;
 
-namespace CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 
 public partial class CheckIn
 {
-    #region Factory Methods
-
     public static CheckIn Create(Guid userId, Guid shopId, DateTime visitedAt)
     {
         if (userId == Guid.Empty) throw new DomainException("UserId is required.");
@@ -13,10 +12,7 @@ public partial class CheckIn
 
         return new CheckIn(userId, shopId, visitedAt);
     }
-
-    #endregion
-
-    #region Domain Logic
+    
 
     public void UpdateNote(string? newNote)
     {
@@ -27,6 +23,4 @@ public partial class CheckIn
     {
         _shopPhotos.AddRange(photos);
     }
-
-    #endregion
 }

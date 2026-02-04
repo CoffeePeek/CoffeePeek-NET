@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 
 public class SearchCoffeeShopsHandler(
-    IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> shopRepository,
+    IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> shopRepository,
     IUserFavoriteRepository favoriteRepository,
     IUserCheckInRepository visitRepository,
     IMapper mapper,

@@ -1,4 +1,6 @@
 ﻿using CoffeePeek.Shops.Domain;
+using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using Microsoft.EntityFrameworkCore;

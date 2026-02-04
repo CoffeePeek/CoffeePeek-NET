@@ -2,10 +2,11 @@ using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Contract.Enums;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using Mapster;
+using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Application.Mapper;
