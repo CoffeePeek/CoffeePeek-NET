@@ -159,23 +159,6 @@ public record CacheKey(
         public static string ListPattern() => "brewmethod:list:*";
     }
     
-    public static class Vacancy
-    {
-        public static CacheKey HHVacancies(string key) => new(
-            Key: $"vacancy:hh:{key}",
-            DefaultTtl: TimeSpan.FromHours(1),
-            Description: "Vacancies list hh.ru by key",
-            Service: "JobVacancies");
-        
-        public static CacheKey List(Guid cityId, int jobType, int page, int pageSize) => new(
-            Key: $"vacancy:list:city:{cityId}:type:{jobType}:page:{page}:size:{pageSize}",
-            DefaultTtl: TimeSpan.FromHours(1),
-            Description: "Vacancies list by cityId, jobType, page and pageSize",
-            Service: "JobVacancies");
-        
-        public static string AllPattern() => "vacancy:*";
-    }
-    
     public static string AllPattern() => "*";
     
     /// <summary>
@@ -223,24 +206,6 @@ public record CacheKey(
                                    Roaster.ListPattern(), BrewMethod.ListPattern()],
                 [Lists] = [$"shop:list:city:*"],
                 [Details] = [Shop.DetailPattern(), $"shop:favorites:*"]
-            };
-            
-            public static Dictionary<string, string> GetDescriptions() => new(Descriptions);
-            public static Dictionary<string, string[]> GetPatterns() => new(Patterns);
-        }
-        
-        public static class Vacancies
-        {
-            public const string All = "vacancies";
-            
-            private static readonly Dictionary<string, string> Descriptions = new()
-            {
-                [All] = "All job vacancies cache"
-            };
-            
-            private static readonly Dictionary<string, string[]> Patterns = new()
-            {
-                [All] = [Vacancy.AllPattern()]
             };
             
             public static Dictionary<string, string> GetDescriptions() => new(Descriptions);

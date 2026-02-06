@@ -10,10 +10,6 @@ MODERATION_INFRA   := CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation
 MODERATION_STARTUP := CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj
 MODERATION_CONTEXT := CoffeePeek.Moderation.Infrastructure.Configuration.ModerationDbContext
 
-JOBS_INFRA      := CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj
-JOBS_STARTUP    := CoffeePeek.JobVacancies/CoffeePeek.JobVacancies.csproj
-JOBS_CONTEXT    := CoffeePeek.JobVacancies.Infrastructure.Configuration.JobVacanciesDbContext
-
 MEDIA_INFRA      := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
 MEDIA_STARTUP    := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
 MEDIA_CONTEXT    := CoffeePeek.MediaService.Data.MediaDbContext
