@@ -37,7 +37,7 @@ builder.Services.AddScoped<PhotoCleanupService>();
 builder.Services.AddScoped<PhotoReplacedEventHandler>();
 
 // Add background job
-//builder.Services.AddHostedService<PhotoCleanupBackgroundJob>();
+builder.Services.AddHostedService<PhotoCleanupBackgroundJob>();
 
 // Configure MinIO
 var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
