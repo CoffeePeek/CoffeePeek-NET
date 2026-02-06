@@ -4,7 +4,8 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var postgres = builder.AddPostgres("postgres")
     .WithImageTag("17.7")
-    .WithDataBindMount("./postgres-data");
+    .WithDataBindMount("./postgres-data")
+    .WithEndpoint("tcp", e => e.Port = 5432);
 
 var accountDb = postgres.AddDatabase(AppResources.AccountDb);
 var shopsDb = postgres.AddDatabase(AppResources.ShopsDb);
