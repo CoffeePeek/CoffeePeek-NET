@@ -58,9 +58,11 @@ public class PhotoService(
     {
         var results = new List<GenerateUploadUrlResponse>();
 
+        var photoMetadataList = new List<PhotoMetadata>();
+        
         foreach (var req in requests)
         {
-            var (url, key) = await storageService.GetPresignedUploadUrl(req.FileName, req.ContentType, Configuration.BucketType.Shop);
+            var (url, key) = await storageService.GetPresignedUploadUrl(req.FileName, req.ContentType, BucketType.Shop, ct);
 
             var photoMetadata = new PhotoMetadata
             {
@@ -76,19 +78,16 @@ public class PhotoService(
                 UploadedAt = DateTime.UtcNow
             };
 
+            photoMetadataList.Add(photoMetadata);
             dbContext.Photos.Add(photoMetadata);
             results.Add(new GenerateUploadUrlResponse(photoMetadata.Id, url, key));
         }
 
         await dbContext.SaveChangesAsync(ct);
 
-        foreach (var result in results)
+        foreach (var photoMetadata in photoMetadataList)
         {
-            var photo = await dbContext.Photos.FindAsync([result.PhotoId], ct);
-            if (photo != null)
-            {
-                await PublishPhotoUploadedEvent(photo);
-            }
+            await PublishPhotoUploadedEvent(photoMetadata);
         }
 
         return Response<List<GenerateUploadUrlResponse>>.Success(results);
