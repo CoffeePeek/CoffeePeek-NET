@@ -163,10 +163,10 @@ jobs:
             --no-build
           
           echo "--- Applying MediaService migrations ---"
-          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONN_MEDIA }}"
+          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_MEDIA }}"
           dotnet ef database update \
             --context MediaDbContext \
             --project CoffeePeek.MediaService/CoffeePeek.MediaService.csproj \
             --startup-project CoffeePeek.MediaService/CoffeePeek.MediaService.csproj \
-            --connection "${{ secrets.DB_CONN_MEDIA }}" \
+            --connection "${{ secrets.DB_CONNECTION_MEDIA }}" \
             --no-build
