@@ -106,7 +106,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:${{ steps.vars.outputs.TAG }}  
 
   apply_migrations:
-    needs: build_and_push_images
+    # needs: build_and_push_images
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     steps:
@@ -128,10 +128,6 @@ jobs:
         env:
           PostgresCpOptions__ConnectionString: ${{ secrets.DB_CONNECTION_ACCOUNT }}
           
-          DB_CONN_ACCOUNT: ${{ secrets.DB_CONNECTION_ACCOUNT }}
-          DB_CONN_SHOPS: ${{ secrets.DB_CONNECTION_SHOPS }}
-          DB_CONN_MODERATION: ${{ secrets.DB_CONNECTION_MODERATION }}
-          DB_CONN_MEDIA: ${{ secrets.DB_CONNECTION_MEDIA }}
         run: |
           dotnet build CoffeePeek.slnx
           
@@ -163,7 +159,6 @@ jobs:
             --no-build
           
           echo "--- Applying MediaService migrations ---"
-          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_MEDIA }}"
           dotnet ef database update \
             --context MediaDbContext \
             --project CoffeePeek.MediaService/CoffeePeek.MediaService.csproj \
