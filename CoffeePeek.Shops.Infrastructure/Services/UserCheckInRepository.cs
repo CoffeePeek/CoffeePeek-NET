@@ -1,7 +1,5 @@
 ﻿using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
-using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shops.Infrastructure.Services;
@@ -20,5 +18,26 @@ public class UserCheckInRepository(IGenericRepository<CheckIn> repository) : IUs
             .Where(x => x.UserId == userId)
             .Select(x => x.ShopId)
             .ToListAsync(ct);
+    }
+
+    public Task<int> GetCheckInCountByCoffeeShopIdAsync(Guid coffeeShopId, CancellationToken ct = default)
+    {
+        return repository
+            .QueryAsNoTracking()
+            .CountAsync(x => x.ShopId == coffeeShopId, ct);
+    }
+
+    public async Task<Dictionary<Guid, int>> GetCheckInCountsByShopIdsAsync(IEnumerable<Guid> shopIds, CancellationToken ct = default)
+    {
+        var shopIdList = shopIds.ToList();
+        
+        var counts = await repository
+            .QueryAsNoTracking()
+            .Where(x => shopIdList.Contains(x.ShopId))
+            .GroupBy(x => x.ShopId)
+            .Select(g => new { ShopId = g.Key, Count = g.Count() })
+            .ToListAsync(ct);
+
+        return counts.ToDictionary(c => c.ShopId, c => c.Count);
     }
 }

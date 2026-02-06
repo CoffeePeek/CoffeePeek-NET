@@ -25,4 +25,12 @@ public static class CapEventNames
             public const string ReviewCompleted = "moderation.review.callback.completed";
         }
     }
+    
+    public static class Media
+    {
+        public const string PhotoReplaced = "media.photo.replaced";
+        public const string PhotoConfirmed = "media.photo.confirmed";
+        public const string PhotoDeleted = "media.photo.deleted";
+        public const string PhotoUploaded = "media.photo.uploaded";
+    }
 }

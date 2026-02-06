@@ -1,9 +1,6 @@
-﻿using System.Net;
-using CoffeePeek.Shared.Extensions.Configuration;
+﻿using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Infrastructure.Options;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
 
 namespace CoffeePeek.Shared.Extensions.Modules;
 
@@ -15,19 +12,15 @@ public static class CAPModule
         /// <summary>
         /// Adds DOTNET.CAP with PostgreSQL storage, RabbitMQ transport, and Redis Streams.
         /// </summary>
-        /// <typeparam name="TDbContext">The DbContext type that will be used for CAP storage</typeparam>
         /// <param name="connectionString">PostgreSQL connection string for CAP storage</param>
         /// <param name="groupName">Unique group name for this service (e.g., "account-service", "shops-service")</param>
-        public IServiceCollection AddCapModule<TDbContext>(string connectionString,
-            string groupName)
-            where TDbContext : DbContext
+        public IServiceCollection AddCapModule(string connectionString, string groupName)
         {
             var rabbitMqOptions = services.AddValidateOptions<RabbitMqOptions>();
 
             services.AddCap(options =>
             {
                 options.UseDashboard();
-                options.UseEntityFramework<TDbContext>();
 
                 options.UsePostgreSql(connectionString);
 
@@ -53,19 +46,6 @@ public static class CAPModule
         
 
             return services;
-        }
-
-        /// <summary>
-        /// Adds DOTNET.CAP with PostgreSQL storage and RabbitMQ transport using PostgresCpOptions.
-        /// </summary>
-        /// <typeparam name="TDbContext">The DbContext type that will be used for CAP storage</typeparam>
-        /// <param name="dbOptions">PostgreSQL options containing connection string</param>
-        /// <param name="groupName">Unique group name for this service (e.g., "account-service", "shops-service")</param>
-        public IServiceCollection AddCapModule<TDbContext>(PostgresCpOptions dbOptions,
-            string groupName)
-            where TDbContext : DbContext
-        {
-            return services.AddCapModule<TDbContext>(dbOptions.ConnectionString, groupName);
         }
     }
 }

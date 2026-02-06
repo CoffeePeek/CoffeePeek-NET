@@ -85,16 +85,16 @@ jobs:
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.moderationservice:dev
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.moderationservice:${{ steps.vars.outputs.TAG }}
 
-      - name: Build and push JobVacancies image
+      - name: Build and push MediaService image
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: CoffeePeek.JobVacancies/JobVacancies.Dockerfile
+          file: CoffeePeek.MediaService/MediaService.Dockerfile
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.jobvacancies:dev
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.jobvacancies:${{ steps.vars.outputs.TAG }}
-
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.mediaservice:dev
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.mediaservice:${{ steps.vars.outputs.TAG }}
+            
       - name: Build and push Gateway image
         uses: docker/build-push-action@v6
         with:
@@ -103,8 +103,7 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:dev
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:${{ steps.vars.outputs.TAG }}
-
+            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:${{ steps.vars.outputs.TAG }}  
 
   apply_migrations:
     needs: build_and_push_images
@@ -131,8 +130,8 @@ jobs:
           
           DB_CONN_ACCOUNT: ${{ secrets.DB_CONNECTION_ACCOUNT }}
           DB_CONN_SHOPS: ${{ secrets.DB_CONNECTION_SHOPS }}
-          DB_CONN_JOBS: ${{ secrets.DB_CONNECTION_JOBS }}
           DB_CONN_MODERATION: ${{ secrets.DB_CONNECTION_MODERATION }}
+          DB_CONN_MEDIA: ${{ secrets.DB_CONNECTION_MEDIA }}
         run: |
           dotnet build CoffeePeek.slnx
           
@@ -163,11 +162,11 @@ jobs:
             --connection "${{ secrets.DB_CONNECTION_MODERATION }}" \
             --no-build
           
-          echo "--- Applying JobsService migrations ---"
-          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_JOBS }}"
+          echo "--- Applying MediaService migrations ---"
+          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONN_MEDIA }}"
           dotnet ef database update \
-            --context JobVacanciesDbContext \
-            --project CoffeePeek.JobVacancies.Infrastructure/CoffeePeek.JobVacancies.Infrastructure.csproj \
-            --startup-project CoffeePeek.JobVacancies/CoffeePeek.JobVacancies.csproj \
-            --connection "${{ secrets.DB_CONNECTION_JOBS }}" \
+            --context MediaDbContext \
+            --project CoffeePeek.MediaService/CoffeePeek.MediaService.csproj \
+            --startup-project CoffeePeek.MediaService/CoffeePeek.MediaService.csproj \
+            --connection "${{ secrets.DB_CONN_MEDIA }}" \
             --no-build

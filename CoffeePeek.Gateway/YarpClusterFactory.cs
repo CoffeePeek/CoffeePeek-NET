@@ -6,12 +6,12 @@ namespace CoffeePeek.Gateway;
 public static class YarpClusterFactory
 {
     private const string DefaultPort = "80";
-    
+
     private static readonly bool IsAspire =
         string.Equals(Environment.GetEnvironmentVariable("DOTNET_ASPIRE_RUNNING"), "true", StringComparison.OrdinalIgnoreCase)
         || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_ASPIRE_RESOURCE_NAME"))
         || string.Equals(Environment.GetEnvironmentVariable("DOTNET_ASPIRE"), "true", StringComparison.OrdinalIgnoreCase);
-    
+
     private record ClusterInfo(
         string ClusterId,
         string EnvPrefix,
@@ -23,7 +23,7 @@ public static class YarpClusterFactory
         new("account-cluster", "ACCOUNT", AppResources.AccountService),
         new("shops-cluster", "SHOPS", AppResources.ShopsService),
         new("moderation-cluster", "MODERATION", AppResources.ModerationService),
-        new("jobs-cluster", "JOBS", AppResources.JobVacanciesService)
+        new("media-cluster", "MEDIA", AppResources.MediaService),
     ];
 
 
@@ -39,7 +39,7 @@ public static class YarpClusterFactory
             var serviceUri = TryGetServiceUri(cluster.AspireServiceName);
 
             var address = serviceUri ?? BuildAddress(host, port);
-            
+
             clusters.Add(new ClusterConfig
             {
                 ClusterId = cluster.ClusterId,
@@ -51,7 +51,7 @@ public static class YarpClusterFactory
         }
         return clusters.ToArray();
     }
-    
+
     private static string BuildAddress(string host, string? port)
     {
         if (IsAspire)
@@ -60,17 +60,17 @@ public static class YarpClusterFactory
         return string.IsNullOrWhiteSpace(port) ? DefaultPort : $"http://{host}:{port}";
     }
 
-    
+
     private static string? ResolvePort(ClusterInfo cluster)
     {
         if (IsAspire)
             return null;
 
         var port = Environment.GetEnvironmentVariable($"{cluster.EnvPrefix}_PORT");
-        
+
         return !string.IsNullOrWhiteSpace(port) ? port : DefaultPort;
     }
-    
+
     private static string ResolveHost(ClusterInfo cluster)
     {
         var envHost = Environment.GetEnvironmentVariable($"{cluster.EnvPrefix}_HOST");

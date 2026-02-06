@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
 

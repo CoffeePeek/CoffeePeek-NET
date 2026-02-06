@@ -17,11 +17,13 @@ using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
-using CoffeePeek.Shared.Infrastructure.Abstract.S3;
 using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Infrastructure.Options;
 using CoffeePeek.Shared.Validation;
 using CoffePeek.ServiceDefaults;
-using Minio;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Persistence.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,8 +41,21 @@ builder.Services.AddControllersModule();
 builder.Services.AddSwaggerModule("CoffeePeek Moderation");
 
 // Database
-var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ModerationDb);
-builder.Services.AddEfCoreData<ModerationDbContext>(dbOptions);
+string connectionString;
+if (builder.Configuration["DOTNET_ASPIRE"] == "true")
+{
+    connectionString = builder.Configuration.GetConnectionString(AppResources.ModerationDb) ?? throw new InvalidOperationException("Connection string not found");
+    builder.AddNpgsqlDbContext<ModerationDbContext>(AppResources.ModerationDb, configureDbContextOptions: opt => 
+        opt.AddInterceptors(new AuditInterceptor()));
+}
+else
+{
+    connectionString = builder.Services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+    builder.Services.AddDbContext<ModerationDbContext>(opt => opt.UseNpgsql(connectionString).AddInterceptors(new AuditInterceptor()));
+}
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork<ModerationDbContext>>();
+builder.Services.AddCapModule(connectionString, AppResources.MediaService);
 
 builder.Services.AddGenericRepository<ModerationShop, ModerationDbContext>();
 builder.Services.AddGenericRepository<ModerationShopContact, ModerationDbContext>();
@@ -56,8 +71,6 @@ builder.Services.AddGenericRepository<ModerationReview, ModerationDbContext>();
 builder.Services.AddScoped<IModerationShopRepository, ModerationShopRepository>();
 builder.Services.AddScoped<IModerationShopCreationService, ModerationShopCreationService>();
 builder.Services.AddScoped<IModerationReviewRepository, ModerationReviewRepository>();
-
-builder.Services.AddScoped<IStorageService, MinIOStorageService>();
 
 builder.Services.AddTransient<IAsyncValidationStrategy<SendReviewToModerationCommand>, SendReviewToModerationValidationStrategy>();
 
@@ -76,15 +89,6 @@ builder.Services.AddHttpClient<IYandexGeocodingService, YandexGeocodingService>(
     client.Timeout = TimeSpan.FromSeconds(yandexOptions.TimeoutSeconds);
 }).AddResiliencePolicies(nameof(YandexGeocodingService));
 
-var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
-builder.Services
-    .AddMinio(configureClient =>
-        configureClient
-            .WithEndpoint(new Uri(minIoOptions.Endpoint))
-            .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
-            .Build()
-        );
-
 // MediatR
 builder.Services.AddMediatRModule(typeof(GetAllModerationShopsHandler));
 
@@ -99,7 +103,6 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Roaster, policy => policy.RequireRole(RoleConsts.Roaster));
 
 // CAP for event publishing and consuming
-builder.Services.AddCapModule<ModerationDbContext>(dbOptions, "moderation-service");
 builder.Services.AddScoped<ModerationShopApproveCompleteHandler>();
 builder.Services.AddScoped<CheckInCreatedConsumer>();
 
@@ -112,6 +115,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseExceptionHandler();
+
+if (app.Environment.IsDevelopment())
+{
+    await app.ApplyMigrations<ModerationDbContext>();
+    //await CoffeePeek.Moderation.Infrastructure.ModerationDbContext.SeedAsync(app.Services);
+}
 
 app.MapDefaultEndpoints();
 

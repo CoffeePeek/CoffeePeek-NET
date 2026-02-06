@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
 
-public class GetShopsInBoundsHandler(IGenericRepository<Domain.Entities.CoffeeShopAggregate.CoffeeShop> shopRepository)
+public class GetShopsInBoundsHandler(IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> shopRepository)
     : IRequestHandler<GetShopsInBoundsQuery, Response<GetShopsInBoundsResponse>>
 {
     public async Task<Response<GetShopsInBoundsResponse>> Handle(GetShopsInBoundsQuery query, CancellationToken cancellationToken)
