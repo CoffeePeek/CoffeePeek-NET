@@ -1,5 +1,4 @@
 ﻿using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 
 namespace CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
@@ -16,8 +15,6 @@ public sealed partial class Review : Entity<Guid>
     public bool IsSoftDelete { get; private set; }
 
     public Rating Rating { get; private set; }
-    
-    public CoffeeShop? Shop { get; private set; }
     
     private readonly List<ShopPhoto> _shopPhotos = [];
     public IReadOnlyCollection<ShopPhoto> Photos => _shopPhotos.AsReadOnly();

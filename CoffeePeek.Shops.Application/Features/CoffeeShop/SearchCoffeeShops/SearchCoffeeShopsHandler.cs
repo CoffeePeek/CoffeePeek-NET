@@ -5,16 +5,21 @@ using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Persistence;
 using CoffeePeek.Shops.Application.Common.Responses;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
-using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
+using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using ReviewEntity = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 
 public class SearchCoffeeShopsHandler(
     IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> shopRepository,
+    IGenericRepository<ReviewEntity> reviewGenericRepository,
+    IReviewRepository reviewRepository,
     IUserFavoriteRepository favoriteRepository,
     IUserCheckInRepository visitRepository,
     IMapper mapper,
@@ -29,7 +34,7 @@ public class SearchCoffeeShopsHandler(
 
         var response = await redisService.GetAsync(
             cacheKey,
-            factory: async () => await GetCoffeShops(queryRequest, cancellationToken));
+            factory: async () => await GetCoffeeShops(queryRequest, cancellationToken));
         
         if (response?.Data == null) 
             return Response<GetCoffeeShopsResponse>.Error("Failed to fetch shops.");
@@ -53,17 +58,15 @@ public class SearchCoffeeShopsHandler(
         return response;
     }
 
-    private async Task<Response<GetCoffeeShopsResponse>> GetCoffeShops(SearchCoffeeShopsQuery queryRequest, CancellationToken cancellationToken)
+    private async Task<Response<GetCoffeeShopsResponse>> GetCoffeeShops(SearchCoffeeShopsQuery queryRequest, CancellationToken cancellationToken)
     {
         var query = shopRepository
             .QueryAsNoTracking()
-            .Include(s => s.Reviews)
             .Include(s => s.BrewMethods)
             .Include(s => s.Roasters)
             .Include(s => s.CoffeeBeans)
             .Include(s => s.Schedules)
             .Include(s => s.ShopPhotos)
-            .Include(s => s.CheckIns)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(queryRequest.Query))
@@ -106,9 +109,17 @@ public class SearchCoffeeShopsHandler(
             query = query.Where(s => s.PriceRange == queryRequest.PriceRange.Value);
         }
 
+        // Filter by minimum rating using a subquery approach
         if (queryRequest.MinRating.HasValue)
         {
-            query = query.Where(s => s.Reviews.Average(r => r.Rating.AverageRating) >= queryRequest.MinRating.Value);
+            var shopIdsWithMinRating = reviewGenericRepository
+                .QueryAsNoTracking()
+                .Where(r => !r.IsSoftDelete)
+                .GroupBy(r => r.CoffeeShopId)
+                .Where(g => g.Average(r => r.Rating.AverageRating) >= queryRequest.MinRating.Value)
+                .Select(g => g.Key);
+
+            query = query.Where(s => shopIdsWithMinRating.Contains(s.Id));
         }
 
         var totalCount = await query.CountAsync(cancellationToken);
@@ -118,8 +129,21 @@ public class SearchCoffeeShopsHandler(
             .Skip((queryRequest.PageNumber - 1) * queryRequest.PageSize)
             .Take(queryRequest.PageSize)
             .ToListAsync(cancellationToken);
-        
-        var dtos = mapper.Map<List<ShortShopDto>>(shops);
+
+        // Get review statistics for all shops in batch
+        var shopIds = shops.Select(s => s.Id).ToList();
+        var reviewStats = await reviewRepository.GetReviewStatsByShopIdsAsync(shopIds, cancellationToken);
+
+        var dtos = shops.Select(shop =>
+        {
+            var dto = mapper.Map<ShortShopDto>(shop);
+            var (averageRating, reviewCount) = reviewStats.GetValueOrDefault(shop.Id, (0m, 0));
+            return dto with
+            {
+                Rating = averageRating,
+                ReviewCount = reviewCount
+            };
+        }).ToList();
 
         var response = new GetCoffeeShopsResponse
         {

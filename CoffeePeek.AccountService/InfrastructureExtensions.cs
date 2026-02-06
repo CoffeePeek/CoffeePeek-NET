@@ -6,6 +6,7 @@ using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Swagger;
 using CoffePeek.ServiceDefaults;
+using Serilog;
 
 namespace CoffeePeek.AccountService;
 
@@ -28,6 +29,8 @@ public static class InfrastructureExtensions
 
     public static async Task UseApplication(this WebApplication app)
     {
+        app.UseSerilogRequestLogging();
+        
         app.UseExceptionHandler();
 
         app.UseAuthentication();

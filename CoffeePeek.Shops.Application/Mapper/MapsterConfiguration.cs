@@ -18,11 +18,11 @@ public class MapsterConfiguration : IRegister
         config.NewConfig<CoffeeShop, ShortShopDto>()
             .Map(dest => dest.CityId, src => src.Location.CityId)
             .Map(dest => dest.Photos, src => src.ShopPhotos)
-            .Map(dest => dest.Rating, src => src.Rating)
-            .Map(dest => dest.ReviewCount, src => src.Reviews.Count)
             .Map(dest => dest.ShopContact, src => src.Contact)
             .Map(dest => dest.Beans, src => src.CoffeeBeans)
-            
+            // Rating and ReviewCount are set manually in handlers via repository
+            .Ignore(dest => dest.Rating)
+            .Ignore(dest => dest.ReviewCount)
             .Ignore(dest => dest.IsFavorite)
             .Ignore(dest => dest.IsVisited);
 
@@ -32,27 +32,28 @@ public class MapsterConfiguration : IRegister
 
         config.NewConfig<CoffeeShop, ShopDto>()
             .Map(d => d.Photos, s => s.ShopPhotos)
-            .Map(dest => dest.Rating, src => src.Reviews.Any()
-                ? src.Reviews.Average(r => r.Rating.AverageRating)
-                : 0m)
-            .Map(dest => dest.ReviewCount, src => src.Reviews.Count)
             .Map(dest => dest.IsOpen, src => true)
-            .Map(dest => dest.CoffeeBeans, src => src.CoffeeBeans);
+            .Map(dest => dest.CoffeeBeans, src => src.CoffeeBeans)
+            // Rating, ReviewCount and Reviews are set manually in handlers via repository
+            .Ignore(dest => dest.Rating)
+            .Ignore(dest => dest.ReviewCount)
+            .Ignore(dest => dest.Reviews);
 
         config.NewConfig<CoffeeShop, CoffeeShopDetailsDto>()
             .Map(d => d.CityId, s => s.Location.CityId)
             .Map(d => d.Photos, s => s.ShopPhotos)
             .Map(d => d.ShopContact, s => s.Contact)
             .Map(d => d.Schedules, s => s.Schedules)
-            .Map(dest => dest.Rating, src => src.Reviews.Any()
-                ? src.Reviews.Average(r => r.Rating.AverageRating)
-                : 0m)
-            .Map(dest => dest.ReviewCount, src => src.Reviews.Count)
             .Map(dest => dest.IsOpen, src => src.IsOpen)
-            .Map(dest => dest.IsNew, src => src.IsNew);
+            .Map(dest => dest.IsNew, src => src.IsNew)
+            // Rating, ReviewCount and Reviews are set manually in handlers via repository
+            .Ignore(dest => dest.Rating)
+            .Ignore(dest => dest.ReviewCount)
+            .Ignore(dest => dest.Reviews);
         
         config.NewConfig<CheckIn, CheckInDto>()
-            .Map(dest => dest.ShopName, src => src.CoffeeShop.Name);
+            // ShopName is set manually in handlers via repository
+            .Ignore(dest => dest.ShopName);
         
         config.NewConfig<Equipment, EquipmentDto>()
             .Map(dest => dest.Model, src => src.ModelName)

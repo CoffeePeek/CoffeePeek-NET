@@ -1,4 +1,5 @@
 using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using MediatR;
 
