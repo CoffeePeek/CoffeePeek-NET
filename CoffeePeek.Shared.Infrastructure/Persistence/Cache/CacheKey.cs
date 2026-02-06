@@ -1,4 +1,4 @@
-namespace CoffeePeek.Shared.Infrastructure.Cache;
+namespace CoffeePeek.Shared.Infrastructure.Persistence;
 
 public record CacheKey(
     string Key,

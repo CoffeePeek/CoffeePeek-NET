@@ -4,7 +4,7 @@ using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using DotNetCore.CAP;
 
-namespace CoffeePeek.Auth.Infrastructure.EventConsumer;
+namespace CoffeePeek.Account.Infrastructure.EventConsumer;
 
 public class CheckinCreatedHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) : ICapSubscribe
 {

@@ -16,21 +16,13 @@ public static class ServiceCollectionExtensions
         {
             services.AddDbContext<TDbContext>(options =>
             {
-                options.UseNpgsql(connectionString)
-                    .AddInterceptors(new AuditInterceptor());
+                options.UseNpgsql(connectionString).AddInterceptors(new AuditInterceptor());
                 additionalOptions?.Invoke(options);
             });
 
             services.AddScoped<IUnitOfWork, UnitOfWork<TDbContext>>();
 
             return services;
-        }
-
-        public IServiceCollection AddEfCoreData<TDbContext>(PostgresCpOptions dbOptions,
-            Action<DbContextOptionsBuilder>? additionalOptions = null)
-            where TDbContext : DbContext
-        {
-            return services.AddEfCoreData<TDbContext>(dbOptions.ConnectionString, additionalOptions);
         }
 
         public IServiceCollection AddGenericRepository<TEntity, TDbContext>()

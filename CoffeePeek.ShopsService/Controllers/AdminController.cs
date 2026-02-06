@@ -1,7 +1,7 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Shared.Infrastructure.Cache;
 using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Infrastructure.Persistence;
 using CoffeePeek.Shops.Application.Features.Admin.InvalidateCache;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

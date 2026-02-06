@@ -2,7 +2,7 @@
 using CoffeePeek.Shops.Application.Services;
 using MediatR;
 
-namespace CoffeePeek.Shops.Application.Features.Internal.GetAllBrewMethods;
+namespace CoffeePeek.Shops.Application.Features.Catalogs.GetAllBrewMethods;
 
 public class GetAllBrewMethodsHandler(ICacheService cacheService) : IRequestHandler<GetAllBrewMethodsCommand, Response<GetAllBrewMethodsResponse>>
 {

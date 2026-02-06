@@ -23,7 +23,7 @@ namespace CoffeePeek.AccountService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class UsersController(IMediator mediator) : ControllerBase
+public class UsersController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
     [HttpGet("{id:guid}")]
     [ProducesResponseType<Response<UserProfileResponse>>(StatusCodes.Status200OK)]
@@ -32,7 +32,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     [SwaggerOperation("Get user profile by id or current user profile")]
     public async Task<IActionResult> GetById(Guid? id)
     {
-        var response = await mediator.Send(new GetPublicUserProfileQuery(id ?? User.GetUserIdOrThrow()));
+        var response = await mediator.Send(new GetPublicUserProfileQuery(id ?? userContext.GetUserIdOrThrow()));
         return Ok(response);
     }
 
@@ -71,10 +71,10 @@ public class UsersController(IMediator mediator) : ControllerBase
     [SwaggerOperation("Get user profile by id or current user profile")]
     public async Task<IActionResult> GetById()
     {
-        var response = await mediator.Send(new GetPublicUserProfileQuery(User.GetUserIdOrThrow()));
+        var response = await mediator.Send(new GetPublicUserProfileQuery(userContext.GetUserIdOrThrow()));
         return Ok(response);
     }
-    
+
     [HttpPatch("me/about")]
     [Authorize]
     [ProducesResponseType<UpdateEntityResponse<string>>(StatusCodes.Status202Accepted)]
@@ -84,7 +84,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileAboutCommand request,
         CancellationToken cancellationToken)
     {
-        var command = request with { UserId = HttpContext.User.GetUserIdOrThrow() };
+        var command = request with { UserId = userContext.GetUserIdOrThrow() };
         var response = await mediator.Send(command, cancellationToken);
 
         return Accepted(response);
@@ -99,7 +99,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileEmailCommand request,
         CancellationToken cancellationToken)
     {
-        var command = request with { UserId = HttpContext.User.GetUserIdOrThrow() };
+        var command = request with { UserId = userContext.GetUserIdOrThrow() };
         var response = await mediator.Send(command, cancellationToken);
 
         return Accepted(response);
@@ -114,22 +114,22 @@ public class UsersController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfilePhoneNumberCommand request,
         CancellationToken cancellationToken)
     {
-        var command = request with { UserId = HttpContext.User.GetUserIdOrThrow() };
+        var command = request with { UserId = userContext.GetUserIdOrThrow() };
         var response = await mediator.Send(command, cancellationToken);
 
         return Accepted(response);
     }
 
-    [HttpPut("me/avatar")]
+    [HttpPatch("me/avatar")]
     [Authorize]
     [ProducesResponseType<UpdateEntityResponse<PhotoMetadata>>(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation("Update user avatar")]
-    public async Task<IActionResult> UpdateAvatar([FromBody] UploadedPhotoDto dto)
+    public async Task<IActionResult> UpdateAvatar([FromBody] UpdateUserAvatarCommand command)
     {
-        var command = new UpdateUserAvatarCommand(User.GetUserIdOrThrow(), dto);
+        command = command with { UserId = userContext.GetUserIdOrThrow() };
         var response = await mediator.Send(command);
 
         return Accepted(response);
@@ -146,7 +146,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     {
         command = command with
         {
-            UserId = User.GetUserIdOrThrow()
+            UserId = userContext.GetUserIdOrThrow()
         };
 
         var response = await mediator.Send(command, cancellationToken);
@@ -159,9 +159,9 @@ public class UsersController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(Response<bool>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation("Delete user by id")]
-    public Task<Response<bool>> DeleteUser( CancellationToken cancellationToken)
+    public Task<Response<bool>> DeleteUser(CancellationToken cancellationToken)
     {
-        var request = new DeleteUserCommand(User.GetUserIdOrThrow());
+        var request = new DeleteUserCommand(userContext.GetUserIdOrThrow());
         return mediator.Send(request, cancellationToken);
     }
 
@@ -173,7 +173,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     [SwaggerOperation("Resend email confirmation")]
     public Task<Response> ResendEmailConfirm()
     {
-        return mediator.Send(new ResendEmailConfirmationCommand(User.GetUserIdOrThrow()));
+        return mediator.Send(new ResendEmailConfirmationCommand(userContext.GetUserIdOrThrow()));
     }
 
     [HttpPut("me/email-confirmation")]

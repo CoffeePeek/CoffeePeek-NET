@@ -2,25 +2,34 @@ using System.Reflection;
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
+using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Swagger;
-using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Infrastructure.Options;
 using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using CoffeePeek.Shops.Infrastructure.Configuration;
 using CoffeePeek.Shops.Infrastructure.Consumers;
 using CoffeePeek.Shops.Infrastructure.Extensions;
 using CoffeePeek.Shops.Infrastructure.Services;
 using CoffePeek.ServiceDefaults;
+using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Infrastructure.Persistence.Data;
+using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
+using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,10 +55,8 @@ builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
 // MediatR
 builder.Services.AddMediatRModule(typeof(GetCoffeeShopHandler));
 
-// JWT Authentication
-builder.Services.AddJwtAuthModule();
-
-// Authorization policies
+// Authorization policies (JWT validation happens in Gateway)
+builder.Services.AddHeaderUserContext();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
     .AddPolicy(RoleConsts.Owner, policy => policy.RequireRole(RoleConsts.Owner))
@@ -75,11 +82,21 @@ builder.Services.AddScoped<ICreateShopFromModerationService, CreateShopFromModer
 builder.Services.AddScoped<ICoffeeShopCacheService, CoffeeShopCacheService>();
 
 // Database
-var dbOptions = builder.Services.GetDatabaseOptions(builder.Configuration, databaseName: AppResources.ShopsDb);
-builder.Services.AddEfCoreData<ShopsDbContext>(dbOptions.ConnectionString);
+string connectionString;
+if (builder.Configuration["DOTNET_ASPIRE"] == "true")
+{
+    connectionString = builder.Configuration.GetConnectionString(AppResources.ShopsDb) ?? throw new InvalidOperationException("Connection string not found");
+    builder.AddNpgsqlDbContext<ShopsDbContext>(AppResources.ShopsDb, configureDbContextOptions: opt => 
+        opt.AddInterceptors(new AuditInterceptor()));
+}
+else
+{
+    connectionString = builder.Services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+    builder.Services.AddDbContext<ShopsDbContext>(opt => opt.UseNpgsql(connectionString).AddInterceptors(new AuditInterceptor()));
+}
 
-// CAP for event publishing and consuming
-builder.Services.AddCapModule<ShopsDbContext>(dbOptions, "shops-service");
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork<ShopsDbContext>>();
+builder.Services.AddCapModule(connectionString, AppResources.ShopsService);
 
 // Register CAP handlers
 builder.Services.AddScoped<ModerationShopApprovedHandler>();
@@ -114,13 +131,11 @@ app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
-    await CoffeePeek.Shops.Infrastructure.ShopsDbInitializer.SeedAsync(app.Services);
+    await app.ApplyMigrations<ShopsDbContext>();
+    //await CoffeePeek.Shops.Infrastructure.ShopsDbInitializer.SeedAsync(app.Services);
 }
 
 app.MapDefaultEndpoints();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 // Swagger documentation
 app.UseSwaggerDocumentation();

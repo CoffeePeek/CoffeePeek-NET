@@ -1,20 +1,21 @@
 using CoffeePeek.Shops.Domain;
+using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Microsoft.EntityFrameworkCore;
+using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Infrastructure.Configuration;
 
 public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContext(options)
 {
+    //category
     public virtual DbSet<BrewMethod> BrewMethods { get; set; }
     
     public virtual DbSet<CoffeeBean> CoffeeBeans { get; set; }
-    
-    public virtual DbSet<Equipment> Equipments { get; set; }
     
     public virtual DbSet<Review> Reviews { get; set; }
     public virtual DbSet<CheckIn> CheckIns { get; set; }
@@ -28,22 +29,29 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     
     public virtual DbSet<City> Cities { get; set; }
 
+    public virtual DbSet<EquipmentCategory> EquipmentCategories { get; set; }
+    public virtual DbSet<Equipment> Equipments { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new CoffeeShopConfiguration());
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasOne(r => r.Shop)
-                .WithMany(s => s.Reviews)
-                .HasForeignKey(r => r.CoffeeShopId)
-                .OnDelete(DeleteBehavior.Cascade);
-            
+            entity.HasKey(r => r.Id);
+            entity.HasIndex(r => r.CoffeeShopId);
             entity.HasIndex(r => r.UserId);
+            entity.Property(r => r.CoffeeShopId).IsRequired();
 
             entity.Property(r => r.Header).HasMaxLength(BusinessConstants.MaxReviewHeaderLength);
             entity.Property(r => r.Comment).HasMaxLength(BusinessConstants.MaxReviewCommentLength);
             entity.Property(r => r.UserName).IsRequired().HasMaxLength(30);
+
+            // Foreign key without navigation property (DDD aggregate separation)
+            entity.HasOne<CoffeeShop>()
+                .WithMany()
+                .HasForeignKey(r => r.CoffeeShopId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             entity.OwnsOne<Rating>(r => r.Rating);
         });
@@ -53,19 +61,24 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
             entity.HasKey(c => c.Id);
             entity.HasIndex(c => c.UserId);
             entity.HasIndex(c => c.ShopId);
+            entity.HasIndex(c => c.ReviewId);
             entity.HasIndex(c => new { c.UserId, c.ShopId });
             
-            entity.HasOne(c => c.CoffeeShop)
-                .WithMany(s => s.CheckIns)
+            entity.Property(c => c.ShopId).IsRequired();
+            entity.Property(c => c.ReviewId).IsRequired(false);
+                
+            entity.Property(c => c.Note).HasMaxLength(BusinessConstants.MaxCheckInNoteLength);
+            
+            // Foreign keys without navigation properties (DDD aggregate separation)
+            entity.HasOne<CoffeeShop>()
+                .WithMany()
                 .HasForeignKey(c => c.ShopId)
                 .OnDelete(DeleteBehavior.Cascade);
                 
-            entity.HasOne(c => c.Review)
+            entity.HasOne<Review>()
                 .WithMany()
                 .HasForeignKey(c => c.ReviewId)
                 .OnDelete(DeleteBehavior.SetNull);
-                
-            entity.Property(c => c.Note).HasMaxLength(BusinessConstants.MaxCheckInNoteLength);
             
             entity.OwnsOne<Rating>(r => r.Rating);
         });
@@ -80,6 +93,23 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
 
             entity.Property(f => f.UserId).IsRequired();
             entity.Property(f => f.CoffeeShopId).IsRequired();
+        });
+
+        modelBuilder.Entity<Equipment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.CategoryId);
+
+            entity.HasOne(e => e.Category)
+                .WithMany()
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<EquipmentCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(BusinessConstants.MaxEquipmentCategoryNameLength);
         });
     }
 }

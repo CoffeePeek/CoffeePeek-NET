@@ -1,5 +1,4 @@
 using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shops.Application.Features.Internal.GetAllCities;
 using CoffeePeek.Shops.Application.Services;
 using MediatR;
 

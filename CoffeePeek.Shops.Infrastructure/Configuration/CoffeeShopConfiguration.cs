@@ -1,4 +1,6 @@
 ﻿using CoffeePeek.Shops.Domain;
+using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using Microsoft.EntityFrameworkCore;
@@ -114,13 +116,13 @@ public class CoffeeShopConfiguration : IEntityTypeConfiguration<CoffeeShop>
 
         builder
             .HasMany(u => u.Equipments)
-            .WithMany(r => r.CoffeeShops)
+            .WithMany()
             .UsingEntity<Dictionary<string, object>>(
                 "CoffeeShopEquipments",
                 j => j.HasOne<Equipment>().WithMany().HasForeignKey("EquipmentId"),
                 j => j.HasOne<CoffeeShop>().WithMany().HasForeignKey("CoffeeShopId")
-                );
-        
+            );
+
         #endregion
     }
 }

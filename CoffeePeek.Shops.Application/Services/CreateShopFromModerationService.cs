@@ -1,5 +1,7 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +44,10 @@ public class CreateShopFromModerationService(
         {
             var ids = shopDto.Equipments.Select(x => x.Id).ToList();
             var equipments = await GetValidEntitiesAsync(equipmentRepository, ids, nameof(Equipment), cancellationToken);
-            shop.SetEquipment(equipments);
+            foreach (var equipment in equipments)
+            {
+                shop.AddEquipment(equipment);
+            }
         }
 
         if (shopDto.BrewMethods is { Length: > 0 })

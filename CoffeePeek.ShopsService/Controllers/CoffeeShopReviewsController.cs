@@ -1,7 +1,7 @@
 ﻿using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Infrastructure;
-using CoffeePeek.Shops.Application.Features.CoffeeShop.DeleteReviewFromCoffeeShop;
 using CoffeePeek.Shops.Application.Features.Review.CanCreateCoffeeShopReview;
+using CoffeePeek.Shops.Application.Features.Review.DeleteReviewFromCoffeeShop;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ namespace CoffeePeek.ShopsService.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class CoffeeShopReviewsController(IMediator mediator) : ControllerBase
+public class CoffeeShopReviewsController(IMediator mediator, IUserContext userContext) : ControllerBase
 {
     [HttpGet("can-create")]
     [ProducesResponseType(typeof(Response<CanCreateCoffeeShopReviewResponse>), StatusCodes.Status200OK)]
@@ -25,7 +25,7 @@ public class CoffeeShopReviewsController(IMediator mediator) : ControllerBase
         if (shopId == Guid.Empty)
             return BadRequest(Response<CanCreateCoffeeShopReviewResponse>.Error("Invalid shop ID"));
 
-        var userId = User.GetUserIdOrThrow();
+        var userId = userContext.GetUserIdOrThrow();
         var query = new CanCreateCoffeeShopReviewQuery(userId, shopId);
         var response = await mediator.Send(query);
 

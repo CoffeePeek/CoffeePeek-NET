@@ -22,11 +22,14 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.BrewMethod", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.BrewMethods.BrewMethod", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -43,7 +46,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                     b.ToTable("BrewMethods");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CheckInAggregate.CheckIn", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,7 +87,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                     b.ToTable("CheckIns");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.City", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.City", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,7 +109,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                     b.ToTable("Cities");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeBean", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeBean", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,7 +130,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                     b.ToTable("CoffeeBeans");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -165,14 +168,31 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                     b.ToTable("Shops");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.Equipment", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Equipment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsCustom")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ModelName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -183,7 +203,33 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Equipments");
+                });
+
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.EquipmentCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EquipmentCategories");
                 });
 
             modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
@@ -395,15 +441,15 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                     b.ToTable("CoffeeShopRoasters");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CheckInAggregate.CheckIn", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", "Review")
+                    b.HasOne("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", null)
                         .WithMany()
                         .HasForeignKey("ReviewId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", "CoffeeShop")
-                        .WithMany("CheckIns")
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", null)
+                        .WithMany()
                         .HasForeignKey("ShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -430,17 +476,13 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                                 .HasForeignKey("CheckInId");
                         });
 
-                    b.Navigation("CoffeeShop");
-
                     b.Navigation("Rating")
                         .IsRequired();
-
-                    b.Navigation("Review");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", b =>
                 {
-                    b.OwnsOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.Location", "Location", b1 =>
+                    b.OwnsOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Location", "Location", b1 =>
                         {
                             b1.Property<Guid>("CoffeeShopId")
                                 .HasColumnType("uuid");
@@ -479,7 +521,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                                 .HasForeignKey("CoffeeShopId");
                         });
 
-                    b.OwnsOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.ShopContact", "Contact", b1 =>
+                    b.OwnsOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.ShopContact", "Contact", b1 =>
                         {
                             b1.Property<Guid>("CoffeeShopId")
                                 .HasColumnType("uuid");
@@ -512,7 +554,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                                 .HasForeignKey("CoffeeShopId");
                         });
 
-                    b.OwnsMany("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.ShopSchedule", "Schedules", b1 =>
+                    b.OwnsMany("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.ShopSchedule", "Schedules", b1 =>
                         {
                             b1.Property<Guid>("CoffeeShopId")
                                 .HasColumnType("uuid");
@@ -580,10 +622,21 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                     b.Navigation("Schedules");
                 });
 
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Equipment", b =>
+                {
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.EquipmentCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", "Shop")
-                        .WithMany("Reviews")
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", null)
+                        .WithMany()
                         .HasForeignKey("CoffeeShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -612,17 +665,15 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
 
                     b.Navigation("Rating")
                         .IsRequired();
-
-                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopPhoto", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CheckInAggregate.CheckIn", null)
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn", null)
                         .WithMany("ShopPhotos")
                         .HasForeignKey("CheckInId");
 
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", null)
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", null)
                         .WithMany("ShopPhotos")
                         .HasForeignKey("CoffeeShopId");
 
@@ -633,13 +684,13 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
 
             modelBuilder.Entity("CoffeeShopBrewMethods", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.BrewMethod", null)
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.BrewMethods.BrewMethod", null)
                         .WithMany()
                         .HasForeignKey("BrewMethodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", null)
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", null)
                         .WithMany()
                         .HasForeignKey("CoffeeShopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -648,13 +699,13 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
 
             modelBuilder.Entity("CoffeeShopCoffeeBeans", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeBean", null)
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeBean", null)
                         .WithMany()
                         .HasForeignKey("CoffeeBeanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", null)
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", null)
                         .WithMany()
                         .HasForeignKey("CoffeeShopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -663,13 +714,13 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
 
             modelBuilder.Entity("CoffeeShopEquipments", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", null)
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", null)
                         .WithMany()
                         .HasForeignKey("CoffeeShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.Equipment", null)
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Equipment", null)
                         .WithMany()
                         .HasForeignKey("EquipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -678,7 +729,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
 
             modelBuilder.Entity("CoffeeShopRoasters", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", null)
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", null)
                         .WithMany()
                         .HasForeignKey("CoffeeShopId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -691,17 +742,13 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CheckInAggregate.CheckIn", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn", b =>
                 {
                     b.Navigation("ShopPhotos");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate.CoffeeShop", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", b =>
                 {
-                    b.Navigation("CheckIns");
-
-                    b.Navigation("Reviews");
-
                     b.Navigation("ShopPhotos");
                 });
 

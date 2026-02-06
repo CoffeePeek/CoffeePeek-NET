@@ -1,5 +1,4 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Cache;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Shared.Infrastructure.Persistence;

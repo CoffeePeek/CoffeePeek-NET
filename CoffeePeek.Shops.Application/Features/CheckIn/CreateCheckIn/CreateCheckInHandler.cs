@@ -16,7 +16,7 @@ namespace CoffeePeek.Shops.Application.Features.CheckIn.CreateCheckIn;
 using Review = Domain.Entities.ReviewAggregate.Review;
 
 public class CreateCheckInHandler(
-    IGenericRepository<Domain.Entities.CheckInAggregate.CheckIn> checkInRepository,
+    IGenericRepository<Domain.Aggregates.CheckInAggregate.CheckIn> checkInRepository,
     IAsyncValidationStrategy<CreateCheckInCommand> validationStrategy,
     IUnitOfWork unitOfWork,
     ICapPublisher capPublisher,
@@ -31,7 +31,7 @@ public class CreateCheckInHandler(
             throw new ValidationException(validationResult.ErrorMessage!);
         }
 
-        var checkIn = Domain.Entities.CheckInAggregate.CheckIn.Create(command.UserId, command.CoffeeShopId, command.VisitedAt);
+        var checkIn = Domain.Aggregates.CheckInAggregate.CheckIn.Create(command.UserId, command.CoffeeShopId, command.VisitedAt);
 
         if (!string.IsNullOrEmpty(command.Note))
         {

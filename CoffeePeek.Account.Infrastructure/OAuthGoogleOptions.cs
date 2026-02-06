@@ -1,4 +1,4 @@
-namespace CoffeePeek.Auth.Infrastructure;
+namespace CoffeePeek.Account.Infrastructure;
 
 public class OAuthGoogleOptions
 {

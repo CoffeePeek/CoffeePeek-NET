@@ -10,7 +10,7 @@ public static class YarpRouteFactory
 
     private static string[] AllVersions => [ApiVersions.V1_0, ApiVersions.V2_0];
     private static string[] DefaultVersions => [ApiVersions.V1_0];
-    
+
     private static readonly List<ServiceRoute> Services =
     [
         new("account", ["Tokens", "Users"], "account-cluster", DefaultVersions),
@@ -26,6 +26,7 @@ public static class YarpRouteFactory
             ],
             "shops-cluster", DefaultVersions),
         new("moderation", ["Moderation", "ModerationReviews", "ModerationShops"], "moderation-cluster", DefaultVersions),
+        new("media", ["Photos"], "media-cluster", DefaultVersions),
         new("jobs", ["Vacancies"], "jobs-cluster", DefaultVersions)
     ];
 
@@ -41,13 +42,13 @@ public static class YarpRouteFactory
 
             routes.Add(CreateSwaggerRoute(service));
         }
-        
+
         // Admin routes with service-specific prefixes
         routes.Add(CreateAdminRoute("account", "account-cluster"));
         routes.Add(CreateAdminRoute("shops", "shops-cluster"));
         routes.Add(CreateAdminRoute("vacancies", "jobs-cluster"));
         routes.Add(CreateAdminRoute("moderation", "moderation-cluster"));
-    
+
         return routes.ToArray();
     }
 
@@ -55,12 +56,12 @@ public static class YarpRouteFactory
     {
         return new RouteConfig
         {
-            RouteId = $"{service.Id}-{controller}-api-route", 
+            RouteId = $"{service.Id}-{controller}-api-route",
             ClusterId = service.ClusterId,
             Match = new RouteMatch { Path = $"/api/{controller}/{{**catch-all}}" },
         };
     }
-    
+
     private static RouteConfig CreateSwaggerRoute(ServiceRoute service) => new()
     {
         RouteId = $"{service.Id}-swagger-route",
@@ -71,7 +72,7 @@ public static class YarpRouteFactory
             new() { { "PathPattern", "/swagger/{**catch-all}" } }
         }
     };
-    
+
     private static RouteConfig CreateAdminRoute(string serviceName, string clusterId) => new()
     {
         RouteId = $"admin-{serviceName}-route",
