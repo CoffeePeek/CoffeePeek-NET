@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<CheckinCreatedHandler>();
         services.AddScoped<ReviewAddedHandler>();
         services.AddScoped<ModerationShopApprovedAccountHandler>();
+        services.AddScoped<UserPhotoUploadedHandler>();
 
         // 3 Email Service
         services.AddHttpClient<ResendClient>();

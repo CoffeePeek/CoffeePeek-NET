@@ -26,5 +26,5 @@ public interface IReviewRepository
     /// <summary>
     /// Gets average ratings and review counts for multiple coffee shops (batch operation)
     /// </summary>
-    Task<Dictionary<Guid, (decimal averageRating, int count)>> GetReviewStatsByShopIdsAsync(IEnumerable<Guid> shopIds, CancellationToken ct);
+    Task<Dictionary<Guid, (decimal averageRating, int count)>> GetReviewStatsByShopIdsAsync(List<Guid> shopIds, CancellationToken ct);
 }

@@ -26,8 +26,11 @@ public static class DependencyInjection
         {
             connectionString = configuration.GetConnectionString(AppResources.AccountDb) ?? 
                                throw new InvalidOperationException("Connection string not found");
-            builder.AddNpgsqlDbContext<AccountDbContext>(AppResources.AccountDb, configureDbContextOptions: opt => 
-                opt.AddInterceptors(new AuditInterceptor()));
+            builder.AddNpgsqlDbContext<AccountDbContext>(
+                connectionName:AppResources.AccountDb, 
+                configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
+                configureSettings: settings => { settings.DisableRetry = true; }
+                );
         }
         else
         {

@@ -5,6 +5,7 @@ using CoffeePeek.MediaService.Data;
 using CoffeePeek.MediaService.Requests;
 using CoffeePeek.MediaService.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using DotNetCore.CAP;
 
@@ -12,7 +13,8 @@ namespace CoffeePeek.MediaService.Services;
 
 public class PhotoService(
     IStorageService storageService,
-    MediaDbContext dbContext,
+    IUnitOfWork unitOfWork,
+    IGenericRepository<PhotoMetadata> repository,
     ICapPublisher capPublisher) : IPhotoService
 {
     public async Task<Response<GenerateUploadUrlResponse>> GenerateUserAvatarUploadUrl(UploadUrlRequest request,
@@ -38,15 +40,18 @@ public class PhotoService(
             Status = PhotoStatus.Pending,
             UploadedAt = DateTime.UtcNow
         };
-        
-        await using (var transaction = await dbContext.Database.BeginTransactionAsync(ct))
+        await unitOfWork.BeginTransactionAsync(ct);
+        try
         {
-            dbContext.Photos.Add(photoMetadata);
             await PublishPhotoUploadedEvent(photoMetadata);
-            await dbContext.SaveChangesAsync(ct);
-            await transaction.CommitAsync(ct);
+            await unitOfWork.SaveChangesAsync(ct);
+            await unitOfWork.CommitTransactionAsync(ct);
         }
-        
+        catch
+        {
+            await unitOfWork.RollbackTransactionAsync(ct);
+            throw;
+        }
 
         var result = new GenerateUploadUrlResponse(photoMetadata.Id, url, key);
 
@@ -79,11 +84,11 @@ public class PhotoService(
             };
 
             photoMetadataList.Add(photoMetadata);
-            dbContext.Photos.Add(photoMetadata);
+            repository.Add(photoMetadata);
             results.Add(new GenerateUploadUrlResponse(photoMetadata.Id, url, key));
         }
 
-        await dbContext.SaveChangesAsync(ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         foreach (var photoMetadata in photoMetadataList)
         {
@@ -95,7 +100,7 @@ public class PhotoService(
 
     public async Task<Response<object>> ConfirmPhoto(Guid photoId, CancellationToken ct)
     {
-        var photo = await dbContext.Photos.FindAsync([photoId], ct);
+        var photo = await repository.GetByIdAsync(photoId, ct);
         if (photo == null)
             return Response<object>.Error("Photo not found");
 
@@ -103,7 +108,7 @@ public class PhotoService(
             return Response<object>.Error("Only pending photos can be confirmed");
 
         photo.Status = PhotoStatus.Confirmed;
-        await dbContext.SaveChangesAsync(ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         await capPublisher.PublishAsync(CapEventNames.Media.PhotoConfirmed, new PhotoConfirmedEvent(
             photo.Id,
@@ -118,16 +123,16 @@ public class PhotoService(
 
     public async Task<Response<object>> DeletePhoto(Guid photoId, CancellationToken ct)
     {
-        var photo = await dbContext.Photos.FindAsync([photoId], ct);
+        var photo = await repository.GetByIdAsync(photoId, ct);
         if (photo == null)
         {
             return Response<object>.Error("Photo not found");
         }
 
-        await storageService.Delete(photo.StorageKey, (Configuration.BucketType)(int)photo.BucketType);
+        await storageService.Delete(photo.StorageKey, (BucketType)(int)photo.BucketType, ct);
 
         photo.Status = PhotoStatus.Deleted;
-        await dbContext.SaveChangesAsync(ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         await capPublisher.PublishAsync(CapEventNames.Media.PhotoDeleted, new PhotoDeletedEvent(
             photo.Id,

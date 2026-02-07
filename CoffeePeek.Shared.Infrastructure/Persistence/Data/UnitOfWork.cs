@@ -70,6 +70,15 @@ public class UnitOfWork<TDbContext>(TDbContext context, IMediator mediator) : IU
         }
     }
 
+    public async Task ExecuteStrategyAsync(Func<Task> action, CancellationToken ct)
+    {
+        var strategy = context.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
+        {
+            await action();
+        });
+    }
+
     private async Task DisposeTransactionAsync()
     {
         if (_transaction != null)

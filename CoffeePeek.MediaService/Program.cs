@@ -1,3 +1,4 @@
+using System.Reflection;
 using CoffeePeek.MediaService.BackgroundJobs;
 using CoffeePeek.MediaService.Configuration;
 using CoffeePeek.MediaService.Data;
@@ -6,8 +7,10 @@ using CoffeePeek.MediaService.Services;
 using CoffeePeek.Shared.Extensions.Configuration;
 using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Modules;
+using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Infrastructure.Options;
+using CoffeePeek.Shared.Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Minio;
 
@@ -33,6 +36,11 @@ builder.Services.AddScoped<IStorageService, MinIOStorageService>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<PhotoCleanupService>();
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MediaDbContext>>();
+builder.Services.AddGenericRepository<PhotoMetadata, MediaDbContext>();
+
+
+builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
 // Register CAP handlers
 builder.Services.AddScoped<PhotoReplacedEventHandler>();
 
@@ -53,7 +61,12 @@ builder.Services
 string connectionString;
 if (builder.Configuration["DOTNET_ASPIRE"] == "true")
 {
-    builder.AddNpgsqlDbContext<MediaDbContext>(AppResources.MediaDb);
+    builder.AddNpgsqlDbContext<MediaDbContext>(
+        AppResources.MediaDb, 
+        configureSettings: settings => 
+        {
+            settings.DisableRetry = true; 
+        });
     connectionString = builder.Configuration.GetConnectionString(AppResources.MediaDb);
 }
 else

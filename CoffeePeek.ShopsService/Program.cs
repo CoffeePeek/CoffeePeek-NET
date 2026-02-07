@@ -86,8 +86,11 @@ string connectionString;
 if (builder.Configuration["DOTNET_ASPIRE"] == "true")
 {
     connectionString = builder.Configuration.GetConnectionString(AppResources.ShopsDb) ?? throw new InvalidOperationException("Connection string not found");
-    builder.AddNpgsqlDbContext<ShopsDbContext>(AppResources.ShopsDb, configureDbContextOptions: opt => 
-        opt.AddInterceptors(new AuditInterceptor()));
+    builder.AddNpgsqlDbContext<ShopsDbContext>(
+        connectionName:AppResources.ShopsDb, 
+        configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
+        configureSettings: settings => { settings.DisableRetry = true; }
+        );
 }
 else
 {

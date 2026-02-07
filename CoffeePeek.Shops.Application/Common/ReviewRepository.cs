@@ -68,14 +68,15 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
     }
 
     public async Task<Dictionary<Guid, (decimal averageRating, int count)>> GetReviewStatsByShopIdsAsync(
-        IEnumerable<Guid> shopIds, 
+        List<Guid> shopIds, 
         CancellationToken ct)
     {
-        var shopIdList = shopIds.ToList();
+        
+        if (!shopIds.Any()) return new Dictionary<Guid, (decimal, int)>();
         
         var stats = await reviewRepository
             .QueryAsNoTracking()
-            .Where(r => shopIdList.Contains(r.CoffeeShopId) && !r.IsSoftDelete)
+            .Where(r => shopIds.Contains(r.CoffeeShopId) && !r.IsSoftDelete)
             .GroupBy(r => r.CoffeeShopId)
             .Select(g => new
             {
