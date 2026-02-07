@@ -1,6 +1,5 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Extensions.Exceptions;
 using MapsterMapper;
 using MediatR;
