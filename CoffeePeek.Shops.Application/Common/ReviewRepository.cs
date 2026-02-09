@@ -11,24 +11,6 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
     {
         return await reviewRepository.FirstOrDefaultAsNoTrackingAsync(x => x.Id == reviewId, ct);
     }
-    
-    public async Task<Review?> GetById(Guid reviewId, CancellationToken ct)
-    {
-        return await reviewRepository.GetByIdAsync(reviewId, ct);
-    }
-
-    public void Update(Review review)
-    {
-        reviewRepository.Update(review);
-    }
-
-    public async Task<(bool exists, Guid? reviewId)> ExistsForCurrentUser(Guid shopId, Guid userId, CancellationToken ct)
-    {
-        var review = await reviewRepository
-            .FirstOrDefaultAsNoTrackingAsync(x => x.CoffeeShopId == shopId && x.UserId == userId, ct);
-        
-        return (review != null, review?.Id);
-    }
 
     public async Task<(IReadOnlyList<Review> reviews, int totalCount)> GetByCoffeeShopId(
         Guid coffeeShopId, 
@@ -51,22 +33,30 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
         return (reviews, totalCount);
     }
 
-    public async Task<(decimal averageRating, int count)> GetReviewStatsByCoffeeShopId(Guid coffeeShopId, CancellationToken ct)
+    public async Task<(IReadOnlyList<Review> reviews, decimal avgRating, int totalCount)> 
+        GetReviewsWithStatsByCoffeeShopId(Guid coffeeShopId, CancellationToken ct)
     {
-        var stats = await reviewRepository
+        var baseQuery = reviewRepository
             .QueryAsNoTracking()
-            .Where(r => r.CoffeeShopId == coffeeShopId && !r.IsSoftDelete)
+            .Where(r => r.CoffeeShopId == coffeeShopId && !r.IsSoftDelete);
+
+        var stats = await baseQuery
+            .GroupBy(r => r.CoffeeShopId)
             .Select(g => new
             {
-                AverageRating = (g.Rating.Place + g.Rating.Coffee + g.Rating.Service) / 3,
-                Count = 1
+                Avg = g.Average(r => (r.Rating.Place + r.Rating.Coffee + r.Rating.Service) / 3m),
+                Count = g.Count()
             })
             .FirstOrDefaultAsync(ct);
 
-        return stats != null ? (stats.AverageRating, stats.Count) : (0m, 0);
+        var reviews = await baseQuery
+            .OrderByDescending(r => r.CreatedAtUtc)
+            .ToListAsync(ct);
+
+        return (reviews, stats?.Avg ?? 0m, stats?.Count ?? 0);
     }
 
-    public async Task<Dictionary<Guid, (decimal averageRating, int count)>> GetReviewStatsByShopIds(
+    public async Task<Dictionary<Guid, (decimal AverageRating, int Count)>> GetReviewStatsByShopIds(
         List<Guid> shopIds, 
         CancellationToken ct)
     {

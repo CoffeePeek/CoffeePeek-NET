@@ -123,7 +123,6 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 // Domain Services
 builder.Services.AddScoped<IUserFavoriteService, UserFavoriteService>();
-builder.Services.AddScoped<IUserCheckInRepository, UserCheckInRepository>();
 
 var app = builder.Build();
 

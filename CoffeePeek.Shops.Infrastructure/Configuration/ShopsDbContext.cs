@@ -2,7 +2,6 @@ using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Microsoft.EntityFrameworkCore;
 using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
@@ -12,7 +11,6 @@ namespace CoffeePeek.Shops.Infrastructure.Configuration;
 
 public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContext(options)
 {
-    //category
     public virtual DbSet<BrewMethod> BrewMethods { get; set; }
     
     public virtual DbSet<CoffeeBean> CoffeeBeans { get; set; }

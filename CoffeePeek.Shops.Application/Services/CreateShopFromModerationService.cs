@@ -3,7 +3,6 @@ using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -97,7 +96,7 @@ public class CreateShopFromModerationService(
 
         logger.LogInformation("Shop {ShopId} successfully created from moderation event {ModerationId}", shop.Id,
             moderationId);
-
+        
         return shop.Id;
     }
 

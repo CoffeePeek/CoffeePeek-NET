@@ -52,10 +52,17 @@ public class CoffeeShopsController(IMediator mediator, IUserContext userContext)
 
         var response = await mediator.Send(query);
 
-        if (response.IsSuccess && response.Data != null)
+        if (!response.IsSuccess)
         {
-            AddPaginationHeaders(response.Data);
+            return BadRequest(response);
         }
+
+        if (response.Data == null)
+        {
+            return NotFound(response);
+        }
+
+        AddPaginationHeaders(response.Data);
 
         return Ok(response);
 

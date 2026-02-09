@@ -20,6 +20,8 @@ public record CoffeeShopDetailsDto
 
     public bool IsFavorite { get; init; }
     public bool IsVisited { get; init; }
+    public bool? CanCreateReview { get; init; }
+    public Guid? ExistingReviewId { get; init; }
     public bool IsOpen { get; init; }
     public bool IsNew { get; init; }
     public PriceRange PriceRange { get; init; }

@@ -1,6 +1,6 @@
 ﻿namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
-public enum ShopStatus
+public enum CoffeeShopStatus
 {
     Active = 0,           
     TemporarilyClosed = 1,

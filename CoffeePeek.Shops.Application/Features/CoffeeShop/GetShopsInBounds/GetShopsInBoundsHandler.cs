@@ -13,7 +13,7 @@ public class GetShopsInBoundsHandler(IGenericRepository<Domain.Aggregates.Coffee
     {
         var shops = await shopRepository
                 .QueryAsNoTracking()
-                .Where(s => s.Location != null &&
+                .Where(s =>
                              s.Location.Latitude.HasValue &&
                              s.Location.Longitude.HasValue &&
                              s.Location.Latitude >= query.MinLat &&
@@ -23,13 +23,12 @@ public class GetShopsInBoundsHandler(IGenericRepository<Domain.Aggregates.Coffee
                 .Select(s => new MapShopDto
                 {
                     Id = s.Id,
-                    Latitude = s.Location!.Latitude!.Value,
-                    Longitude = s.Location!.Longitude!.Value,
+                    Latitude = s.Location.Latitude!.Value,
+                    Longitude = s.Location.Longitude!.Value,
                     Title = s.Name
                 })
                 .Take(500)
                 .ToArrayAsync(cancellationToken);
-            
 
         var response = new GetShopsInBoundsResponse(shops);
         return Response<GetShopsInBoundsResponse>.Success(response);
