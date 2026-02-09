@@ -50,9 +50,6 @@ builder.Services.AddControllersModule();
 builder.Services.AddSwaggerModule("Shops Service");
 
 // MediatR
-builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
-
-// MediatR
 builder.Services.AddMediatRModule(typeof(GetCoffeeShopHandler));
 
 // Authorization policies (JWT validation happens in Gateway)

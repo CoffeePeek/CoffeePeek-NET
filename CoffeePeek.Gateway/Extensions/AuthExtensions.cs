@@ -33,7 +33,8 @@ public static class AuthExtensions
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
+                RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
             };
         });
 

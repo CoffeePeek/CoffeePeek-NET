@@ -30,7 +30,7 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
         return (review != null, review?.Id);
     }
 
-    public async Task<(IReadOnlyList<Review> reviews, int totalCount)> GetByCoffeeShopIdAsync(
+    public async Task<(IReadOnlyList<Review> reviews, int totalCount)> GetByCoffeeShopId(
         Guid coffeeShopId, 
         int page = 1, 
         int pageSize = 10, 
@@ -51,43 +51,47 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
         return (reviews, totalCount);
     }
 
-    public async Task<(decimal averageRating, int count)> GetReviewStatsByCoffeeShopIdAsync(Guid coffeeShopId, CancellationToken ct)
+    public async Task<(decimal averageRating, int count)> GetReviewStatsByCoffeeShopId(Guid coffeeShopId, CancellationToken ct)
     {
         var stats = await reviewRepository
             .QueryAsNoTracking()
             .Where(r => r.CoffeeShopId == coffeeShopId && !r.IsSoftDelete)
-            .GroupBy(_ => 1)
             .Select(g => new
             {
-                AverageRating = g.Average(r => r.Rating.AverageRating),
-                Count = g.Count()
+                AverageRating = (g.Rating.Place + g.Rating.Coffee + g.Rating.Service) / 3,
+                Count = 1
             })
             .FirstOrDefaultAsync(ct);
 
         return stats != null ? (stats.AverageRating, stats.Count) : (0m, 0);
     }
 
-    public async Task<Dictionary<Guid, (decimal averageRating, int count)>> GetReviewStatsByShopIdsAsync(
+    public async Task<Dictionary<Guid, (decimal averageRating, int count)>> GetReviewStatsByShopIds(
         List<Guid> shopIds, 
         CancellationToken ct)
     {
-        
-        if (!shopIds.Any()) return new Dictionary<Guid, (decimal, int)>();
-        
-        var stats = await reviewRepository
+        if (shopIds.Count == 0) 
+            return new Dictionary<Guid, (decimal, int)>();
+
+        var statsList = await reviewRepository
             .QueryAsNoTracking()
             .Where(r => shopIds.Contains(r.CoffeeShopId) && !r.IsSoftDelete)
+            .Select(r => new
+            {
+                r.CoffeeShopId,
+                RatingSum = (r.Rating.Place + r.Rating.Coffee + r.Rating.Service) / 3m
+            })
             .GroupBy(r => r.CoffeeShopId)
             .Select(g => new
             {
-                CoffeeShopId = g.Key,
-                AverageRating = g.Average(r => r.Rating.AverageRating),
+                ShopId = g.Key,
+                Avg = g.Average(x => x.RatingSum),
                 Count = g.Count()
             })
             .ToListAsync(ct);
 
-        return stats.ToDictionary(
-            s => s.CoffeeShopId, 
-            s => (s.AverageRating, s.Count));
+        return statsList.ToDictionary(
+            x => x.ShopId, 
+            x => (averageRating: x.Avg, count: x.Count));
     }
 }

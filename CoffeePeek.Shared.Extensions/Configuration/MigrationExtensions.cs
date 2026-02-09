@@ -40,10 +40,6 @@ public static class MigrationExtensions
     private static async Task ApplyMigrationsToContext<TDbContext>(TDbContext dbContext) 
         where TDbContext : DbContext
     {
-        var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
-        if (pendingMigrations.Any())
-        {
-            await dbContext.Database.MigrateAsync();
-        }
+        await dbContext.Database.MigrateAsync();
     }
 }

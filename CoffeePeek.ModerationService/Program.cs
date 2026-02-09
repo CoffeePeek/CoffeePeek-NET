@@ -17,6 +17,7 @@ using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Extensions.Resilience;
 using CoffeePeek.Shared.Extensions.Swagger;
+using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shared.Infrastructure.Options;
 using CoffeePeek.Shared.Validation;
@@ -96,6 +97,9 @@ builder.Services.AddHttpClient<IYandexGeocodingService, YandexGeocodingService>(
 builder.Services.AddMediatRModule(typeof(GetAllModerationShopsHandler));
 
 // Authorization policies (JWT validation happens in Gateway)
+builder.Services
+    .AddAuthentication("HeaderAuth")
+    .AddCookie("HeaderAuth");
 builder.Services.AddHeaderUserContext();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
@@ -113,6 +117,8 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
+
+app.UseMiddleware<HeaderAuthMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -132,7 +132,7 @@ public class SearchCoffeeShopsHandler(
 
         // Get review statistics for all shops in batch
         var shopIds = shops.Select(s => s.Id).ToList();
-        var reviewStats = await reviewRepository.GetReviewStatsByShopIdsAsync(shopIds, cancellationToken);
+        var reviewStats = await reviewRepository.GetReviewStatsByShopIds(shopIds, cancellationToken);
 
         var dtos = shops.Select(shop =>
         {

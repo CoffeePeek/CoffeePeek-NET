@@ -45,8 +45,8 @@ public class GetCoffeeShopHandler(
                     return Response<GetCoffeeShopResponse>.Error($"Coffee shop with ID {queryRequest.Id} not found.");
 
                 // Get review statistics and reviews through the repository
-                var (averageRating, reviewCount) = await reviewRepository.GetReviewStatsByCoffeeShopIdAsync(queryRequest.Id, cancellationToken);
-                var (reviews, _) = await reviewRepository.GetByCoffeeShopIdAsync(queryRequest.Id, page: 1, pageSize: 10, cancellationToken);
+                var (averageRating, reviewCount) = await reviewRepository.GetReviewStatsByCoffeeShopId(queryRequest.Id, cancellationToken);
+                var (reviews, _) = await reviewRepository.GetByCoffeeShopId(queryRequest.Id, page: 1, pageSize: 10, cancellationToken);
                 
                 var shopDto = shop.Adapt<CoffeeShopDetailsDto>(mapper.Config) with
                 {

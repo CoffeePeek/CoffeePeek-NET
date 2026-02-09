@@ -36,11 +36,6 @@ builder.Services.AddScoped<IStorageService, MinIOStorageService>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<PhotoCleanupService>();
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MediaDbContext>>();
-builder.Services.AddGenericRepository<PhotoMetadata, MediaDbContext>();
-
-
-builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
 // Register CAP handlers
 builder.Services.AddScoped<PhotoReplacedEventHandler>();
 
@@ -57,16 +52,16 @@ builder.Services
             .Build()
     );
 
+// MediatR
+builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
 
 string connectionString;
 if (builder.Configuration["DOTNET_ASPIRE"] == "true")
 {
     builder.AddNpgsqlDbContext<MediaDbContext>(
-        AppResources.MediaDb, 
-        configureSettings: settings => 
-        {
-            settings.DisableRetry = true; 
-        });
+        connectionName: AppResources.MediaDb,
+        configureSettings: settings => { settings.DisableRetry = true; }
+        );
     connectionString = builder.Configuration.GetConnectionString(AppResources.MediaDb);
 }
 else
@@ -74,6 +69,9 @@ else
     connectionString = builder.Services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
     builder.Services.AddDbContext<MediaDbContext>(opt => opt.UseNpgsql(connectionString));
 }
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MediaDbContext>>();
+builder.Services.AddGenericRepository<PhotoMetadata, MediaDbContext>();
 
 builder.Services.AddCapModule(connectionString, AppResources.MediaService);
 

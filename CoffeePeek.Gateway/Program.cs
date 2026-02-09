@@ -3,6 +3,7 @@ using CoffeePeek.Gateway.Extensions;
 using CoffeePeek.Shared.Extensions.Handlers;
 using CoffeePeek.Shared.Extensions.Logging;
 using CoffeePeek.Shared.Extensions.Modules;
+using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffePeek.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,13 @@ builder.ConfigureEnvironment();
 
 // JWT Authentication for Gateway
 builder.Services.AddGatewayJwtAuth();
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
+    .AddPolicy(RoleConsts.Owner, policy => policy.RequireRole(RoleConsts.Owner))
+    .AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User))
+    .AddPolicy(RoleConsts.Moderator, policy => policy.RequireRole(RoleConsts.Moderator))
+    .AddPolicy(RoleConsts.Employee, policy => policy.RequireRole(RoleConsts.Employee))
+    .AddPolicy(RoleConsts.Roaster, policy => policy.RequireRole(RoleConsts.Roaster));
 
 builder.Services.AddReverseProxy()
     .LoadFromMemory(YarpConfig.GetRoutes(), YarpConfig.GetClusters())
