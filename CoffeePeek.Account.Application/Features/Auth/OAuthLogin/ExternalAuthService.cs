@@ -1,7 +1,7 @@
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Auth.Constants;
 
 namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 

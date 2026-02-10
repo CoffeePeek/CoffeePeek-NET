@@ -1,25 +1,23 @@
 using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Application.Common.Models;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Options;
-using MediatR;
+using CoffeePeek.Shared.Auth.Options;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 
-public class GoogleLoginHandler(
-    IGoogleAuthService googleAuthService,
-    IExternalAuthService externalAuthService,
-    IJWTTokenService tokenService,
-    IUnitOfWork unitOfWork,
-    IOptions<JWTOptions> options)
-    : IRequestHandler<GoogleLoginCommand, Response<GoogleLoginResponse>>
+public class GoogleLoginHandler
 {
-    public async Task<Response<GoogleLoginResponse>> Handle(GoogleLoginCommand request, CancellationToken ct)
+    public static async Task<Response<GoogleLoginResponse>> Handle(GoogleLoginCommand request, 
+        IGoogleAuthService googleAuthService,
+        IExternalAuthService externalAuthService,
+        IJWTTokenService tokenService,
+        IUnitOfWork unitOfWork,
+        IOptions<JWTOptions> options,
+        CancellationToken ct)
     {
         var payload = await googleAuthService.ValidateIdTokenAsync(request.IdToken);
         if (payload == null)

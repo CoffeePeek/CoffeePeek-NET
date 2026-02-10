@@ -4,7 +4,6 @@ using CoffeePeek.Account.Application.Features.Auth.Login;
 using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 using CoffeePeek.Account.Application.Mapper;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Shared.Extensions.Modules;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CoffeePeek.Account.Application;
@@ -27,9 +26,6 @@ public static class DependencyInjection
         });
 
         services.AddSingleton<IEmailTemplateService, EmailTemplateService>();
-        
-        
-        services.AddMediatRModule(typeof(LoginUserHandler));
         
         services.AddScoped<IExternalAuthService, ExternalAuthService>();
         

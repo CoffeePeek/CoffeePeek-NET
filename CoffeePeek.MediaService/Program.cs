@@ -4,26 +4,25 @@ using CoffeePeek.MediaService.Configuration;
 using CoffeePeek.MediaService.Data;
 using CoffeePeek.MediaService.Handlers;
 using CoffeePeek.MediaService.Services;
-using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Handlers;
-using CoffeePeek.Shared.Extensions.Modules;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using CoffeePeek.Shared.Infrastructure.Options;
-using CoffeePeek.Shared.Infrastructure.Persistence.Data;
+using CoffeePeek.Shared.Auth.Constants;
+using CoffeePeek.Shared.Auth.Extensions;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Extensions.CAP;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Extentions;
+using CoffeePeek.Shared.Persistence;
+using CoffeePeek.Shared.Persistence.Data;
+using CoffeePeek.Shared.Persistence.Extensions;
+using CoffeePeek.Shared.Web.Handlers;
 using Microsoft.EntityFrameworkCore;
 using Minio;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
-// Add Swagger
-builder.Services.AddSwaggerModule("CoffeePeek Media Service");
 
 // Add authentication and authorization
 builder.Services.AddHeaderUserContext();
@@ -53,7 +52,7 @@ builder.Services
     );
 
 // MediatR
-builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
+var a = builder.Host;.AddMediatRModule(Assembly.GetExecutingAssembly());
 
 string connectionString;
 if (builder.Configuration["DOTNET_ASPIRE"] == "true")
@@ -83,7 +82,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    await app.ApplyMigrations<MediaDbContext>();
+    //await app.ApplyMigrations<MediaDbContext>();
     app.MapOpenApi();
 }
 

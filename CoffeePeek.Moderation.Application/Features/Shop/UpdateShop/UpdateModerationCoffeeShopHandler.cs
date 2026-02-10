@@ -1,4 +1,5 @@
 using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Moderation.Application.Abstractions;

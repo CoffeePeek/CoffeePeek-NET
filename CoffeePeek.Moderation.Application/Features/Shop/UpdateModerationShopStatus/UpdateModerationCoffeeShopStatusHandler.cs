@@ -1,8 +1,9 @@
+using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
+using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Moderation.Domain.Entities;
-using CoffeePeek.Shared.Extensions.CAP;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using DotNetCore.CAP;

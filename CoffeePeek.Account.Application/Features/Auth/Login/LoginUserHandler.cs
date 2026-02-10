@@ -1,18 +1,17 @@
 ﻿using CoffeePeek.Account.Application.Common;
 using CoffeePeek.Account.Application.Common.Interfaces;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using MediatR;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.Account.Application.Features.Auth.Login;
 
-public class LoginUserHandler(
-    IAuthService authService,
-    IUnitOfWork unitOfWork,
-    EmailExistenceFilter emailExistenceFilter)
-    : IRequestHandler<LoginUserCommand, Response<LoginResponse>>
+public class LoginUserHandler
 {
-    public async Task<Response<LoginResponse>> Handle(LoginUserCommand request, CancellationToken ct)
+    public static async Task<Response<LoginResponse>> Handle(LoginUserCommand request, 
+        IAuthService authService,
+        IUnitOfWork unitOfWork,
+        EmailExistenceFilter emailExistenceFilter,
+        CancellationToken ct)
     {
         var result = await authService.LoginAsync(
             request.Email, 

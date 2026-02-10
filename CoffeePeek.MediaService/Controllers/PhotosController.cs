@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
-using CoffeePeek.Contract.Abstract;
 using CoffeePeek.MediaService.Requests;
 using CoffeePeek.MediaService.Responses;
 using CoffeePeek.MediaService.Services;
-using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Auth;
+using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 

@@ -1,19 +1,19 @@
 ﻿using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using MediatR;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.Account.Application.Features.Admin.ChangeRole;
 
-public class ChangeRoleHandler(
-    IGenericRepository<Role> roleRepository,
-    IUserRepository userRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<ChangeRoleCommand, Response>
+public class ChangeRoleHandler
 {
-    public async Task<Response> Handle(ChangeRoleCommand request, CancellationToken cancellationToken)
+    public static async Task<Response> Handle(
+        ChangeRoleCommand request,
+        IGenericRepository<Role> roleRepository,
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
+        CancellationToken cancellationToken)
     {
         var user = await userRepository.GetById(request.UserIdOfChange, cancellationToken);
 
@@ -21,9 +21,9 @@ public class ChangeRoleHandler(
         {
             throw new NotFoundException("User not found");
         }
-        
+
         var role = await roleRepository.GetByIdAsync(request.RoleId, cancellationToken);
-        
+
         if (role == null)
         {
             throw new NotFoundException("Role not found");

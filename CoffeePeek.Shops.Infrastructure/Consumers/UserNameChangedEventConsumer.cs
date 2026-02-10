@@ -1,7 +1,9 @@
+using CoffeePeek.Contract.Constants;
+using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Events.Account;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Constants;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

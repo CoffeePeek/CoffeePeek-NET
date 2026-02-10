@@ -3,11 +3,16 @@ using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Persistence.Configuration;
 using CoffeePeek.Account.Persistence.Repositories;
-using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Options;
 using CoffeePeek.Shared.Infrastructure.Persistence.Data;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Extentions;
+using CoffeePeek.Shared.Persistence;
+using CoffeePeek.Shared.Persistence.Data;
+using CoffeePeek.Shared.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -55,7 +60,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository>(provider =>
         {
             var baseRepo = provider.GetRequiredService<UserRepository>();
-            var redisService = provider.GetRequiredService<IRedisService>();
+            var redisService = provider.GetRequiredService<ICacheService>();
             return new CachedUserRepository(baseRepo, redisService);
         });
         

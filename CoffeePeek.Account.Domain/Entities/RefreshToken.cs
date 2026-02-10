@@ -1,5 +1,5 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Domain.Entities;
 
 namespace CoffeePeek.Account.Domain.Entities;
 
@@ -40,7 +40,9 @@ public sealed class RefreshToken : Entity<Guid>
 
     public void Revoke()
     {
-        if (IsRevoked) return;
+        if (IsRevoked) 
+            return;
+        
         IsRevoked = true;
     }
 }

@@ -1,18 +1,21 @@
 ﻿using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Events.Account;
-using CoffeePeek.Shared.Extensions.CAP;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using DotNetCore.CAP;
-using MediatR;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
+using Wolverine;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateUsername;
 
-public class UpdateUsernameHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, ICapPublisher capPublisher)
-    : IRequestHandler<UpdateProfileUsernameCommand, UpdateEntityResponse<string>>
+[Transactional]
+public class UpdateUsernameHandler
 {
-    public async Task<UpdateEntityResponse<string>> Handle(UpdateProfileUsernameCommand command,
+    public async Task<UpdateEntityResponse<string>> Handle(
+        UpdateProfileUsernameCommand command,
+        IUserRepository userRepository, 
+        IUnitOfWork unitOfWork, 
+        IMessageBus bus,
         CancellationToken ct)
     {
         using var transaction = unitOfWork.BeginTransactionAsync(ct);

@@ -1,6 +1,6 @@
-﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.MediaService.Requests;
+﻿using CoffeePeek.MediaService.Requests;
 using CoffeePeek.MediaService.Responses;
+using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.MediaService.Services;
 

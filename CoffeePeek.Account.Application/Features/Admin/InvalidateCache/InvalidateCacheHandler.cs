@@ -1,22 +1,18 @@
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Persistence;
-using MediatR;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
+using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Account.Application.Features.Admin.InvalidateCache;
 
-public class InvalidateCacheHandler(
-    IRedisService redisService,
-    ILogger<InvalidateCacheHandler> logger) 
-    : IRequestHandler<InvalidateCacheCommand, Response<InvalidateCacheResponse>>
+public class InvalidateCacheHandler
 {
-    private static readonly Dictionary<string, string[]> CategoryToPatterns = 
+    private static readonly Dictionary<string, string[]> CategoryToPatterns =
         CacheKey.Categories.Account.GetPatterns();
 
-    public async Task<Response<InvalidateCacheResponse>> Handle(
-        InvalidateCacheCommand request, 
+    public static async Task<Response<InvalidateCacheResponse>> Handle(
+        InvalidateCacheCommand request,
+        ICacheService redisService,
+        ILogger<InvalidateCacheHandler> logger,
         CancellationToken cancellationToken)
     {
         try
@@ -24,9 +20,9 @@ public class InvalidateCacheHandler(
             if (request.InvalidateAll)
             {
                 await redisService.RemoveByPattern("*");
-                
+
                 logger.LogInformation("Admin: All cache invalidated in AccountService");
-                
+
                 return Response<InvalidateCacheResponse>.Success(
                     new InvalidateCacheResponse(
                         "All cache successfully invalidated",
@@ -51,8 +47,9 @@ public class InvalidateCacheHandler(
             {
                 await redisService.RemoveByPattern(pattern);
             }
-            
-            logger.LogInformation("Admin: Cache category '{Category}' invalidated in AccountService (patterns: {Patterns})", 
+
+            logger.LogInformation(
+                "Admin: Cache category '{Category}' invalidated in AccountService (patterns: {Patterns})",
                 request.Category, string.Join(", ", patterns));
 
             return Response<InvalidateCacheResponse>.Success(
@@ -62,9 +59,10 @@ public class InvalidateCacheHandler(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to invalidate cache in AccountService. Category: {Category}, InvalidateAll: {InvalidateAll}", 
+            logger.LogError(ex,
+                "Failed to invalidate cache in AccountService. Category: {Category}, InvalidateAll: {InvalidateAll}",
                 request.Category, request.InvalidateAll);
-            
+
             return Response<InvalidateCacheResponse>.Error(
                 "Failed to invalidate cache. See logs for details.");
         }

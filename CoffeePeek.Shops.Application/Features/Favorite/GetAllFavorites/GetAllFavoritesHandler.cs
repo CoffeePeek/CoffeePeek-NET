@@ -1,6 +1,6 @@
 ﻿using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using MapsterMapper;
 using MediatR;
 

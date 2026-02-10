@@ -1,25 +1,24 @@
 ﻿using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using MediatR;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.Extensions.Configuration;
 using Resend;
 
 namespace CoffeePeek.Account.Application.Features.Auth.Email.ResendEmailConfirmation;
 
-public class ResendEmailConfirmationHandler(
-    IResend resend,
-    IEmailTemplateService templateService,
-    IUserRepository userRepository,
-    IUnitOfWork unitOfWork,
-    IConfiguration config) : IRequestHandler<ResendEmailConfirmationCommand, Response>
+public class ResendEmailConfirmationHandler
 {
     private const string WebClientUrl = nameof(WebClientUrl);
-    
-    public async Task<Response> Handle(ResendEmailConfirmationCommand request, CancellationToken cancellationToken)
+
+    public static async Task<Response> Handle(ResendEmailConfirmationCommand request, 
+        IResend resend,
+        IEmailTemplateService templateService,
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
+        IConfiguration config,
+        CancellationToken cancellationToken)
     {
         var user = await userRepository.GetById(request.UserId, cancellationToken);
 
@@ -39,7 +38,7 @@ public class ResendEmailConfirmationHandler(
             HtmlBody = templateService.GetConfirmationHtml(user.Username.Value, confirmationUrl)
         };
 
-        
+
         await resend.EmailSendAsync(message, cancellationToken);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

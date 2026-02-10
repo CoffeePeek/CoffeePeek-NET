@@ -10,137 +10,155 @@ using CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateEmail
 using CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdatePhoneNumber;
 using CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateUsername;
 using CoffeePeek.Account.Domain.Entities;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Dtos;
-using CoffeePeek.Shared.Infrastructure;
-using MediatR;
+using CoffeePeek.Shared.Auth;
+using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
+using Wolverine;
 
 namespace CoffeePeek.AccountService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class UsersController(IMediator mediator, IUserContext userContext) : ControllerBase
+public class UsersController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Get user profile by id or current user profile
+    /// </summary>
     [HttpGet("{id:guid}")]
     [ProducesResponseType<Response<UserProfileResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Get user profile by id or current user profile")]
     public async Task<IActionResult> GetById(Guid? id)
     {
-        var response = await mediator.Send(new GetPublicUserProfileQuery(id ?? userContext.GetUserIdOrThrow()));
+        var command = new GetPublicUserProfileQuery(id ?? userContext.GetUserIdOrThrow());
+        var response = await bus.InvokeAsync<Response<UserProfileResponse>>(command);
         return Ok(response);
     }
 
+    /// <summary>
+    /// Check if user exists by email
+    /// </summary>
     [HttpGet("exists")]
     [ProducesResponseType<Response>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Check if user exists by email")]
     public async Task<IActionResult> CheckUser([FromQuery] string email)
     {
-        var request = new CheckUserExistsByEmailQuery(email);
+        var request = new CheckUserExistsByEmailCommand(email);
 
-        var response = await mediator.Send(request);
+        var response = await bus.InvokeAsync<Response>(request);
 
         return Ok(response);
     }
 
+    /// <summary>
+    /// Register new user
+    /// </summary>
     [HttpPost]
     [ProducesResponseType<CreateEntityResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Register new user")]
     public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
     {
-        var response = await mediator.Send(command);
+        var response = await bus.InvokeAsync<CreateEntityResponse>(command);
         return Ok(response);
     }
 
     #region Me
 
+    /// <summary>
+    /// Get user profile by id or current user profile
+    /// </summary>
     [HttpGet("me")]
     [Authorize]
     [ProducesResponseType<Response<UserProfileResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Get user profile by id or current user profile")]
     public async Task<IActionResult> GetById()
     {
-        var response = await mediator.Send(new GetPublicUserProfileQuery(userContext.GetUserIdOrThrow()));
+        var request = new GetPublicUserProfileQuery(userContext.GetUserIdOrThrow());
+        var response = await bus.InvokeAsync<Response<UserProfileResponse>>(request);
         return Ok(response);
     }
 
+    /// <summary>
+    /// Update user profile about information
+    /// </summary>
     [HttpPatch("me/about")]
     [Authorize]
     [ProducesResponseType<UpdateEntityResponse<string>>(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Update user profile about information")]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileAboutCommand request,
         CancellationToken cancellationToken)
     {
         var command = request with { UserId = userContext.GetUserIdOrThrow() };
-        var response = await mediator.Send(command, cancellationToken);
+        var response = await bus.InvokeAsync<UpdateEntityResponse<string>>(command, cancellationToken);
 
         return Accepted(response);
     }
 
+    /// <summary>
+    /// Update user profile email
+    /// </summary>
     [HttpPatch("me/email")]
     [Authorize]
     [ProducesResponseType<UpdateEntityResponse<string>>(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Update user profile email")]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileEmailCommand request,
         CancellationToken cancellationToken)
     {
         var command = request with { UserId = userContext.GetUserIdOrThrow() };
-        var response = await mediator.Send(command, cancellationToken);
+        var response = await bus.InvokeAsync<UpdateEntityResponse<string>>(command, cancellationToken);
 
         return Accepted(response);
     }
 
+    /// <summary>
+    /// Update user profile phone number
+    /// </summary>
     [HttpPatch("me/phone-number")]
     [Authorize]
     [ProducesResponseType<UpdateEntityResponse<string>>(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Update user profile phone number")]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfilePhoneNumberCommand request,
         CancellationToken cancellationToken)
     {
         var command = request with { UserId = userContext.GetUserIdOrThrow() };
-        var response = await mediator.Send(command, cancellationToken);
+        var response = await bus.InvokeAsync<UpdateEntityResponse<string>>(command, cancellationToken);
 
         return Accepted(response);
     }
 
+    /// <summary>
+    /// Update user avatar
+    /// </summary>
     [HttpPatch("me/avatar")]
     [Authorize]
     [ProducesResponseType<UpdateEntityResponse<PhotoMetadata>>(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Update user avatar")]
-    public async Task<IActionResult> UpdateAvatar([FromBody] UpdateUserAvatarCommand command)
+    public async Task<IActionResult> UpdateAvatar([FromBody] UpdateUserAvatarCommand command, CancellationToken cancellationToken)
     {
         command = command with { UserId = userContext.GetUserIdOrThrow() };
-        var response = await mediator.Send(command);
+        var response = await bus.InvokeAsync<UpdateEntityResponse<PhotoMetadata>>(command, cancellationToken);
 
         return Accepted(response);
     }
 
+    /// <summary>
+    /// Update user username
+    /// </summary>
     [HttpPatch("me/username")]
     [Authorize]
     [ProducesResponseType<UpdateEntityResponse<string>>(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Update user username")]
     public async Task<IActionResult> UpdateEmail([FromBody] UpdateProfileUsernameCommand command,
         CancellationToken cancellationToken)
     {
@@ -149,40 +167,51 @@ public class UsersController(IMediator mediator, IUserContext userContext) : Con
             UserId = userContext.GetUserIdOrThrow()
         };
 
-        var response = await mediator.Send(command, cancellationToken);
+        var response = await bus.InvokeAsync<UpdateEntityResponse<string>>(command, cancellationToken);
 
         return Accepted(response);
     }
 
+    /// <summary>
+    /// Delete user by id
+    /// </summary>
     [HttpDelete("me")]
     [Authorize]
-    [ProducesResponseType(typeof(Response<bool>), StatusCodes.Status200OK)]
+    [ProducesResponseType<Response<bool>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Delete user by id")]
-    public Task<Response<bool>> DeleteUser(CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteUser(CancellationToken cancellationToken)
     {
         var request = new DeleteUserCommand(userContext.GetUserIdOrThrow());
-        return mediator.Send(request, cancellationToken);
+        var response = await bus.InvokeAsync<Response<bool>>(request, cancellationToken);
+        
+        return Ok(response);
     }
 
-
+    /// <summary>
+    /// Resend email confirmation
+    /// </summary>
     [HttpPost("me/email-confirmation")]
     [Authorize]
-    [ProducesResponseType(typeof(Response), StatusCodes.Status200OK)]
+    [ProducesResponseType<Response>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Resend email confirmation")]
-    public Task<Response> ResendEmailConfirm()
+    public async Task<IActionResult> ResendEmailConfirm()
     {
-        return mediator.Send(new ResendEmailConfirmationCommand(userContext.GetUserIdOrThrow()));
+        var command = new ResendEmailConfirmationCommand(userContext.GetUserIdOrThrow());
+        var response = await bus.InvokeAsync<Response>(command);
+        
+        return Ok(response);
     }
 
+    /// <summary>
+    /// Confirm email
+    /// </summary>
     [HttpPut("me/email-confirmation")]
-    [ProducesResponseType(typeof(Response), StatusCodes.Status200OK)]
+    [ProducesResponseType<Response>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Confirm email")]
-    public Task<Response> ConfirmEmail([FromQuery] string token)
+    public async Task<IActionResult> ConfirmEmail([FromQuery] string token)
     {
-        return mediator.Send(new ConfirmEmailCommand(token));
+        var response = await bus.InvokeAsync<Response>(new ConfirmEmailCommand(token));
+        return Ok(response);
     }
 
     #endregion

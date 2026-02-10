@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace CoffeePeek.ShopsService.Controllers;
 

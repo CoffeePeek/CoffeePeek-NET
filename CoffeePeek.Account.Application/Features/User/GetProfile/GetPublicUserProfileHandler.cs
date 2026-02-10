@@ -1,17 +1,19 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
-using MediatR;
 
 namespace CoffeePeek.Account.Application.Features.User.GetProfile;
 
-public class GetPublicUserProfileHandler(IUserRepository userRepository, IMapper mapper)
-    : IRequestHandler<GetPublicUserProfileQuery, Response<UserProfileResponse>>
+public class GetPublicUserProfileHandler
 {
-    public async Task<Response<UserProfileResponse>> Handle(GetPublicUserProfileQuery request, CancellationToken ct)
+    public async Task<Response<UserProfileResponse>> Handle(
+        GetPublicUserProfileQuery query, 
+        IUserRepository userRepository, 
+        IMapper mapper, 
+        CancellationToken ct)
     {
-        var user = await userRepository.GetById(request.UserId, ct);
+        var user = await userRepository.GetById(query.UserId, ct);
 
         if (user == null)
         {

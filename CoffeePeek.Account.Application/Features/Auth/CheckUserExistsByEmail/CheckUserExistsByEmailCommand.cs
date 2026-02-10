@@ -1,0 +1,4 @@
+﻿
+namespace CoffeePeek.Account.Application.Features.Auth.CheckUserExistsByEmail;
+
+public record CheckUserExistsByEmailCommand(string Email);

@@ -2,26 +2,23 @@
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using MediatR;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Account.Application.Features.Auth.RegisterUser;
 
-public class RegisterUserHandler(
-    IUserRepository userRepository,
-    IRoleRepository roleRepository,
-    IPasswordHasherService passwordHasher,
-    IUnitOfWork unitOfWork,
-    EmailExistenceFilter emailExistenceFilter,
-    ILogger<RegisterUserHandler> logger)
-    : IRequestHandler<RegisterUserCommand, CreateEntityResponse>
+public class RegisterUserHandler
 {
-    public async Task<CreateEntityResponse> Handle(RegisterUserCommand request, CancellationToken ct)
+    public async Task<CreateEntityResponse> Handle(RegisterUserCommand request, 
+        IUserRepository userRepository,
+        IRoleRepository roleRepository,
+        IPasswordHasherService passwordHasher,
+        IUnitOfWork unitOfWork,
+        EmailExistenceFilter emailExistenceFilter,
+        ILogger<RegisterUserHandler> logger, 
+        CancellationToken ct)
     {
         if (emailExistenceFilter.MightExist(request.Email) || !await userRepository.IsEmailUnique(request.Email, ct))
         {
@@ -29,11 +26,12 @@ public class RegisterUserHandler(
         }
 
         var passwordHash = passwordHasher.HashPassword(request.Password);
-        
+
         var defaultRole = await roleRepository.GetRoleAsync(RoleConsts.User)
                           ?? throw new DomainException("Default role not found");
 
-        var user = Domain.Entities.UserAggregate.User.Register(request.Email, invalidUsername:request.UserName, passwordHash,
+        var user = Domain.Entities.UserAggregate.User.Register(request.Email, invalidUsername: request.UserName,
+            passwordHash,
             defaultRole);
 
         await userRepository.Add(user, ct);

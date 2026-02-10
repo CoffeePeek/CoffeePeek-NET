@@ -1,19 +1,18 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Events.Shops;
-using CoffeePeek.Shared.Extensions.CAP;
 using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Infrastructure;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using DotNetCore.CAP;
 using MapsterMapper;
 using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.CheckIn.CreateCheckIn;
 
-using Review = Domain.Entities.ReviewAggregate.Review;
+using Review = Domain.Aggregates.ReviewAggregate.Review;
 
 public class CreateCheckInHandler(
     IGenericRepository<Domain.Aggregates.CheckInAggregate.CheckIn> checkInRepository,

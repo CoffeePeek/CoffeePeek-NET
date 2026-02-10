@@ -1,18 +1,15 @@
 ﻿using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using MediatR;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.Account.Application.Features.Auth.Email.ConfirmEmail;
 
-public class ConfirmEmailHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) 
-    : IRequestHandler<ConfirmEmailCommand, Response>
+public class ConfirmEmailHandler
 {
-    public async Task<Response> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
+    public static async Task<Response> Handle(ConfirmEmailCommand request, IUserRepository userRepository, IUnitOfWork unitOfWork, CancellationToken cancellationToken)
     {
-         var user = await userRepository.GetByEmailConfirmToken(request.Token, cancellationToken);
+        var user = await userRepository.GetByEmailConfirmToken(request.Token, cancellationToken);
 
         if (user == null)
             throw new NotFoundException("User not found.");

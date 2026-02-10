@@ -1,34 +1,34 @@
 ﻿using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Account.Domain.Events;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Resend;
 
 namespace CoffeePeek.Account.Application.Features.Auth.RegisterUser;
 
-public class UserRegisteredEventHandler(
-    IResend resend,
-    IConfiguration config,
-    IEmailTemplateService templateService,
-    ILogger<UserRegisteredEventHandler> logger) : INotificationHandler<UserRegisteredInternalEvent>
+public class UserRegisteredEventHandler
 {
-    public async Task Handle(UserRegisteredInternalEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(
+        UserRegisteredInternalEvent @event,
+        IResend resend,
+        IConfiguration config,
+        IEmailTemplateService templateService,
+        ILogger<UserRegisteredEventHandler> logger,
+        CancellationToken ct)
     {
+        var confirmationUrl = $"{config["WebClientUrl"]}/confirm-email?token={@event.ConfirmationToken}";
+
+        var message = new EmailMessage
+        {
+            From = "CoffeePeek.by <info@coffeepeek.by>",
+            To = @event.Email,
+            Subject = "Perfectly roasted beans are waiting for you! ☕",
+            HtmlBody = templateService.GetConfirmationHtml(@event.Username, confirmationUrl)
+        };
+
         try
         {
-            var confirmationUrl = $"{config["WebClientUrl"]}/confirm-email?token={notification.ConfirmationToken}";
-
-            var message = new EmailMessage
-            {
-                From = "CoffeePeek.by <info@coffeepeek.by>",
-                To = notification.Email,
-                Subject = "Perfectly roasted beans are waiting for you! ☕",
-                HtmlBody = templateService.GetConfirmationHtml(notification.Username, confirmationUrl)
-            };
-
-            await resend.EmailSendAsync(message, cancellationToken);
+            await resend.EmailSendAsync(message, ct);
         }
         catch (ResendException e)
         {
@@ -38,5 +38,7 @@ public class UserRegisteredEventHandler(
         {
             logger.LogError(e.Message);
         }
+        
+        logger.LogInformation("Confirmation email sent to {Email}", @event.Email);
     }
 }

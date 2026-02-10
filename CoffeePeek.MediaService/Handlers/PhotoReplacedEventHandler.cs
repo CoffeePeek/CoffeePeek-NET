@@ -1,6 +1,6 @@
+using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.MediaService.Services;
-using CoffeePeek.Shared.Infrastructure.Constants;
 using DotNetCore.CAP;
 
 namespace CoffeePeek.MediaService.Handlers;

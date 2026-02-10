@@ -1,12 +1,11 @@
-﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Events;
+﻿using CoffeePeek.Contract.Events;
 using CoffeePeek.MediaService.Configuration;
 using CoffeePeek.MediaService.Data;
 using CoffeePeek.MediaService.Requests;
 using CoffeePeek.MediaService.Responses;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
 using DotNetCore.CAP;
 
 namespace CoffeePeek.MediaService.Services;

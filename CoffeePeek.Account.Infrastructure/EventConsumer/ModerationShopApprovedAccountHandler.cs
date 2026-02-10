@@ -1,4 +1,6 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
+using CoffeePeek.Contract.Constants;
+using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Constants;

@@ -1,10 +1,7 @@
 ﻿using CoffeePeek.Account.Application;
 using CoffeePeek.Account.Infrastructure;
 using CoffeePeek.Account.Persistence;
-using CoffeePeek.Account.Persistence.Configuration;
-using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Logging;
-using CoffeePeek.Shared.Extensions.Swagger;
+using CoffeePeek.Shared.Web.Logging;
 using CoffePeek.ServiceDefaults;
 using Serilog;
 
@@ -35,16 +32,14 @@ public static class InfrastructureExtensions
 
         app.UseAuthentication();
         app.UseAuthorization();
-        
+
         if (app.Environment.IsDevelopment())
         {
-             await app.ApplyMigrations<AccountDbContext>();
-            //AccountDbInitializer.SeedAsync(app.Services);
+            app.MapOpenApi();
+            //await app.ApplyMigrations<AccountDbContext>();
         }
         
         app.MapDefaultEndpoints();
-
-        app.UseSwaggerDocumentation();
 
         app.MapControllers();
     }

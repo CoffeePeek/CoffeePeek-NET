@@ -1,7 +1,6 @@
-﻿using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+﻿using CoffeePeek.Shops.Domain.Entities;
 
-namespace CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 
 public sealed partial class Review : Entity<Guid>
 {

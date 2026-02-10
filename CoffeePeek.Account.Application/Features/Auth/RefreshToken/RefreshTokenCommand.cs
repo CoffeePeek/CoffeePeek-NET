@@ -1,6 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using CoffeePeek.Contract.Abstract;
-using MediatR;
 
 namespace CoffeePeek.Account.Application.Features.Auth.RefreshToken;
 
@@ -8,4 +6,4 @@ public record RefreshTokenCommand(
     [property: JsonIgnore] Guid UserId,
     string RefreshToken,
     [property: JsonIgnore] string DeviceName = "unknown",
-    [property: JsonIgnore] string IpAddress = "unknown") : IRequest<Response<RefreshTokenResponse>>;
+    [property: JsonIgnore] string IpAddress = "unknown");

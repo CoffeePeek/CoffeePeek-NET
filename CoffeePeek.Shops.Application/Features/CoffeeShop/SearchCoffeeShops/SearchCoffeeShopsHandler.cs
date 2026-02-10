@@ -8,11 +8,10 @@ using CoffeePeek.Shops.Application.Common.Responses;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using ReviewEntity = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
+using ReviewEntity = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 

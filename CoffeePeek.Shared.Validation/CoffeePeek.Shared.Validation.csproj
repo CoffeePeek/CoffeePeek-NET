@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CoffeePeek.Shared.Kernel\CoffeePeek.Shared.Kernel.csproj" />
+    </ItemGroup>
+
 </Project>

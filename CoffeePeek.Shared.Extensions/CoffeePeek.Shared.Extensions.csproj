@@ -7,38 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Asp.Versioning.Http" Version="8.1.1" />
-      <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.1" />
-      <PackageReference Include="FluentResults" Version="4.0.0" />
-      <PackageReference Include="FluentResults.Extensions.AspNetCore" Version="0.2.0" />
-      <PackageReference Include="MediatR" Version="13.1.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.0" />
-      <PackageReference Include="Npgsql" Version="10.0.0" />
-      <PackageReference Include="StackExchange.Redis" Version="2.10.1" />
-      <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.0" />
-      <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.1.0" />
-      <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="10.0.0" />
-      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.0.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.3.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.3.0" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
-      <PackageReference Include="MassTransit" Version="8.5.7" />
-      <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.7" />
-      <PackageReference Include="DotNetCore.CAP" Version="10.0.1" />
-      <PackageReference Include="DotNetCore.CAP.PostgreSql" Version="10.0.1" />
-      <PackageReference Include="DotNetCore.CAP.RedisStreams" Version="10.0.1" />
+        <PackageReference Include="DotNetCore.CAP" Version="10.0.1" />
+        <PackageReference Include="DotNetCore.CAP.PostgreSql" Version="10.0.1" />
+        <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="10.0.1" />
+        <PackageReference Include="DotNetCore.CAP.RedisStreams" Version="10.0.1" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Shared.Infrastructure\CoffeePeek.Shared.Infrastructure.csproj" />
+        <ProjectReference Include="..\CoffeePeek.Shared.Kernel\CoffeePeek.Shared.Kernel.csproj" />
     </ItemGroup>
-
+    
 </Project>

@@ -1,7 +1,7 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shared.Validation;
-using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.Favorite.RemoveFromFavorite;

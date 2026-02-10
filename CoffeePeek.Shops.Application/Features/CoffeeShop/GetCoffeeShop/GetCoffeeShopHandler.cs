@@ -5,7 +5,6 @@ using CoffeePeek.Shared.Infrastructure.Persistence;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using Mapster;
 using MapsterMapper;
 using MediatR;

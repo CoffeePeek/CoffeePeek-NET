@@ -1,15 +1,17 @@
 ﻿using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using MediatR;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdatePhoneNumber;
 
-public class UpdatePhoneNumberHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
-    : IRequestHandler<UpdateProfilePhoneNumberCommand, UpdateEntityResponse<string>>
+public class UpdatePhoneNumberHandler
 {
-    public async Task<UpdateEntityResponse<string>> Handle(UpdateProfilePhoneNumberCommand request, CancellationToken ct)
+    public static async Task<UpdateEntityResponse<string>> Handle(
+        UpdateProfilePhoneNumberCommand request, 
+        IUserRepository userRepository, 
+        IUnitOfWork unitOfWork,
+        CancellationToken ct)
     {
         var user = await userRepository.GetById(request.UserId, ct);
         if (user == null)

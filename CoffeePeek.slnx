@@ -40,9 +40,13 @@
   </Folder>
   <Folder Name="/CoffeePeek/Shared/">
     <Project Path="CoffeePeek.Contract/CoffeePeek.Contract.csproj" />
+    <Project Path="CoffeePeek.Shared.Auth/CoffeePeek.Shared.Auth.csproj" />
+    <Project Path="CoffeePeek.Shared.Domain/CoffeePeek.Shared.Domain.csproj" />
     <Project Path="CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj" />
-    <Project Path="CoffeePeek.Shared.Infrastructure/CoffeePeek.Shared.Infrastructure.csproj" />
+    <Project Path="CoffeePeek.Shared.Kernel/CoffeePeek.Shared.Kernel.csproj" />
+    <Project Path="CoffeePeek.Shared.Persistence/CoffeePeek.Shared.Persistence.csproj" />
     <Project Path="CoffeePeek.Shared.Validation/CoffeePeek.Shared.Validation.csproj" />
+    <Project Path="CoffeePeek.Shared.Web/CoffeePeek.Shared.Web.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".github/workflows/ci-cd.yml" />

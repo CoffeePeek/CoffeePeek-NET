@@ -1,7 +1,6 @@
-﻿using CoffeePeek.Contract.Responses;
+﻿using CoffeePeek.Contract.Events;
+using CoffeePeek.Contract.Responses;
 using CoffeePeek.Moderation.Domain.Entities;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
 using DotNetCore.CAP;
 
 namespace CoffeePeek.Moderation.Infrastructure.Consumers;

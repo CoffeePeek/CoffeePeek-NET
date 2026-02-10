@@ -5,7 +5,7 @@ using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.Review.DeleteReviewFromCoffeeShop;
 
-public class DeleteReviewFromCoffeeShopHandler(IGenericRepository<Domain.Entities.ReviewAggregate.Review> reviewRepository, IUnitOfWork unitOfWork)
+public class DeleteReviewFromCoffeeShopHandler(IGenericRepository<Domain.Aggregates.ReviewAggregate.Review> reviewRepository, IUnitOfWork unitOfWork)
     : IRequestHandler<DeleteReviewFromCoffeeShopCommand, Response>
 {
     public async Task<Response> Handle(DeleteReviewFromCoffeeShopCommand request, CancellationToken cancellationToken)

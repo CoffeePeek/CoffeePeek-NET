@@ -2,7 +2,6 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 
 namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;

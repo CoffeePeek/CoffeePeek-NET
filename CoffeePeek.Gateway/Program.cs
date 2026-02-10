@@ -1,9 +1,10 @@
 using CoffeePeek.Gateway;
 using CoffeePeek.Gateway.Extensions;
-using CoffeePeek.Shared.Extensions.Handlers;
-using CoffeePeek.Shared.Extensions.Logging;
+using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Extensions.Modules;
-using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Web.Extensions;
+using CoffeePeek.Shared.Web.Handlers;
+using CoffeePeek.Shared.Web.Logging;
 using CoffePeek.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +30,6 @@ builder.Services.AddReverseProxy()
     .AddTransforms<ClaimsToHeadersTransformProvider>();
 
 builder.Services.AddResponseCaching();
-builder.Services.AddSwaggerModule("CoffeePeek Gateway");
 builder.Services.AddCorsModule();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -48,27 +48,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseResponseCaching();
-app.ConfigureCustomCaching();
 
 
 // Gateway self health check
 app.MapGet("/health/gateway", () => Results.Ok(new { status = "healthy", service = "Gateway", timestamp = DateTime.UtcNow }))
     .WithName("GatewayHealthCheck")
     .WithTags("Health");
-
-app.UseSwagger();
-app.UseSwaggerUI(options =>
-{
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Gateway API");
-
-    foreach (var service in YarpRouteFactory.ServicesList)
-    {
-        foreach (var version in service.Versions)
-        {
-            options.SwaggerEndpoint($"/swagger/{service.Id}/v{version}/swagger.json", $"{service.Id.ToUpper()} v{version} Service");
-        }
-    }
-});
 
 app.MapReverseProxy();
 

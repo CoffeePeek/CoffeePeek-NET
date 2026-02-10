@@ -1,4 +1,4 @@
-using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Kernel;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -16,21 +16,18 @@ var accountService = builder
     .AddProject<Projects.CoffeePeek_AccountService>(AppResources.AccountService)
     .WithReference(accountDb)
     .WithEnvironment("DOTNET_ASPIRE", "true")
-    .WithUrl("/swagger", "Swagger UI")
     .WithUrl("/cap", "Cap dashboard");
 
 var shopsService = builder
     .AddProject<Projects.CoffeePeek_ShopsService>(AppResources.ShopsService)
     .WithReference(shopsDb)
     .WithEnvironment("DOTNET_ASPIRE", "true")
-    .WithUrl("/swagger", "Swagger UI")
     .WithUrl("/cap", "Cap dashboard");
 
 var moderationService = builder
     .AddProject<Projects.CoffeePeek_ModerationService>(AppResources.ModerationService)
     .WithReference(moderationDb)
     .WithEnvironment("DOTNET_ASPIRE", "true")
-    .WithUrl("/swagger", "Swagger UI")
     .WithUrl("/cap", "Cap dashboard");
 
 var mediaService = builder
@@ -46,7 +43,5 @@ builder.AddProject<Projects.CoffeePeek_Gateway>(AppResources.Gateway)
     .WithReference(moderationService)
     .WithReference(mediaService)
     .WithEnvironment("DOTNET_ASPIRE", "true")
-    .WithEnvironment("DOTNET_ASPIRE_RUNNING", "true")
-    .WithUrl("/swagger", "Swagger UI");
-
+    .WithEnvironment("DOTNET_ASPIRE_RUNNING", "true");
 builder.Build().Run();

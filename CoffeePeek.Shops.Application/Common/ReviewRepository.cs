@@ -1,6 +1,5 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shops.Application.Common;

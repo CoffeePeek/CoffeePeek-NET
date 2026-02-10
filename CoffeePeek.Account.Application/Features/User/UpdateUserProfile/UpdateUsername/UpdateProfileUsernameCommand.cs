@@ -1,10 +1,5 @@
-﻿using CoffeePeek.Contract.Abstract;
-using MediatR;
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateUsername;
 
-public record UpdateProfileUsernameCommand(
-    [property: JsonIgnore] Guid UserId, 
-    string Username)
-    : IRequest<UpdateEntityResponse<string>>;
+public record UpdateProfileUsernameCommand([property: JsonIgnore] Guid UserId, string Username);

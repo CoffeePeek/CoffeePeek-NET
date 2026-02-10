@@ -2,7 +2,6 @@ using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Application.Features.CheckIn.CreateCheckIn;
 using CoffeePeek.Shops.Domain;
-using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 
 namespace CoffeePeek.Shops.Application.ValidationStrategy.CheckIn;
 

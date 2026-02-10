@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Domain.Entities;
+using CoffeePeek.Shared.Kernel.Exceptions;
 
 namespace CoffeePeek.Account.Domain.Entities;
 

@@ -1,12 +1,11 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Persistence;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 
 namespace CoffeePeek.Account.Persistence.Repositories;
 
 public class CachedUserRepository(
     IUserRepository decorated,
-    IRedisService redisService) : IUserRepository
+    ICacheService redisService) : IUserRepository
 {
     public async Task Update(User user, CancellationToken ct = default)
     {

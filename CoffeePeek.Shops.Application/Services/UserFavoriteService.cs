@@ -2,7 +2,6 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
-using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 
 namespace CoffeePeek.Shops.Application.Services;
 

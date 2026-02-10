@@ -1,4 +1,6 @@
-﻿using CoffeePeek.Contract.Events.Shops;
+﻿using CoffeePeek.Contract.Constants;
+using CoffeePeek.Contract.Events;
+using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
 using CoffeePeek.Shared.Infrastructure.Constants;
 using DotNetCore.CAP;

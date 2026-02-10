@@ -1,7 +1,7 @@
 using CoffeePeek.Contract.Dtos;
-using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shops.Domain.Entities;
 
-namespace CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 
 public sealed partial class Review
 {

@@ -1,5 +1,3 @@
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
-
 namespace CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 
 public interface IReviewRepository

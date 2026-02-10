@@ -1,5 +1,4 @@
 ﻿using CoffeePeek.Contract.Dtos.Schedule;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 
 namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 

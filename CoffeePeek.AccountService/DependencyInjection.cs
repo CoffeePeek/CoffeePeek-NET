@@ -1,9 +1,9 @@
 ﻿using System.Text;
-using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Handlers;
-using CoffeePeek.Shared.Extensions.Modules;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using CoffeePeek.Shared.Infrastructure.Options;
+using CoffeePeek.Shared.Auth.Constants;
+using CoffeePeek.Shared.Auth.Extensions;
+using CoffeePeek.Shared.Auth.Options;
+using CoffeePeek.Shared.Kernel.Extentions;
+using CoffeePeek.Shared.Web.Handlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -26,9 +26,6 @@ public static class DependencyInjection
         services.AddAuthorizationBuilder()
             .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
             .AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
-
-        // Swagger
-        services.AddSwaggerModule("CoffeePeek Account Service");
 
         // HTTP Context
         services.AddHttpContextAccessor();

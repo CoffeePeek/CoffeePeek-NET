@@ -3,9 +3,6 @@ using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Account.Infrastructure.EventConsumer;
 using CoffeePeek.Account.Infrastructure.Identity;
-using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Modules;
-using CoffeePeek.Shared.Infrastructure.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Resend;
 

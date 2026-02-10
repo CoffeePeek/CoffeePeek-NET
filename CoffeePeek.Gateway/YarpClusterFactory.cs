@@ -1,4 +1,4 @@
-using CoffeePeek.Shared.Extensions.Configuration;
+using CoffeePeek.Shared.Kernel;
 using Yarp.ReverseProxy.Configuration;
 
 namespace CoffeePeek.Gateway;

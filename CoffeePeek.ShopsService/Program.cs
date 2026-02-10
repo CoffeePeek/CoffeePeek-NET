@@ -1,36 +1,22 @@
-using System.Reflection;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Handlers;
-using CoffeePeek.Shared.Extensions.Logging;
-using CoffeePeek.Shared.Extensions.Modules;
-using CoffeePeek.Shared.Extensions.Swagger;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using CoffeePeek.Shared.Infrastructure.Options;
 using CoffeePeek.Shops.Application.Common;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
-using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using CoffeePeek.Shops.Infrastructure.Configuration;
 using CoffeePeek.Shops.Infrastructure.Consumers;
 using CoffeePeek.Shops.Infrastructure.Extensions;
 using CoffeePeek.Shops.Infrastructure.Services;
 using CoffePeek.ServiceDefaults;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Persistence.Data;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
-using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
+using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
 
 var builder = WebApplication.CreateBuilder(args);
 
