@@ -1,7 +1,7 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using Microsoft.EntityFrameworkCore;
+using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Application.Common;
 
@@ -10,24 +10,6 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
     public async Task<Review?> GetByIdAsNoTracking(Guid reviewId, CancellationToken ct)
     {
         return await reviewRepository.FirstOrDefaultAsNoTrackingAsync(x => x.Id == reviewId, ct);
-    }
-    
-    public async Task<Review?> GetById(Guid reviewId, CancellationToken ct)
-    {
-        return await reviewRepository.GetByIdAsync(reviewId, ct);
-    }
-
-    public void Update(Review review)
-    {
-        reviewRepository.Update(review);
-    }
-
-    public async Task<(bool exists, Guid? reviewId)> ExistsForCurrentUser(Guid shopId, Guid userId, CancellationToken ct)
-    {
-        var review = await reviewRepository
-            .FirstOrDefaultAsNoTrackingAsync(x => x.CoffeeShopId == shopId && x.UserId == userId, ct);
-        
-        return (review != null, review?.Id);
     }
 
     public async Task<(IReadOnlyList<Review> reviews, int totalCount)> GetByCoffeeShopId(
@@ -51,23 +33,31 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
         return (reviews, totalCount);
     }
 
-    public async Task<(decimal averageRating, int count)> GetReviewStatsByCoffeeShopId(Guid coffeeShopId, CancellationToken ct)
+    public async Task<(IReadOnlyList<Review> reviews, decimal avgRating, int totalCount)> 
+        GetReviewsWithStatsByCoffeeShopId(Guid coffeeShopId, CancellationToken ct)
     {
-        var stats = await reviewRepository
+        var baseQuery = reviewRepository
             .QueryAsNoTracking()
-            .Where(r => r.CoffeeShopId == coffeeShopId && !r.IsSoftDelete)
+            .Where(r => r.CoffeeShopId == coffeeShopId && !r.IsSoftDelete);
+
+        var stats = await baseQuery
+            .GroupBy(r => r.CoffeeShopId)
             .Select(g => new
             {
-                AverageRating = (g.Rating.Place + g.Rating.Coffee + g.Rating.Service) / 3,
-                Count = 1
+                Avg = g.Average(r => r.Rating.AverageRating),
+                Count = g.Count()
             })
             .FirstOrDefaultAsync(ct);
 
-        return stats != null ? (stats.AverageRating, stats.Count) : (0m, 0);
+        var reviews = await baseQuery
+            .OrderByDescending(r => r.CreatedAtUtc)
+            .ToListAsync(ct);
+
+        return (reviews, stats?.Avg ?? 0m, stats?.Count ?? 0);
     }
 
-    public async Task<Dictionary<Guid, (decimal averageRating, int count)>> GetReviewStatsByShopIds(
-        List<Guid> shopIds, 
+    public async Task<Dictionary<Guid, (decimal AverageRating, int Count)>> GetReviewStatsByShopIds(
+        IReadOnlyList<Guid> shopIds, 
         CancellationToken ct)
     {
         if (shopIds.Count == 0) 
@@ -79,7 +69,7 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
             .Select(r => new
             {
                 r.CoffeeShopId,
-                RatingSum = (r.Rating.Place + r.Rating.Coffee + r.Rating.Service) / 3m
+                RatingSum = r.Rating.AverageRating
             })
             .GroupBy(r => r.CoffeeShopId)
             .Select(g => new
@@ -93,5 +83,15 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
         return statsList.ToDictionary(
             x => x.ShopId, 
             x => (averageRating: x.Avg, count: x.Count));
+    }
+
+    public IQueryable<Guid> GetQueryableGroupByIdAndSortByRating(decimal minRating)
+    {
+        return reviewRepository
+            .QueryAsNoTracking()
+            .Where(r => !r.IsSoftDelete)
+            .GroupBy(r => r.CoffeeShopId)
+            .Where(g => g.Average(r => r.Rating.AverageRating) >= minRating)
+            .Select(g => g.Key);
     }
 }

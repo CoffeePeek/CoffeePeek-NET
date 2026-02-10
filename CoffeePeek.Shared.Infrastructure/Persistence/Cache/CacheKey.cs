@@ -27,9 +27,6 @@ public record CacheKey(
             Service: "UserService");
         
             
-        public static string ProfilePattern() => "user:profile:*";
-        
-        public static string StatisticsPattern() => "user:statistics:*";
         
         public static string AllPattern() => "user:*";
     }
@@ -100,8 +97,8 @@ public record CacheKey(
             DefaultTtl: TimeSpan.FromMinutes(5),
             Description: "Shop search results",
             Service: "ShopsService");
-            
-        public static string AllPattern() => "shop:*";
+        
+        public static string SearchPattern() => "shop:search:*";
     }
     
     public static class City
@@ -192,12 +189,14 @@ public record CacheKey(
             public const string Dictionaries = "dictionaries";
             public const string Lists = "shops-lists";
             public const string Details = "shops-details";
+            public const string Search = "shops-search";
             
             private static readonly Dictionary<string, string> Descriptions = new()
             {
                 [Dictionaries] = "Cities, Equipment, Beans, Roasters, Brew Methods",
                 [Lists] = "Coffee shops lists by city (paginated)",
-                [Details] = "Shop details and favorites"
+                [Details] = "Shop details and favorites",
+                [Search] = "Coffee shops search results"
             };
             
             private static readonly Dictionary<string, string[]> Patterns = new()
@@ -205,11 +204,9 @@ public record CacheKey(
                 [Dictionaries] = [City.ListPattern(), Equipment.ListPattern(), Bean.ListPattern(), 
                                    Roaster.ListPattern(), BrewMethod.ListPattern()],
                 [Lists] = [$"shop:list:city:*"],
-                [Details] = [Shop.DetailPattern(), $"shop:favorites:*"]
+                [Details] = [Shop.DetailPattern(), $"shop:favorites:*"],
+                [Search] = [Shop.SearchPattern()]
             };
-            
-            public static Dictionary<string, string> GetDescriptions() => new(Descriptions);
-            public static Dictionary<string, string[]> GetPatterns() => new(Patterns);
         }
     }
 }

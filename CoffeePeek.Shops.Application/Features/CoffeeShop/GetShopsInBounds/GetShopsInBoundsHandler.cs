@@ -9,11 +9,12 @@ namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
 public class GetShopsInBoundsHandler(IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> shopRepository)
     : IRequestHandler<GetShopsInBoundsQuery, Response<GetShopsInBoundsResponse>>
 {
+    private const int MaxShopsInBoundMap = 500;
     public async Task<Response<GetShopsInBoundsResponse>> Handle(GetShopsInBoundsQuery query, CancellationToken cancellationToken)
     {
         var shops = await shopRepository
                 .QueryAsNoTracking()
-                .Where(s => s.Location != null &&
+                .Where(s =>
                              s.Location.Latitude.HasValue &&
                              s.Location.Longitude.HasValue &&
                              s.Location.Latitude >= query.MinLat &&
@@ -23,13 +24,12 @@ public class GetShopsInBoundsHandler(IGenericRepository<Domain.Aggregates.Coffee
                 .Select(s => new MapShopDto
                 {
                     Id = s.Id,
-                    Latitude = s.Location!.Latitude!.Value,
-                    Longitude = s.Location!.Longitude!.Value,
+                    Latitude = s.Location.Latitude!.Value,
+                    Longitude = s.Location.Longitude!.Value,
                     Title = s.Name
                 })
-                .Take(500)
+                .Take(MaxShopsInBoundMap)
                 .ToArrayAsync(cancellationToken);
-            
 
         var response = new GetShopsInBoundsResponse(shops);
         return Response<GetShopsInBoundsResponse>.Success(response);

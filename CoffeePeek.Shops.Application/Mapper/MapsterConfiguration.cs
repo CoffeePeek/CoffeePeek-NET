@@ -4,10 +4,8 @@ using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 using Mapster;
 using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
-using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Application.Mapper;
 
@@ -21,7 +19,7 @@ public class MapsterConfiguration : IRegister
             .Map(dest => dest.ShopContact, src => src.Contact)
             .Map(dest => dest.Beans, src => src.CoffeeBeans)
             // Rating and ReviewCount are set manually in handlers via repository
-            .Ignore(dest => dest.Rating)
+            .Ignore(dest => dest.AverageRating)
             .Ignore(dest => dest.ReviewCount)
             .Ignore(dest => dest.IsFavorite)
             .Ignore(dest => dest.IsVisited);
@@ -46,10 +44,12 @@ public class MapsterConfiguration : IRegister
             .Map(d => d.Schedules, s => s.Schedules)
             .Map(dest => dest.IsOpen, src => src.IsOpen)
             .Map(dest => dest.IsNew, src => src.IsNew)
-            // Rating, ReviewCount and Reviews are set manually in handlers via repository
+            // Rating, ReviewCount, Reviews, CanCreateReview, ExistingReviewId are set manually in handlers
             .Ignore(dest => dest.Rating)
             .Ignore(dest => dest.ReviewCount)
-            .Ignore(dest => dest.Reviews);
+            .Ignore(dest => dest.Reviews)
+            .Ignore(dest => dest.CanCreateReview)
+            .Ignore(dest => dest.ExistingReviewId);
         
         config.NewConfig<CheckIn, CheckInDto>()
             // ShopName is set manually in handlers via repository

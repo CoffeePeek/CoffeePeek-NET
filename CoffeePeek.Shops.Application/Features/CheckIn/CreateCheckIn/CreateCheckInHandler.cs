@@ -13,7 +13,7 @@ using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.CheckIn.CreateCheckIn;
 
-using Review = Domain.Entities.ReviewAggregate.Review;
+using Review = Domain.Aggregates.ReviewAggregate.Review;
 
 public class CreateCheckInHandler(
     IGenericRepository<Domain.Aggregates.CheckInAggregate.CheckIn> checkInRepository,

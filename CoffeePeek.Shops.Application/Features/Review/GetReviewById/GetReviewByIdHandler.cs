@@ -2,7 +2,6 @@
 using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using MapsterMapper;
 using MediatR;
 
