@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeePeek.Shops.Application.Features.Review.GetReviewsByUserId;
 
 public class GetReviewsByUserIdRequestHandler(
-    IGenericRepository<Shops.Domain.Entities.ReviewAggregate.Review> reviewRepository, 
+    IGenericRepository<Domain.Aggregates.ReviewAggregate.Review> reviewRepository, 
     IMapper mapper)
     : IRequestHandler<GetReviewsByUserIdQuery, Response<GetReviewsByUserIdResponse>>
 {

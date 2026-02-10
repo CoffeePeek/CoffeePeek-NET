@@ -14,9 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 
 public class SearchCoffeeShopsHandler(
-    IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> shopRepository,
     IReviewRepository reviewRepository,
-    IGenericRepository<Domain.Entities.ReviewAggregate.Review> domainReviewRepository,
     ICoffeeShopRepository coffeeShopRepository,
     IMapper mapper,
     IRedisService redisService)
@@ -30,7 +28,7 @@ public class SearchCoffeeShopsHandler(
 
         var response = await redisService.GetAsync(
             cacheKey,
-            factory: async () => await GetCoffeeShops(queryRequest, cancellationToken));
+            factory: () => GetCoffeeShops(queryRequest, cancellationToken));
 
         if (response?.Data == null) 
             return Response<GetCoffeeShopsResponse>.Error("Failed to fetch shops.");
@@ -56,14 +54,17 @@ public class SearchCoffeeShopsHandler(
 
     private async Task<Response<GetCoffeeShopsResponse>> GetCoffeeShops(SearchCoffeeShopsQuery queryRequest, CancellationToken cancellationToken)
     {
-        var query = shopRepository.QueryAsNoTracking().AsQueryable();
+        var query = coffeeShopRepository.QueryAsNoTracking();
         
         if (!string.IsNullOrWhiteSpace(queryRequest.Query))
         {
-            var term = $"%{queryRequest.Query.Trim()}%";
+            var escaped = queryRequest.Query.Trim().Replace("\\", @"\\").Replace("%", "\\%").Replace("_", "\\_");
+            var term = $"%{escaped}%";
+            
             query = query.Where(s =>
                 EF.Functions.ILike(s.Name, term) ||
                 EF.Functions.ILike(s.Location.Address, term));
+            
         }
 
         if (queryRequest.CityId.HasValue)
@@ -78,12 +79,7 @@ public class SearchCoffeeShopsHandler(
         
         if (queryRequest.MinRating.HasValue)
         {
-            var shopsAboveRating = domainReviewRepository.QueryAsNoTracking()
-                .Where(r => !r.IsSoftDelete)
-                .GroupBy(r => r.CoffeeShopId)
-                .Where(g => g.Average(r => (r.Rating.Place + r.Rating.Coffee + r.Rating.Service) / 3.0m) 
-                            >= queryRequest.MinRating.Value)
-                .Select(g => g.Key);
+            var shopsAboveRating = reviewRepository.GetQueryableGroupByIdAndSortByRating(queryRequest.MinRating.Value);
 
             query = query.Where(s => shopsAboveRating.Contains(s.Id));
         }
@@ -112,7 +108,7 @@ public class SearchCoffeeShopsHandler(
         var totalCount = await query.CountAsync(cancellationToken);
         var totalPages = (int)Math.Ceiling(totalCount / (double)queryRequest.PageSize);
         
-        var shops  = await query
+        var shops= await query
             .Include(s => s.BrewMethods)
             .Include(s => s.Roasters)
             .Include(s => s.CoffeeBeans)

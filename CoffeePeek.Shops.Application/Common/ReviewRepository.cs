@@ -1,7 +1,7 @@
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using Microsoft.EntityFrameworkCore;
+using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Application.Common;
 
@@ -44,7 +44,7 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
             .GroupBy(r => r.CoffeeShopId)
             .Select(g => new
             {
-                Avg = g.Average(r => (r.Rating.Place + r.Rating.Coffee + r.Rating.Service) / 3m),
+                Avg = g.Average(r => r.Rating.AverageRating),
                 Count = g.Count()
             })
             .FirstOrDefaultAsync(ct);
@@ -57,7 +57,7 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
     }
 
     public async Task<Dictionary<Guid, (decimal AverageRating, int Count)>> GetReviewStatsByShopIds(
-        List<Guid> shopIds, 
+        IReadOnlyList<Guid> shopIds, 
         CancellationToken ct)
     {
         if (shopIds.Count == 0) 
@@ -69,7 +69,7 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
             .Select(r => new
             {
                 r.CoffeeShopId,
-                RatingSum = (r.Rating.Place + r.Rating.Coffee + r.Rating.Service) / 3m
+                RatingSum = r.Rating.AverageRating
             })
             .GroupBy(r => r.CoffeeShopId)
             .Select(g => new
@@ -83,5 +83,15 @@ public class ReviewRepository(IGenericRepository<Review> reviewRepository) : IRe
         return statsList.ToDictionary(
             x => x.ShopId, 
             x => (averageRating: x.Avg, count: x.Count));
+    }
+
+    public IQueryable<Guid> GetQueryableGroupByIdAndSortByRating(decimal minRating)
+    {
+        return reviewRepository
+            .QueryAsNoTracking()
+            .Where(r => !r.IsSoftDelete)
+            .GroupBy(r => r.CoffeeShopId)
+            .Where(g => g.Average(r => r.Rating.AverageRating) >= minRating)
+            .Select(g => g.Key);
     }
 }

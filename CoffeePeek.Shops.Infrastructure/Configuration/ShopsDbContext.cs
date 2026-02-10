@@ -5,7 +5,7 @@ using CoffeePeek.Shops.Domain.Entities;
 using CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
 using Microsoft.EntityFrameworkCore;
 using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
-using Review = CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review;
+using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Infrastructure.Configuration;
 

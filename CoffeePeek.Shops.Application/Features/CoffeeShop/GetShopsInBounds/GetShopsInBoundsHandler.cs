@@ -9,6 +9,7 @@ namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
 public class GetShopsInBoundsHandler(IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> shopRepository)
     : IRequestHandler<GetShopsInBoundsQuery, Response<GetShopsInBoundsResponse>>
 {
+    private const int MaxShopsInBoundMap = 500;
     public async Task<Response<GetShopsInBoundsResponse>> Handle(GetShopsInBoundsQuery query, CancellationToken cancellationToken)
     {
         var shops = await shopRepository
@@ -27,7 +28,7 @@ public class GetShopsInBoundsHandler(IGenericRepository<Domain.Aggregates.Coffee
                     Longitude = s.Location.Longitude!.Value,
                     Title = s.Name
                 })
-                .Take(500)
+                .Take(MaxShopsInBoundMap)
                 .ToArrayAsync(cancellationToken);
 
         var response = new GetShopsInBoundsResponse(shops);

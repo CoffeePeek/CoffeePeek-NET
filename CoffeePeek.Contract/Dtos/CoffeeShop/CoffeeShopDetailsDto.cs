@@ -21,6 +21,9 @@ public record CoffeeShopDetailsDto
     public bool IsFavorite { get; init; }
     public bool IsVisited { get; init; }
     public bool? CanCreateReview { get; init; }
+    /// <summary>
+    /// null if user for unauthenticated user
+    /// </summary>
     public Guid? ExistingReviewId { get; init; }
     public bool IsOpen { get; init; }
     public bool IsNew { get; init; }

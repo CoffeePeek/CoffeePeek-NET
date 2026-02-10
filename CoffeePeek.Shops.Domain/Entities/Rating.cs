@@ -7,9 +7,8 @@ public record Rating
     public int Place { get; private set; }
     public int Service { get; private set; }
     public int Coffee { get; private set; }
+    public decimal AverageRating { get; private set; }
     
-    public decimal AverageRating => (Coffee + Place + Service) / 3m;
-
     private Rating() { }
     
     internal Rating(int place, int service, int coffee)
@@ -17,6 +16,7 @@ public record Rating
         Place = place;
         Service = service;
         Coffee = coffee;
+        AverageRating = (Place + Place + Service) / 3m;
     }
 
     public static Rating Create(int place, int service, int coffee)
@@ -41,5 +41,6 @@ public record Rating
         Coffee = coffee;
         Place = place;
         Service = service;
+        AverageRating = (Place + Place + Service) / 3m;
     }
 }

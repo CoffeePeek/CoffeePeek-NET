@@ -7,6 +7,25 @@ namespace CoffeePeek.Shops.Infrastructure.Services;
 
 public class CoffeeShopRepository(IGenericRepository<CoffeeShop> repository, ShopsDbContext dbContext) : ICoffeeShopRepository
 {
+    public IQueryable<CoffeeShop> QueryAsNoTracking()
+    {
+        return repository.QueryAsNoTracking();
+    }
+    
+    public Task<CoffeeShop?> GetByIdAsNoTracking(Guid id, CancellationToken ct = default)
+    {
+        return repository
+            .QueryAsNoTracking()
+            .Include(x => x.ShopPhotos)
+            .Include(x => x.Equipments)
+            .Include(x => x.CoffeeBeans)
+            .Include(x => x.Roasters)
+            .Include(x => x.BrewMethods)
+            .Include(x => x.Schedules)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
+    }
+
     public Task<bool> Exists(Guid id, CancellationToken ct = default)
     {
         return repository.AnyAsync(x => x.Id == id, ct);
@@ -57,12 +76,10 @@ public class CoffeeShopRepository(IGenericRepository<CoffeeShop> repository, Sho
             .Select(c => new
             {
                 c.Id,
-                IsFavorite = dbContext.UserFavorites
-                    .Any(f => f.UserId == userId && shopIds.Contains(f.CoffeeShopId)),
-                IsVisited = dbContext.CheckIns
-                    .Any(checkIn => checkIn.UserId == userId && shopIds.Contains(checkIn.ShopId)),
+                IsFavorite = dbContext.UserFavorites.Any(f => f.UserId == userId && f.CoffeeShopId == c.Id),
+                IsVisited = dbContext.UserFavorites.Any(checkIn => checkIn.UserId == userId && checkIn.CoffeeShopId == c.Id),
                 ExistingReviewId = dbContext.Reviews
-                    .Where(r => shopIds.Contains(r.CoffeeShopId) && r.UserId == userId && !r.IsSoftDelete)
+                    .Where(r => r.CoffeeShopId == c.Id && r.UserId == userId && !r.IsSoftDelete)
                     .Select(r => (Guid?)r.Id)
                     .FirstOrDefault()
             })

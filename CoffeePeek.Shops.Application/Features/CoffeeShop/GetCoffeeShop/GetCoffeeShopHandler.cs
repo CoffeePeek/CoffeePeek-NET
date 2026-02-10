@@ -7,12 +7,10 @@ using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 using Mapster;
 using MapsterMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 
 public class GetCoffeeShopHandler(
-    IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> shopRepository,
     ICoffeeShopRepository coffeeShopRepository,
     IReviewRepository reviewRepository,
     IMapper mapper,
@@ -28,30 +26,19 @@ public class GetCoffeeShopHandler(
             cacheKey,
             async () =>
             {
-                var shop = await shopRepository
-                    .QueryAsNoTracking()
-                    .Include(x => x.ShopPhotos)
-                    .Include(x => x.Equipments)
-                    .Include(x => x.CoffeeBeans)
-                    .Include(x => x.Roasters)
-                    .Include(x => x.BrewMethods)
-                    .Include(x => x.Schedules)
-                    .AsSplitQuery()
-                    .FirstOrDefaultAsync(x => x.Id == queryRequest.Id, cancellationToken);
+                var shop = await coffeeShopRepository.GetByIdAsNoTracking(queryRequest.Id, cancellationToken);
 
                 if (shop == null)
                     return Response<GetCoffeeShopResponse>.Error($"Coffee shop with ID {queryRequest.Id} not found.");
 
-                var viewStats = await reviewRepository.GetReviewsWithStatsByCoffeeShopId(shop.Id, cancellationToken);
-
-                // Reviews lit
-                var (reviews, _) = await reviewRepository.GetByCoffeeShopId(queryRequest.Id, page: 1, pageSize: 10, cancellationToken);
+                // Reviews list
+                var (reviews, avgRating, totalCount) = await reviewRepository.GetReviewsWithStatsByCoffeeShopId(shop.Id, cancellationToken);
                 
                 var shopDto = shop.Adapt<CoffeeShopDetailsDto>(mapper.Config) with
                 {
-                    Rating = viewStats.avgRating,
-                    ReviewCount = viewStats.totalCount,
-                    Reviews = reviews.Adapt<ReviewDto[]>(mapper.Config)
+                    Rating = avgRating,
+                    ReviewCount = totalCount,
+                    Reviews = reviews.Take(10).Adapt<ReviewDto[]>(mapper.Config)
                 };
 
                 return Response<GetCoffeeShopResponse>.Success(new GetCoffeeShopResponse(shopDto));

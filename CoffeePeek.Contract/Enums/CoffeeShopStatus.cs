@@ -1,4 +1,4 @@
-﻿namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+﻿namespace CoffeePeek.Contract.Enums;
 
 public enum CoffeeShopStatus
 {

@@ -232,7 +232,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                     b.ToTable("EquipmentCategories");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -443,7 +443,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
 
             modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn", b =>
                 {
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", null)
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review", null)
                         .WithMany()
                         .HasForeignKey("ReviewId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -458,6 +458,9 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                         {
                             b1.Property<Guid>("CheckInId")
                                 .HasColumnType("uuid");
+
+                            b1.Property<decimal>("AverageRating")
+                                .HasColumnType("numeric");
 
                             b1.Property<int>("Coffee")
                                 .HasColumnType("integer");
@@ -633,7 +636,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review", b =>
                 {
                     b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", null)
                         .WithMany()
@@ -645,6 +648,9 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                         {
                             b1.Property<Guid>("ReviewId")
                                 .HasColumnType("uuid");
+
+                            b1.Property<decimal>("AverageRating")
+                                .HasColumnType("numeric");
 
                             b1.Property<int>("Coffee")
                                 .HasColumnType("integer");
@@ -677,7 +683,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                         .WithMany("ShopPhotos")
                         .HasForeignKey("CoffeeShopId");
 
-                    b.HasOne("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", null)
+                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review", null)
                         .WithMany("Photos")
                         .HasForeignKey("ReviewId");
                 });
@@ -752,7 +758,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                     b.Navigation("ShopPhotos");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ReviewAggregate.Review", b =>
+            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review", b =>
                 {
                     b.Navigation("Photos");
                 });

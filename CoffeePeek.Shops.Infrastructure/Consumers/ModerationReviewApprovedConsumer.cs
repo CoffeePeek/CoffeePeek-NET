@@ -2,9 +2,9 @@ using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Infrastructure.Constants;
-using CoffeePeek.Shops.Domain.Entities.ReviewAggregate;
 using DotNetCore.CAP;
 using Microsoft.Extensions.Logging;
+using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
