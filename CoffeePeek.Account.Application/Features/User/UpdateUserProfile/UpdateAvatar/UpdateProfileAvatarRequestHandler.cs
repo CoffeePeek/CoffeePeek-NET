@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.Account.Domain.Entities;
+using CoffeePeek.Account.Domain.Entities.PhotoMetadataAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Shared.Domain.Interfaces.Persistance;
@@ -15,7 +16,7 @@ public class UpdateUserAvatarRequestHandler
     public static async Task<UpdateEntityResponse<PhotoMetadata>> Handle(
         UpdateUserAvatarCommand request, 
         IUserRepository userRepository,
-        IGenericRepository<PhotoMetadata> photoMetadataRepository,
+        IPhotoMetadataRepository photoMetadataRepository,
         IMessageBus bus,
         CancellationToken ct)
     {

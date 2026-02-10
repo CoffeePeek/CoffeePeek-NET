@@ -1,4 +1,3 @@
-using System.Reflection;
 using CoffeePeek.MediaService.BackgroundJobs;
 using CoffeePeek.MediaService.Configuration;
 using CoffeePeek.MediaService.Data;
@@ -7,7 +6,6 @@ using CoffeePeek.MediaService.Services;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Extensions;
 using CoffeePeek.Shared.Domain.Interfaces.Persistance;
-using CoffeePeek.Shared.Extensions.CAP;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Extentions;
 using CoffeePeek.Shared.Persistence;
@@ -51,9 +49,6 @@ builder.Services
             .Build()
     );
 
-// MediatR
-var a = builder.Host;.AddMediatRModule(Assembly.GetExecutingAssembly());
-
 string connectionString;
 if (builder.Configuration["DOTNET_ASPIRE"] == "true")
 {
@@ -69,11 +64,6 @@ else
     builder.Services.AddDbContext<MediaDbContext>(opt => opt.UseNpgsql(connectionString));
 }
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MediaDbContext>>();
-builder.Services.AddGenericRepository<PhotoMetadata, MediaDbContext>();
-
-builder.Services.AddCapModule(connectionString, AppResources.MediaService);
-
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
@@ -85,12 +75,6 @@ if (app.Environment.IsDevelopment())
     //await app.ApplyMigrations<MediaDbContext>();
     app.MapOpenApi();
 }
-
-app.UseSwagger();
-app.UseSwaggerUI(options =>
-{
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Media Service API");
-});
 
 app.UseHttpsRedirection();
 

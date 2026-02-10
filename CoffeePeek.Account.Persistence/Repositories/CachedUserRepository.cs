@@ -17,14 +17,8 @@ public class CachedUserRepository(
 
     public Task Add(User user, CancellationToken ct = default) => decorated.Add(user, ct);
 
-    public Task<bool> IsEmailUnique(string email, CancellationToken ct) => decorated.IsEmailUnique(email, ct);
-
     public Task<User?> GetByEmail(string email, CancellationToken ct) =>
         decorated.GetByEmail(email, ct);
-
-    public Task<User?>
-        GetByProvider(string provider, string providerId, CancellationToken ct) =>
-        decorated.GetByProvider(provider, providerId, ct);
 
     public Task<User?> GetByEmailConfirmToken(string requestToken, CancellationToken cancellationToken)
         => decorated.GetByEmailConfirmToken(requestToken, cancellationToken);

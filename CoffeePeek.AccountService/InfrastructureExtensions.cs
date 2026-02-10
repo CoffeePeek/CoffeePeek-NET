@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.Account.Application;
+using CoffeePeek.Account.Application.Features.Auth.RegisterUser;
 using CoffeePeek.Account.Infrastructure;
 using CoffeePeek.Account.Persistence;
 using CoffeePeek.Shared.Web.Logging;
@@ -13,7 +14,15 @@ public static class InfrastructureExtensions
     {
         builder.AddSerilogLogging();
         builder.AddServiceDefaults();
-        builder.WebHost.ConfigureWebhost();
+        builder.WebHost
+            .ConfigureWebhost();
+        
+        var connectionString = Account.Persistence.DependencyInjection.GetConnectionString(builder.Configuration, builder.Services);
+        
+        // Setup Wolverine on HostBuilder (must be done before Build())
+        var handlersAssembly = typeof(RegisterUserHandler).Assembly;
+        builder.Host
+            .AddPersistence(handlersAssembly, connectionString);
         
         builder.Services
             .AddApplication()
@@ -24,7 +33,7 @@ public static class InfrastructureExtensions
         return builder;
     }
 
-    public static async Task UseApplication(this WebApplication app)
+    public static void UseApplication(this WebApplication app)
     {
         app.UseSerilogRequestLogging();
         

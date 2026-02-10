@@ -2,21 +2,22 @@
 using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.Auth.Email.ConfirmEmail;
 
-public class ConfirmEmailHandler
+public static class ConfirmEmailHandler
 {
-    public static async Task<Response> Handle(ConfirmEmailCommand request, IUserRepository userRepository, IUnitOfWork unitOfWork, CancellationToken cancellationToken)
+    [Transactional]
+    public static async Task<Response> Handle(
+        ConfirmEmailCommand request, 
+        IUserRepository userRepository,
+        CancellationToken ct)
     {
-        var user = await userRepository.GetByEmailConfirmToken(request.Token, cancellationToken);
-
-        if (user == null)
-            throw new NotFoundException("User not found.");
+        var user = await userRepository.GetByEmailConfirmToken(request.Token, ct)
+                   ?? throw new NotFoundException("User not found.");
 
         user.ConfirmEmail(request.Token);
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Response.Success(new { message = "Email confirmed successfully!" });
     }

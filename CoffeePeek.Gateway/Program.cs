@@ -1,7 +1,6 @@
 using CoffeePeek.Gateway;
 using CoffeePeek.Gateway.Extensions;
 using CoffeePeek.Shared.Auth.Constants;
-using CoffeePeek.Shared.Extensions.Modules;
 using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
 using CoffeePeek.Shared.Web.Logging;

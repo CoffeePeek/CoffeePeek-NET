@@ -1,25 +1,28 @@
 using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Events;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using DotNetCore.CAP;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Infrastructure.EventConsumer;
 
-public class UserPhotoUploadedHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) : ICapSubscribe
+public class UserPhotoUploadedHandler
 {
-    [CapSubscribe(CapEventNames.Media.PhotoUploaded)]
-    public async Task Handle(PhotoUploadedEvent @event, CancellationToken cancellationToken)
+    [Transactional]
+    public async Task Handle(
+        PhotoUploadedEvent @event, 
+        IUserRepository userRepository, 
+        CancellationToken ct)
     {
-        var user = await userRepository.GetById(@event.OwnerId, cancellationToken);
+        var user = await userRepository.GetById(@event.OwnerId, ct);
 
         if (user == null) return;
 
-        var photo = PhotoMetadata.Create(@event.FileName, @event.ContentType, @event.StorageKey, @event.SizeBytes);
+        var photo = PhotoMetadata.Create(
+            @event.FileName, 
+            @event.ContentType, 
+            @event.StorageKey, 
+            @event.SizeBytes);
+            
         user.UpdateAvatar(photo);
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

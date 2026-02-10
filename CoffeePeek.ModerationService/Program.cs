@@ -90,7 +90,7 @@ builder.Services.AddHttpClient<IYandexGeocodingService, YandexGeocodingService>(
 {
     client.BaseAddress = new Uri(yandexOptions.BaseUrl);
     client.Timeout = TimeSpan.FromSeconds(yandexOptions.TimeoutSeconds);
-}).AddResiliencePolicies(nameof(YandexGeocodingService));
+});
 
 // MediatR
 builder.Services.AddMediatRModule(typeof(GetAllModerationShopsHandler));

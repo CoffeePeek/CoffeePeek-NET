@@ -2,22 +2,24 @@
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.Extensions.Logging;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.Auth.RegisterUser;
 
 public class RegisterUserHandler
 {
-    public async Task<CreateEntityResponse> Handle(RegisterUserCommand request, 
-        IUserRepository userRepository,
+    [Transactional]
+    public async Task<(CreateEntityResponse, UserRegisteredInternalEvent)> Handle(
+        RegisterUserCommand request, 
+        IQueryUserRepository userRepository,
         IRoleRepository roleRepository,
         IPasswordHasherService passwordHasher,
-        IUnitOfWork unitOfWork,
         EmailExistenceFilter emailExistenceFilter,
-        ILogger<RegisterUserHandler> logger, 
+        ILogger<RegisterUserHandler> logger,
         CancellationToken ct)
     {
         if (emailExistenceFilter.MightExist(request.Email) || !await userRepository.IsEmailUnique(request.Email, ct))
@@ -30,16 +32,25 @@ public class RegisterUserHandler
         var defaultRole = await roleRepository.GetRoleAsync(RoleConsts.User)
                           ?? throw new DomainException("Default role not found");
 
-        var user = Domain.Entities.UserAggregate.User.Register(request.Email, invalidUsername: request.UserName,
+        var user = Domain.Entities.UserAggregate.User.Register(
+            request.Email, 
+            request.UserName,
             passwordHash,
             defaultRole);
 
-        await userRepository.Add(user, ct);
-        await unitOfWork.SaveChangesAsync(ct);
+        userRepository.Add(user, ct);
 
         emailExistenceFilter.Add(request.Email);
-
         logger.LogInformation("User {Email} registered with ID {UserId}", request.Email, user.Id);
-        return CreateEntityResponse.Success();
+
+        var response = CreateEntityResponse.Success();
+        
+        var @event = new UserRegisteredInternalEvent(
+            user.Id,
+            user.Credentials.Email.Value, 
+            user.Username.Value, 
+            user.Credentials.EmailConfirmationToken!);
+
+        return (response, @event);
     }
 }

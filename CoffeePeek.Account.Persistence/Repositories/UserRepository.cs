@@ -1,15 +1,16 @@
 ﻿using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Account.Persistence.Configuration;
+using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Account.Persistence.Repositories;
 
-public class UserRepository(IGenericRepository<User> userRepository) : IUserRepository
+public class UserRepository(AccountDbContext dbContext) : IUserRepository
 {
+    private readonly DbSet<User> _repository = dbContext.Users;
     public async Task<User?> GetById(Guid userId, CancellationToken ct = default)
     {
-        return await userRepository
-            .Query()
+        return await _repository
             .Include(x => x.RefreshTokens)
             .Include(x => x.Roles)
             .Include(x => x.PhotoMetadata)
@@ -18,42 +19,26 @@ public class UserRepository(IGenericRepository<User> userRepository) : IUserRepo
 
     public async Task Add(User user, CancellationToken ct = default)
     {
-        ArgumentNullException.ThrowIfNull(user);
-        await userRepository.AddAsync(user, ct);
+        await _repository.AddAsync(user, ct);
     }
 
     public Task Update(User user, CancellationToken ct = default)
     {
-        ArgumentNullException.ThrowIfNull(user);
-        userRepository.Update(user);
+        _repository.Update(user);
         return Task.CompletedTask;
-    }
-
-    public async Task<bool> IsEmailUnique(string email, CancellationToken ct)
-    {
-        return !await userRepository.AnyAsync(c => c.Credentials.Email == email, ct);
     }
 
     public Task<User?> GetByEmail(string email, CancellationToken ct)
     {
-        return userRepository
-            .Query()
+        return _repository
             .Include(x => x.Roles)
             .Include(x => x.RefreshTokens)
             .FirstOrDefaultAsync(c => c.Credentials.Email == email, ct);
     }
 
-    public Task<User?> GetByProvider(string provider, string providerId, CancellationToken ct)
-    {
-        return userRepository
-            .QueryAsNoTracking()
-            .Include(x => x.Credentials)
-            .FirstOrDefaultAsync(x => x.Credentials.OAuthProvider == provider, cancellationToken: ct);
-    }
-
     public Task<User?> GetByEmailConfirmToken(string requestToken, CancellationToken cancellationToken)
     {
-        return userRepository.FirstOrDefaultAsync(c => c.Credentials.EmailConfirmationToken == requestToken,
+        return _repository.FirstOrDefaultAsync(c => c.Credentials.EmailConfirmationToken == requestToken,
             cancellationToken);
     }
 }

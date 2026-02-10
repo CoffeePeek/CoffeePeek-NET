@@ -1,48 +1,33 @@
-﻿using CoffeePeek.Account.Application.Common.Interfaces;
-using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+﻿using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
-using Microsoft.Extensions.Configuration;
-using Resend;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.Auth.Email.ResendEmailConfirmation;
 
-public class ResendEmailConfirmationHandler
+public static class ResendEmailConfirmationHandler
 {
-    private const string WebClientUrl = nameof(WebClientUrl);
-
-    public static async Task<Response> Handle(ResendEmailConfirmationCommand request, 
-        IResend resend,
-        IEmailTemplateService templateService,
+    [Transactional]
+    public static async Task<(Response, UserRegisteredInternalEvent)> Handle(
+        ResendEmailConfirmationCommand request, 
         IUserRepository userRepository,
-        IUnitOfWork unitOfWork,
-        IConfiguration config,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
-        var user = await userRepository.GetById(request.UserId, cancellationToken);
-
-        if (user == null)
-            throw new NotFoundException("User not found");
+        var user = await userRepository.GetById(request.UserId, ct)
+                   ?? throw new NotFoundException("User not found");
 
         if (user.Credentials.EmailConfirmed)
             throw new DomainException("Email already confirmed.");
 
-        var confirmationUrl = $"{config[WebClientUrl]}/confirm-email?token={user.Credentials.EmailConfirmationToken}";
 
-        var message = new EmailMessage
-        {
-            From = "CoffeePeek <hello@resend.dev>",
-            To = user.Credentials.Email.Value,
-            Subject = "Perfectly roasted beans are waiting for you! ☕",
-            HtmlBody = templateService.GetConfirmationHtml(user.Username.Value, confirmationUrl)
-        };
+        var response = Response.Success(new { message = "Confirmation email is on its way!" });
 
+        var @event = new UserRegisteredInternalEvent(
+            user.Id,
+            user.Credentials.Email.Value, 
+            user.Username.Value, 
+            user.Credentials.EmailConfirmationToken!);
 
-        await resend.EmailSendAsync(message, cancellationToken);
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return Response.Success(new { message = "Email sent successfully!" });
+        return (response, @event);
     }
 }

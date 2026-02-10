@@ -3,10 +3,8 @@ using CoffeePeek.MediaService.Configuration;
 using CoffeePeek.MediaService.Data;
 using CoffeePeek.MediaService.Requests;
 using CoffeePeek.MediaService.Responses;
-using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
-using DotNetCore.CAP;
 
 namespace CoffeePeek.MediaService.Services;
 

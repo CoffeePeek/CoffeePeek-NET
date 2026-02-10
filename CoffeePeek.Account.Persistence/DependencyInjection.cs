@@ -1,13 +1,11 @@
-﻿using CoffeePeek.Account.Domain.Entities;
+﻿using System.Reflection;
+using CoffeePeek.Account.Domain.Entities;
+using CoffeePeek.Account.Domain.Entities.PhotoMetadataAggregate;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Persistence.Configuration;
 using CoffeePeek.Account.Persistence.Repositories;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
-using CoffeePeek.Shared.Domain.Interfaces.Persistance;
-using CoffeePeek.Shared.Extensions.Modules;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Persistence.Data;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Extentions;
 using CoffeePeek.Shared.Persistence;
@@ -23,14 +21,33 @@ namespace CoffeePeek.Account.Persistence;
 
 public static class DependencyInjection
 {
+    public static string GetConnectionString(IConfiguration configuration, IServiceCollection services)
+    {
+        if (configuration["DOTNET_ASPIRE"] == "true")
+        {
+            return configuration.GetConnectionString(AppResources.AccountDb) ?? 
+                   throw new InvalidOperationException("Connection string not found");
+        }
+        else
+        {
+            return services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+        }
+    }
+    
+    public static IHostBuilder AddPersistence(this IHostBuilder hostBuilder, Assembly handlersAssembly, string connectionString)
+    {
+        hostBuilder.AddWolverine(handlersAssembly, connectionString);
+        
+        return hostBuilder;
+    }
+    
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration, WebApplicationBuilder builder)
     {
         // Database
-        string connectionString;
+        string connectionString = GetConnectionString(configuration, services);
+        
         if (configuration["DOTNET_ASPIRE"] == "true")
         {
-            connectionString = configuration.GetConnectionString(AppResources.AccountDb) ?? 
-                               throw new InvalidOperationException("Connection string not found");
             builder.AddNpgsqlDbContext<AccountDbContext>(
                 connectionName:AppResources.AccountDb, 
                 configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
@@ -39,21 +56,13 @@ public static class DependencyInjection
         }
         else
         {
-            connectionString = services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
             services.AddDbContext<AccountDbContext>(opt => opt.UseNpgsql(connectionString).AddInterceptors(new AuditInterceptor()));
         }
-
-        // 1. Database & Repositories
-        builder.Services.AddScoped<IUnitOfWork, UnitOfWork<AccountDbContext>>();
-        services.AddGenericRepository<UserCredential, AccountDbContext>();
-        services.AddGenericRepository<Role, AccountDbContext>();
-        services.AddGenericRepository<UserStatistics, AccountDbContext>();
-        services.AddGenericRepository<User, AccountDbContext>();
-        services.AddGenericRepository<PhotoMetadata, AccountDbContext>();
 
         // 2. Repository Implementations
         services.AddScoped<UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IPhotoMetadataRepository, PhotoMetadataRepository>();
         services.AddScoped<IQueryUserRepository, QueryUserRepository>();
 
         // 3. Repository Decorators (после базовых репозиториев)
@@ -64,8 +73,7 @@ public static class DependencyInjection
             return new CachedUserRepository(baseRepo, redisService);
         });
         
-        // 4. Event Bus (CAP)
-        services.AddCapModule(connectionString, AppResources.AccountService);
+        services.AddCacheModule();
         
         return services;
     }

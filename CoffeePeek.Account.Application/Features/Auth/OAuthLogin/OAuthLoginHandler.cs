@@ -6,16 +6,18 @@ using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 
-public class GoogleLoginHandler
+public static class GoogleLoginHandler
 {
-    public static async Task<Response<GoogleLoginResponse>> Handle(GoogleLoginCommand request, 
+    [Transactional]
+    public static async Task<Response<GoogleLoginResponse>> Handle(
+        GoogleLoginCommand request,
         IGoogleAuthService googleAuthService,
         IExternalAuthService externalAuthService,
         IJWTTokenService tokenService,
-        IUnitOfWork unitOfWork,
         IOptions<JWTOptions> options,
         CancellationToken ct)
     {
@@ -34,20 +36,16 @@ public class GoogleLoginHandler
         var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken();
 
-        var authResult = new AuthResult { AccessToken = accessToken, RefreshToken = refreshToken };
-
         user.AddSession(
-            authResult.RefreshToken,
+            refreshToken,
             ttl: TimeSpan.FromDays(options.Value.AccessTokenLifetimeMinutes),
             request.DeviceName,
             request.IpAddress);
 
-        await unitOfWork.SaveChangesAsync(ct);
-
         return Response<GoogleLoginResponse>.Success(new GoogleLoginResponse
         {
-            AccessToken = authResult.AccessToken,
-            RefreshToken = authResult.RefreshToken,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
             User = new GoogleLoginUser { Email = user.Credentials.Email, AvatarUrl = payload.Picture }
         });
     }

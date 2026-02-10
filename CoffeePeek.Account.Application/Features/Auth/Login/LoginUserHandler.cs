@@ -2,14 +2,15 @@
 using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 using CoffeePeek.Shared.Kernel.Response;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.Auth.Login;
 
 public class LoginUserHandler
 {
+    [Transactional]
     public static async Task<Response<LoginResponse>> Handle(LoginUserCommand request, 
         IAuthService authService,
-        IUnitOfWork unitOfWork,
         EmailExistenceFilter emailExistenceFilter,
         CancellationToken ct)
     {
@@ -18,8 +19,6 @@ public class LoginUserHandler
             request.Password, 
             request.DeviceName, 
             request.IpAddress);
-
-        await unitOfWork.SaveChangesAsync(ct);
 
         emailExistenceFilter.Add(request.Email);
 

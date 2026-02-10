@@ -1,4 +1,4 @@
-﻿namespace CoffeePeek.Shared.Infrastructure.Options;
+﻿namespace CoffeePeek.Shared.Web;
 
 public class RabbitMqOptions
 {

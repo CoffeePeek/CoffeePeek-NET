@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
-namespace CoffeePeek.Shared.Extensions.Modules;
+namespace CoffeePeek.Shared.Web.Extensions;
 
 public static class EnvironmentModule
 {
