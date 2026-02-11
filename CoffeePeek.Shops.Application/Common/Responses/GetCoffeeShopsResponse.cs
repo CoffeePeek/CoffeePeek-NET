@@ -4,7 +4,7 @@ namespace CoffeePeek.Shops.Application.Common.Responses;
 
 public class GetCoffeeShopsResponse
 {
-    public List<ShortShopDto> CoffeeShops { get; set; }
+    public ShortShopDto[] CoffeeShops { get; set; }
 
     public int CurrentPage { get; set; }
     public int PageSize { get; set; }

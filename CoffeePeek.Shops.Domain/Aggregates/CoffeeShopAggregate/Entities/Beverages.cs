@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Shared.Infrastructure.Abstract;
+﻿using CoffeePeek.Shared.Domain.Entities;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 
 namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;

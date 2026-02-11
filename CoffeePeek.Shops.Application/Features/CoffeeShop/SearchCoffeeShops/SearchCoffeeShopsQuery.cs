@@ -1,8 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Enums;
-using CoffeePeek.Shops.Application.Common.Responses;
-using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 
@@ -20,5 +17,4 @@ public record SearchCoffeeShopsQuery(
     [Range(1, int.MaxValue)]
     int PageNumber = 1,
     [Range(1, 100)]
-    int PageSize = 10)
-    : IRequest<Response<GetCoffeeShopsResponse>>;
+    int PageSize = 10);

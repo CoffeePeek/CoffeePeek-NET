@@ -1,29 +1,30 @@
-using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Responses;
 using CoffeePeek.Shops.Application.Services;
-using DotNetCore.CAP;
 using Microsoft.Extensions.Logging;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
-public class ModerationShopApprovedHandler(
-    ICreateShopFromModerationService createShopService,
-    ILogger<ModerationShopApprovedHandler> logger) : ICapSubscribe
+public static class ModerationShopApprovedHandler
 {
-    [CapSubscribe(CapEventNames.Moderation.ShopApproved)]
-    public async Task<ModerationShopApproveCompleteResponse> Handle(ModerationShopApprovedEvent @event, CancellationToken cancellationToken)
+    [Transactional]
+    public static async Task<ModerationShopApproveCompleteResponse> Handle(
+        ModerationShopApprovedEvent @event,
+        ICreateShopFromModerationService createShopService,
+        ILogger logger,
+        CancellationToken ct)
     {
         var shopDto = @event.Shop;
 
-        logger.LogInformation("Received {EventName} for UserId: {UserId}, ShopId: {ShopId}",
-            nameof(ModerationShopApprovedEvent), @event.UserId, shopDto.Id);
+        logger.LogInformation("Processing approval for ShopId: {ShopId} by User: {UserId}", 
+            shopDto.Id, @event.UserId);
 
         var shopId = await createShopService.CreateShopFromApprovedEventAsync(
             shopDto,
-            creatorId:@event.UserId,
+            creatorId: @event.UserId,
             moderationId: shopDto.Id,
-            cancellationToken);
+            ct);
         
         return new ModerationShopApproveCompleteResponse(shopDto.Id, shopId);
     }

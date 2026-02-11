@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Contract.Abstract;
+using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.Review.GetReviewsByUserId;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
-using IMediator = MediatR.IMediator;
+using Wolverine;
 
 namespace CoffeePeek.ShopsService.Controllers;
 
@@ -12,13 +11,19 @@ namespace CoffeePeek.ShopsService.Controllers;
 [Authorize]
 [Route("api/users/{userId:guid}/reviews")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class UserReviewsController(IMediator mediator) : ControllerBase
+public class UserReviewsController(IMessageBus bus) : ControllerBase
 {
+    /// <summary>
+    /// Get reviews for user
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="pageNumber"></param>
+    /// <param name="pageSize"></param>
+    /// <returns></returns>
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetReviewsByUserIdResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Get reviews for user")]
     public async Task<IActionResult> GetUserReviews(
         Guid userId,
         [FromQuery] int pageNumber = 1,
@@ -31,7 +36,7 @@ public class UserReviewsController(IMediator mediator) : ControllerBase
         pageSize = Math.Clamp(pageSize, 1, 100);
 
         var query = new GetReviewsByUserIdQuery(userId, pageNumber, pageSize);
-        var response = await mediator.Send(query);
+        var response = await bus.InvokeAsync<Response<GetReviewsByUserIdResponse>>(query);
 
         if (response is { IsSuccess: true, Data: not null })
         {

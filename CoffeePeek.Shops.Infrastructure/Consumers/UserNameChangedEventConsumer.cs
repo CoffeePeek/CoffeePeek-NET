@@ -1,34 +1,27 @@
-using CoffeePeek.Contract.Constants;
-using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Events.Account;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
-using DotNetCore.CAP;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
-public class UserNameChangedHandler(
-    IGenericRepository<Review> reviewRepository,
-    IUnitOfWork unitOfWork,
-    ILogger<UserNameChangedHandler> logger) : ICapSubscribe
+public static class UserNameChangedHandler
 {
-    [CapSubscribe(CapEventNames.Account.UserNameChanged)]
-    public async Task Handle(UserNameChangedEvent @event, CancellationToken cancellationToken)
+    [Transactional]
+    public static async Task Handle(
+        UserNameChangedEvent @event,
+        IReviewRepository reviewRepository,
+        ILogger logger,
+        CancellationToken ct)
     {
-        logger.LogInformation("Received UserNameChangedEvent for UserId: {UserId}, NewUserName: {NewUserName}",
+        logger.LogInformation("Updating reviews for user {UserId} with new name: {NewName}",
             @event.UserId, @event.NewUserName);
 
-        var reviews = await reviewRepository
-            .Query()
-            .Where(r => r.UserId == @event.UserId)
-            .ToListAsync(cancellationToken);
+        var reviews = await reviewRepository.GetByUserId(@event.UserId, ct);
 
-        if (reviews.Count == 0)
+        if (reviews.Length == 0)
         {
-            logger.LogInformation("No reviews found for UserId: {UserId}", @event.UserId);
+            logger.LogInformation("No reviews found for user {UserId}", @event.UserId);
             return;
         }
 
@@ -37,9 +30,6 @@ public class UserNameChangedHandler(
             review.UpdateUserName(@event.NewUserName);
         }
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-        
-        logger.LogInformation("Updated {Count} reviews with new UserName for UserId: {UserId}",
-            reviews.Count, @event.UserId);
+        logger.LogInformation("Successfully updated {Count} reviews", reviews.Length);
     }
 }

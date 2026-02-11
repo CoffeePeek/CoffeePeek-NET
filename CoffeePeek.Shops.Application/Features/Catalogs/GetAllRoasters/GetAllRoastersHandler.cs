@@ -1,17 +1,22 @@
-﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shops.Application.Services;
-using MediatR;
+﻿using CoffeePeek.Contract.Dtos.Shop;
+using CoffeePeek.Shared.Kernel.Response;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using MapsterMapper;
 
 namespace CoffeePeek.Shops.Application.Features.Catalogs.GetAllRoasters;
 
-public class GetAllRoastersHandler(ICacheService cacheService) : IRequestHandler<GetAllRoastersCommand, Response<GetAllRoastersResponse>>
+public class GetAllRoastersHandler
 {
-    public async Task<Response<GetAllRoastersResponse>> Handle(GetAllRoastersCommand request, CancellationToken cancellationToken)
+    public async Task<Response<GetAllRoastersResponse>> Handle(
+        GetAllRoastersCommand request,
+        IQueryRoasterRepository repository,
+        IMapper mapper,
+        CancellationToken cancellationToken)
     {
-        var roasters = await cacheService.GetRoasters();
-        
-        var response = new GetAllRoastersResponse(roasters);
-        
-        return Response<GetAllRoastersResponse>.Success(response);
+        var roasters = await repository.GetAll();
+
+        var roastersDto = mapper.Map<RoasterDto[]>(roasters);
+
+        return Response<GetAllRoastersResponse>.Success(new GetAllRoastersResponse(roastersDto));
     }
 }

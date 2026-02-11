@@ -1,16 +1,18 @@
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using MediatR;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
+using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Shops.Application.Features.Review.DeleteReviewFromCoffeeShop;
 
-public class DeleteReviewFromCoffeeShopHandler(IGenericRepository<Domain.Aggregates.ReviewAggregate.Review> reviewRepository, IUnitOfWork unitOfWork)
-    : IRequestHandler<DeleteReviewFromCoffeeShopCommand, Response>
+public class DeleteReviewFromCoffeeShopHandler
 {
-    public async Task<Response> Handle(DeleteReviewFromCoffeeShopCommand request, CancellationToken cancellationToken)
+    [Transactional]
+    public async Task<Response> Handle(DeleteReviewFromCoffeeShopCommand request, 
+        IReviewRepository reviewRepository,
+        CancellationToken cancellationToken)
     {
-        var review = await reviewRepository.FirstOrDefaultAsync(x => x.Id == request.ReviewId, cancellationToken);
+        var review = await reviewRepository.GetById(request.ReviewId, cancellationToken);
 
         if (review == null)
         {
@@ -19,8 +21,6 @@ public class DeleteReviewFromCoffeeShopHandler(IGenericRepository<Domain.Aggrega
 
         review.SoftDelete();
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-        
         return Response.Success();
     }
 }

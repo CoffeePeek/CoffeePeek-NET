@@ -1,17 +1,16 @@
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Extensions.Exceptions;
+using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
-using MediatR;
 
 namespace CoffeePeek.Shops.Application.Features.Favorite.AddToFavorite;
 
-public class AddToFavoriteHandler(
-    IUserFavoriteService userFavoriteService,
-    IValidationStrategy<AddToFavoriteCommand> validationStrategy)
-    : IRequestHandler<AddToFavoriteCommand, CreateEntityResponse<Guid>>
+public class AddToFavoriteHandler
 {
-    public async Task<CreateEntityResponse<Guid>> Handle(AddToFavoriteCommand request,
+    public async Task<CreateEntityResponse<Guid>> Handle(
+        AddToFavoriteCommand request,
+        IUserFavoriteService userFavoriteService,
+        IValidationStrategy<AddToFavoriteCommand> validationStrategy,
         CancellationToken cancellationToken)
     {
         var validationResult = validationStrategy.Validate(request);

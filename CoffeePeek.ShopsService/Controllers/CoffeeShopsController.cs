@@ -1,27 +1,39 @@
 using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Auth;
+using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Common.Responses;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
+using Wolverine;
 
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class CoffeeShopsController(IMediator mediator, IUserContext userContext) : ControllerBase
+public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Search coffee shops
+    /// </summary>
+    /// <param name="cityId"></param>
+    /// <param name="q"></param>
+    /// <param name="roasters"></param>
+    /// <param name="equipments"></param>
+    /// <param name="beans"></param>
+    /// <param name="brewMethods"></param>
+    /// <param name="priceRange"></param>
+    /// <param name="minRating"></param>
+    /// <param name="page"></param>
+    /// <param name="pageSize"></param>
+    /// <returns></returns>
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetCoffeeShopsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    [SwaggerOperation(Summary = "Search coffee shops", Description = "Search coffee shops by criteria")]
     public async Task<IActionResult> GetCoffeeShops(
         [FromQuery] Guid? cityId = null,
         [FromQuery] string? q = null,
@@ -50,9 +62,9 @@ public class CoffeeShopsController(IMediator mediator, IUserContext userContext)
             PageNumber: page,
             PageSize: pageSize);
 
-        var response = await mediator.Send(query);
+        var response = await bus.InvokeAsync<Response<GetCoffeeShopsResponse>>(query);
 
-        if (response.IsSuccess && response.Data != null)
+        if (response is { IsSuccess: true, Data: not null })
         {
             AddPaginationHeaders(response.Data);
         }
@@ -68,15 +80,21 @@ public class CoffeeShopsController(IMediator mediator, IUserContext userContext)
         }
     }
 
+    /// <summary>
+    /// Get coffee shop by ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(Response<GetCoffeeShopResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    [SwaggerOperation(Summary = "Get coffee shop by ID")]
-    public Task<Response<GetCoffeeShopResponse>> GetCoffeeShop(Guid id)
+    public async Task<IActionResult> GetCoffeeShop(Guid id)
     {
-        return mediator.Send(new GetCoffeeShopQuery(id, userContext.GetUserId()));
+        var query = new GetCoffeeShopQuery(id);
+        var response = await bus.InvokeAsync<Response<GetCoffeeShopResponse>>(query);
+        
+        return Ok(response);
     }
 }

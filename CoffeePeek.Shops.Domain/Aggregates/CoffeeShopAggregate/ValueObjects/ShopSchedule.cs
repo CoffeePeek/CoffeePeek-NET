@@ -1,6 +1,4 @@
-﻿using CoffeePeek.Contract.Dtos.Schedule;
-
-namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+﻿namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
 public record ShopSchedule
 {
@@ -23,9 +21,8 @@ public record ShopSchedule
         Intervals = intervals;
     }
 
-    public static ShopSchedule Create(DayOfWeek dayOfWeek, bool isClosed, List<ShopScheduleIntervalDto> intervalDtos)
+    public static ShopSchedule Create(DayOfWeek dayOfWeek, bool isClosed, ICollection<ShopScheduleInterval> intervals)
     {
-        var intervals = intervalDtos.Select(x => ShopScheduleInterval.Create(x.OpenTime, x.CloseTime)).ToList();
         return new ShopSchedule(dayOfWeek, isClosed, intervals);
     }
 }

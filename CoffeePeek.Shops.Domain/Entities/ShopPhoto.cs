@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Domain.Entities;
 
 namespace CoffeePeek.Shops.Domain.Entities;
 
@@ -12,12 +12,8 @@ public sealed class ShopPhoto : Entity<Guid>
     public long SizeBytes { get; private set; }
     public Guid OwnerId { get; private set; }
 
-
     // ReSharper disable once UnusedMember.Local
-    private ShopPhoto()
-    {
-        //ef core
-    }
+    private ShopPhoto() { }
 
     public ShopPhoto(string fileName, string contentType, string storageKey, long sizeBytes, Guid ownerId)
     {

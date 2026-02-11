@@ -1,32 +1,31 @@
-﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Enums;
+﻿using CoffeePeek.Contract.Enums;
 using CoffeePeek.Moderation.Application.Features.Review.ChangeStatusModerationReview;
 using CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
 using CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
-using CoffeePeek.Shared.Infrastructure;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using MediatR;
+using CoffeePeek.Shared.Auth;
+using CoffeePeek.Shared.Auth.Constants;
+using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
+using Wolverine;
 
 namespace CoffeePeek.ModerationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class ModerationReviewsController(IMediator mediator, IUserContext userContext) : ControllerBase
+public class ModerationReviewsController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
     [HttpGet]
     [Authorize(Policy = RoleConsts.Moderator)]
     [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    [SwaggerOperation("Get all moderation reviews")]
     public async Task<IActionResult> GetAllModerationReviews()
     {
-        return Ok(await mediator.Send(new GetAllModerationReviewsQuery()));
+        var response = await bus.InvokeAsync<Response<GetAllModerationReviewsResponse>>(new GetAllModerationReviewsQuery());
+        return Ok(response);
     }
 
     [HttpPost]
@@ -36,7 +35,6 @@ public class ModerationReviewsController(IMediator mediator, IUserContext userCo
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    [SwaggerOperation("Create new moderation review")]
     public async Task<IActionResult> SendReviewToModeration([FromBody] SendReviewToModerationCommand command)
     {
         command = command with
@@ -45,7 +43,7 @@ public class ModerationReviewsController(IMediator mediator, IUserContext userCo
             UserName = userContext.GetUsernameOrThrow()
         };
 
-        var response = await mediator.Send(command);
+        var response = await bus.InvokeAsync<CreateEntityResponse>(command);
 
         return Ok(response);
     }
@@ -56,12 +54,11 @@ public class ModerationReviewsController(IMediator mediator, IUserContext userCo
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Update moderation review")]
     public async Task<IActionResult> UpdateReview(
         [FromBody] UpdateCoffeeShopReviewCommand command, Guid reviewId)
     {
         command = command with { UserId = userContext.GetUserIdOrThrow(), ReviewId = reviewId };
-        var response = await mediator.Send(command);
+        var response = await bus.InvokeAsync<Response<UpdateCoffeeShopReviewResponse>>(command);
 
         return response.IsSuccess ? Ok(response) : NotFound(response);
     }
@@ -72,11 +69,11 @@ public class ModerationReviewsController(IMediator mediator, IUserContext userCo
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    [SwaggerOperation("Change status of moderation review, when reject status need set reject reason")]
     public async Task<IActionResult> ChangeStatusModerationReview(
         ChangeStatusModerationReviewCommand command)
     {
         var commandWithUser = command with { UserId = userContext.GetUserIdOrThrow() };
-        return Ok(await mediator.Send(commandWithUser));
+        var response = await bus.InvokeAsync<UpdateEntityResponse<ModerationStatus>>(commandWithUser);
+        return Ok(response);
     }
 }

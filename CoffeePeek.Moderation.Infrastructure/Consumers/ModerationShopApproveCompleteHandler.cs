@@ -1,22 +1,19 @@
-﻿using CoffeePeek.Contract.Events;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Moderation.Domain.Entities;
-using DotNetCore.CAP;
+﻿using CoffeePeek.Contract.Responses;
+using CoffeePeek.Moderation.Domain.Aggregates;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Moderation.Infrastructure.Consumers;
 
-public class ModerationShopApproveCompleteHandler(IModerationShopRepository repository, IUnitOfWork unitOfWork) : ICapSubscribe
+public static class ModerationShopApproveCompleteHandler
 {
-    [CapSubscribe(CapEventNames.Moderation.CallBack.ShopCompleted)]
-    public async Task Handle(ModerationShopApproveCompleteResponse @event, CancellationToken cancellationToken)
+    [Transactional]
+    public static async Task Handle(
+        ModerationShopApproveCompleteResponse @event, 
+        IModerationShopRepository repository, 
+        CancellationToken ct)
     {
-        var moderationShop = await repository.GetByIdWithOutDetails(@event.ModerationShopId, cancellationToken);
+        var moderationShop = await repository.GetByIdWithOutDetails(@event.ModerationShopId, ct);
 
-        if (moderationShop == null) 
-            return;
-        
-        moderationShop.AddShopId(@event.ShopId);
-        
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        moderationShop?.AddShopId(@event.ShopId);
     }
 }

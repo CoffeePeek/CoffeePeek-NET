@@ -1,17 +1,16 @@
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
+using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
-using MediatR;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Shops.Application.Features.Favorite.RemoveFromFavorite;
 
-public class RemoveFromFavoriteHandler(
-    IUserFavoriteService favoriteService,
-    IValidationStrategy<RemoveFromFavoriteCommand> validationStrategy)
-    : IRequestHandler<RemoveFromFavoriteCommand, UpdateEntityResponse<Guid>>
+public class RemoveFromFavoriteHandler
 {
+    [Transactional]
     public async Task<UpdateEntityResponse<Guid>> Handle(RemoveFromFavoriteCommand request,
+        IUserFavoriteService favoriteService,
+        IValidationStrategy<RemoveFromFavoriteCommand> validationStrategy,
         CancellationToken cancellationToken)
     {
         var validationResult = validationStrategy.Validate(request);

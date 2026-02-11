@@ -1,22 +1,21 @@
-using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Application.Common.Models;
-using CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
-using CoffeePeek.Moderation.Domain.Entities;
-using MediatR;
+using CoffeePeek.Moderation.Domain.Aggregates;
+using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.Extensions.Logging;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
-public class SendCoffeeShopToModerationHandler(
-    IModerationShopRepository repository,
-    IModerationShopCreationService creationService,
-    IYandexGeocodingService geocodingService,
-    ILogger<SendCoffeeShopToModerationHandler> logger)
-    : IRequestHandler<SendCoffeeShopToModerationCommand, Response<SendCoffeeShopToModerationResponse>>
+public static class SendCoffeeShopToModerationHandler
 {
-    public async Task<Response<SendCoffeeShopToModerationResponse>> Handle(
+    [Transactional]
+    public static async Task<Response<SendCoffeeShopToModerationResponse>> Handle(
         SendCoffeeShopToModerationCommand command,
+        IModerationShopRepository repository,
+        IModerationShopCreationService creationService,
+        IYandexGeocodingService geocodingService,
+        ILogger<SendCoffeeShopToModerationCommand> logger,
         CancellationToken ct)
     {
         logger.LogInformation("Processing moderation request for shop: {ShopName} by user: {UserId}",
@@ -32,7 +31,7 @@ public class SendCoffeeShopToModerationHandler(
                 "A coffee shop with that name and address is already located on the edge.");
         }
 
-        var geocodingResult = await TryGeocodeAsync(command.Address, ct);
+        var geocodingResult = await TryGeocodeAsync(command.Address, geocodingService, logger, ct);
 
         var shopId = await creationService.Create(command, geocodingResult, ct);
 
@@ -45,7 +44,11 @@ public class SendCoffeeShopToModerationHandler(
             "The application has been accepted and will be reviewed by the moderator.");
     }
 
-    private async Task<GeocodingResult?> TryGeocodeAsync(string address, CancellationToken ct)
+    private static async Task<GeocodingResult?> TryGeocodeAsync(
+        string address,
+        IYandexGeocodingService geocodingService,
+        ILogger logger,
+        CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(address)) return null;
 

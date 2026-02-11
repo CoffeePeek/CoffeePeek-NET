@@ -1,5 +1,5 @@
 using CoffeePeek.Account.Domain.Entities;
-using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using FluentAssertions;
 using Xunit;
 

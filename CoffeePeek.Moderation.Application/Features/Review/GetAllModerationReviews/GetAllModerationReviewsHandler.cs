@@ -1,21 +1,19 @@
-﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
-using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
-using Mapster;
+﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
+using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
-using MediatR;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 
-public class GetAllModerationReviewsHandler(IModerationReviewRepository repository, IMapper mapper)
-    : IRequestHandler<GetAllModerationReviewsQuery, Response<GetAllModerationReviewsResponse>>
+public class GetAllModerationReviewsHandler
 {
-    public async Task<Response<GetAllModerationReviewsResponse>> Handle(GetAllModerationReviewsQuery request,
+    public async Task<Response<GetAllModerationReviewsResponse>> Handle(
+        GetAllModerationReviewsQuery _,
+        IQueryModerationReviewRepository reviewRepository, 
+        IMapper mapper,
         CancellationToken cancellationToken)
     {
-        var moderationReviews = await repository.GetAll(cancellationToken);
+        var moderationReviews = await reviewRepository.GetAll(cancellationToken);
 
         var moderationReviewDtos = mapper.Map<ModerationReviewDto[]>(moderationReviews);
 

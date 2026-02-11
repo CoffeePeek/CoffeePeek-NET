@@ -1,15 +1,12 @@
-﻿using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+﻿using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 
 namespace CoffeePeek.Shops.Application.Services;
 
 public class UserFavoriteService(
-    IGenericRepository<UserFavorite> favoriteRepository,
     IUserFavoriteRepository userFavoriteRepository,
-    ICoffeeShopRepository coffeeShopRepository,
-    IUnitOfWork unitOfWork)
+    IQueryCoffeeShopRepository queryCoffeeShopRepository)
     : IUserFavoriteService
 {
     public async Task<Guid> AddToFavoritesAsync(
@@ -27,7 +24,7 @@ public class UserFavoriteService(
             throw new InvalidOperationException("CoffeeShopId cannot be empty");
         }
 
-        var shopExists = await coffeeShopRepository.Exists(coffeeShopId, ct);
+        var shopExists = await queryCoffeeShopRepository.Exists(coffeeShopId, ct);
         if (!shopExists)
         {
             throw new NotFoundException("Coffee shop not found");
@@ -41,8 +38,7 @@ public class UserFavoriteService(
 
         var favorite = UserFavorite.Create(userId, coffeeShopId);
 
-        await favoriteRepository.AddAsync(favorite, ct);
-        await unitOfWork.SaveChangesAsync(ct);
+        userFavoriteRepository.Add(favorite);
 
         return favorite.Id;
     }
@@ -68,7 +64,6 @@ public class UserFavoriteService(
             throw new NotFoundException("Coffee shop not found");
         }
 
-        favoriteRepository.Remove(favorite);
-        await unitOfWork.SaveChangesAsync(ct);
+        userFavoriteRepository.Remove(favorite);
     }
 }

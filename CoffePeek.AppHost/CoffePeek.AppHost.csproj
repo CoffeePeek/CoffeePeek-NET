@@ -20,6 +20,7 @@
       <ProjectReference Include="..\CoffeePeek.Gateway\CoffeePeek.Gateway.csproj" />
       <ProjectReference Include="..\CoffeePeek.MediaService\CoffeePeek.MediaService.csproj" />
       <ProjectReference Include="..\CoffeePeek.ModerationService\CoffeePeek.ModerationService.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shared.Kernel\CoffeePeek.Shared.Kernel.csproj" />
       <ProjectReference Include="..\CoffeePeek.ShopsService\CoffeePeek.ShopsService.csproj" />
     </ItemGroup>
 

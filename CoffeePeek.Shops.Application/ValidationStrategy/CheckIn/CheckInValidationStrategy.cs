@@ -1,17 +1,17 @@
-using CoffeePeek.Shared.Infrastructure.Abstract;
 using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Application.Features.CheckIn.CreateCheckIn;
 using CoffeePeek.Shops.Domain;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
 namespace CoffeePeek.Shops.Application.ValidationStrategy.CheckIn;
 
 public class CheckInValidationStrategy(
-    IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> coffeeShopRepository)
+    IQueryCoffeeShopRepository queryCoffeeShopRepository)
     : IAsyncValidationStrategy<CreateCheckInCommand>
 {
     public async Task<ValidationResult> ValidateAsync(CreateCheckInCommand command, CancellationToken ct)
     {
-        var shopExists = await coffeeShopRepository.AnyAsync(x => x.Id == command.CoffeeShopId, ct);
+        var shopExists = await queryCoffeeShopRepository.Exists(command.CoffeeShopId, ct);
         if (!shopExists)
         {
             return ValidationResult.Invalid("Coffee shop not found");

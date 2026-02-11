@@ -1,21 +1,25 @@
-using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Events;
-using CoffeePeek.MediaService.Services;
-using DotNetCore.CAP;
+using CoffeePeek.MediaService.Data;
+using JasperFx.Core;
+using Wolverine;
 
 namespace CoffeePeek.MediaService.Handlers;
 
-public class PhotoReplacedEventHandler(
-    PhotoCleanupService cleanupService,
-    ILogger<PhotoReplacedEventHandler> logger) : ICapSubscribe
+public class PhotoReplacedEventHandler
 {
-    [CapSubscribe(CapEventNames.Media.PhotoReplaced)]
-    public async Task HandleAsync(PhotoReplacedEvent eventData, CancellationToken ct)
+    public async Task Handle(
+        PhotoReplacedEvent @event,
+        MediaDbContext dbContext,
+        IMessageContext bus,
+        CancellationToken ct)
     {
-        logger.LogInformation(
-            "Received PhotoReplacedEvent for old photo {OldPhotoId}, new photo {NewPhotoId}",
-            eventData.OldPhotoId, eventData.NewPhotoId);
+        var oldPhoto = await dbContext.Photos.FindAsync([@event.OldPhotoId], ct);
+        if (oldPhoto != null)
+        {
+            oldPhoto.Status = PhotoStatus.PendingDeletion;
+            await dbContext.SaveChangesAsync(ct);
 
-        await cleanupService.HandlePhotoReplacedAsync(eventData, ct);
+            await bus.ScheduleAsync(new DeletePhotoFromStorage(@event.OldPhotoId), 1.Hours());
+        }
     }
 }

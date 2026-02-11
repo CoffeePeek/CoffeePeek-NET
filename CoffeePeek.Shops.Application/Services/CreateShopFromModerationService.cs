@@ -1,33 +1,29 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Shops.Application.Services;
 
 public class CreateShopFromModerationService(
-    IGenericRepository<CoffeeShop> shopRepository,
-    IGenericRepository<CoffeeBean> coffeeBeanRepository,
-    IGenericRepository<Equipment> equipmentRepository,
-    IGenericRepository<Roaster> roasterRepository,
-    IGenericRepository<BrewMethod> brewMethodRepository,
-    IUnitOfWork unitOfWork,
+    IQueryCoffeeShopRepository shopRepository,
+    IQueryCoffeeBeanRepository coffeeBeanRepository,
+    IQueryEquipmentRepository equipmentRepository,
+    IQueryRoasterRepository roasterRepository,
+    IQueryBrewMethodRepository brewMethodRepository,
     ILogger<CreateShopFromModerationService> logger) : ICreateShopFromModerationService
 {
     public async Task<Guid> CreateShopFromApprovedEventAsync(ShopDto shopDto, Guid creatorId, Guid moderationId, CancellationToken cancellationToken = default)
     {
-        var exists = await shopRepository.AnyAsync(x => x.ModerationId == moderationId, cancellationToken);
+        var exists = await shopRepository.ExistsByModerationId(moderationId, cancellationToken);
         if (exists)
         {
             logger.LogInformation("Shop with ModerationId {ModerationId} already exists, skipping creation", moderationId);
             throw new InvalidOperationException($"Shop with ModerationId {moderationId} already exists");
         }
 
-        var shop = new CoffeeShop(creatorId, shopDto.Name, shopDto.PriceRange, moderationId);
-        shop.UpdateDetails(shopDto.Name, shopDto.Description, shopDto.PriceRange);
+        var shop = new CoffeeShop(creatorId, shopDto.Name, (PriceRange)shopDto.PriceRange, moderationId);
+        shop.UpdateDetails(shopDto.Name, shopDto.Description, (PriceRange)shopDto.PriceRange);
 
         if (shopDto.Location != null)
         {
@@ -42,7 +38,7 @@ public class CreateShopFromModerationService(
         if (shopDto.Equipments is { Length: > 0 })
         {
             var ids = shopDto.Equipments.Select(x => x.Id).ToList();
-            var equipments = await GetValidEntitiesAsync(equipmentRepository, ids, nameof(Equipment), cancellationToken);
+            var equipments = await equipmentRepository.GetByIds(ids, cancellationToken);
             foreach (var equipment in equipments)
             {
                 shop.AddEquipment(equipment);
@@ -52,28 +48,30 @@ public class CreateShopFromModerationService(
         if (shopDto.BrewMethods is { Length: > 0 })
         {
             var ids = shopDto.BrewMethods.Select(x => x.Id).ToList();
-            var brewMethods = await GetValidEntitiesAsync(brewMethodRepository, ids, nameof(BrewMethod), cancellationToken);
+            var brewMethods = await brewMethodRepository.GetByIds(ids, cancellationToken);
             shop.SetBrewMethods(brewMethods);
         }
 
         if (shopDto.Roasters is { Length: > 0 })
         {
             var ids = shopDto.Roasters.Select(x => x.Id).ToList();
-            var roasters = await GetValidEntitiesAsync(roasterRepository, ids, nameof(Roaster), cancellationToken);
+            var roasters = await roasterRepository.GetByIds(ids, cancellationToken);
             shop.SetRoasters(roasters);
         }
 
         if (shopDto.CoffeeBeans is { Length: > 0 })
         {
             var ids = shopDto.CoffeeBeans.Select(x => x.Id).ToList();
-            var coffeeBeans = await GetValidEntitiesAsync(coffeeBeanRepository, ids, nameof(CoffeeBean), cancellationToken);
+            var coffeeBeans = await coffeeBeanRepository.GetByIds(ids, cancellationToken);
             shop.SetBeans(coffeeBeans);
         }
 
         if (shopDto.Schedules is { Length: > 0 })
         {
             var schedules = shopDto.Schedules
-                .Select(x => ShopSchedule.Create(x.DayOfWeek, x.IsClosed, x.Intervals))
+                .Select(x => 
+                    ShopSchedule.Create(x.DayOfWeek, x.IsClosed, x.Intervals
+                        .Select(i => ShopScheduleInterval.Create(i.OpenTime, i.CloseTime)).ToList()))
                 .ToList();
             shop.AddSchedule(schedules);
         }
@@ -90,31 +88,12 @@ public class CreateShopFromModerationService(
             shop.AddPhotos(photos);
         }
 
-        await shopRepository.AddAsync(shop, cancellationToken);
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        shopRepository.Add(shop);
 
         logger.LogInformation("Shop {ShopId} successfully created from moderation event {ModerationId}", shop.Id,
             moderationId);
 
         return shop.Id;
-    }
-
-    private async Task<List<T>> GetValidEntitiesAsync<T>(
-        IGenericRepository<T> repository, 
-        List<Guid> ids, 
-        string entityName, 
-        CancellationToken ct) where T : Entity<Guid>
-    {
-        var existing = await repository.Query()
-            .Where(x => ids.Contains(x.Id))
-            .ToListAsync(ct);
-
-        var missingIds = ids.Except(existing.Select(x => x.Id)).ToList();
-        if (missingIds.Count != 0)
-            logger.LogWarning("Missing {EntityName} IDs: {Ids}", entityName, string.Join(", ", missingIds));
-
-        return existing;
     }
 }
 

@@ -126,12 +126,12 @@ public record CacheKey(
         public static string ListPattern() => "equipment:list:*";
     }
     
-    public static class Bean
+    public static class CoffeeBean
     {
         public static CacheKey ListAll() => new(
-            Key: "bean:list:all",
+            Key: "coffeebean:list:all",
             DefaultTtl: TimeSpan.FromDays(1),
-            Description: "All beans list",
+            Description: "All coffee beans list",
             Service: "ShopsService");
         
         public static string ListPattern() => "bean:list:*";
@@ -202,7 +202,7 @@ public record CacheKey(
             
             private static readonly Dictionary<string, string[]> Patterns = new()
             {
-                [Dictionaries] = [City.ListPattern(), Equipment.ListPattern(), Bean.ListPattern(), 
+                [Dictionaries] = [City.ListPattern(), Equipment.ListPattern(), CoffeeBean.ListPattern(), 
                                    Roaster.ListPattern(), BrewMethod.ListPattern()],
                 [Lists] = [$"shop:list:city:*"],
                 [Details] = [Shop.DetailPattern(), $"shop:favorites:*"]

@@ -1,33 +1,43 @@
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Auth;
+using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.CheckIn.CreateCheckIn;
 using CoffeePeek.Shops.Application.Features.CheckIn.GetUserCheckIns;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
+using Wolverine;
 
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class CheckInsController(IMediator mediator, IUserContext userContext) : ControllerBase
+public class CheckInsController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Create check-in for coffee shop
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
     [HttpPost]
     [ProducesResponseType(typeof(Response<CreateCheckInResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Create check-in for coffee shop")]
-    public Task<Response<CreateCheckInResponse>> CreateCheckIn([FromBody] CreateCheckInCommand command)
+    public async Task<IActionResult> CreateCheckIn([FromBody] CreateCheckInCommand command)
     {
         command = command with { UserId = userContext.GetUserIdOrThrow(), UserName = userContext.GetUsernameOrThrow() };
-        return mediator.Send(command);
+        var response = await bus.InvokeAsync<Response<CreateCheckInResponse>>(command);
+
+        return Ok(response);
     }
 
+    /// <summary>
+    /// Get check-ins for current user
+    /// </summary>
+    /// <param name="pageNumber"></param>
+    /// <param name="pageSize"></param>
+    /// <returns></returns>
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetUserCheckInsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation("Get check-ins for current user")]
     public async Task<IActionResult> GetMyCheckIns(
         [FromHeader(Name = "X-Page-Number")] int pageNumber = 1,
         [FromHeader(Name = "X-Page-Size")] int pageSize = 10)
@@ -36,7 +46,9 @@ public class CheckInsController(IMediator mediator, IUserContext userContext) : 
         pageSize = pageSize <= 0 ? 10 : Math.Min(pageSize, 100);
 
         var userId = userContext.GetUserIdOrThrow();
-        var response = await mediator.Send(new GetUserCheckInsCommand(userId, pageNumber, pageSize));
+        
+        var command = new GetUserCheckInsCommand(userId, pageNumber, pageSize);
+        var response = await bus.InvokeAsync<Response<GetUserCheckInsResponse>>(command);
 
         if (response is { IsSuccess: true, Data: not null })
         {

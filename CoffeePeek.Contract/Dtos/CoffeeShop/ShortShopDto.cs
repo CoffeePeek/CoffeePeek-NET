@@ -5,7 +5,7 @@ using CoffeePeek.Contract.Enums;
 
 namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 
-public record ShortShopDto
+public class ShortShopDto
 {
     public Guid Id { get; init; }
     public Guid CityId { get; init; }
@@ -15,16 +15,15 @@ public record ShortShopDto
     public decimal Rating { get; init; }
     public int ReviewCount { get; init; }
 
-    public bool IsFavorite { get; init; }
-    public bool IsVisited { get; init; }
+    public bool IsFavorite { get; set; }
+    public bool IsVisited { get; set; }
     public bool IsNew { get; init; }
     public bool IsOpen { get; init; }
     
     public PriceRange PriceRange { get; init; }
     
-    
     public LocationDto? Location { get; init; }
-    public BeansDto[]? Beans { get; init; }
+    public CoffeeBeansDto[]? Beans { get; init; }
     public RoasterDto[]? Roasters { get; init; }
     public EquipmentDto[]? Equipments { get; init; }
     public BrewMethodDto[]? BrewMethods { get; init; }

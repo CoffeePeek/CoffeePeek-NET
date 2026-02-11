@@ -1,15 +1,13 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.Contact;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Enums;
-using MediatR;
 
 namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
-public record SendCoffeeShopToModerationCommand : IRequest<Response<SendCoffeeShopToModerationResponse>>
+public record SendCoffeeShopToModerationCommand
 {
     [JsonIgnore] public Guid UserId { get; init; }
     

@@ -1,24 +1,20 @@
-﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
-using MapsterMapper;
-using MediatR;
+﻿using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.Shops.Application.Features.Favorite.GetAllFavorites;
 
-public class GetAllFavoritesHandler(IGenericRepository<UserFavorite> favoriteShopRepository, IMapper mapper)
-    : IRequestHandler<GetAllFavoritesCommand, Response<GetAllFavoritesResponse>>
+//TODO add real implementation
+public class GetAllFavoritesHandler
 {
-    public async Task<Response<GetAllFavoritesResponse>> Handle(GetAllFavoritesCommand request,
+    public Task<Response<GetAllFavoritesResponse>> Handle(GetAllFavoritesCommand request,
         CancellationToken cancellationToken)
     {
         if (request.UserId == Guid.Empty)
         {
-            return Response<GetAllFavoritesResponse>.Error("UserId is required and cannot be empty");
+            return Task.FromResult(Response<GetAllFavoritesResponse>.Error("UserId is required and cannot be empty"));
         }
 
         var result = new GetAllFavoritesResponse([]);
 
-        return Response<GetAllFavoritesResponse>.Success(result);
+        return Task.FromResult(Response<GetAllFavoritesResponse>.Success(result));
     }
 }

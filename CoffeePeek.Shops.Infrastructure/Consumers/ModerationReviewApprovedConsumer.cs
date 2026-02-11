@@ -1,40 +1,31 @@
-using CoffeePeek.Contract.Constants;
-using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Events.Shops;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
-using CoffeePeek.Shops.Infrastructure.Configuration;
-using DotNetCore.CAP;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
-public class ModerationReviewApprovedHandler(
-    IGenericRepository<Review> reviewRepository,
-    IUnitOfWork unitOfWork,
-    ICapPublisher capPublisher,
-    ILogger<ModerationReviewApprovedHandler> logger) : ICapSubscribe
+public static class ModerationReviewApprovedHandler
 {
-    [CapSubscribe(CapEventNames.Moderation.ReviewApproved)]
-    public async Task Handle(ModerationReviewApprovedEvent @event, CancellationToken cancellationToken)
+    [Transactional]
+    public static async Task<ReviewAddedEvent?> Handle(
+        ModerationReviewApprovedEvent @event,
+        IReviewRepository reviewRepository,
+        ILogger logger,
+        CancellationToken ct)
     {
         var reviewDto = @event.Review;
         
-        logger.LogInformation("Received ModerationReviewApprovedEvent for UserId: {UserId}, ShopId: {ShopId}", 
+        logger.LogInformation("Processing approved review for User: {UserId}, Shop: {ShopId}", 
             reviewDto.UserId, reviewDto.ShopId);
 
-        var existingReview = await reviewRepository
-            .FirstOrDefaultAsync(r => r.CoffeeShopId == reviewDto.ShopId && r.UserId == reviewDto.UserId, 
-                cancellationToken);
+        var exists = await reviewRepository.AnyAsync(reviewDto.ShopId, reviewDto.UserId, ct);
 
-        if (existingReview != null)
+        if (exists)
         {
-            logger.LogWarning("Review already exists for UserId: {UserId}, ShopId: {ShopId}. Skipping.", 
-                reviewDto.UserId, reviewDto.ShopId);
-            return;
+            logger.LogWarning("Review already exists. Skipping creation.");
+            return null;
         }
         
         var review = Review.Create(
@@ -43,24 +34,12 @@ public class ModerationReviewApprovedHandler(
             reviewDto.UserName,
             reviewDto.Header,
             reviewDto.Comment,
-            reviewDto.Rating);
+            reviewDto.Rating.Place, reviewDto.Rating.Service, reviewDto.Rating.Coffee);
 
         reviewRepository.Add(review);
 
+        logger.LogInformation("Review created. ID: {ReviewId}", review.Id);
 
-        using var trans = unitOfWork.BeginTransactionAsync(cancellationToken);
-            
-        await capPublisher.PublishAsync(
-            name: CapEventNames.Shops.ReviewAdded,
-            contentObj: new ReviewAddedEvent(reviewDto.UserId, reviewDto.ShopId, review.Id),
-            cancellationToken: cancellationToken);
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-            
-        await unitOfWork.CommitTransactionAsync(cancellationToken);
-
-        logger.LogInformation(
-            "Review created successfully for UserId: {UserId}, ShopId: {ShopId}, ReviewId: {ReviewId}",
-            reviewDto.UserId, reviewDto.ShopId, review.Id);
+        return new ReviewAddedEvent(reviewDto.UserId, reviewDto.ShopId, review.Id);
     }
 }

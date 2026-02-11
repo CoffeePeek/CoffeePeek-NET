@@ -10,11 +10,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
+        services.AddOpenApi();
+        
         // Controllers and API
         services.AddControllersModule();
-
-        // Swagger
-        services.AddSwaggerModule("Shops Service");
 
         // User context for reading claims from headers (set by Gateway)
         services.AddHeaderUserContext();

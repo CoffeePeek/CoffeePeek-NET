@@ -1,58 +1,51 @@
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
-using CoffeePeek.Contract.Events;
 using CoffeePeek.Contract.Events.Moderation;
-using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using DotNetCore.CAP;
+using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
-using MediatR;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.ChangeStatusModerationReview;
 
-public class ChangeStatusModerationReviewHandler(
-    IModerationReviewRepository repository, 
-    IUnitOfWork unitOfWork,
-    IMapper mapper,
-    ICapPublisher capPublisher)
-    : IRequestHandler<ChangeStatusModerationReviewCommand, UpdateEntityResponse<ModerationStatus>>
+public static class ChangeStatusModerationReviewHandler
 {
-    public async Task<UpdateEntityResponse<ModerationStatus>> Handle(ChangeStatusModerationReviewCommand request,
-        CancellationToken cancellationToken)
+    [Transactional]
+    public static async Task<(UpdateEntityResponse<ModerationStatus>, ModerationReviewApprovedEvent?)> Handle(
+        ChangeStatusModerationReviewCommand command,
+        IModerationReviewRepository repository,
+        IMapper mapper,
+        CancellationToken ct)
     {
-        var moderationReview = await repository.GetById(request.ModerationReviewId, cancellationToken);
+        var review = await repository.GetById(command.ModerationReviewId, ct);
 
-        if (moderationReview == null)
-        {
+        if (review == null)
             throw new NotFoundException("Moderation review not found");
-        }
 
-        switch (request.ModerationStatus)
+        ModerationReviewApprovedEvent? approvedEvent = null;
+
+        var oldStatus = review.ModerationStatus;
+        switch (command.ModerationStatus)
         {
             case ModerationStatus.Approved:
-                moderationReview.Approve(request.UserId);
-                var reviewDto = mapper.Map<ModerationReviewDto>(moderationReview);
-                await capPublisher.PublishAsync(
-                    name: CapEventNames.Moderation.ReviewApproved,
-                    contentObj: new ModerationReviewApprovedEvent(reviewDto),
-                    cancellationToken: cancellationToken);
+                review.Approve(command.UserId);
+                // Маппим в DTO и готовим событие к отправке
+                var dto = mapper.Map<ModerationReviewDto>(review);
+                approvedEvent = new ModerationReviewApprovedEvent(dto);
                 break;
+
             case ModerationStatus.Rejected:
-                moderationReview.Reject(request.RejectReason!, request.UserId);
+                review.Reject(command.RejectReason!, command.UserId);
                 break;
+
             case ModerationStatus.Pending:
-                moderationReview.MoveToPending(request.UserId);
+                review.MoveToPending(command.UserId);
                 break;
-            default:
-                throw new ArgumentOutOfRangeException();
         }
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return UpdateEntityResponse<ModerationStatus>.Success(moderationReview.ModerationStatus);
+        var response = UpdateEntityResponse<ModerationStatus>.Success((ModerationStatus)review.ModerationStatus, oldEntity: (ModerationStatus)oldStatus);
+        
+        return (response, approvedEvent);
     }
 }

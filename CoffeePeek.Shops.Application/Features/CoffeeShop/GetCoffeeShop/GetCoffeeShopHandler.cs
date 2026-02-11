@@ -1,76 +1,55 @@
-using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Persistence;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
+using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
-using Mapster;
 using MapsterMapper;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 
-public class GetCoffeeShopHandler(
-    IGenericRepository<Domain.Aggregates.CoffeeShopAggregate.CoffeeShop> shopRepository,
-    IUserFavoriteRepository favoriteRepository,
-    IUserCheckInRepository checkInRepository,
-    IReviewRepository reviewRepository,
-    IMapper mapper,
-    IRedisService redisService)
-    : IRequestHandler<GetCoffeeShopQuery, Response<GetCoffeeShopResponse>>
+public static class GetCoffeeShopHandler
 {
-    public async Task<Response<GetCoffeeShopResponse>> Handle(GetCoffeeShopQuery queryRequest,
-        CancellationToken cancellationToken)
+    public static async Task<Response<GetCoffeeShopResponse>> Handle(
+        GetCoffeeShopQuery query,
+        ICoffeeShopQueries shopQueries,
+        IUserFavoriteRepository favoriteRepository,
+        IQueryCheckInRepository checkInRepository,
+        IQueryReviewRepository reviewRepository,
+        ICacheService redisService,
+        IMapper mapper,
+        CancellationToken ct)
     {
-        var cacheKey = CacheKey.Shop.Detail(queryRequest.Id);
-        
-        var response = await redisService.GetAsync(
-            cacheKey,
-            async () =>
-            {
-                var shop = await shopRepository
-                    .QueryAsNoTracking()
-                    .Include(x => x.ShopPhotos)
-                    .Include(x => x.Equipments)
-                    .Include(x => x.CoffeeBeans)
-                    .Include(x => x.Roasters)
-                    .Include(x => x.BrewMethods)
-                    .Include(x => x.Schedules)
-                    .FirstOrDefaultAsync(x => x.Id == queryRequest.Id, cancellationToken);
+        var cacheKey = CacheKey.Shop.Detail(query.Id);
 
-                if (shop == null)
-                    return Response<GetCoffeeShopResponse>.Error($"Coffee shop with ID {queryRequest.Id} not found.");
-
-                // Get review statistics and reviews through the repository
-                var (averageRating, reviewCount) = await reviewRepository.GetReviewStatsByCoffeeShopId(queryRequest.Id, cancellationToken);
-                var (reviews, _) = await reviewRepository.GetByCoffeeShopId(queryRequest.Id, page: 1, pageSize: 10, cancellationToken);
-                
-                var shopDto = shop.Adapt<CoffeeShopDetailsDto>(mapper.Config) with
-                {
-                    Rating = averageRating,
-                    ReviewCount = reviewCount,
-                    Reviews = reviews.Adapt<ReviewDto[]>(mapper.Config)
-                };
-
-                return Response<GetCoffeeShopResponse>.Success(new GetCoffeeShopResponse(shopDto));
-            },
-            cacheKey.DefaultTtl);
-
-        if (response?.Data?.ShopDto != null && queryRequest.UserId.HasValue)
+        var shopDto = await redisService.GetAsync(cacheKey, async () =>
         {
-            var userId = queryRequest.UserId.Value;
-        
-            var enrichedCoffeeShop = response.Data.ShopDto with
-            {
-                IsFavorite = await favoriteRepository.Exists(userId, response.Data.ShopDto.Id, cancellationToken),
-                IsVisited = await checkInRepository.Exists(userId, response.Data.ShopDto.Id, cancellationToken)
+            var dto = await shopQueries.GetDetailsById(query.Id, ct);
+            if (dto == null) return null;
+
+            var (avgRating, count) = await reviewRepository.GetReviewStatsByCoffeeShopId(query.Id, ct);
+            var (reviews, _) = await reviewRepository.GetByCoffeeShopId(query.Id, 1, 10, ct);
+
+            return dto with { 
+                Rating = avgRating, 
+                ReviewCount = count, 
+                Reviews = mapper.Map<ReviewDto[]>(reviews)
             };
-            
-            response.Data.ShopDto = enrichedCoffeeShop;
+        }, cacheKey.DefaultTtl);
+
+        if (shopDto == null)
+            return Response<GetCoffeeShopResponse>.Error("Shop not found");
+
+        if (query.UserId.HasValue)
+        {
+            var userId = query.UserId.Value;
+            shopDto = shopDto with
+            {
+                IsFavorite = await favoriteRepository.Exists(userId, query.Id, ct),
+                IsVisited = await checkInRepository.Exists(userId, query.Id, ct)
+            };
         }
-        
-        return response ?? Response<GetCoffeeShopResponse>.Error($"Coffee shop with ID {queryRequest.Id} not found.");
+
+        return Response<GetCoffeeShopResponse>.Success(new GetCoffeeShopResponse(shopDto));
     }
 }

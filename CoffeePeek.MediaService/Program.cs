@@ -1,16 +1,11 @@
-using CoffeePeek.MediaService.BackgroundJobs;
 using CoffeePeek.MediaService.Configuration;
 using CoffeePeek.MediaService.Data;
-using CoffeePeek.MediaService.Handlers;
 using CoffeePeek.MediaService.Services;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Extensions;
-using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Extentions;
 using CoffeePeek.Shared.Persistence;
-using CoffeePeek.Shared.Persistence.Data;
-using CoffeePeek.Shared.Persistence.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
 using Microsoft.EntityFrameworkCore;
 using Minio;
@@ -30,14 +25,6 @@ builder.Services.AddAuthorizationBuilder()
 
 // Add services
 builder.Services.AddScoped<IStorageService, MinIOStorageService>();
-builder.Services.AddScoped<IPhotoService, PhotoService>();
-builder.Services.AddScoped<PhotoCleanupService>();
-
-// Register CAP handlers
-builder.Services.AddScoped<PhotoReplacedEventHandler>();
-
-// Add background job
-builder.Services.AddHostedService<PhotoCleanupBackgroundJob>();
 
 // Configure MinIO
 var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();

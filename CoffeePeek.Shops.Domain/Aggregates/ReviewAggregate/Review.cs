@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Shops.Domain.Entities;
+﻿using CoffeePeek.Shared.Domain.Entities;
+using CoffeePeek.Shops.Domain.Entities;
 
 namespace CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 

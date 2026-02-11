@@ -1,17 +1,17 @@
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Auth;
+using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.Favorite.AddToFavorite;
 using CoffeePeek.Shops.Application.Features.Favorite.RemoveFromFavorite;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Wolverine;
 
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class FavoriteCoffeeShopsController(IMediator mediator, IUserContext userContext) : ControllerBase
+public class FavoriteCoffeeShopsController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
     [HttpPost]
     [Authorize]
@@ -24,7 +24,7 @@ public class FavoriteCoffeeShopsController(IMediator mediator, IUserContext user
     public async Task<IActionResult> AddToFavorite([FromQuery] Guid id)
     {
         var command = new AddToFavoriteCommand(userContext.GetUserIdOrThrow(), id);
-        var response = await mediator.Send(command);
+        var response = await bus.InvokeAsync<CreateEntityResponse<Guid>>(command);
 
         return Created(response.EntityId.ToString(), response);
     }
@@ -39,7 +39,7 @@ public class FavoriteCoffeeShopsController(IMediator mediator, IUserContext user
     public async Task<IActionResult> RemoveFromFavorite([FromQuery] Guid id)
     {
         var command = new RemoveFromFavoriteCommand(userContext.GetUserIdOrThrow(), id);
-        await mediator.Send(command);
+        await bus.InvokeAsync(command);
 
         return NoContent();
     }
