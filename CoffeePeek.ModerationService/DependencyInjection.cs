@@ -6,7 +6,8 @@ using CoffeePeek.Shared.Web.Handlers;
 namespace CoffeePeek.ModerationService;
 
 public static class DependencyInjection
-{s
+{
+    public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
         services.AddOpenApi();
         

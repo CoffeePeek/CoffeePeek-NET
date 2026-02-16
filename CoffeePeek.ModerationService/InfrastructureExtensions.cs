@@ -47,7 +47,7 @@ public static class InfrastructureExtensions
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
-            await app.ApplyMigrations<ModerationDbContext>();
+            //await app.ApplyMigrations<ModerationDbContext>();
         }
 
         app.MapDefaultEndpoints();

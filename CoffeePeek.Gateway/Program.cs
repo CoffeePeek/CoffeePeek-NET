@@ -5,6 +5,7 @@ using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
 using CoffeePeek.Shared.Web.Logging;
 using CoffePeek.ServiceDefaults;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,30 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
+app.MapScalarApiReference(o =>
+{
+    o.AddDocument(
+        documentName: "account",
+        title: "Account API",
+        routePattern: "/account/openapi/v1.json",
+        isDefault: true);
+
+    o.AddDocument(
+        documentName: "shops",
+        title: "Shops API",
+        routePattern: "/shops/openapi/v1.json");
+
+    o.AddDocument(
+        documentName: "moderation",
+        title: "Moderation API",
+        routePattern: "/moderation/openapi/v1.json");
+
+    o.AddDocument(
+        documentName: "media",
+        title: "Media API",
+        routePattern: "/media/openapi/v1.json");
+});
+
 app.MapDefaultEndpoints();
 
 app.UseExceptionHandler();
@@ -47,7 +72,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseResponseCaching();
-
 
 // Gateway self health check
 app.MapGet("/health/gateway", () => Results.Ok(new { status = "healthy", service = "Gateway", timestamp = DateTime.UtcNow }))

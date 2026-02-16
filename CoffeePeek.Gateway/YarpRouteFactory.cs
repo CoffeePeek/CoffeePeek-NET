@@ -26,32 +26,33 @@ public static class YarpRouteFactory
             ],
             "shops-cluster", DefaultVersions),
         new("moderation", ["Moderation", "ModerationReviews", "ModerationShops"], "moderation-cluster", DefaultVersions),
-        new("media", ["Photos"], "media-cluster", DefaultVersions),
-        new("jobs", ["Vacancies"], "jobs-cluster", DefaultVersions)
+        new("media", ["Photos"], "media-cluster", DefaultVersions)
     ];
 
     public static ReadOnlyCollection<ServiceRoute> ServicesList => Services.AsReadOnly();
 
     public static RouteConfig[] CreateRoutes()
     {
-        var routes = new List<RouteConfig>();
-
-        foreach (var service in Services)
-        {
-            routes.AddRange(service.Controllers.Select(controller => CreateApiRoute(service, controller)));
-        }
-
-        return routes.ToArray();
+        return Services.Select(CreateOpenApiRoute).ToArray();
     }
 
-    private static RouteConfig CreateApiRoute(ServiceRoute service, string controller)
+    private static RouteConfig CreateOpenApiRoute(ServiceRoute service)
     {
         return new RouteConfig
         {
-            RouteId = $"{service.Id}-{controller}-api-route",
+            RouteId = $"{service.Id}-openapi-route",
             ClusterId = service.ClusterId,
-            Match = new RouteMatch { Path = $"/api/{controller}/{{**catch-all}}" },
+            Match = new RouteMatch
+            {
+                Path = $"/{service.Id}/openapi/{{**catch-all}}"
+            },
+            Transforms =
+            [
+                new Dictionary<string, string>
+                {
+                    { "PathRemovePrefix", $"/{service.Id}" }
+                }
+            ]
         };
     }
-    
 }

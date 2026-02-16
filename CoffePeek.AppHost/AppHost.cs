@@ -15,27 +15,22 @@ var mediaDb = postgres.AddDatabase(AppResources.MediaDb);
 var accountService = builder
     .AddProject<Projects.CoffeePeek_AccountService>(AppResources.AccountService)
     .WithReference(accountDb)
-    .WithEnvironment("DOTNET_ASPIRE", "true")
-    .WithUrl("/cap", "Cap dashboard");
+    .WithEnvironment("DOTNET_ASPIRE", "true");
 
 var shopsService = builder
     .AddProject<Projects.CoffeePeek_ShopsService>(AppResources.ShopsService)
     .WithReference(shopsDb)
-    .WithEnvironment("DOTNET_ASPIRE", "true")
-    .WithUrl("/cap", "Cap dashboard");
+    .WithEnvironment("DOTNET_ASPIRE", "true");
 
 var moderationService = builder
     .AddProject<Projects.CoffeePeek_ModerationService>(AppResources.ModerationService)
     .WithReference(moderationDb)
-    .WithEnvironment("DOTNET_ASPIRE", "true")
-    .WithUrl("/cap", "Cap dashboard");
+    .WithEnvironment("DOTNET_ASPIRE", "true");
 
 var mediaService = builder
     .AddProject<Projects.CoffeePeek_MediaService>(AppResources.MediaService)
     .WithReference(mediaDb)
-    .WithEnvironment("DOTNET_ASPIRE", "true")
-    .WithUrl("/swagger", "Swagger UI")
-    .WithUrl("/cap", "Cap dashboard");
+    .WithEnvironment("DOTNET_ASPIRE", "true");
 
 builder.AddProject<Projects.CoffeePeek_Gateway>(AppResources.Gateway)
     .WithReference(accountService)
@@ -43,5 +38,6 @@ builder.AddProject<Projects.CoffeePeek_Gateway>(AppResources.Gateway)
     .WithReference(moderationService)
     .WithReference(mediaService)
     .WithEnvironment("DOTNET_ASPIRE", "true")
-    .WithEnvironment("DOTNET_ASPIRE_RUNNING", "true");
+    .WithEnvironment("DOTNET_ASPIRE_RUNNING", "true")
+    .WithUrl("/scalar", "docs");
 builder.Build().Run();

@@ -44,7 +44,7 @@ public static class InfrastructureExtensions
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
-            await app.ApplyMigrations<ShopsDbContext>();
+            //await app.ApplyMigrations<ShopsDbContext>();
             //await CoffeePeek.Shops.Infrastructure.ShopsDbInitializer.SeedAsync(app.Services);
         }
 
