@@ -9,7 +9,19 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
-        services.AddOpenApi();
+        services.AddOpenApi(options =>
+        {
+            options.AddDocumentTransformer((document, _, _) =>
+            {
+                document.Servers.Clear();
+                document.Servers.Add(new Microsoft.OpenApi.OpenApiServer
+                { 
+                    Url = "/",
+                    Description = "Gateway" 
+                });
+                return Task.CompletedTask;
+            });
+        });
         
         // Controllers and API
         services.AddControllersModule();

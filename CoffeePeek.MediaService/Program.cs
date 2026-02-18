@@ -14,8 +14,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, _, _) =>
+    {
+        document.Servers.Clear();
+        document.Servers.Add(new Microsoft.OpenApi.OpenApiServer
+        { 
+            Url = "/",
+            Description = "Gateway" 
+        });
+        return Task.CompletedTask;
+    });
+});
 
 // Add authentication and authorization
 builder.Services.AddHeaderUserContext();
@@ -63,7 +74,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
 
 app.MapControllers();
 

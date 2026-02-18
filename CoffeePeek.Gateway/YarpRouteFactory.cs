@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CoffeePeek.Shared.Web.Constants;
 using Yarp.ReverseProxy.Configuration;
+using Yarp.ReverseProxy.Transforms;
 
 namespace CoffeePeek.Gateway;
 
@@ -33,26 +34,40 @@ public static class YarpRouteFactory
 
     public static RouteConfig[] CreateRoutes()
     {
-        return Services.Select(CreateOpenApiRoute).ToArray();
+        var routes = new List<RouteConfig>();
+
+        foreach (var service in Services)
+        {
+            routes.Add(CreateOpenApiRoute(service));
+
+            foreach (var controller in service.Controllers)
+            {
+                routes.Add(new RouteConfig
+                {
+                    RouteId = $"{service.Id}-{controller}-route",
+                    ClusterId = service.ClusterId,
+                    Match = new RouteMatch
+                    {
+                        Path = $"/api/{controller}/{{**remainder}}"
+                    }
+                });
+            }
+        }
+
+        return routes.ToArray();
     }
 
-    private static RouteConfig CreateOpenApiRoute(ServiceRoute service)
+    public static RouteConfig CreateOpenApiRoute(ServiceRoute service)
     {
         return new RouteConfig
-        {
-            RouteId = $"{service.Id}-openapi-route",
-            ClusterId = service.ClusterId,
-            Match = new RouteMatch
             {
-                Path = $"/{service.Id}/openapi/{{**catch-all}}"
-            },
-            Transforms =
-            [
-                new Dictionary<string, string>
+                RouteId = $"{service.Id}-openapi-route",
+                ClusterId = service.ClusterId,
+                Match = new RouteMatch
                 {
-                    { "PathRemovePrefix", $"/{service.Id}" }
+                    Path = $"/{service.Id}/openapi/{{**catch-all}}"
                 }
-            ]
-        };
+            }
+            .WithTransformPathRemovePrefix(prefix: $"/{service.Id}");
     }
 }

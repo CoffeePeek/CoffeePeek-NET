@@ -50,8 +50,6 @@ public static class InfrastructureExtensions
 
         app.MapDefaultEndpoints();
 
-        app.UseHttpsRedirection();
-
         app.MapControllers();
     }
 }

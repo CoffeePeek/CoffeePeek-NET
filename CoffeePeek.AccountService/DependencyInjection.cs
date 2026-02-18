@@ -6,7 +6,9 @@ using CoffeePeek.Shared.Kernel.Extentions;
 using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
 namespace CoffeePeek.AccountService;
 
@@ -14,7 +16,54 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
-        services.AddOpenApi();
+        services.AddOpenApi(options =>
+        {
+            options.AddOperationTransformer((operation, context, _) =>
+            {
+                var hasAuthorize =
+                    context.Description.ActionDescriptor.EndpointMetadata
+                        .OfType<AuthorizeAttribute>()
+                        .Any();
+
+                if (!hasAuthorize)
+                    return Task.CompletedTask;
+
+                operation.Security ??= new List<OpenApiSecurityRequirement>();
+
+                var schemeReference = new OpenApiSecuritySchemeReference("Bearer");
+
+                operation.Security.Add(new OpenApiSecurityRequirement
+                {
+                    [schemeReference] = []
+                });
+
+                return Task.CompletedTask;
+            });
+            
+            options.AddDocumentTransformer((document, _, _) =>
+            {
+                document.Servers.Clear();
+                document.Servers.Add(new OpenApiServer
+                {
+                    Url = "/",
+                    Description = "Gateway"
+                });
+
+                document.Components ??= new OpenApiComponents();
+                document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Description = "Please enter a valid token"
+                };
+
+                return Task.CompletedTask;
+            });
+        });
+        
         // Controllers and API
         services.AddControllersModule();
 
