@@ -1,24 +1,22 @@
 using CoffeePeek.Account.Application.Common.Interfaces;
-using CoffeePeek.Account.Application.Common.Models;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Shared.Auth.Options;
-using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 
 public static class GoogleLoginHandler
 {
-    [Transactional]
     public static async Task<Response<GoogleLoginResponse>> Handle(
         GoogleLoginCommand request,
         IGoogleAuthService googleAuthService,
         IExternalAuthService externalAuthService,
         IJWTTokenService tokenService,
         IOptions<JWTOptions> options,
+        IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
         var payload = await googleAuthService.ValidateIdTokenAsync(request.IdToken);
@@ -42,6 +40,8 @@ public static class GoogleLoginHandler
             request.DeviceName,
             request.IpAddress);
 
+        await unitOfWork.SaveChangesAsync(ct);
+        
         return Response<GoogleLoginResponse>.Success(new GoogleLoginResponse
         {
             AccessToken = accessToken,

@@ -2,25 +2,37 @@ using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.CheckIn.CreateCheckIn;
 using CoffeePeek.Shops.Application.Features.CheckIn.GetUserCheckIns;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
+[Tags("Check-ins")]
+[Produces("application/json")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class CheckInsController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
     /// <summary>
-    /// Create check-in for coffee shop
+    /// Create a new check-in at a coffee shop
     /// </summary>
-    /// <param name="command"></param>
-    /// <returns></returns>
+    /// <remarks>
+    /// **Process:**
+    /// 1. Takes shop ID and optional message from body.
+    /// 2. Automatically injects User ID and Name from Gateway headers.
+    /// 3. Registers the visit in the system.
+    /// </remarks>
+    /// <param name="command">Check-in details (ShopId is required)</param>
+    /// <response code="200">Check-in successfully created</response>
+    /// <response code="400">Invalid shop ID or business logic violation</response>
+    /// <response code="401">Unauthorized: Missing user context headers</response>
     [HttpPost]
     [ProducesResponseType(typeof(Response<CreateCheckInResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateCheckIn([FromBody] CreateCheckInCommand command)
     {
         command = command with { UserId = userContext.GetUserIdOrThrow(), UserName = userContext.GetUsernameOrThrow() };
@@ -30,14 +42,24 @@ public class CheckInsController(IMessageBus bus, IUserContext userContext) : Con
     }
 
     /// <summary>
-    /// Get check-ins for current user
+    /// Get paginated list of check-ins for the current user
     /// </summary>
-    /// <param name="pageNumber"></param>
-    /// <param name="pageSize"></param>
-    /// <returns></returns>
+    /// <remarks>
+    /// **Note on Pagination:**
+    /// This endpoint uses **Custom Headers** for pagination control instead of query parameters.
+    /// 
+    /// **Response Headers:**
+    /// - `X-Total-Count`: Total number of check-ins
+    /// - `X-Total-Pages`: Total number of pages
+    /// - `X-Current-Page`: Current page index
+    /// </remarks>
+    /// <param name="pageNumber">Page index (starts from 1)</param>
+    /// <param name="pageSize">Items per page (max 100)</param>
+    /// <response code="200">Returns list of user's check-ins</response>
+    /// <response code="401">Unauthorized: Missing user context headers</response>
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetUserCheckInsResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMyCheckIns(
         [FromHeader(Name = "X-Page-Number")] int pageNumber = 1,
         [FromHeader(Name = "X-Page-Size")] int pageSize = 10)

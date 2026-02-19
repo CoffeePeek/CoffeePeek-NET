@@ -5,6 +5,7 @@ using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
 using CoffeePeek.Shared.Web.Logging;
 using CoffePeek.ServiceDefaults;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
@@ -85,16 +86,18 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
-
+var token =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYzAwMzE3Ny04YmYyLTQ3YTItODEyYS05NTk2Zjg0OGIxZmMiLCJuYW1lIjoiWmFseXBhNDQiLCJlbWFpbCI6InN0ZWZpc2VuQHlhbmRleC5ydSIsImp0aSI6IjhhZDhlZmI1LTY4YTgtNDQ3NC04MmFkLTk4ZTM2ZTVkODAxNyIsInByZWZlcnJlZF91c2VybmFtZSI6IlphbHlwYTQ0IiwiZW1haWxfdmVyaWZpZWQiOiJzdGVmaXNlbkB5YW5kZXgucnUiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiTW9kZXJhdG9yIiwiVXNlciIsIkFkbWluIl0sImV4cCI6MTc3MTQ3MTg4OSwiaXNzIjoiQ29mZmVlUGVlay5XRUIiLCJhdWQiOiJDb2ZmZWVQZWVrLkFQSSJ9.weTXcaU6NQhAXQ3vOETHz1lEhUsaQywLM6WhaJaNrUY";
+    
 app.MapScalarApiReference(o =>
 {
     o.Theme = ScalarTheme.Moon;
     o.DefaultHttpClient = new KeyValuePair<ScalarTarget, ScalarClient>(ScalarTarget.CSharp, ScalarClient.HttpClient);
-    o.AddPreferredSecuritySchemes();
-
-    o.AddHttpAuthentication("HTTP Bearer", auth =>
+    o.AddPreferredSecuritySchemes("Bearer");
+    
+    o.AddHttpAuthentication("Bearer", auth =>
     {
-        auth.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYzAwMzE3Ny04YmYyLTQ3YTItODEyYS05NTk2Zjg0OGIxZmMiLCJuYW1lIjoiWmFseXBhNDQiLCJlbWFpbCI6InN0ZWZpc2VuQHlhbmRleC5ydSIsImp0aSI6IjhhZDhlZmI1LTY4YTgtNDQ3NC04MmFkLTk4ZTM2ZTVkODAxNyIsInByZWZlcnJlZF91c2VybmFtZSI6IlphbHlwYTQ0IiwiZW1haWxfdmVyaWZpZWQiOiJzdGVmaXNlbkB5YW5kZXgucnUiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiTW9kZXJhdG9yIiwiVXNlciIsIkFkbWluIl0sImV4cCI6MTc3MTQ3MTg4OSwiaXNzIjoiQ29mZmVlUGVlay5XRUIiLCJhdWQiOiJDb2ZmZWVQZWVrLkFQSSJ9.weTXcaU6NQhAXQ3vOETHz1lEhUsaQywLM6WhaJaNrUY";
+        auth.Token = token; 
     }).EnablePersistentAuthentication();
     
     o.AddDocument(

@@ -12,6 +12,7 @@ namespace CoffeePeek.AccountService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Tags("Tokens management")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class TokensController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
@@ -32,6 +33,16 @@ public class TokensController(IMessageBus bus, IUserContext userContext) : Contr
 
         var response = await bus.InvokeAsync<Response<LoginResponse>>(command);
 
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,  
+            Secure = true,    
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTimeOffset.UtcNow.AddDays(7)
+        };
+        
+        Response.Cookies.Append("refreshToken", response.Data.RefreshToken, cookieOptions);
+        
         return Ok(response);
     }
 
@@ -56,19 +67,23 @@ public class TokensController(IMessageBus bus, IUserContext userContext) : Contr
     }
 
     /// <summary>
-    /// Refresh token
+    /// Refresh token from cookies
     /// </summary>
     [HttpPut]
-    [Authorize]
     [ProducesResponseType<Response<RefreshTokenResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand command)
+    public async Task<IActionResult> Refresh()
     {
+        if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
+        {
+            return BadRequest(new { message = "Refresh token is required" });
+        }
+        
         var deviceName = Request.Headers.UserAgent.ToString();
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-        command = command with { UserId = userContext.GetUserIdOrThrow(), DeviceName = deviceName, IpAddress = ipAddress };
+        var command = new RefreshTokenCommand(userContext.GetUserIdOrThrow(), refreshToken, deviceName, ipAddress);
 
         var response = await bus.InvokeAsync<Response<RefreshTokenResponse>>(command);
 

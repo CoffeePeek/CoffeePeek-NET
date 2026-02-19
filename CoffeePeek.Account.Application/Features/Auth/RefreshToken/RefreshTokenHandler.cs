@@ -1,7 +1,7 @@
 ﻿using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Shared.Auth.Options;
-using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.Extensions.Options;
@@ -12,11 +12,12 @@ namespace CoffeePeek.Account.Application.Features.Auth.RefreshToken;
 public class RefreshTokenHandler
 {
     [Transactional]
-    public async Task<Response<RefreshTokenResponse>> Handle(
+    public static async Task<Response<RefreshTokenResponse>> Handle(
         RefreshTokenCommand request,
         IUserRepository repository,
         IJWTTokenService tokenService,
         IOptions<JWTOptions> jwtOptions,
+        IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
         var user = await repository.GetById(request.UserId, ct)
@@ -32,6 +33,8 @@ public class RefreshTokenHandler
             request.DeviceName,
             request.IpAddress);
 
+        await unitOfWork.SaveChangesAsync(ct);
+        
         return Response<RefreshTokenResponse>.Success(new RefreshTokenResponse(newAccessToken, newRefreshTokenValue));
     }
 }

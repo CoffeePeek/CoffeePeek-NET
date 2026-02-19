@@ -8,22 +8,33 @@ namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Tags("Map Services")]
+[Produces("application/json")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class MapController(IMessageBus bus) : ControllerBase
 {
     /// <summary>
-    /// Get coffee shops in bounds
+    /// Get coffee shops within geographical boundaries
     /// </summary>
-    /// <param name="minLat"></param>
-    /// <param name="minLon"></param>
-    /// <param name="maxLat"></param>
-    /// <param name="maxLon"></param>
-    /// <returns></returns>
+    /// <remarks>
+    /// Use this endpoint to fetch coffee shops for map-based views. 
+    /// It requires a bounding box defined by minimum and maximum coordinates.
+    /// 
+    /// **Constraints:**
+    /// - Latitude: -90 to 90
+    /// - Longitude: -180 to 180
+    /// - Min values must be lower than Max values.
+    /// </remarks>
+    /// <param name="minLat">Minimum latitude (Southern boundary)</param>
+    /// <param name="minLon">Minimum longitude (Western boundary)</param>
+    /// <param name="maxLat">Maximum latitude (Northern boundary)</param>
+    /// <param name="maxLon">Maximum longitude (Eastern boundary)</param>
+    /// <response code="200">Returns a list of shops found within the specified area</response>
+    /// <response code="400">Invalid coordinates or bounding box geometry</response>
     [HttpGet]
-    [ProducesResponseType<Response<GetShopsInBoundsResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    [ProducesResponseType(typeof(Response<GetShopsInBoundsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetShopsInBounds(
         [FromQuery] [Range(-90, 90)] decimal minLat,
         [FromQuery] [Range(-180, 180)] decimal minLon,

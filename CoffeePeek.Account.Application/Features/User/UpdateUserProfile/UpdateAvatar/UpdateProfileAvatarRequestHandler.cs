@@ -2,22 +2,21 @@
 using CoffeePeek.Account.Domain.Entities.PhotoMetadataAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Events;
-using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
-using Wolverine;
-using Wolverine.Attributes;
+using MassTransit;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateAvatar;
 
-public class UpdateUserAvatarRequestHandler
+public static class UpdateUserAvatarRequestHandler
 {
-    [Transactional]
     public static async Task<UpdateEntityResponse<PhotoMetadata>> Handle(
         UpdateUserAvatarCommand request, 
         IUserRepository userRepository,
         IPhotoMetadataRepository photoMetadataRepository,
-        IMessageBus bus,
+        IUnitOfWork unitOfWork,
+        IEventPublisher publishEndpoint,
         CancellationToken ct)
     {
         var user = await userRepository.GetById(request.UserId, ct)
@@ -25,7 +24,8 @@ public class UpdateUserAvatarRequestHandler
 
         var oldPhoto = user.PhotoMetadata;
 
-        var photoMetadata = PhotoMetadata.Create(request.UploadedPhoto.FileName,
+        var photoMetadata = PhotoMetadata.Create(
+            request.UploadedPhoto.FileName,
             request.UploadedPhoto.ContentType,
             request.UploadedPhoto.StorageKey,
             request.UploadedPhoto.Size);
@@ -35,14 +35,16 @@ public class UpdateUserAvatarRequestHandler
 
         if (oldPhoto != null)
         {
-            await bus.PublishAsync(new PhotoReplacedEvent(
+            await publishEndpoint.Publish(new PhotoReplacedEvent(
                 oldPhoto.Id,
                 oldPhoto.StorageKey,
                 photoMetadata.Id,
                 "User",
                 user.Id,
-                DateTime.UtcNow));
+                DateTime.UtcNow), ct);
         }
+
+        await unitOfWork.SaveChangesAsync(ct);
 
         return UpdateEntityResponse<PhotoMetadata>.Success(user.PhotoMetadata!, "Photo updated successfully");
     }

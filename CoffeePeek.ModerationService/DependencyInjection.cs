@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Extensions;
+using CoffeePeek.Shared.Web;
 using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
 
@@ -11,16 +12,7 @@ public static class DependencyInjection
     {
         services.AddOpenApi(options =>
         {
-            options.AddDocumentTransformer((document, _, _) =>
-            {
-                document.Servers.Clear();
-                document.Servers.Add(new Microsoft.OpenApi.OpenApiServer
-                { 
-                    Url = "/",
-                    Description = "Gateway" 
-                });
-                return Task.CompletedTask;
-            });
+            options.AddDocumentTransformer<BearerSecurityTransformer>();
         });
         
         // Controllers and API

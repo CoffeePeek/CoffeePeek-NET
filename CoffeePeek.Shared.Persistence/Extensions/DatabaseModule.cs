@@ -1,42 +1,27 @@
-using CoffeePeek.Shared.Kernel.Extentions;
-using Microsoft.Extensions.Configuration;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Persistence.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CoffeePeek.Shared.Persistence.Extensions;
 
 public static class DatabaseModule
 {
-    extension(IServiceCollection services)
+    public static IServiceCollection AddDatabase<TDbContext>(
+        this IServiceCollection services,
+        string connectionString,
+        Action<DbContextOptionsBuilder>? configure = null)
+        where TDbContext : DbContext
     {
-        public PostgresCpOptions GetDatabaseOptions(IConfiguration configuration,
-            string databaseName,
-            string? connectionStringOverride = null)
+        services.AddDbContext<TDbContext>(opt =>
         {
-            var connectionString =
-                connectionStringOverride
-                ?? configuration.GetConnectionString(databaseName)
-                ?? GetDatabaseConnectionString();
+            opt.UseNpgsql(connectionString);
+            configure?.Invoke(opt);
+        });
 
-            var dbOptions = services.AddValidateOptions<PostgresCpOptions>();
+        services.AddScoped<IUnitOfWork, UnitOfWork<TDbContext>>();
 
-            if (!string.IsNullOrWhiteSpace(connectionString))
-            {
-                dbOptions.ConnectionString = connectionString;
-            }
-
-            return dbOptions;
-        }
-    }
-    
-    private static string? GetDatabaseConnectionString()
-    {
-        var directConnectionString = Environment.GetEnvironmentVariable("PostgresCpOptions__ConnectionString");
-        if (!string.IsNullOrEmpty(directConnectionString))
-        {
-            return directConnectionString;
-        }
-        
-        return null;
+        return services;
     }
 }
 

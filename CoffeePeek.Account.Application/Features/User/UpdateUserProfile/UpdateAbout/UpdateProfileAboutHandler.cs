@@ -1,5 +1,6 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Shared.Domain.Interfaces.Persistance;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using Wolverine.Attributes;
@@ -12,6 +13,7 @@ public class UpdateProfileHandler
     public async Task<UpdateEntityResponse<string>> Handle(
         UpdateProfileAboutCommand command,
         IUserRepository userRepository, 
+        IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
         var user = await userRepository.GetById(command.UserId, ct);
@@ -24,6 +26,8 @@ public class UpdateProfileHandler
 
         await userRepository.Update(user, ct);
 
+        await unitOfWork.SaveChangesAsync(ct);
+        
         return UpdateEntityResponse<string>.Success(user.About, "Profile updated successfully");
     }
 }

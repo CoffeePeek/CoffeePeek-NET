@@ -19,23 +19,20 @@ public static class InfrastructureExtensions
         builder.WebHost
             .ConfigureWebhost();
 
-        var connectionString =
-            Shops.Persistance.DependencyInjection.GetConnectionString(builder.Configuration, builder.Services);
-        
         var handlersAssembly = typeof(GetCoffeeShopHandler).Assembly;
         builder.Host
-            .AddPersistence(handlersAssembly, connectionString);
+            .AddPersistence(handlersAssembly);
         
         builder.Services
             .AddApplication()
-            .AddPersistence(builder.Configuration, builder)
+            .AddPersistence(builder)
             .AddInfrastructure()
             .AddPresentation();
 
         return builder;
     }
 
-    public static async Task UseApplication(this WebApplication app)
+    public static void UseApplication(this WebApplication app)
     {
         app.UseSerilogRequestLogging();
 

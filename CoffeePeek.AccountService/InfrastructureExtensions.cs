@@ -17,17 +17,14 @@ public static class InfrastructureExtensions
         builder.WebHost
             .ConfigureWebhost();
         
-        var connectionString = Account.Persistence.DependencyInjection.GetConnectionString(builder.Configuration, builder.Services);
-        
-        // Setup Wolverine on HostBuilder (must be done before Build())
         var handlersAssembly = typeof(RegisterUserHandler).Assembly;
         builder.Host
-            .AddPersistence(handlersAssembly, connectionString);
+            .AddPersistence(handlersAssembly);
         
         builder.Services
             .AddApplication()
             .AddInfrastructure()
-            .AddPersistence(builder.Configuration, builder)
+            .AddPersistence(builder)
             .AddPresentation();
         
         return builder;

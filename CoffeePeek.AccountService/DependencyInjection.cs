@@ -1,14 +1,17 @@
 ﻿using System.Text;
+using Asp.Versioning.ApiExplorer;
+using CoffeePeek.Account.Infrastructure.EventConsumer;
+using CoffeePeek.Account.Persistence.Configuration;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Extensions;
 using CoffeePeek.Shared.Auth.Options;
 using CoffeePeek.Shared.Kernel.Extentions;
+using CoffeePeek.Shared.Persistence.Extensions;
+using CoffeePeek.Shared.Web;
 using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 
 namespace CoffeePeek.AccountService;
 
@@ -18,50 +21,7 @@ public static class DependencyInjection
     {
         services.AddOpenApi(options =>
         {
-            options.AddOperationTransformer((operation, context, _) =>
-            {
-                var hasAuthorize =
-                    context.Description.ActionDescriptor.EndpointMetadata
-                        .OfType<AuthorizeAttribute>()
-                        .Any();
-
-                if (!hasAuthorize)
-                    return Task.CompletedTask;
-
-                operation.Security ??= new List<OpenApiSecurityRequirement>();
-
-                var schemeReference = new OpenApiSecuritySchemeReference("Bearer");
-
-                operation.Security.Add(new OpenApiSecurityRequirement
-                {
-                    [schemeReference] = []
-                });
-
-                return Task.CompletedTask;
-            });
-            
-            options.AddDocumentTransformer((document, _, _) =>
-            {
-                document.Servers.Clear();
-                document.Servers.Add(new OpenApiServer
-                {
-                    Url = "/",
-                    Description = "Gateway"
-                });
-
-                document.Components ??= new OpenApiComponents();
-                document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Name = "Authorization",
-                    Description = "Please enter a valid token"
-                };
-
-                return Task.CompletedTask;
-            });
+            options.AddDocumentTransformer<BearerSecurityTransformer>();
         });
         
         // Controllers and API
@@ -80,6 +40,8 @@ public static class DependencyInjection
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
+        services.AddMessaging<AccountDbContext>(typeof(CheckinCreatedHandler).Assembly);
+        
         return services;
     }
 

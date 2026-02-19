@@ -104,4 +104,14 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
             .Take(500)
             .ToArrayAsync(ct);
     }
+
+    public Task<CoffeeShopDetailsDto[]> GetUserFavoriteCoffeeShops(Guid userId, CancellationToken cancellationToken)
+    {
+        return context.UserFavorites.AsNoTracking()
+            .Include(x => x.CoffeeShop)
+            .Where(x => x.UserId == userId)
+            .Select(x => x.CoffeeShop)
+            .ProjectToType<CoffeeShopDetailsDto>()
+            .ToArrayAsync(cancellationToken);
+    }
 }

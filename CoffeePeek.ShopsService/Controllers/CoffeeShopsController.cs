@@ -11,23 +11,19 @@ namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Tags("Coffee Shops Management")]
+[Produces("application/json")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
     /// <summary>
-    /// Search coffee shops
+    /// Search for coffee shops with advanced filters
     /// </summary>
-    /// <param name="cityId"></param>
-    /// <param name="q"></param>
-    /// <param name="roasters"></param>
-    /// <param name="equipments"></param>
-    /// <param name="beans"></param>
-    /// <param name="brewMethods"></param>
-    /// <param name="priceRange"></param>
-    /// <param name="minRating"></param>
-    /// <param name="page"></param>
-    /// <param name="pageSize"></param>
-    /// <returns></returns>
+    /// <remarks>
+    /// This endpoint allows you to search for coffee shops using various filters like city, equipment, beans, and more.
+    /// Results are paginated and include metadata in X-Headers.
+    /// </remarks>
+    /// <response code="200">Returns list of coffee shops. Check X-Total-Count header for pagination metadata.</response>
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetCoffeeShopsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,7 +32,7 @@ public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : 
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> GetCoffeeShops(
         [FromQuery] Guid? cityId = null,
-        [FromQuery] string? q = null,
+        [FromQuery, MaxLength(100)] string? q = null,
         [FromQuery] Guid[]? roasters = null,
         [FromQuery] Guid[]? equipments = null,
         [FromQuery] Guid[]? beans = null,
@@ -81,10 +77,16 @@ public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : 
     }
 
     /// <summary>
-    /// Get coffee shop by ID
+    /// Get detailed information about a specific coffee shop
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
+    /// <remarks>
+    /// This endpoint returns full coffee shop details including:
+    /// - Average rating and review count
+    /// - Top 10 recent reviews
+    /// - Personal user interaction status (IsFavorite, IsVisited) if authenticated
+    /// </remarks>
+    /// <param name="id">The unique identifier (GUID) of the coffee shop</param>
+    /// <returns>Returns coffee shop details or an error message</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(Response<GetCoffeeShopResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

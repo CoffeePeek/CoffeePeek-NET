@@ -3,29 +3,28 @@ using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Shared.Auth.Constants;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.Extensions.Logging;
-using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.Auth.RegisterUser;
 
 public class RegisterUserHandler
 {
-    [Transactional]
-    public async Task<(CreateEntityResponse, UserRegisteredInternalEvent)> Handle(
+    public static async Task<CreateEntityResponse> Handle(
         RegisterUserCommand request, 
         IQueryUserRepository userRepository,
         IRoleRepository roleRepository,
         IPasswordHasherService passwordHasher,
+        IUnitOfWork unitOfWork,
+        IEventPublisher publishEndpoint,
         EmailExistenceFilter emailExistenceFilter,
         ILogger<RegisterUserHandler> logger,
         CancellationToken ct)
     {
         if (emailExistenceFilter.MightExist(request.Email) || !await userRepository.IsEmailUnique(request.Email, ct))
-        {
             throw new DomainException("Email already exists");
-        }
 
         var passwordHash = passwordHasher.HashPassword(request.Password);
 
@@ -43,14 +42,14 @@ public class RegisterUserHandler
         emailExistenceFilter.Add(request.Email);
         logger.LogInformation("User {Email} registered with ID {UserId}", request.Email, user.Id);
 
-        var response = CreateEntityResponse.Success();
-        
-        var @event = new UserRegisteredInternalEvent(
+        await publishEndpoint.Publish(new UserRegisteredInternalEvent(
             user.Id,
             user.Credentials.Email.Value, 
             user.Username.Value, 
-            user.Credentials.EmailConfirmationToken!);
+            user.Credentials.EmailConfirmationToken!), ct);
 
-        return (response, @event);
+        await unitOfWork.SaveChangesAsync(ct);
+
+        return CreateEntityResponse.Success();
     }
 }

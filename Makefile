@@ -14,7 +14,7 @@ MEDIA_INFRA      := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
 MEDIA_STARTUP    := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
 MEDIA_CONTEXT    := CoffeePeek.MediaService.Data.MediaDbContext
 
-n := InitialCreate
+n := AddOutbox
 
 define add_migration
 	dotnet ef migrations add $(4) \

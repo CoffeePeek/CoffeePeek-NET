@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Entities.PhotoMetadataAggregate;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
@@ -12,8 +11,6 @@ using CoffeePeek.Shared.Persistence;
 using CoffeePeek.Shared.Persistence.Data;
 using CoffeePeek.Shared.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -21,44 +18,38 @@ namespace CoffeePeek.Account.Persistence;
 
 public static class DependencyInjection
 {
-    public static string GetConnectionString(IConfiguration configuration, IServiceCollection services)
+    public static IHostBuilder AddPersistence(this IHostBuilder hostBuilder, Assembly handlersAssembly)
     {
-        if (configuration["DOTNET_ASPIRE"] == "true")
-        {
-            return configuration.GetConnectionString(AppResources.AccountDb) ?? 
-                   throw new InvalidOperationException("Connection string not found");
-        }
-        else
+        hostBuilder.AddWolverine(handlersAssembly);
+
+        return hostBuilder;
+    }
+
+    public static IServiceCollection AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
+    {
+#if DEBUG
+        builder.AddNpgsqlDbContext<AccountDbContext>(
+            connectionName: AppResources.AccountDb,
+            configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
+            configureSettings: settings => { settings.DisableRetry = true; }
+        );
+    
+        services.AddScoped<IUnitOfWork, UnitOfWork<AccountDbContext>>();
+#else
+        var connectionString = GetConnectionString(services);
+
+        services.AddDatabase<AccountDbContext>(
+            connectionString,
+            opt => opt.AddInterceptors(new AuditInterceptor())
+        );
+        
+        static string GetConnectionString(IServiceCollection services)
         {
             return services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
         }
-    }
-    
-    public static IHostBuilder AddPersistence(this IHostBuilder hostBuilder, Assembly handlersAssembly, string connectionString)
-    {
-        hostBuilder.AddWolverine(handlersAssembly, connectionString);
+#endif
+        services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
         
-        return hostBuilder;
-    }
-    
-    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration, WebApplicationBuilder builder)
-    {
-        // Database
-        string connectionString = GetConnectionString(configuration, services);
-        
-        if (configuration["DOTNET_ASPIRE"] == "true")
-        {
-            builder.AddNpgsqlDbContext<AccountDbContext>(
-                connectionName:AppResources.AccountDb, 
-                configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
-                configureSettings: settings => { settings.DisableRetry = true; }
-                );
-        }
-        else
-        {
-            services.AddDbContext<AccountDbContext>(opt => opt.UseNpgsql(connectionString).AddInterceptors(new AuditInterceptor()));
-        }
-
         // 2. Repository Implementations
         services.AddScoped<UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
@@ -72,9 +63,9 @@ public static class DependencyInjection
             var redisService = provider.GetRequiredService<ICacheService>();
             return new CachedUserRepository(baseRepo, redisService);
         });
-        
+
         services.AddCacheModule();
-        
+
         return services;
     }
 }

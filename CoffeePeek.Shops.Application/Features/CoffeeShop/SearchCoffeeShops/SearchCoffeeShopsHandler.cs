@@ -9,13 +9,13 @@ using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 
-public class SearchCoffeeShopsHandler(
-    ICoffeeShopQueries coffeeShopQueries,
-    IUserFavoriteRepository favoriteRepository,
-    IQueryCheckInRepository visitRepository,
-    ICacheService redisService)
+public class SearchCoffeeShopsHandler
 {
-    public async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsQuery queryRequest,
+    public static async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsQuery queryRequest,
+        ICoffeeShopQueries coffeeShopQueries,
+        IUserFavoriteRepository favoriteRepository,
+        IQueryCheckInRepository visitRepository,
+        ICacheService redisService,
         CancellationToken ct)
     {
         var searchHash = CreateSearchHash(queryRequest);

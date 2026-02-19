@@ -14,6 +14,6 @@ public record CreateCheckInCommand(
     ICollection<UploadedPhotoDto>? Photos,
     RatingDto? Rating)
 {
-    [JsonIgnore] public Guid UserId { get; set; }
-    [JsonIgnore] public string UserName { get; set; } = string.Empty;
+    [JsonIgnore] public Guid UserId { get; init; }
+    [JsonIgnore] public string UserName { get; init; } = string.Empty;
 }

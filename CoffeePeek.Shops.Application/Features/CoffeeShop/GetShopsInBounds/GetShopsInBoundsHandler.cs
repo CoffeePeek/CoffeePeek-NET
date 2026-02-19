@@ -5,7 +5,7 @@ namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
 
 public class GetShopsInBoundsHandler
 {
-    public async Task<Response<GetShopsInBoundsResponse>> Handle(GetShopsInBoundsQuery query, ICoffeeShopQueries shopQueries, CancellationToken cancellationToken)
+    public static async Task<Response<GetShopsInBoundsResponse>> Handle(GetShopsInBoundsQuery query, ICoffeeShopQueries shopQueries, CancellationToken cancellationToken)
     {
         var shops = await shopQueries.GetShopsInBounds(query, cancellationToken);
 

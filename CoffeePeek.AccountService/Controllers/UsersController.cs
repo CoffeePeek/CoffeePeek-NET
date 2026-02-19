@@ -20,6 +20,7 @@ namespace CoffeePeek.AccountService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Tags("User")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class UsersController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {

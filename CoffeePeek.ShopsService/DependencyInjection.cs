@@ -1,8 +1,12 @@
+using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Extensions;
+using CoffeePeek.Shared.Persistence.Extensions;
+using CoffeePeek.Shared.Web;
 using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
-using Microsoft.Extensions.DependencyInjection;
+using CoffeePeek.Shops.Infrastructure.Consumers;
+using CoffeePeek.Shops.Persistance.Configuration;
 
 namespace CoffeePeek.ShopsService;
 
@@ -12,22 +16,10 @@ public static class DependencyInjection
     {
         services.AddOpenApi(options =>
         {
-            options.AddDocumentTransformer((document, _, _) =>
-            {
-                document.Servers.Clear();
-                document.Servers.Add(new Microsoft.OpenApi.OpenApiServer
-                { 
-                    Url = "/",
-                    Description = "Gateway" 
-                });
-                return Task.CompletedTask;
-            });
+            options.AddDocumentTransformer<BearerSecurityTransformer>();
         });
         
-        // Controllers and API
         services.AddControllersModule();
-
-        // User context for reading claims from headers (set by Gateway)
         services.AddHeaderUserContext();
 
         // Authorization policies (JWT validation happens in Gateway)
@@ -42,6 +34,8 @@ public static class DependencyInjection
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
+        services.AddMessaging<ShopsDbContext>(typeof(ModerationShopApprovedHandler).Assembly);
+        
         return services;
     }
 

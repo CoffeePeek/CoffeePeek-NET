@@ -9,4 +9,5 @@ public interface ICoffeeShopQueries
     Task<(ShortShopDto[] Items, int TotalCount)> Search(SearchCoffeeShopsQuery request, CancellationToken ct);
     Task<CoffeeShopDetailsDto?> GetDetailsById(Guid id, CancellationToken ct);
     Task<MapShopDto[]> GetShopsInBounds(GetShopsInBoundsQuery query, CancellationToken ct = default);
+    Task<CoffeeShopDetailsDto[]> GetUserFavoriteCoffeeShops(Guid userId, CancellationToken cancellationToken);
 }
