@@ -106,7 +106,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:${{ steps.vars.outputs.TAG }}  
 
   apply_migrations:
-    # needs: build_and_push_images
+    needs: build_and_push_images
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     steps:
