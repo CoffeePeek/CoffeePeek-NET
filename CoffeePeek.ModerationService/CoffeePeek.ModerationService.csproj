@@ -11,7 +11,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
     <ItemGroup>
@@ -19,12 +21,6 @@
         <ProjectReference Include="..\CoffeePeek.Shared.Auth\CoffeePeek.Shared.Auth.csproj" />
         <ProjectReference Include="..\CoffeeShop.Moderation.Persistence\CoffeeShop.Moderation.Persistence.csproj" />
         <ProjectReference Include="..\CoffePeek.ServiceDefaults\CoffePeek.ServiceDefaults.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
     </ItemGroup>
     
 </Project>

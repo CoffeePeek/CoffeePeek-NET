@@ -8,13 +8,18 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj", "CoffeePeek.ShopsService/"]
-COPY ["CoffePeek.ServiceDefaults/CoffePeek.ServiceDefaults.csproj", "CoffePeek.ServiceDefaults/"]
-COPY ["CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj", "CoffeePeek.Shared.Extensions/"]
-COPY ["CoffeePeek.Shared.Infrastructure/CoffeePeek.Shared.Infrastructure.csproj", "CoffeePeek.Shared.Infrastructure/"]
-COPY ["CoffeePeek.Contract/CoffeePeek.Contract.csproj", "CoffeePeek.Contract/"]
-COPY ["CoffeePeek.Shops.Domain/CoffeePeek.Shops.Domain.csproj", "CoffeePeek.Shops.Domain/"]
-COPY ["CoffeePeek.Shops.Application/CoffeePeek.Shops.Application.csproj", "CoffeePeek.Shops.Application/"]
 COPY ["CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj", "CoffeePeek.Shops.Infrastructure/"]
+COPY ["CoffeePeek.Shops.Application/CoffeePeek.Shops.Application.csproj", "CoffeePeek.Shops.Application/"]
+COPY ["CoffeePeek.Contract/CoffeePeek.Contract.csproj", "CoffeePeek.Contract/"]
+COPY ["CoffeePeek.Shared.Kernel/CoffeePeek.Shared.Kernel.csproj", "CoffeePeek.Shared.Kernel/"]
+COPY ["CoffeePeek.Shared.Validation/CoffeePeek.Shared.Validation.csproj", "CoffeePeek.Shared.Validation/"]
+COPY ["CoffeePeek.Shops.Domain/CoffeePeek.Shops.Domain.csproj", "CoffeePeek.Shops.Domain/"]
+COPY ["CoffeePeek.Shared.Domain/CoffeePeek.Shared.Domain.csproj", "CoffeePeek.Shared.Domain/"]
+COPY ["CoffeePeek.Shops.Persistance/CoffeePeek.Shops.Persistance.csproj", "CoffeePeek.Shops.Persistance/"]
+COPY ["CoffeePeek.Shared.Persistence/CoffeePeek.Shared.Persistence.csproj", "CoffeePeek.Shared.Persistence/"]
+COPY ["CoffeePeek.Shared.Auth/CoffeePeek.Shared.Auth.csproj", "CoffeePeek.Shared.Auth/"]
+COPY ["CoffeePeek.Shared.Web/CoffeePeek.Shared.Web.csproj", "CoffeePeek.Shared.Web/"]
+COPY ["CoffePeek.ServiceDefaults/CoffePeek.ServiceDefaults.csproj", "CoffePeek.ServiceDefaults/"]
 RUN dotnet restore "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj"
 COPY . .
 WORKDIR "/src/CoffeePeek.ShopsService"

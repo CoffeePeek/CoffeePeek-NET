@@ -14,9 +14,13 @@ COPY ["CoffeePeek.AccountService/CoffeePeek.AccountService.csproj", "CoffeePeek.
 COPY ["CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj", "CoffeePeek.Account.Infrastructure/"]
 COPY ["CoffeePeek.Account.Application/CoffeePeek.Account.Application.csproj", "CoffeePeek.Account.Application/"]
 COPY ["CoffeePeek.Account.Domain/CoffeePeek.Account.Domain.csproj", "CoffeePeek.Account.Domain/"]
-COPY ["CoffeePeek.Shared.Infrastructure/CoffeePeek.Shared.Infrastructure.csproj", "CoffeePeek.Shared.Infrastructure/"]
+COPY ["CoffeePeek.Shared.Domain/CoffeePeek.Shared.Domain.csproj", "CoffeePeek.Shared.Domain/"]
+COPY ["CoffeePeek.Shared.Kernel/CoffeePeek.Shared.Kernel.csproj", "CoffeePeek.Shared.Kernel/"]
+COPY ["CoffeePeek.Shared.Auth/CoffeePeek.Shared.Auth.csproj", "CoffeePeek.Shared.Auth/"]
+COPY ["CoffeePeek.Shared.Web/CoffeePeek.Shared.Web.csproj", "CoffeePeek.Shared.Web/"]
 COPY ["CoffeePeek.Contract/CoffeePeek.Contract.csproj", "CoffeePeek.Contract/"]
-COPY ["CoffeePeek.Shared.Extensions/CoffeePeek.Shared.Extensions.csproj", "CoffeePeek.Shared.Extensions/"]
+COPY ["CoffeePeek.Account.Persistence/CoffeePeek.Account.Persistence.csproj", "CoffeePeek.Account.Persistence/"]
+COPY ["CoffeePeek.Shared.Persistence/CoffeePeek.Shared.Persistence.csproj", "CoffeePeek.Shared.Persistence/"]
 COPY ["CoffePeek.ServiceDefaults/CoffePeek.ServiceDefaults.csproj", "CoffePeek.ServiceDefaults/"]
 RUN dotnet restore "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj"
 COPY . .
