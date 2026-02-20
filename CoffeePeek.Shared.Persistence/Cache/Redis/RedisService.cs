@@ -37,7 +37,7 @@ public class RedisService(IConnectionMultiplexer redis) : ICacheService
         try
         {
             string? cachedValue = await _db.StringGetAsync(cacheKey.Key);
-        
+
             if (!string.IsNullOrEmpty(cachedValue))
             {
                 return JsonSerializer.Deserialize<T>(cachedValue);

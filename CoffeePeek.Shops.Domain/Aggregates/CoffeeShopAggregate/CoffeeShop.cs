@@ -9,7 +9,7 @@ public sealed class CoffeeShop : Entity<Guid>
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
     public PriceRange PriceRange { get; private set; }
-    public ShopStatus Status { get; private set; } = ShopStatus.Active;
+    public CoffeeShopStatus Status { get; private set; } = CoffeeShopStatus.Active;
 
     public Guid CreatorId { get; private set; }
     public Guid? ModerationId {get; private set; }
@@ -58,10 +58,10 @@ public sealed class CoffeeShop : Entity<Guid>
     {
         switch (Status)
         {
-            case ShopStatus.PermanentlyClosed:
-            case ShopStatus.TemporarilyClosed:
+            case CoffeeShopStatus.PermanentlyClosed:
+            case CoffeeShopStatus.TemporarilyClosed:
                 return false;
-            case ShopStatus.Active:
+            case CoffeeShopStatus.Active:
                 break;
         }
 

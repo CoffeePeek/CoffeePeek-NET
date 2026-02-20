@@ -48,3 +48,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Разделена логика DI в AccountService, добавлен Persistance layer
 - Вынесена логика проверки Auth в Gateway
 - MediaService для централизации всех фотографий
+
+## [v0.1.3] - 2026-02-02
+
+### Changed
+
+- Оптимизация и ускорение запросов на кофейни и детали кофейни
+- Удалён запрос на взть создания отзыва, логика перенесена в запрос детали кофейни `api/coffeeshops/{guid:shopdId}`
