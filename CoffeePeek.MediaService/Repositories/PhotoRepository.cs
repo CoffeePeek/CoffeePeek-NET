@@ -12,6 +12,11 @@ public class PhotoRepository(MediaDbContext dbContext) : IPhotoRepository
         _repository.Add(metadata);
     }
 
+    public void AddRange(IEnumerable<PhotoMetadata> photoMetadatas)
+    {
+        _repository.AddRange(photoMetadatas);
+    }
+    
     public Task<PhotoMetadata?> GetByIdAsync(Guid photoId, CancellationToken ct)
     {
         return _repository.FirstOrDefaultAsync(x => x.Id == photoId, ct);

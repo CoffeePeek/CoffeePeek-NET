@@ -13,9 +13,13 @@ public static class AppResources
 
     public const string Postgres = "postgres";
 
+    
     public const string AccountService = "coffeepeek-accountservice";
     public const string ShopsService = "coffeepeek-shopsservice";
     public const string ModerationService = "coffeepeek-moderationservice";
     public const string MediaService = "coffeepeek-mediaservice";
     public const string Gateway = "coffeepeek-gateway";
+    
+    public const string FrontEnd = "coffeepeek-frontend";
+    
 }

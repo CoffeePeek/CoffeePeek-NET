@@ -3,8 +3,6 @@ using CoffeePeek.Contract.Events.Account;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
-using MassTransit;
-using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateUsername;
 

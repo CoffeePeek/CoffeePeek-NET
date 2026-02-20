@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using CoffeePeek.MediaService.Commands;
+using CoffeePeek.MediaService.Commands.Base;
 using CoffeePeek.MediaService.Responses;
 using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Kernel.Response;
@@ -42,12 +43,11 @@ public class PhotosController(IMessageBus bus, IUserContext userContext) : Contr
     [ProducesResponseType<Response<List<GenerateUploadUrlResponse>>>( StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GenerateUploadUrls([FromBody] List<GenerateAvatarUploadCommand> requests, CancellationToken ct)
+    public async Task<IActionResult> GenerateUploadUrls([FromBody] List<PhotoRequest> requests, CancellationToken ct)
     {
         var ownerId = userContext.GetUserIdOrThrow();
-        requests = requests.Select(x => x with { OwnerId = ownerId }).ToList();
-        
-        var response = await bus.InvokeAsync<Response<List<GenerateUploadUrlResponse>>>(requests, ct);
+        var command = new GenerateShopPhotosCommand(requests, ownerId);
+        var response = await bus.InvokeAsync<Response<List<GenerateUploadUrlResponse>>>(command, ct);
         return Ok(response);
     }
 }

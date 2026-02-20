@@ -12,6 +12,16 @@ var shopsDb = postgres.AddDatabase(AppResources.ShopsDb);
 var moderationDb = postgres.AddDatabase(AppResources.ModerationDb);
 var mediaDb = postgres.AddDatabase(AppResources.MediaDb);
 
+builder
+    .AddViteApp(AppResources.FrontEnd, "../../CoffeePeek.FE.WebClient/coffee-peek")
+    .WithHttpEndpoint(
+        port: 5173, 
+        targetPort: 5173, 
+        isProxied: false,
+        name: AppResources.FrontEnd
+    )
+    .WithExternalHttpEndpoints();
+
 var accountService = builder
     .AddProject<Projects.CoffeePeek_AccountService>(AppResources.AccountService)
     .WithReference(accountDb)
@@ -40,4 +50,5 @@ builder.AddProject<Projects.CoffeePeek_Gateway>(AppResources.Gateway)
     .WithEnvironment("DOTNET_ASPIRE", "true")
     .WithEnvironment("DOTNET_ASPIRE_RUNNING", "true")
     .WithUrl("/scalar", "docs");
+
 builder.Build().Run();

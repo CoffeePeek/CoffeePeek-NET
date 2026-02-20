@@ -51,15 +51,6 @@ public class PhotoMetadata
         ScheduledDeletionAt.Value <= utcNow;
 }
 
-public enum PhotoStatus
-{
-    Pending,
-    Confirmed,
-    Orphaned,
-    Deleted,
-    PendingDeletion
-}
-
 public enum OwnerType
 {
     User,

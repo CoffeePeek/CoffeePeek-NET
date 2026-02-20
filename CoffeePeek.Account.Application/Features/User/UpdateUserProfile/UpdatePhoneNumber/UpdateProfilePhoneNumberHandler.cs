@@ -1,9 +1,7 @@
 ﻿using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
-using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdatePhoneNumber;
 

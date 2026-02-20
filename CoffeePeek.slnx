@@ -20,6 +20,7 @@
     <Project Path="CoffeePeek.AccountService/CoffeePeek.AccountService.csproj" />
   </Folder>
   <Folder Name="/CoffeePeek/CoffeePeek.Account/Tests/">
+    <Project Path="CoffeePeek.Account.Application.Tests/CoffeePeek.Account.Application.Tests.csproj" />
     <Project Path="CoffeePeek.Account.Domain.Tests/CoffeePeek.Account.Domain.Tests.csproj" />
     <Project Path="CoffeePeek.Account.Infrastructure.Tests/CoffeePeek.Account.Infrastructure.Tests.csproj" />
   </Folder>

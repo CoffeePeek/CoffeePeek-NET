@@ -1,4 +1,3 @@
-using System.Reflection;
 using CoffeePeek.MediaService.Configuration;
 using CoffeePeek.MediaService.Consumers;
 using CoffeePeek.MediaService.Data;

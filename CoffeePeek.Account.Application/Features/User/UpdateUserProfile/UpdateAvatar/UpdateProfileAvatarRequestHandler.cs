@@ -5,7 +5,6 @@ using CoffeePeek.Contract.Events;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
-using MassTransit;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateAvatar;
 
