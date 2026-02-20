@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace CoffeePeek.Shops.Infrastructure.Migrations
+namespace CoffeePeek.Shops.Persistance.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -18,6 +18,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    Category = table.Column<int>(type: "integer", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -55,33 +56,57 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Equipments",
+                name: "EquipmentCategories",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Equipments", x => x.Id);
+                    table.PrimaryKey("PK_EquipmentCategories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "OutboxEvents",
+                name: "InboxState",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    EventType = table.Column<string>(type: "text", nullable: false),
-                    Payload = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Processed = table.Column<bool>(type: "boolean", nullable: false),
-                    ProcessedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MessageId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ConsumerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LockId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true),
+                    Received = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ReceiveCount = table.Column<int>(type: "integer", nullable: false),
+                    ExpirationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Consumed = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Delivered = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastSequenceNumber = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OutboxEvents", x => x.Id);
+                    table.PrimaryKey("PK_InboxState", x => x.Id);
+                    table.UniqueConstraint("AK_InboxState_MessageId_ConsumerId", x => new { x.MessageId, x.ConsumerId });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OutboxState",
+                columns: table => new
+                {
+                    OutboxId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LockId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true),
+                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Delivered = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastSequenceNumber = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutboxState", x => x.OutboxId);
                 });
 
             migrationBuilder.CreateTable(
@@ -127,38 +152,70 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserFavorites",
+                name: "Equipments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CoffeeShopId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Brand = table.Column<string>(type: "text", nullable: false),
+                    ModelName = table.Column<string>(type: "text", nullable: false),
+                    IsCustom = table.Column<bool>(type: "boolean", nullable: false),
+                    IsPrimary = table.Column<bool>(type: "boolean", nullable: false),
+                    CategoryId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserFavorites", x => x.Id);
+                    table.PrimaryKey("PK_Equipments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Equipments_EquipmentCategories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "EquipmentCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserVisits",
+                name: "OutboxMessage",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ShopId = table.Column<Guid>(type: "uuid", nullable: false),
-                    FirstVisitedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastVisitedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    VisitCount = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
-                    HasReview = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    Note = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    SequenceNumber = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    EnqueueTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    SentTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Headers = table.Column<string>(type: "text", nullable: true),
+                    Properties = table.Column<string>(type: "text", nullable: true),
+                    InboxMessageId = table.Column<Guid>(type: "uuid", nullable: true),
+                    InboxConsumerId = table.Column<Guid>(type: "uuid", nullable: true),
+                    OutboxId = table.Column<Guid>(type: "uuid", nullable: true),
+                    MessageId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ContentType = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    MessageType = table.Column<string>(type: "text", nullable: false),
+                    Body = table.Column<string>(type: "text", nullable: false),
+                    ConversationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CorrelationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    InitiatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    RequestId = table.Column<Guid>(type: "uuid", nullable: true),
+                    SourceAddress = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    DestinationAddress = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ResponseAddress = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    FaultAddress = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ExpirationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserVisits", x => x.Id);
+                    table.PrimaryKey("PK_OutboxMessage", x => x.SequenceNumber);
+                    table.ForeignKey(
+                        name: "FK_OutboxMessage_InboxState_InboxMessageId_InboxConsumerId",
+                        columns: x => new { x.InboxMessageId, x.InboxConsumerId },
+                        principalTable: "InboxState",
+                        principalColumns: new[] { "MessageId", "ConsumerId" });
+                    table.ForeignKey(
+                        name: "FK_OutboxMessage_OutboxState_OutboxId",
+                        column: x => x.OutboxId,
+                        principalTable: "OutboxState",
+                        principalColumn: "OutboxId");
                 });
 
             migrationBuilder.CreateTable(
@@ -210,30 +267,6 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CoffeeShopEquipments",
-                columns: table => new
-                {
-                    CoffeeShopId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EquipmentId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CoffeeShopEquipments", x => new { x.CoffeeShopId, x.EquipmentId });
-                    table.ForeignKey(
-                        name: "FK_CoffeeShopEquipments_Equipments_EquipmentId",
-                        column: x => x.EquipmentId,
-                        principalTable: "Equipments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CoffeeShopEquipments_Shops_CoffeeShopId",
-                        column: x => x.CoffeeShopId,
-                        principalTable: "Shops",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CoffeeShopRoasters",
                 columns: table => new
                 {
@@ -264,13 +297,14 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Header = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Comment = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    CoffeeShopId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ShopId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ReviewDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserName = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     IsSoftDelete = table.Column<bool>(type: "boolean", nullable: false),
-                    RatingCoffee = table.Column<int>(type: "integer", nullable: false),
-                    RatingPlace = table.Column<int>(type: "integer", nullable: false),
-                    RatingService = table.Column<int>(type: "integer", nullable: false),
+                    Rating_Place = table.Column<int>(type: "integer", nullable: false),
+                    Rating_Service = table.Column<int>(type: "integer", nullable: false),
+                    Rating_Coffee = table.Column<int>(type: "integer", nullable: false),
+                    Rating_AverageRating = table.Column<decimal>(type: "numeric", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -278,35 +312,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Reviews", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reviews_Shops_ShopId",
-                        column: x => x.ShopId,
-                        principalTable: "Shops",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ShopPhotos",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FileName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    ContentType = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    StorageKey = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    SizeBytes = table.Column<long>(type: "bigint", nullable: false),
-                    OwnerId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ShopId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CoffeeShopId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShopPhotos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ShopPhotos_Shops_CoffeeShopId",
+                        name: "FK_Reviews_Shops_CoffeeShopId",
                         column: x => x.CoffeeShopId,
                         principalTable: "Shops",
                         principalColumn: "Id",
@@ -335,14 +341,64 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserFavorites",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CoffeeShopId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserFavorites", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserFavorites_Shops_CoffeeShopId",
+                        column: x => x.CoffeeShopId,
+                        principalTable: "Shops",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CoffeeShopEquipments",
+                columns: table => new
+                {
+                    CoffeeShopId = table.Column<Guid>(type: "uuid", nullable: false),
+                    EquipmentId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CoffeeShopEquipments", x => new { x.CoffeeShopId, x.EquipmentId });
+                    table.ForeignKey(
+                        name: "FK_CoffeeShopEquipments_Equipments_EquipmentId",
+                        column: x => x.EquipmentId,
+                        principalTable: "Equipments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CoffeeShopEquipments_Shops_CoffeeShopId",
+                        column: x => x.CoffeeShopId,
+                        principalTable: "Shops",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CheckIns",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Note = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ReviewId = table.Column<Guid>(type: "uuid", nullable: true),
                     ShopId = table.Column<Guid>(type: "uuid", nullable: false),
+                    VisitedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ReviewId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Rating_Place = table.Column<int>(type: "integer", nullable: false),
+                    Rating_Service = table.Column<int>(type: "integer", nullable: false),
+                    Rating_Coffee = table.Column<int>(type: "integer", nullable: false),
+                    Rating_AverageRating = table.Column<decimal>(type: "numeric", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -383,6 +439,42 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                         principalTable: "ShopSchedule",
                         principalColumns: new[] { "CoffeeShopId", "Id" },
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShopPhotos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FileName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    ContentType = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    StorageKey = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    SizeBytes = table.Column<long>(type: "bigint", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CheckInId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CoffeeShopId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ReviewId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShopPhotos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShopPhotos_CheckIns_CheckInId",
+                        column: x => x.CheckInId,
+                        principalTable: "CheckIns",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ShopPhotos_Reviews_ReviewId",
+                        column: x => x.ReviewId,
+                        principalTable: "Reviews",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ShopPhotos_Shops_CoffeeShopId",
+                        column: x => x.CoffeeShopId,
+                        principalTable: "Shops",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -426,9 +518,46 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                 column: "RoasterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_ShopId",
+                name: "IX_Equipments_CategoryId",
+                table: "Equipments",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InboxState_Delivered",
+                table: "InboxState",
+                column: "Delivered");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OutboxMessage_EnqueueTime",
+                table: "OutboxMessage",
+                column: "EnqueueTime");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OutboxMessage_ExpirationTime",
+                table: "OutboxMessage",
+                column: "ExpirationTime");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OutboxMessage_InboxMessageId_InboxConsumerId_SequenceNumber",
+                table: "OutboxMessage",
+                columns: new[] { "InboxMessageId", "InboxConsumerId", "SequenceNumber" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OutboxMessage_OutboxId_SequenceNumber",
+                table: "OutboxMessage",
+                columns: new[] { "OutboxId", "SequenceNumber" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OutboxState_Created",
+                table: "OutboxState",
+                column: "Created");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_CoffeeShopId",
                 table: "Reviews",
-                column: "ShopId");
+                column: "CoffeeShopId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_UserId",
@@ -436,9 +565,19 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ShopPhotos_CheckInId",
+                table: "ShopPhotos",
+                column: "CheckInId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ShopPhotos_CoffeeShopId",
                 table: "ShopPhotos",
                 column: "CoffeeShopId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShopPhotos_ReviewId",
+                table: "ShopPhotos",
+                column: "ReviewId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shops_Latitude_Longitude",
@@ -460,35 +599,11 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                 table: "UserFavorites",
                 columns: new[] { "UserId", "CoffeeShopId" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserVisits_UserId",
-                table: "UserVisits",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserVisits_UserId_LastVisitedAt",
-                table: "UserVisits",
-                columns: new[] { "UserId", "LastVisitedAt" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserVisits_UserId_ShopId",
-                table: "UserVisits",
-                columns: new[] { "UserId", "ShopId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserVisits_UserId_VisitCount",
-                table: "UserVisits",
-                columns: new[] { "UserId", "VisitCount" });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "CheckIns");
-
             migrationBuilder.DropTable(
                 name: "Cities");
 
@@ -505,7 +620,7 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                 name: "CoffeeShopRoasters");
 
             migrationBuilder.DropTable(
-                name: "OutboxEvents");
+                name: "OutboxMessage");
 
             migrationBuilder.DropTable(
                 name: "ShopPhotos");
@@ -515,12 +630,6 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserFavorites");
-
-            migrationBuilder.DropTable(
-                name: "UserVisits");
-
-            migrationBuilder.DropTable(
-                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "BrewMethods");
@@ -535,7 +644,22 @@ namespace CoffeePeek.Shops.Infrastructure.Migrations
                 name: "Roasters");
 
             migrationBuilder.DropTable(
+                name: "InboxState");
+
+            migrationBuilder.DropTable(
+                name: "OutboxState");
+
+            migrationBuilder.DropTable(
+                name: "CheckIns");
+
+            migrationBuilder.DropTable(
                 name: "ShopSchedule");
+
+            migrationBuilder.DropTable(
+                name: "EquipmentCategories");
+
+            migrationBuilder.DropTable(
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "Shops");
