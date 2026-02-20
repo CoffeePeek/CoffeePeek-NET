@@ -1,5 +1,6 @@
 using System.Reflection;
 using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Extentions;
 using CoffeePeek.Shared.Persistence;
 using CoffeePeek.Shared.Persistence.Data;
 using CoffeePeek.Shared.Persistence.Extensions;
