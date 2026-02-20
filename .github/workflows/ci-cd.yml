@@ -106,7 +106,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:${{ steps.vars.outputs.TAG }}  
 
   apply_migrations:
-    needs: build_and_push_images
+    # needs: build_and_push_images
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     steps:
@@ -135,7 +135,7 @@ jobs:
           export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_ACCOUNT }}"
           dotnet ef database update \
             --context AccountDbContext \
-            --project CoffeePeek.Account.Infrastructure/CoffeePeek.Account.Infrastructure.csproj \
+            --project CoffeePeek.Account.Persistence/CoffeePeek.Account.Persistence.csproj \
             --startup-project CoffeePeek.AccountService/CoffeePeek.AccountService.csproj \
             --connection "${{ secrets.DB_CONNECTION_ACCOUNT }}" \
             --no-build
@@ -144,7 +144,7 @@ jobs:
           export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_SHOPS }}"
           dotnet ef database update \
             --context ShopsDbContext \
-            --project CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj \
+            --project CoffeePeek.Shops.Persistance/CoffeePeek.Shops.Persistance.csproj \
             --startup-project CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj \
             --connection "${{ secrets.DB_CONNECTION_SHOPS }}" \
             --no-build
@@ -153,7 +153,7 @@ jobs:
           export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_MODERATION }}"
           dotnet ef database update \
             --context ModerationDbContext \
-            --project CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj \
+            --project CoffeeShop.Moderation.Persistence/CoffeeShop.Moderation.Persistence.csproj \
             --startup-project CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj \
             --connection "${{ secrets.DB_CONNECTION_MODERATION }}" \
             --no-build
