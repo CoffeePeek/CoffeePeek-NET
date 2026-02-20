@@ -1,5 +1,5 @@
 ﻿using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Kernel.Exceptions;
 
 namespace CoffeePeek.Account.Domain.Entities.UserAggregate;
 
@@ -10,8 +10,8 @@ public partial record UserCredential
     public bool EmailConfirmed { get; private set; }
     public string? OAuthProvider { get; private set; }
     public string? ProviderId { get; private set; }
-    public string? EmailConfirmationToken { get; init; }
-    public DateTime? EmailConfirmationExpiresAt { get; init; }
+    public string? EmailConfirmationToken { get; private set; }
+    public DateTime? EmailConfirmationExpiresAt { get; private set; }
 
     private UserCredential()
     {
@@ -34,6 +34,21 @@ public partial record UserCredential
         PasswordHash = string.Empty
     };
 
+    public void UpdateEmail(string invalidEmail)
+    {
+        Email = Email.Create(invalidEmail);
+
+        ResetEmailConfirmedFlow();
+    }
+
+    public void ResetEmailConfirmedFlow()
+    {
+        var token = Guid.NewGuid().ToString("N");
+        EmailConfirmed = false;
+        EmailConfirmationToken =  token;
+        EmailConfirmationExpiresAt = DateTime.UtcNow.AddMinutes(10);
+    }
+    
     public UserCredential ConfirmEmail(string token)
     {
         if (token != EmailConfirmationToken) throw new DomainException("Invalid token.");
@@ -59,11 +74,5 @@ public partial record UserCredential
 
         OAuthProvider = provider;
         ProviderId = providerId;
-    }
-
-    public void UpdateEmail(string invalidEmail)
-    {
-        Email = Email.Create(invalidEmail);
-        EmailConfirmed = false;
     }
 }

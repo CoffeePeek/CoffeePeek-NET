@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CoffeePeek.Shared.Web\CoffeePeek.Shared.Web.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Remove="Serilog.AspNetCore" />
+      <PackageReference Remove="Serilog.Sinks.Console" />
+      <PackageReference Remove="Serilog.Settings.Configuration" />
+      <PackageReference Remove="Microsoft.Extensions.Http.Polly" />
+      <PackageReference Remove="Polly" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
+    </ItemGroup>
+
+</Project>

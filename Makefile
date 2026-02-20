@@ -2,19 +2,19 @@
 ACCOUNT_STARTUP := CoffeePeek.AccountService/CoffeePeek.AccountService.csproj
 ACCOUNT_CONTEXT := CoffeePeek.Account.Persistence.Configuration.AccountDbContext
 
-SHOPS_INFRA     := CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj 
+SHOPS_INFRA     := CoffeePeek.Shops.Persistance/CoffeePeek.Shops.Persistance.csproj 
 SHOPS_STARTUP   := CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj 
-SHOPS_CONTEXT   := CoffeePeek.Shops.Infrastructure.Configuration.ShopsDbContext
+SHOPS_CONTEXT   := CoffeePeek.Shops.Persistance.Configuration.ShopsDbContext
 
-MODERATION_INFRA   := CoffeePeek.Moderation.Infrastructure/CoffeePeek.Moderation.Infrastructure.csproj
+MODERATION_INFRA   := CoffeeShop.Moderation.Persistence/CoffeeShop.Moderation.Persistence.csproj
 MODERATION_STARTUP := CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj
-MODERATION_CONTEXT := CoffeePeek.Moderation.Infrastructure.Configuration.ModerationDbContext
+MODERATION_CONTEXT := CoffeeShop.Moderation.Persistence.Configuration.ModerationDbContext
 
 MEDIA_INFRA      := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
 MEDIA_STARTUP    := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
 MEDIA_CONTEXT    := CoffeePeek.MediaService.Data.MediaDbContext
 
-n := AddAvgRating
+n := AddOutbox3
 
 define add_migration
 	dotnet ef migrations add $(4) \

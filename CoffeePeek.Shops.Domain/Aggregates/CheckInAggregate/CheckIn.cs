@@ -1,6 +1,5 @@
-using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Domain.Entities;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
 
 namespace CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 
@@ -18,10 +17,8 @@ public sealed partial class CheckIn : AggregateRoot<Guid>
     private readonly List<ShopPhoto> _shopPhotos = [];
     public IReadOnlyCollection<ShopPhoto> ShopPhotos => _shopPhotos.AsReadOnly();
     
-    private CheckIn()
-    {
-        //ef core
-    }
+    // ReSharper disable once UnusedMember.Local
+    private CheckIn() { }
 
     private CheckIn(Guid userId, Guid shopId, DateTime visitedAt)
     {

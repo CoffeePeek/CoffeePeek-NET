@@ -7,9 +7,16 @@ public class MediaDbContextFactory : IDesignTimeDbContextFactory<MediaDbContext>
 {
     public MediaDbContext CreateDbContext(string[] args)
     {
-        var optionsBuilder = new DbContextOptionsBuilder<MediaDbContext>();
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile("appsettings.Development.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
         
-        var connectionString = Environment.GetEnvironmentVariable("PostgresCpOptions__ConnectionString");
+        var optionsBuilder = new DbContextOptionsBuilder<MediaDbContext>();
+
+        var connectionString = configuration.GetSection("PostgresCpOptions:ConnectionString").Value;
 
         if (string.IsNullOrEmpty(connectionString))
         {

@@ -1,18 +1,19 @@
-using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Moderation.Domain.Aggregates;
+using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
-using MediatR;
 
 namespace CoffeePeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 
-public class GetAllModerationShopsHandler(IModerationShopRepository repository, IMapper mapper) 
-    : IRequestHandler<GetAllModerationShopsQuery, Response<GetAllModerationShopsResponse>>
+public class GetAllModerationShopsHandler
 {
-    public async Task<Response<GetAllModerationShopsResponse>> Handle(GetAllModerationShopsQuery request, 
+    public async Task<Response<GetAllModerationShopsResponse>> Handle(
+        GetAllModerationShopsQuery _, 
+        IQueryModerationShopRepository repository, 
+        IMapper mapper,
         CancellationToken cancellationToken)
     {
-        var moderationShops = await repository.GetAllForReviewAsync();
+        var moderationShops = await repository.GetAllForReviewAsync(cancellationToken);
         
         var dtos = mapper.Map<ModerationShopDto[]>(moderationShops);
 

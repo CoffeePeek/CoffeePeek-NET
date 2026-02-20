@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Shared.Extensions.Exceptions;
+﻿using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shops.Domain.Entities;
 
 namespace CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
@@ -12,7 +12,6 @@ public partial class CheckIn
 
         return new CheckIn(userId, shopId, visitedAt);
     }
-    
 
     public void UpdateNote(string? newNote)
     {

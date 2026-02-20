@@ -1,28 +1,24 @@
-using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Moderation.Application.Abstractions;
-using CoffeePeek.Moderation.Domain.Entities;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using DotNetCore.CAP;
+using CoffeePeek.Moderation.Domain.Aggregates;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
-using MediatR;
-using Microsoft.Extensions.Logging;
+using Wolverine;
+using DomainPriceRange = CoffeePeek.Moderation.Domain.Aggregates.Enums.PriceRange;
 
 namespace CoffeePeek.Moderation.Application.Features.Shop.UpdateShop;
 
-public class UpdateModerationCoffeeShopHandler(
-    IModerationShopRepository repository,
-    IUnitOfWork unitOfWork,
-    IYandexGeocodingService geocodingService,
-    IMapper mapper,
-    ICapPublisher capPublisher,
-    ILogger<UpdateModerationCoffeeShopHandler> logger)
-    : IRequestHandler<UpdateModerationCoffeeShopCommand, UpdateEntityResponse<ModerationShopDto>>
+public static class UpdateModerationCoffeeShopHandler
 {
-    public async Task<UpdateEntityResponse<ModerationShopDto>> Handle(
+    public static async Task<UpdateEntityResponse<ModerationShopDto>> Handle(
         UpdateModerationCoffeeShopCommand command,
+        IModerationShopRepository repository,
+        IYandexGeocodingService geocodingService,
+        IMapper mapper,
+        OutgoingMessages outgoingMessages,
+        IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
         var moderationShopDto = command.ModerationShopDto;
@@ -33,7 +29,10 @@ public class UpdateModerationCoffeeShopHandler(
             return UpdateEntityResponse<ModerationShopDto>.Error("Shop not found or access denied");
         }
 
-        shop.UpdateInfo(moderationShopDto.Name, moderationShopDto.Description, moderationShopDto.PriceRange, moderationShopDto.CityId);
+        var domainPriceRange = moderationShopDto.PriceRange != null
+            ? (DomainPriceRange?)moderationShopDto.PriceRange
+            : null;
+        shop.UpdateInfo(moderationShopDto.Name, moderationShopDto.Description, domainPriceRange, moderationShopDto.CityId);
 
         if (moderationShopDto.Address != null && moderationShopDto.Address != shop.Location?.Address)
         {
@@ -59,14 +58,12 @@ public class UpdateModerationCoffeeShopHandler(
             moderationShopDto.CoffeeBeanIds,
             moderationShopDto.RoasterIds,
             moderationShopDto.BrewMethodIds);
-        
-        
+
         // Publish PhotoReplacedEvent for removed photos
         if (moderationShopDto.ShopPhotos is not null)
         {
-            // Store old photos for comparison
             var oldPhotos = shop.ShopPhotos.ToList();
-            
+
             var newPhotoStorageKeys = moderationShopDto.ShopPhotos
                 .Select(p => p.StorageKey)
                 .ToHashSet();
@@ -76,20 +73,19 @@ public class UpdateModerationCoffeeShopHandler(
 
             foreach (var removedPhoto in removedPhotos)
             {
-                await capPublisher.PublishAsync(CapEventNames.Media.PhotoReplaced, new PhotoReplacedEvent(
+                outgoingMessages.Add(new PhotoReplacedEvent(
                     removedPhoto.Id,
                     removedPhoto.StorageKey,
                     Guid.Empty,
                     "Shop",
                     shop.Id,
-                    DateTime.UtcNow), cancellationToken: ct);
+                    DateTime.UtcNow));
             }
         }
 
         await unitOfWork.SaveChangesAsync(ct);
+        
         var result = mapper.Map<ModerationShopDto>(shop);
-
-        logger.LogInformation("Shop {ShopId} updated by user {UserId}", shop.Id, command.UserId);
 
         return UpdateEntityResponse<ModerationShopDto>.Success(result, "Shop updated successfully");
     }

@@ -1,30 +1,29 @@
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Responses;
-using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shops.Application.Services;
-using DotNetCore.CAP;
-using Microsoft.Extensions.Logging;
+using MassTransit;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
-public class ModerationShopApprovedHandler(
+public class ModerationShopApprovedConsumer(
     ICreateShopFromModerationService createShopService,
-    ILogger<ModerationShopApprovedHandler> logger) : ICapSubscribe
+    IEventPublisher eventPublisher,
+    IUnitOfWork unitOfWork) : IConsumer<ModerationShopApprovedEvent>
 {
-    [CapSubscribe(CapEventNames.Moderation.ShopApproved)]
-    public async Task<ModerationShopApproveCompleteResponse> Handle(ModerationShopApprovedEvent @event, CancellationToken cancellationToken)
+    public async Task Consume(ConsumeContext<ModerationShopApprovedEvent> context)
     {
-        var shopDto = @event.Shop;
-
-        logger.LogInformation("Received {EventName} for UserId: {UserId}, ShopId: {ShopId}",
-            nameof(ModerationShopApprovedEvent), @event.UserId, shopDto.Id);
+        var @event = context.Message;
+        var ct = context.CancellationToken;
 
         var shopId = await createShopService.CreateShopFromApprovedEventAsync(
-            shopDto,
-            creatorId:@event.UserId,
-            moderationId: shopDto.Id,
-            cancellationToken);
-        
-        return new ModerationShopApproveCompleteResponse(shopDto.Id, shopId);
+            @event.Shop,
+            creatorId: @event.UserId,
+            moderationId: @event.Shop.Id,
+            ct);
+
+        await eventPublisher.Publish(new ModerationShopApproveCompleteResponse(@event.Shop.Id, shopId), ct);
+
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

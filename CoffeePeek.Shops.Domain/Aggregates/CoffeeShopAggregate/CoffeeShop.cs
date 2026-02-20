@@ -1,5 +1,4 @@
-﻿using CoffeePeek.Contract.Enums;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+﻿using CoffeePeek.Shared.Domain.Entities;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Entities;
 

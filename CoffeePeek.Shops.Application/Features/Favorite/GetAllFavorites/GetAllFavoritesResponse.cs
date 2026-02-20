@@ -2,4 +2,4 @@
 
 namespace CoffeePeek.Shops.Application.Features.Favorite.GetAllFavorites;
 
-public record GetAllFavoritesResponse(List<CoffeeShopDetailsDto> FavoriteShops);
+public record GetAllFavoritesResponse(CoffeeShopDetailsDto[] FavoriteShops);

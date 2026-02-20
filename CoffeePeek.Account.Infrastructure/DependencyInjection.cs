@@ -1,11 +1,9 @@
 ﻿using CoffeePeek.Account.Application.Common.Interfaces;
-using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Account.Infrastructure.EventConsumer;
 using CoffeePeek.Account.Infrastructure.Identity;
-using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Modules;
-using CoffeePeek.Shared.Infrastructure.Options;
+using CoffeePeek.Shared.Auth.Options;
+using CoffeePeek.Shared.Kernel.Extentions;
 using Microsoft.Extensions.DependencyInjection;
 using Resend;
 
@@ -16,17 +14,16 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddValidateOptions<JWTOptions>();
-        
+            
         // 1. Domain Services (реализации интерфейсов из Domain)
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();
         services.AddScoped<IJWTTokenService, JWTTokenService>();
-        services.AddScoped<IExternalAuthService, ExternalAuthService>();
 
         // 2. Event Handlers
-        services.AddScoped<CheckinCreatedHandler>();
-        services.AddScoped<ReviewAddedHandler>();
-        services.AddScoped<ModerationShopApprovedAccountHandler>();
-        services.AddScoped<UserPhotoUploadedHandler>();
+        services.AddScoped<CheckinCreatedConsumer>();
+        services.AddScoped<ReviewAddedConsumer>();
+        services.AddScoped<ModerationShopApprovedAccountConsumer>();
+        services.AddScoped<UserPhotoUploadedConsumer>();
 
         // 3 Email Service
         services.AddHttpClient<ResendClient>();
@@ -40,9 +37,6 @@ public static class DependencyInjection
         // 4. OAuth
         services.AddValidateOptions<OAuthGoogleOptions>();
         services.AddScoped<IGoogleAuthService, GoogleAuthService>();
-
-        // 5. Cache (должен быть зарегистрирован до декораторов, использующих Redis)
-        services.AddCacheModule();
 
         return services;
     }

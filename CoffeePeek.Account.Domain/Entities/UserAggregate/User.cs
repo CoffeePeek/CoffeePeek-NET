@@ -1,11 +1,11 @@
 ﻿using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Events;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Domain.Entities;
+using CoffeePeek.Shared.Kernel.Exceptions;
 
 namespace CoffeePeek.Account.Domain.Entities.UserAggregate;
 
-public class User : Entity<Guid>
+public class User : AggregateRoot<Guid>
 {
     public Username Username { get; private set; }
     public PhoneNumber? PhoneNumber { get; private set; }

@@ -1,11 +1,9 @@
-﻿using CoffeePeek.Contract.Abstract;
-using MediatR;
+﻿using System.Text.Json.Serialization;
 
 namespace CoffeePeek.Account.Application.Features.Auth.Login;
 
 public record LoginUserCommand(
     string Email,
     string Password,
-    string DeviceName = "unknown",
-    string IpAddress = "unknown")
-    : IRequest<Response<LoginResponse>>;
+    [property:JsonIgnore] string DeviceName = "unknown",
+    [property:JsonIgnore] string IpAddress = "unknown");

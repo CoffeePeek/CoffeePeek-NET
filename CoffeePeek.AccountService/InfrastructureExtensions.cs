@@ -1,10 +1,8 @@
 ﻿using CoffeePeek.Account.Application;
+using CoffeePeek.Account.Application.Features.Auth.RegisterUser;
 using CoffeePeek.Account.Infrastructure;
 using CoffeePeek.Account.Persistence;
-using CoffeePeek.Account.Persistence.Configuration;
-using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Logging;
-using CoffeePeek.Shared.Extensions.Swagger;
+using CoffeePeek.Shared.Web.Logging;
 using CoffePeek.ServiceDefaults;
 using Serilog;
 
@@ -16,18 +14,23 @@ public static class InfrastructureExtensions
     {
         builder.AddSerilogLogging();
         builder.AddServiceDefaults();
-        builder.WebHost.ConfigureWebhost();
+        builder.WebHost
+            .ConfigureWebhost();
+        
+        var handlersAssembly = typeof(RegisterUserHandler).Assembly;
+        builder.Host
+            .AddPersistence(handlersAssembly);
         
         builder.Services
             .AddApplication()
             .AddInfrastructure()
-            .AddPersistence(builder.Configuration, builder)
+            .AddPersistence(builder)
             .AddPresentation();
         
         return builder;
     }
 
-    public static async Task UseApplication(this WebApplication app)
+    public static void UseApplication(this WebApplication app)
     {
         app.UseSerilogRequestLogging();
         
@@ -35,16 +38,14 @@ public static class InfrastructureExtensions
 
         app.UseAuthentication();
         app.UseAuthorization();
-        
+
         if (app.Environment.IsDevelopment())
         {
-             await app.ApplyMigrations<AccountDbContext>();
-            //AccountDbInitializer.SeedAsync(app.Services);
+            app.MapOpenApi();
+            //await app.ApplyMigrations<AccountDbContext>();
         }
         
         app.MapDefaultEndpoints();
-
-        app.UseSwaggerDocumentation();
 
         app.MapControllers();
     }

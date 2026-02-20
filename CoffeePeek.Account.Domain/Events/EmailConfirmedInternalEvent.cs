@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Shared.Infrastructure.Abstract;
+﻿using CoffeePeek.Shared.Domain.Events;
 
 namespace CoffeePeek.Account.Domain.Events;
 

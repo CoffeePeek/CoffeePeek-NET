@@ -1,30 +1,38 @@
 using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Auth;
+using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Common.Responses;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
+using Wolverine;
 
 namespace CoffeePeek.ShopsService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Tags("Coffee Shops Management")]
+[Produces("application/json")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class CoffeeShopsController(IMediator mediator, IUserContext userContext) : ControllerBase
+public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Search for coffee shops with advanced filters
+    /// </summary>
+    /// <remarks>
+    /// This endpoint allows you to search for coffee shops using various filters like city, equipment, beans, and more.
+    /// Results are paginated and include metadata in X-Headers.
+    /// </remarks>
+    /// <response code="200">Returns list of coffee shops. Check X-Total-Count header for pagination metadata.</response>
     [HttpGet]
     [ProducesResponseType(typeof(Response<GetCoffeeShopsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    [SwaggerOperation(Summary = "Search coffee shops", Description = "Search coffee shops by criteria")]
     public async Task<IActionResult> GetCoffeeShops(
         [FromQuery] Guid? cityId = null,
-        [FromQuery] string? q = null,
+        [FromQuery, MaxLength(100)] string? q = null,
         [FromQuery] Guid[]? roasters = null,
         [FromQuery] Guid[]? equipments = null,
         [FromQuery] Guid[]? beans = null,
@@ -50,19 +58,12 @@ public class CoffeeShopsController(IMediator mediator, IUserContext userContext)
             PageNumber: page,
             PageSize: pageSize);
 
-        var response = await mediator.Send(query);
+        var response = await bus.InvokeAsync<Response<GetCoffeeShopsResponse>>(query);
 
-        if (!response.IsSuccess)
+        if (response is { IsSuccess: true, Data: not null })
         {
-            return BadRequest(response);
+            AddPaginationHeaders(response.Data);
         }
-
-        if (response.Data == null)
-        {
-            return NotFound(response);
-        }
-
-        AddPaginationHeaders(response.Data);
 
         return Ok(response);
 
@@ -75,15 +76,27 @@ public class CoffeeShopsController(IMediator mediator, IUserContext userContext)
         }
     }
 
+    /// <summary>
+    /// Get detailed information about a specific coffee shop
+    /// </summary>
+    /// <remarks>
+    /// This endpoint returns full coffee shop details including:
+    /// - Average rating and review count
+    /// - Top 10 recent reviews
+    /// - Personal user interaction status (IsFavorite, IsVisited) if authenticated
+    /// </remarks>
+    /// <param name="id">The unique identifier (GUID) of the coffee shop</param>
+    /// <returns>Returns coffee shop details or an error message</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(Response<GetCoffeeShopResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    [SwaggerOperation(Summary = "Get coffee shop by ID")]
-    public Task<Response<GetCoffeeShopResponse>> GetCoffeeShop(Guid id)
+    public async Task<IActionResult> GetCoffeeShop(Guid id)
     {
-        return mediator.Send(new GetCoffeeShopQuery(id, userContext.GetUserId()));
+        var query = new GetCoffeeShopQuery(id);
+        var response = await bus.InvokeAsync<Response<GetCoffeeShopResponse>>(query);
+        
+        return Ok(response);
     }
 }

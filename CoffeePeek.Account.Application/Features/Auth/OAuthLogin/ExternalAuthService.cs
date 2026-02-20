@@ -1,14 +1,14 @@
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Auth.Constants;
 
 namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 
 using User = Domain.Entities.UserAggregate.User;
 
 public class ExternalAuthService(
-    IUserRepository userRepository,
+    IQueryUserRepository userRepository,
     IRoleRepository roleRepository) : IExternalAuthService
 {
     public async Task<User> GetOrCreate(string email, string provider, string providerId,
@@ -34,7 +34,7 @@ public class ExternalAuthService(
         
         newUser.AssignRole(role);
 
-        await userRepository.Add(newUser, ct);
+        userRepository.Add(newUser, ct);
         return newUser;
     }
 }

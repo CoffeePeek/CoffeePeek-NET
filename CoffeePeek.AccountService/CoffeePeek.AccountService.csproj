@@ -5,25 +5,15 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.OpenApi.Generated</InterceptorsNamespaces>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Asp.Versioning.Abstractions" Version="8.1.0" />
-        <PackageReference Include="MassTransit" Version="8.5.7" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.7" />
-        <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="10.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Sentry.AspNetCore" Version="6.0.0" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
-    </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Account.Infrastructure\CoffeePeek.Account.Infrastructure.csproj" />
       <ProjectReference Include="..\CoffeePeek.Account.Persistence\CoffeePeek.Account.Persistence.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shared.Auth\CoffeePeek.Shared.Auth.csproj" />
       <ProjectReference Include="..\CoffePeek.ServiceDefaults\CoffePeek.ServiceDefaults.csproj" />
     </ItemGroup>
 

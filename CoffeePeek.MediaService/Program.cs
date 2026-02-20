@@ -1,100 +1,78 @@
-using System.Reflection;
-using CoffeePeek.MediaService.BackgroundJobs;
 using CoffeePeek.MediaService.Configuration;
+using CoffeePeek.MediaService.Consumers;
 using CoffeePeek.MediaService.Data;
 using CoffeePeek.MediaService.Handlers;
+using CoffeePeek.MediaService.Repositories;
 using CoffeePeek.MediaService.Services;
-using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Handlers;
-using CoffeePeek.Shared.Extensions.Modules;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using CoffeePeek.Shared.Infrastructure.Options;
-using CoffeePeek.Shared.Infrastructure.Persistence.Data;
-using Microsoft.EntityFrameworkCore;
+using CoffeePeek.Shared.Auth.Constants;
+using CoffeePeek.Shared.Auth.Extensions;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Extentions;
+using CoffeePeek.Shared.Persistence;
+using CoffeePeek.Shared.Persistence.Data;
+using CoffeePeek.Shared.Persistence.Extensions;
+using CoffeePeek.Shared.Web;
+using CoffeePeek.Shared.Web.Handlers;
 using Minio;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
 
-// Add services to the container.
+services.AddControllers();
+services.AddProblemDetails();
+services.AddExceptionHandler<GlobalExceptionHandler>();
+services.AddHeaderUserContext();
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<BearerSecurityTransformer>();
+});
 
-// Add Swagger
-builder.Services.AddSwaggerModule("CoffeePeek Media Service");
-
-// Add authentication and authorization
-builder.Services.AddHeaderUserContext();
-builder.Services.AddAuthorizationBuilder()
+services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
     .AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
 
-// Add services
-builder.Services.AddScoped<IStorageService, MinIOStorageService>();
-builder.Services.AddScoped<IPhotoService, PhotoService>();
-builder.Services.AddScoped<PhotoCleanupService>();
+#if DEBUG
+builder.AddNpgsqlDbContext<MediaDbContext>(
+    connectionName: AppResources.MediaDb,
+    configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
+    configureSettings: settings => { settings.DisableRetry = true; }
+);
+#else
+var connectionString = services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
 
-// Register CAP handlers
-builder.Services.AddScoped<PhotoReplacedEventHandler>();
+services.AddDatabase<MediaDbContext>(
+    connectionString,
+    opt => opt.AddInterceptors(new AuditInterceptor())
+);
+#endif
 
-// Add background job
-builder.Services.AddHostedService<PhotoCleanupBackgroundJob>();
+services.AddScoped<IUnitOfWork, UnitOfWork<MediaDbContext>>();
+services.AddScoped<IPhotoRepository, PhotoRepository>();
 
-// Configure MinIO
-var minIoOptions = builder.Services.AddValidateOptions<MinIOOptions>();
-builder.Services
-    .AddMinio(configureClient =>
-        configureClient
-            .WithEndpoint(new Uri(minIoOptions.Endpoint))
-            .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
-            .Build()
-    );
+var minIoOptions = services.AddValidateOptions<MinIOOptions>();
 
-// MediatR
-builder.Services.AddMediatRModule(Assembly.GetExecutingAssembly());
+services.AddScoped<IStorageService, MinIOStorageService>();
+services.AddMinio(client => client
+    .WithEndpoint(new Uri(minIoOptions.Endpoint))
+    .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
+    .Build()
+);
 
-string connectionString;
-if (builder.Configuration["DOTNET_ASPIRE"] == "true")
-{
-    builder.AddNpgsqlDbContext<MediaDbContext>(
-        connectionName: AppResources.MediaDb,
-        configureSettings: settings => { settings.DisableRetry = true; }
-        );
-    connectionString = builder.Configuration.GetConnectionString(AppResources.MediaDb);
-}
-else
-{
-    connectionString = builder.Services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
-    builder.Services.AddDbContext<MediaDbContext>(opt => opt.UseNpgsql(connectionString));
-}
+services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
+services.AddMessaging<MediaDbContext>(typeof(DeletePhotoConsumer).Assembly);
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork<MediaDbContext>>();
-builder.Services.AddGenericRepository<PhotoMetadata, MediaDbContext>();
-
-builder.Services.AddCapModule(connectionString, AppResources.MediaService);
-
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddProblemDetails();
+var handlersAssembly = typeof(ConfirmPhotoHandler).Assembly;
+builder.Host.AddWolverine(handlersAssembly);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    await app.ApplyMigrations<MediaDbContext>();
     app.MapOpenApi();
 }
 
-app.UseSwagger();
-app.UseSwaggerUI(options =>
-{
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Media Service API");
-});
-
-app.UseHttpsRedirection();
-
+app.UseExceptionHandler();
 app.MapControllers();
 
 app.Run();

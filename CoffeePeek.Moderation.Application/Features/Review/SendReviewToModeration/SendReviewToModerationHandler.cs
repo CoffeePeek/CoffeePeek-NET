@@ -1,64 +1,55 @@
-﻿using CoffeePeek.Contract.Abstract;
+﻿using CoffeePeek.Moderation.Domain.Aggregates;
+using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
 using CoffeePeek.Moderation.Domain.Entities;
-using CoffeePeek.Moderation.Domain.Entities.ModerationReviewAggregate;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Validation;
-using MediatR;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
+using ModerationReview = CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate.ModerationReview;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
 
-public class SendReviewToModerationHandler(
-    IAsyncValidationStrategy<SendReviewToModerationCommand> validationStrategy,
-    IGenericRepository<ModerationShop> shopRepository,
-    IGenericRepository<PhotoMetadata> photosRepository,
-    IModerationReviewRepository repository,
-    IUnitOfWork unitOfWork)
-    : IRequestHandler<SendReviewToModerationCommand, CreateEntityResponse>
+public static class SendReviewToModerationHandler
 {
-    public async Task<CreateEntityResponse> Handle(SendReviewToModerationCommand request,
+    public static async Task<CreateEntityResponse> Handle(
+        SendReviewToModerationCommand command,
+        IQueryModerationShopRepository moderationShopRepository,
+        IModerationReviewRepository repository,
+        IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
-        var validationResult = await validationStrategy.ValidateAsync(request, ct);
-
-        if (!validationResult.IsValid)
-        {
-            throw new InvalidOperationException(validationResult.ErrorMessage);
-        }
-        
-        var moderationShop = await shopRepository.FirstOrDefaultAsNoTrackingAsync(x => x.ShopId == request.ShopId, ct);
+        var moderationShop = await moderationShopRepository.GetById(command.ShopId, ct);
 
         if (moderationShop == null)
-        {
             throw new NotFoundException("Coffee shop not found");
-        }
-        
-        var photos = new List<PhotoMetadata>();
 
-        if (request.Photos != null)
+        var photos = new List<PhotoMetadata>();
+        if (command.Photos != null && command.Photos.Count != 0)
         {
-            photos = request.Photos
-                .Select(x =>
-                    PhotoMetadata
-                        .Create(x.FileName, x.ContentType, x.StorageKey, x.Size, request.UserId, moderationShop.Id))
+            photos = command.Photos
+                .Select(x => PhotoMetadata.Create(
+                    x.FileName, 
+                    x.ContentType, 
+                    x.StorageKey, 
+                    x.Size, 
+                    command.UserId, 
+                    moderationShop.Id))
                 .ToList();
-            
-            await photosRepository.AddRangeAsync(photos, ct);
         }
-        
-        var review = ModerationReview.Create(request.UserId,
-            request.ShopId,
-            moderationShopId:moderationShop.Id,
-            request.UserName,
-            request.Header,
-            request.Comment,
-            request.Rating,
+
+        var review = ModerationReview.Create(
+            command.UserId,
+            command.ShopId,
+            moderationShop.Id,
+            command.UserName,
+            command.Header,
+            command.Comment,
+            command.Rating.Place, command.Rating.Service, command.Rating.Coffee,
             photos);
 
         repository.Add(review);
-
+        
         await unitOfWork.SaveChangesAsync(ct);
-
+        
         return CreateEntityResponse.Success();
     }
 }

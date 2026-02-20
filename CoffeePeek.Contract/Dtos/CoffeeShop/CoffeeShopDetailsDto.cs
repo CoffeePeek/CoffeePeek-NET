@@ -30,7 +30,7 @@ public record CoffeeShopDetailsDto
     public PriceRange PriceRange { get; init; }
 
     public LocationDto? Location { get; init; }
-    public BeansDto[]? CoffeeBeans { get; init; }
+    public CoffeeBeansDto[]? CoffeeBeans { get; init; }
     public RoasterDto[]? Roasters { get; init; }
     public EquipmentDto[]? Equipments { get; init; }
     public BrewMethodDto[]? BrewMethods { get; init; }

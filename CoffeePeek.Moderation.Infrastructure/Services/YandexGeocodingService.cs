@@ -10,7 +10,8 @@ namespace CoffeePeek.Moderation.Infrastructure.Services;
 public class YandexGeocodingService(
     HttpClient httpClient,
     IOptions<YandexApiOptions> options,
-    ILogger<YandexGeocodingService> logger) : IYandexGeocodingService
+    ILogger<YandexGeocodingService> logger) 
+    : IYandexGeocodingService
 {
     private readonly YandexApiOptions _options = options.Value;
 

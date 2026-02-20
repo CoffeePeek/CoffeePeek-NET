@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.MediaService.Configuration;
+using CoffeePeek.MediaService.Data;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
@@ -13,7 +14,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
     private const int PresignedUrlExpirySeconds = 600;
     
 
-    public async Task<(string UploadUrl, string StorageKey)> GetPresignedUploadUrl(string fileName,
+    public async Task<PresignedPhotoMetaData> GetPresignedUploadUrl(string fileName,
         string contentType, BucketType bucketType, CancellationToken ct = default)
     {
         var storageKey = $"{Guid.NewGuid()}{Path.GetExtension(fileName)}";
@@ -29,7 +30,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
 
         var url = await minioClient.PresignedPutObjectAsync(args);
 
-        return (url, storageKey);
+        return new PresignedPhotoMetaData(url, storageKey);
     }
 
     public async Task MarkAsPermanent(string storageKey, BucketType bucketType, CancellationToken ct = default)

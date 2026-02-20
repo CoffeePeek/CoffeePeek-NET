@@ -7,9 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Shared.Infrastructure\CoffeePeek.Shared.Infrastructure.csproj" />
+        <ProjectReference Include="..\CoffeePeek.Shared.Domain\CoffeePeek.Shared.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Aggregates\" />
+    </ItemGroup>
 </Project>

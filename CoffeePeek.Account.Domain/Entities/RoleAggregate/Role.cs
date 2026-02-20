@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Domain.Entities;
 
 namespace CoffeePeek.Account.Domain.Entities.RoleAggregate;
 

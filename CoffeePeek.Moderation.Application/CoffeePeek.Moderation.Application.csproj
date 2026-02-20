@@ -7,15 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CoffeePeek.Moderation.Domain\CoffeePeek.Moderation.Domain.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Shared.Validation\CoffeePeek.Shared.Validation.csproj" />
+        <ProjectReference Include="..\CoffeePeek.Moderation.Domain\CoffeePeek.Moderation.Domain.csproj" />
+        <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
+        <ProjectReference Include="..\CoffeePeek.Shared.Validation\CoffeePeek.Shared.Validation.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentResults" Version="4.0.0" />
-      <PackageReference Include="Mapster" Version="7.4.0" />
-      <PackageReference Include="MediatR" Version="13.1.0" />
+        <PackageReference Include="Mapster" Version="7.4.0" />
+        <PackageReference Include="WolverineFx" Version="5.15.0" />
     </ItemGroup>
 
 </Project>

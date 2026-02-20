@@ -1,48 +1,33 @@
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using MapsterMapper;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shops.Application.Features.CheckIn.GetUserCheckIns;
 
 public class GetUserCheckInsHandler(
-    IGenericRepository<Domain.Aggregates.CheckInAggregate.CheckIn> checkInRepository,
-    ICoffeeShopRepository coffeeShopRepository,
+    ICheckInQueries checkInQueries,
+    IQueryCoffeeShopRepository queryCoffeeShopRepository,
     IMapper mapper)
-    : IRequestHandler<GetUserCheckInsCommand, Response<GetUserCheckInsResponse>>
 {
-    public async Task<Response<GetUserCheckInsResponse>> Handle(GetUserCheckInsCommand request, CancellationToken cancellationToken)
+    public async Task<Response<GetUserCheckInsResponse>> Handle(GetUserCheckInsCommand request,
+        CancellationToken cancellationToken)
     {
-        var query = checkInRepository.QueryAsNoTracking()
-            .Where(c => c.UserId == request.UserId)
-            .OrderByDescending(c => c.CreatedAtUtc);
+        var checkinDtos =
+            await checkInQueries.GetByUserId(request.UserId, request.PageNumber, request.PageSize, cancellationToken);
 
-        var totalItems = await query.CountAsync(cancellationToken);
-        var totalPages = (int)Math.Ceiling(totalItems / (double)request.PageSize);
+        var shopIds = checkinDtos.Select(c => c.ShopId).Distinct().ToList();
+        var shopNames = await queryCoffeeShopRepository.GetShopNamesByIdsAsync(shopIds, cancellationToken);
 
-        var checkIns = await query
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .ToListAsync(cancellationToken);
-
-        // Get shop names for all check-ins in batch
-        var shopIds = checkIns.Select(c => c.ShopId).Distinct().ToList();
-        var shopNames = await coffeeShopRepository.GetShopNamesByIdsAsync(shopIds, cancellationToken);
-
-        var checkInDtos = checkIns.Select(c =>
+        var checkInDtos = checkinDtos.Select(c =>
         {
-            var dto = mapper.Map<CheckInDto>(c);
-            dto.ShopName = shopNames.GetValueOrDefault(c.ShopId, string.Empty);
-            return dto;
+            c.ShopName = shopNames.GetValueOrDefault(c.ShopId, string.Empty);
+            return c;
         }).ToArray();
 
         var response = new GetUserCheckInsResponse(
             checkInDtos,
-            totalItems,
-            totalPages,
+            TotalItems: checkinDtos.Length,
+            TotalPages: (int)Math.Ceiling(checkinDtos.Length / (double)request.PageSize),
             request.PageNumber,
             request.PageSize);
 

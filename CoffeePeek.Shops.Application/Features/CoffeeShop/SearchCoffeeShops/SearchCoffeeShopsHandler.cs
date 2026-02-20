@@ -1,159 +1,55 @@
 using System.Security.Cryptography;
 using System.Text;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Dtos.CoffeeShop;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Persistence;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
+using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Common.Responses;
-using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
-using MapsterMapper;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
+using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 
-public class SearchCoffeeShopsHandler(
-    IReviewRepository reviewRepository,
-    ICoffeeShopRepository coffeeShopRepository,
-    IMapper mapper,
-    IRedisService redisService)
-    : IRequestHandler<SearchCoffeeShopsQuery, Response<GetCoffeeShopsResponse>>
+public class SearchCoffeeShopsHandler
 {
-    public async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsQuery queryRequest, 
-        CancellationToken cancellationToken)
+    public static async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsQuery queryRequest,
+        ICoffeeShopQueries coffeeShopQueries,
+        IUserFavoriteRepository favoriteRepository,
+        IQueryCheckInRepository visitRepository,
+        ICacheService redisService,
+        CancellationToken ct)
     {
         var searchHash = CreateSearchHash(queryRequest);
         var cacheKey = CacheKey.Shop.Search(searchHash);
 
-        var response = await redisService.GetAsync(
-            cacheKey,
-            factory: () => GetCoffeeShops(queryRequest, cancellationToken));
-
-        if (response?.Data == null) 
-            return Response<GetCoffeeShopsResponse>.Error("Failed to fetch shops.");
+        var cachedResponse = await redisService.GetAsync(cacheKey, async () =>
+        {
+            var (items, totalCount) = await coffeeShopQueries.Search(queryRequest, ct);
+            
+            return new GetCoffeeShopsResponse
+            {
+                CoffeeShops = items,
+                TotalItems = totalCount,
+                CurrentPage = queryRequest.PageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)queryRequest.PageSize)
+            };
+        });
         
+        if (cachedResponse == null) return Response<GetCoffeeShopsResponse>.Error("Error");
+
         if (queryRequest.UserId.HasValue)
         {
             var userId = queryRequest.UserId.Value;
-            var shopIds = response.Data.CoffeeShops.Select(s => s.Id).ToList();
-        
-            var enrichmentMap = await coffeeShopRepository.GetBatchUserShopEnrichmentAsync(userId, shopIds, cancellationToken);
+            var favoriteIds = await favoriteRepository.GetFavoriteShopIdsAsync(userId, ct);
+            var visitedIds = await visitRepository.GetVisitedShopIdsAsync(userId, ct);
 
-            var enrichedShops = response.Data.CoffeeShops.Select(shop =>
+            foreach (var shop in cachedResponse.CoffeeShops)
             {
-                var e = enrichmentMap.GetValueOrDefault(shop.Id, new UserShopEnrichment(false, false, null));
-                return shop with { IsFavorite = e.IsFavorite, IsVisited = e.IsVisited };
-            }).ToList();
-
-            response.Data.CoffeeShops = enrichedShops;
+                shop.IsFavorite = favoriteIds.Contains(shop.Id);
+                shop.IsVisited = visitedIds.Contains(shop.Id);
+            }
         }
 
-        return response;
-    }
-
-    private async Task<Response<GetCoffeeShopsResponse>> GetCoffeeShops(SearchCoffeeShopsQuery queryRequest, CancellationToken cancellationToken)
-    {
-        var query = coffeeShopRepository.QueryAsNoTracking();
-        
-        if (!string.IsNullOrWhiteSpace(queryRequest.Query))
-        {
-            var escaped = queryRequest.Query.Trim().Replace("\\", @"\\").Replace("%", "\\%").Replace("_", "\\_");
-            var term = $"%{escaped}%";
-            
-            query = query.Where(s =>
-                EF.Functions.ILike(s.Name, term) ||
-                EF.Functions.ILike(s.Location.Address, term));
-            
-        }
-
-        if (queryRequest.CityId.HasValue)
-        {
-            query = query.Where(s => s.Location.CityId == queryRequest.CityId.Value);
-        }
-
-        if (queryRequest.PriceRange.HasValue)
-        {
-            query = query.Where(s => s.PriceRange == queryRequest.PriceRange.Value);
-        }
-        
-        if (queryRequest.MinRating.HasValue)
-        {
-            var shopsAboveRating = reviewRepository.GetQueryableGroupByIdAndSortByRating(queryRequest.MinRating.Value);
-
-            query = query.Where(s => shopsAboveRating.Contains(s.Id));
-        }
-
-        if (queryRequest.Equipments is { Length: > 0 })
-        {
-            query = query.Where(s => s.Equipments.Any(e => queryRequest.Equipments.Contains(e.Id)));
-        }
-
-        if (queryRequest.Beans is { Length: > 0 })
-        {
-            query = query.Where(s => s.CoffeeBeans.Any(e => queryRequest.Beans.Contains(e.Id)));
-        }
-
-        if (queryRequest.Roasters is { Length: > 0 })
-        {
-            query = query.Where(s => s.Roasters.Any(e => queryRequest.Roasters.Contains(e.Id)));
-        }
-
-        if (queryRequest.BrewMethods is { Length: > 0 })
-        {
-            query = query.Where(s => s.BrewMethods.Any(e => queryRequest.BrewMethods.Contains(e.Id)));
-        }
-
-
-        var totalCount = await query.CountAsync(cancellationToken);
-        var totalPages = (int)Math.Ceiling(totalCount / (double)queryRequest.PageSize);
-        
-        var shops= await query
-            .Include(s => s.BrewMethods)
-            .Include(s => s.Roasters)
-            .Include(s => s.CoffeeBeans)
-            .Include(s => s.ShopPhotos)
-            .AsSplitQuery()
-            .OrderBy(x => x.CreatedAtUtc).ThenBy(x => x.Name).ThenBy(x => x.Id)
-            .Skip((queryRequest.PageNumber - 1) * queryRequest.PageSize)
-            .Take(queryRequest.PageSize)
-            .ToListAsync(cancellationToken);
-        
-        if (shops.Count == 0)
-        {
-            return Response<GetCoffeeShopsResponse>.Success(new GetCoffeeShopsResponse
-            {
-                CoffeeShops = [],
-                CurrentPage = queryRequest.PageNumber,
-                PageSize = queryRequest.PageSize,
-                TotalItems = totalCount,
-                TotalPages = totalPages
-            });
-        }
-
-        var reviewStats = await reviewRepository.GetReviewStatsByShopIds(shops.Select(x => x.Id).ToList(), cancellationToken);
-        
-        var dtos = shops.Select(shop =>
-        {
-            var reviewStat = reviewStats.GetValueOrDefault(shop.Id, (0, 0));
-            var dto = mapper.Map<ShortShopDto>(shop);
-            return dto with
-            {
-                AverageRating = reviewStat.AverageRating,
-                ReviewCount = reviewStat.Count
-            };
-        }).ToList();
-
-        var response = new GetCoffeeShopsResponse
-        {
-            CoffeeShops = dtos,
-            CurrentPage = queryRequest.PageNumber,
-            PageSize = queryRequest.PageSize,
-            TotalItems = totalCount,
-            TotalPages = totalPages
-        };
-
-        return Response<GetCoffeeShopsResponse>.Success(response);
+        return Response<GetCoffeeShopsResponse>.Success(cachedResponse);
     }
 
     private static string CreateSearchHash(SearchCoffeeShopsQuery query)
@@ -208,13 +104,12 @@ public class SearchCoffeeShopsHandler(
         keyBuilder.Append($"page:{query.PageNumber}:size:{query.PageSize}");
 
         return keyBuilder.ToString();
-        
-        static string ComputeHash(string input)
-        {
-            var bytes = Encoding.UTF8.GetBytes(input);
-            var hash = SHA256.HashData(bytes);
-            return Convert.ToBase64String(hash)[..16].Replace("/", "_").Replace("+", "-");
-        }
     }
-    
+
+    private static string ComputeHash(string input)
+    {
+        var bytes = Encoding.UTF8.GetBytes(input);
+        var hash = SHA256.HashData(bytes);
+        return Convert.ToBase64String(hash)[..16].Replace("/", "_").Replace("+", "-");
+    }
 }

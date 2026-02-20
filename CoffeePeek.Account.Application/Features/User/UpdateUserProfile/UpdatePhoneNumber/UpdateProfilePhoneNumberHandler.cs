@@ -1,15 +1,17 @@
 ﻿using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using MediatR;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdatePhoneNumber;
 
-public class UpdatePhoneNumberHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
-    : IRequestHandler<UpdateProfilePhoneNumberCommand, UpdateEntityResponse<string>>
+public class UpdatePhoneNumberHandler
 {
-    public async Task<UpdateEntityResponse<string>> Handle(UpdateProfilePhoneNumberCommand request, CancellationToken ct)
+    public static async Task<UpdateEntityResponse<string>> Handle(
+        UpdateProfilePhoneNumberCommand request, 
+        IUserRepository userRepository, 
+        IUnitOfWork unitOfWork,
+        CancellationToken ct)
     {
         var user = await userRepository.GetById(request.UserId, ct);
         if (user == null)
@@ -21,6 +23,7 @@ public class UpdatePhoneNumberHandler(IUserRepository userRepository, IUnitOfWor
         user.UpdatePhoneNumber(phoneNumber);
 
         await userRepository.Update(user, ct);
+
         await unitOfWork.SaveChangesAsync(ct);
 
         return UpdateEntityResponse<string>.Success(phoneNumber.ToString(), "Phone number updated successful");

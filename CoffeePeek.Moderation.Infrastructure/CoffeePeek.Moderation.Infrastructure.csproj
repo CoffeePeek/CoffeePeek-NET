@@ -9,5 +9,10 @@
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Moderation.Application\CoffeePeek.Moderation.Application.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="MassTransit.Abstractions" Version="9.0.1" />
+        <PackageReference Include="WolverineFx" Version="5.15.0" />
+    </ItemGroup>
 
 </Project>

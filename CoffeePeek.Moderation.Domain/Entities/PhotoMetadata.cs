@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Shared.Infrastructure.Abstract;
+﻿using CoffeePeek.Shared.Domain.Entities;
 
 namespace CoffeePeek.Moderation.Domain.Entities;
 
@@ -11,10 +11,8 @@ public sealed class PhotoMetadata : Entity<Guid>
     public Guid OwnerId { get; private set; } 
     public Guid ModerationShopId { get; private set; }
 
-    private PhotoMetadata()
-    {
-        //ef core
-    }
+    // ReSharper disable once UnusedMember.Local
+    private PhotoMetadata() { }
 
     private PhotoMetadata(string fileName, string contentType, string storageKey, long sizeBytes, Guid ownerId,
         Guid moderationShopId)

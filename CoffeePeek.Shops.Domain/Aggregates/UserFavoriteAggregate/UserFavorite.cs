@@ -1,12 +1,15 @@
-﻿using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+﻿using CoffeePeek.Shared.Domain.Entities;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
-namespace CoffeePeek.Shops.Domain.Entities.UserFavoriteAggregate;
+namespace CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 
 public sealed class UserFavorite : Entity<Guid>
 {
     public Guid UserId { get; private set; }
     public Guid CoffeeShopId { get; private set; }
+    
+    public CoffeeShop CoffeeShop { get; private set; }
     
     private UserFavorite() { }
 

@@ -1,9 +1,15 @@
 ﻿using System.Text;
-using CoffeePeek.Shared.Extensions.Configuration;
-using CoffeePeek.Shared.Extensions.Handlers;
-using CoffeePeek.Shared.Extensions.Modules;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using CoffeePeek.Shared.Infrastructure.Options;
+using Asp.Versioning.ApiExplorer;
+using CoffeePeek.Account.Infrastructure.EventConsumer;
+using CoffeePeek.Account.Persistence.Configuration;
+using CoffeePeek.Shared.Auth.Constants;
+using CoffeePeek.Shared.Auth.Extensions;
+using CoffeePeek.Shared.Auth.Options;
+using CoffeePeek.Shared.Kernel.Extentions;
+using CoffeePeek.Shared.Persistence.Extensions;
+using CoffeePeek.Shared.Web;
+using CoffeePeek.Shared.Web.Extensions;
+using CoffeePeek.Shared.Web.Handlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -13,9 +19,13 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
+        services.AddOpenApi(options =>
+        {
+            options.AddDocumentTransformer<BearerSecurityTransformer>();
+        });
+        
         // Controllers and API
-        services.AddControllers();
-        services.AddEndpointsApiExplorer();
+        services.AddControllersModule();
 
         services.AddJwtAuth();
         // User context for reading claims from headers (set by Gateway)
@@ -27,15 +37,11 @@ public static class DependencyInjection
             .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
             .AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
 
-        // Swagger
-        services.AddSwaggerModule("CoffeePeek Account Service");
-
-        // HTTP Context
-        services.AddHttpContextAccessor();
-
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
+        services.AddMessaging<AccountDbContext>(typeof(CheckinCreatedConsumer).Assembly);
+        
         return services;
     }
 
@@ -76,8 +82,6 @@ public static class DependencyInjection
                     ClockSkew = TimeSpan.Zero
                 };
             });
-
-        services.AddAuthorization();
 
         return services;
     }

@@ -1,44 +1,53 @@
 ﻿using System.ComponentModel;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.MediaService.Requests;
+using CoffeePeek.MediaService.Commands;
+using CoffeePeek.MediaService.Commands.Base;
 using CoffeePeek.MediaService.Responses;
-using CoffeePeek.MediaService.Services;
-using CoffeePeek.Shared.Infrastructure;
+using CoffeePeek.Shared.Auth;
+using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
+using Wolverine;
 
 namespace CoffeePeek.MediaService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class PhotosController(IPhotoService photoService, IUserContext userContext) : ControllerBase
+public class PhotosController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Generate presigned upload url for avatar photo
+    /// </summary>
+    /// <param name="command"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
     [HttpPost("avatar")]
     [Description("Get url for presigned upload avatar photo")]
     [ProducesResponseType<Response<GenerateUploadUrlResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(Summary = "Generate presigned upload urls")]
-    public async Task<IActionResult> GenerateUploadUrl([FromBody] UploadUrlRequest request, CancellationToken ct)
+    public async Task<IActionResult> GenerateUploadUrl([FromBody] GenerateAvatarUploadCommand command, CancellationToken ct)
     {
-        request = request with { OwnerId = userContext.GetUserIdOrThrow() };
-        var response = await photoService.GenerateUserAvatarUploadUrl(request, ct);
+        command = command with { OwnerId = userContext.GetUserIdOrThrow() };
+        var response = await bus.InvokeAsync<Response<GenerateUploadUrlResponse>>(command, ct);
         return Ok(response);
     }
     
+    /// <summary>
+    /// Generate presigned upload urls for shop photos
+    /// </summary>
+    /// <param name="requests"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
     [HttpPost("shop")]
     [Description("Get urls for presigned upload photos")]
     [ProducesResponseType<Response<List<GenerateUploadUrlResponse>>>( StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(Summary = "Generate presigned upload urls")]
-    public async Task<IActionResult> GenerateUploadUrls([FromBody] List<UploadUrlRequest> requests, CancellationToken ct)
+    public async Task<IActionResult> GenerateUploadUrls([FromBody] List<PhotoRequest> requests, CancellationToken ct)
     {
         var ownerId = userContext.GetUserIdOrThrow();
-        requests = requests.Select(x => x with { OwnerId = ownerId }).ToList();
-        
-        var response = await photoService.GenerateShopUploadUrls(requests, ct);
+        var command = new GenerateShopPhotosCommand(requests, ownerId);
+        var response = await bus.InvokeAsync<Response<List<GenerateUploadUrlResponse>>>(command, ct);
         return Ok(response);
     }
 }

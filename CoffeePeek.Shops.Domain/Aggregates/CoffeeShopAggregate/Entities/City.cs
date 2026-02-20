@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CoffeePeek.Shared.Infrastructure.Abstract;
+using CoffeePeek.Shared.Domain.Entities;
 
 namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 

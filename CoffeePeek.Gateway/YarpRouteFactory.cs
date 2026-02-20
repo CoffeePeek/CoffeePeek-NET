@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using CoffeePeek.Shared.Infrastructure.Constants;
+using CoffeePeek.Shared.Web.Constants;
 using Yarp.ReverseProxy.Configuration;
+using Yarp.ReverseProxy.Transforms;
 
 namespace CoffeePeek.Gateway;
 
@@ -26,8 +27,7 @@ public static class YarpRouteFactory
             ],
             "shops-cluster", DefaultVersions),
         new("moderation", ["Moderation", "ModerationReviews", "ModerationShops"], "moderation-cluster", DefaultVersions),
-        new("media", ["Photos"], "media-cluster", DefaultVersions),
-        new("jobs", ["Vacancies"], "jobs-cluster", DefaultVersions)
+        new("media", ["Photos"], "media-cluster", DefaultVersions)
     ];
 
     public static ReadOnlyCollection<ServiceRoute> ServicesList => Services.AsReadOnly();
@@ -38,45 +38,36 @@ public static class YarpRouteFactory
 
         foreach (var service in Services)
         {
-            routes.AddRange(service.Controllers.Select(controller => CreateApiRoute(service, controller)));
+            routes.Add(CreateOpenApiRoute(service));
 
-            routes.Add(CreateSwaggerRoute(service));
+            foreach (var controller in service.Controllers)
+            {
+                routes.Add(new RouteConfig
+                {
+                    RouteId = $"{service.Id}-{controller}-route",
+                    ClusterId = service.ClusterId,
+                    Match = new RouteMatch
+                    {
+                        Path = $"/api/{controller}/{{**remainder}}"
+                    }
+                });
+            }
         }
-
-        // Admin routes with service-specific prefixes
-        routes.Add(CreateAdminRoute("account", "account-cluster"));
-        routes.Add(CreateAdminRoute("shops", "shops-cluster"));
-        routes.Add(CreateAdminRoute("vacancies", "jobs-cluster"));
-        routes.Add(CreateAdminRoute("moderation", "moderation-cluster"));
 
         return routes.ToArray();
     }
 
-    private static RouteConfig CreateApiRoute(ServiceRoute service, string controller)
+    public static RouteConfig CreateOpenApiRoute(ServiceRoute service)
     {
         return new RouteConfig
-        {
-            RouteId = $"{service.Id}-{controller}-api-route",
-            ClusterId = service.ClusterId,
-            Match = new RouteMatch { Path = $"/api/{controller}/{{**catch-all}}" },
-        };
+            {
+                RouteId = $"{service.Id}-openapi-route",
+                ClusterId = service.ClusterId,
+                Match = new RouteMatch
+                {
+                    Path = $"/{service.Id}/openapi/{{**catch-all}}"
+                }
+            }
+            .WithTransformPathRemovePrefix(prefix: $"/{service.Id}");
     }
-
-    private static RouteConfig CreateSwaggerRoute(ServiceRoute service) => new()
-    {
-        RouteId = $"{service.Id}-swagger-route",
-        ClusterId = service.ClusterId,
-        Match = new RouteMatch { Path = $"/swagger/{service.Id}/{{**catch-all}}" },
-        Transforms = new List<Dictionary<string, string>>
-        {
-            new() { { "PathPattern", "/swagger/{**catch-all}" } }
-        }
-    };
-
-    private static RouteConfig CreateAdminRoute(string serviceName, string clusterId) => new()
-    {
-        RouteId = $"admin-{serviceName}-route",
-        ClusterId = clusterId,
-        Match = new RouteMatch { Path = $"/api/admin/{serviceName}/{{**catch-all}}" }
-    };
 }

@@ -1,8 +1,3 @@
-﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
-using MediatR;
+﻿namespace CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 
-namespace CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
-
-public record GetAllModerationReviewsQuery : IRequest<Response<GetAllModerationReviewsResponse>>;
+public record GetAllModerationReviewsQuery;

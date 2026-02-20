@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Kernel.Exceptions;
 
 namespace CoffeePeek.Account.Domain.Entities.UserAggregate;
 

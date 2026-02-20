@@ -1,17 +1,32 @@
-﻿using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shops.Application.Services;
-using MediatR;
+﻿using CoffeePeek.Contract.Dtos.Shop;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
+using CoffeePeek.Shared.Kernel.Response;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using MapsterMapper;
 
 namespace CoffeePeek.Shops.Application.Features.Catalogs.GetAllBeans;
 
-public class GetAllBeansHandler(ICacheService cacheService) : IRequestHandler<GetAllBeansCommand, Response<GetAllBeansResponse>>
+public class GetAllBeansHandler
 {
-    public async Task<Response<GetAllBeansResponse>> Handle(GetAllBeansCommand request, CancellationToken cancellationToken)
+    public async Task<Response<GetAllCoffeeBeansResponse>> Handle(GetAllBeansCommand _, 
+        ICacheService cacheService,
+        IQueryCoffeeBeanRepository repository,
+        IMapper mapper,
+        CancellationToken cancellationToken)
     {
-        var beans = await cacheService.GetBeans();
+        var cacheKey = CacheKey.CoffeeBean.ListAll();
         
-        var response = new GetAllBeansResponse(beans);
+        var result = await cacheService.GetAsync<CoffeeBeansDto[]>(cacheKey);
         
-        return Response<GetAllBeansResponse>.Success(response);
+        if (result == null)
+        {
+            var coffeeBeans = await repository.GetAll(cancellationToken);
+            result = mapper.Map<CoffeeBeansDto[]>(coffeeBeans);
+            await cacheService.SetAsync(cacheKey, result);
+        }
+        
+        var response = new GetAllCoffeeBeansResponse(result);
+
+        return Response<GetAllCoffeeBeansResponse>.Success(response);
     }
 }

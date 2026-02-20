@@ -1,5 +1,4 @@
-using CoffeePeek.Contract.Dtos;
-using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shops.Domain.Entities;
 
 namespace CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
@@ -7,7 +6,7 @@ namespace CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 public sealed partial class Review
 {
     public static Review Create(Guid shopId, Guid userId, string userName, string header,
-        string comment, RatingDto ratingDto)
+        string comment, int ratingPlace, int ratingService, int ratingCoffee)
     {
         if (shopId == Guid.Empty)
             throw new DomainException($"{nameof(CoffeeShopId)} cannot be empty.");
@@ -29,7 +28,7 @@ public sealed partial class Review
             throw new DomainException(
                 $"{nameof(comment)} must be between {BusinessConstants.MinReviewCommentLength} and {BusinessConstants.MaxReviewCommentLength} characters.");
 
-        var rating = Rating.Create(ratingDto.Place, ratingDto.Service, ratingDto.Coffee);
+        var rating = Rating.Create(ratingPlace, ratingService, ratingCoffee);
         
         return new Review(shopId, userId, userName, header, comment, rating);
     }

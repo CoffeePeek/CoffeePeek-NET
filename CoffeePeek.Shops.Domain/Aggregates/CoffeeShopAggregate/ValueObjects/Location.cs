@@ -1,4 +1,4 @@
-﻿using CoffeePeek.Shared.Extensions.Exceptions;
+﻿using CoffeePeek.Shared.Kernel.Exceptions;
 
 namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 

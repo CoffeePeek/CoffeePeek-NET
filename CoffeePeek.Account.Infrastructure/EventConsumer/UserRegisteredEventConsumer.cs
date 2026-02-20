@@ -1,0 +1,47 @@
+﻿using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
+using MassTransit;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Resend;
+
+namespace CoffeePeek.Account.Infrastructure.EventConsumer;
+
+public class UserRegisteredEventConsumer(
+    IResend resend,
+    IConfiguration config,
+    IEmailTemplateService templateService,
+    ILogger<UserRegisteredEventConsumer> logger) : IConsumer<UserRegisteredInternalEvent>
+{
+    public async Task Consume(ConsumeContext<UserRegisteredInternalEvent> context)
+    {
+        var @event = context.Message;
+        var ct = context.CancellationToken;
+
+        var confirmationUrl = $"{config["WebClientUrl"]}/confirm-email?token={@event.ConfirmationToken}";
+
+        var message = new EmailMessage
+        {
+            From = "CoffeePeek.by <info@coffeepeek.by>",
+            To = @event.Email,
+            Subject = "Perfectly roasted beans are waiting for you! ☕",
+            HtmlBody = templateService.GetConfirmationHtml(@event.Username, confirmationUrl)
+        };
+
+        try
+        {
+            await resend.EmailSendAsync(message, ct);
+            logger.LogInformation("Confirmation email sent to {Email}", @event.Email);
+        }
+        catch (ResendException e)
+        {
+            logger.LogError(e, "Resend error for {Email}", @event.Email);
+            throw;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Unexpected error sending email to {Email}", @event.Email);
+            throw;
+        }
+    }
+}

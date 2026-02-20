@@ -1,57 +1,49 @@
 ﻿using CoffeePeek.Account.Domain.Entities;
+using CoffeePeek.Account.Domain.Entities.PhotoMetadataAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Abstract;
 using CoffeePeek.Contract.Events;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using DotNetCore.CAP;
-using MediatR;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateAvatar;
 
-public class UpdateUserAvatarRequestHandler(
-    IUserRepository userRepository,
-    IGenericRepository<PhotoMetadata> photoMetadataRepository,
-    IUnitOfWork unitOfWork,
-    ICapPublisher capPublisher) : IRequestHandler<UpdateUserAvatarCommand, UpdateEntityResponse<PhotoMetadata>>
+public static class UpdateUserAvatarRequestHandler
 {
-    public async Task<UpdateEntityResponse<PhotoMetadata>> Handle(UpdateUserAvatarCommand request, CancellationToken cancellationToken)
+    public static async Task<UpdateEntityResponse<PhotoMetadata>> Handle(
+        UpdateUserAvatarCommand request, 
+        IUserRepository userRepository,
+        IPhotoMetadataRepository photoMetadataRepository,
+        IUnitOfWork unitOfWork,
+        IEventPublisher publishEndpoint,
+        CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(request.UploadedPhoto.FileName))
-            throw new ValidationException("File name cannot be empty");
-
-        var user = await userRepository.GetById(request.UserId, cancellationToken)
+        var user = await userRepository.GetById(request.UserId, ct)
                    ?? throw new NotFoundException($"User with ID {request.UserId} not found");
 
-        var oldPhotoId = user.PhotoMetadataId;
-        var oldStorageKey = user.PhotoMetadata?.StorageKey;
+        var oldPhoto = user.PhotoMetadata;
 
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        
-        var photoMetadata = PhotoMetadata.Create(request.UploadedPhoto.FileName,
+        var photoMetadata = PhotoMetadata.Create(
+            request.UploadedPhoto.FileName,
             request.UploadedPhoto.ContentType,
             request.UploadedPhoto.StorageKey,
             request.UploadedPhoto.Size);
-
+        
         photoMetadataRepository.Add(photoMetadata);
         user.UpdateAvatar(photoMetadata);
 
-        if (oldPhotoId.HasValue && !string.IsNullOrEmpty(oldStorageKey))
+        if (oldPhoto != null)
         {
-            await capPublisher.PublishAsync(CapEventNames.Media.PhotoReplaced, new PhotoReplacedEvent(
-                oldPhotoId.Value,
-                oldStorageKey,
+            await publishEndpoint.Publish(new PhotoReplacedEvent(
+                oldPhoto.Id,
+                oldPhoto.StorageKey,
                 photoMetadata.Id,
                 "User",
                 user.Id,
-                DateTime.UtcNow), cancellationToken: cancellationToken);
+                DateTime.UtcNow), ct);
         }
-        
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-        
-        await unitOfWork.CommitTransactionAsync(cancellationToken);
-        
+
+        await unitOfWork.SaveChangesAsync(ct);
 
         return UpdateEntityResponse<PhotoMetadata>.Success(user.PhotoMetadata!, "Photo updated successfully");
     }

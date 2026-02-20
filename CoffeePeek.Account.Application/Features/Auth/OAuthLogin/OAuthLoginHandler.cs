@@ -1,25 +1,23 @@
 using CoffeePeek.Account.Application.Common.Interfaces;
-using CoffeePeek.Account.Application.Common.Models;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Contract.Responses;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Options;
-using MediatR;
+using CoffeePeek.Shared.Auth.Options;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 
-public class GoogleLoginHandler(
-    IGoogleAuthService googleAuthService,
-    IExternalAuthService externalAuthService,
-    IJWTTokenService tokenService,
-    IUnitOfWork unitOfWork,
-    IOptions<JWTOptions> options)
-    : IRequestHandler<GoogleLoginCommand, Response<GoogleLoginResponse>>
+public static class GoogleLoginHandler
 {
-    public async Task<Response<GoogleLoginResponse>> Handle(GoogleLoginCommand request, CancellationToken ct)
+    public static async Task<Response<GoogleLoginResponse>> Handle(
+        GoogleLoginCommand request,
+        IGoogleAuthService googleAuthService,
+        IExternalAuthService externalAuthService,
+        IJWTTokenService tokenService,
+        IOptions<JWTOptions> options,
+        IUnitOfWork unitOfWork,
+        CancellationToken ct)
     {
         var payload = await googleAuthService.ValidateIdTokenAsync(request.IdToken);
         if (payload == null)
@@ -36,20 +34,18 @@ public class GoogleLoginHandler(
         var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken();
 
-        var authResult = new AuthResult { AccessToken = accessToken, RefreshToken = refreshToken };
-
         user.AddSession(
-            authResult.RefreshToken,
+            refreshToken,
             ttl: TimeSpan.FromDays(options.Value.AccessTokenLifetimeMinutes),
             request.DeviceName,
             request.IpAddress);
 
         await unitOfWork.SaveChangesAsync(ct);
-
+        
         return Response<GoogleLoginResponse>.Success(new GoogleLoginResponse
         {
-            AccessToken = authResult.AccessToken,
-            RefreshToken = authResult.RefreshToken,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
             User = new GoogleLoginUser { Email = user.Credentials.Email, AvatarUrl = payload.Picture }
         });
     }

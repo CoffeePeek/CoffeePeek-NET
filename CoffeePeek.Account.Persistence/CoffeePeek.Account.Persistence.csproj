@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Account.Application\CoffeePeek.Account.Application.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shared.Persistence\CoffeePeek.Shared.Persistence.csproj" />
     </ItemGroup>
 
     <ItemGroup>

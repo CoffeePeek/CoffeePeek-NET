@@ -1,8 +1,6 @@
-﻿using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
-using CoffeePeek.Shops.Domain.Entities.CoffeeShopAggregate;
+﻿using CoffeePeek.Shared.Domain.Entities;
 
-namespace CoffeePeek.Shops.Domain.Entities;
+namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
 public class Roaster : Entity<Guid>
 {

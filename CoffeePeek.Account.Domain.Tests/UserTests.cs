@@ -1,7 +1,7 @@
 using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Shared.Extensions.Exceptions;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using FluentAssertions;
 using Xunit;
 

@@ -1,32 +1,22 @@
 using CoffeePeek.Contract.Events.Account;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using DotNetCore.CAP;
-using Microsoft.EntityFrameworkCore;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
+using MassTransit;
 using Microsoft.Extensions.Logging;
-using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
-public class UserNameChangedHandler(
-    IGenericRepository<Review> reviewRepository,
-    IUnitOfWork unitOfWork,
-    ILogger<UserNameChangedHandler> logger) : ICapSubscribe
+public class UserNameChangedHandler(IReviewRepository reviewRepository, IUnitOfWork unitOfWork) : IConsumer<UserNameChangedEvent>
 {
-    [CapSubscribe(CapEventNames.Account.UserNameChanged)]
-    public async Task Handle(UserNameChangedEvent @event, CancellationToken cancellationToken)
+    public async Task Consume(ConsumeContext<UserNameChangedEvent> context)
     {
-        logger.LogInformation("Received UserNameChangedEvent for UserId: {UserId}, NewUserName: {NewUserName}",
-            @event.UserId, @event.NewUserName);
+        var @event = context.Message;
+        
+        var reviews = await reviewRepository.GetByUserId(@event.UserId, CancellationToken.None);
 
-        var reviews = await reviewRepository
-            .Query()
-            .Where(r => r.UserId == @event.UserId)
-            .ToListAsync(cancellationToken);
-
-        if (reviews.Count == 0)
+        if (reviews.Length == 0)
         {
-            logger.LogInformation("No reviews found for UserId: {UserId}", @event.UserId);
             return;
         }
 
@@ -35,9 +25,6 @@ public class UserNameChangedHandler(
             review.UpdateUserName(@event.NewUserName);
         }
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-        
-        logger.LogInformation("Updated {Count} reviews with new UserName for UserId: {UserId}",
-            reviews.Count, @event.UserId);
+        await unitOfWork.SaveChangesAsync();
     }
 }

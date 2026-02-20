@@ -2,8 +2,8 @@ using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Application.Common.Models;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Options;
+using CoffeePeek.Shared.Auth.Options;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.Account.Application.Features.Auth.Login;

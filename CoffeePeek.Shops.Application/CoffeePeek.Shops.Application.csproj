@@ -8,14 +8,14 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Shared.Extensions\CoffeePeek.Shared.Extensions.csproj" />
-      <ProjectReference Include="..\CoffeePeek.Shops.Domain\CoffeePeek.Shops.Domain.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shared.Validation\CoffeePeek.Shared.Validation.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shops.Domain\CoffeePeek.Shops.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Mapster" Version="7.4.0" />
-      <PackageReference Include="MediatR" Version="13.1.0" />
+        <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
+        <PackageReference Include="WolverineFx" Version="5.15.0" />
+        <PackageReference Include="Mapster" Version="7.4.0" />
     </ItemGroup>
 
 </Project>

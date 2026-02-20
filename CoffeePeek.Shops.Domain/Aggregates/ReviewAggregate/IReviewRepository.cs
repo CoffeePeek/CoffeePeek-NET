@@ -1,18 +1,9 @@
-namespace CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
+﻿namespace CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 
 public interface IReviewRepository
 {
-    Task<Review?> GetByIdAsNoTracking(Guid id, CancellationToken ct);
-    
-    Task<(IReadOnlyList<Review> reviews, int totalCount)> GetByCoffeeShopId(
-        Guid coffeeShopId, 
-        int page = 1, 
-        int pageSize = 10, 
-        CancellationToken ct = default);
-
-    Task<(IReadOnlyList<Review> reviews, decimal avgRating, int totalCount)>
-        GetReviewsWithStatsByCoffeeShopId(Guid coffeeShopId, CancellationToken ct);
-    
-    Task<Dictionary<Guid, (decimal AverageRating, int Count)>> GetReviewStatsByShopIds(IReadOnlyList<Guid> shopIds, CancellationToken ct);
-    IQueryable<Guid> GetQueryableGroupByIdAndSortByRating(decimal queryRequestMinRating);
+    void Add(Review review);
+    Task<bool> AnyAsync(Guid shopId, Guid reviewId, CancellationToken ct);
+    Task<Review?> GetById(Guid reviewId, CancellationToken ct);
+    Task<Review[]> GetByUserId(Guid eventUserId, CancellationToken ct);
 }

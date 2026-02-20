@@ -1,26 +1,21 @@
 ﻿using CoffeePeek.Contract.Events.Shops;
 using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
-using CoffeePeek.Shared.Infrastructure.Constants;
-using DotNetCore.CAP;
-using MediatR;
 
 namespace CoffeePeek.Moderation.Infrastructure.Consumers;
 
-public class CheckInCreatedConsumer(IMediator mediator) : ICapSubscribe
+public static class CheckInCreatedHandler
 {
-    [CapSubscribe(CapEventNames.Shops.CheckinCreated)]
-    public async Task Handle(CheckinCreatedEvent @event, CancellationToken cancellationToken)
+    public static SendReviewToModerationCommand Handle(CheckinCreatedEvent @event)
     {
         var review = @event.ReviewDto;
-        var command = new SendReviewToModerationCommand(
-            review.UserId, 
-            review.Username, 
+
+        return new SendReviewToModerationCommand(
+            review.UserId,
+            review.Username,
             review.CoffeeShopId,
-            review.Header, 
-            review.Comment, 
-            review.Rating, 
+            review.Header,
+            review.Comment,
+            review.Rating,
             review.Photos);
-        
-        await mediator.Publish(command, cancellationToken);
     }
 }

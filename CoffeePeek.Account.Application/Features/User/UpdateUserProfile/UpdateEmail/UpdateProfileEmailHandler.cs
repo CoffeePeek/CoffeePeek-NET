@@ -1,18 +1,18 @@
 ﻿using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Abstract;
-using CoffeePeek.Shared.Extensions.Exceptions;
-using CoffeePeek.Shared.Infrastructure.Abstract;
-using MediatR;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateEmail;
 
 //TODO CP-157 реализовать смену почты с интеграцией с Resend
-public class UpdateEmailRequestHandler(
-    IUserRepository userRepository,
-    IUnitOfWork unitOfWork)
-    : IRequestHandler<UpdateProfileEmailCommand, UpdateEntityResponse<string>>
+public class UpdateEmailRequestHandler
 {
-    public async Task<UpdateEntityResponse<string>> Handle(UpdateProfileEmailCommand request, CancellationToken ct)
+    public static async Task<UpdateEntityResponse<string>> Handle(
+        UpdateProfileEmailCommand request, 
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
+        CancellationToken ct)
     {
         var user = await userRepository.GetById(request.UserId, ct);
 
@@ -24,6 +24,7 @@ public class UpdateEmailRequestHandler(
         user.Credentials.UpdateEmail(request.Email);
 
         await userRepository.Update(user, ct);
+        
         await unitOfWork.SaveChangesAsync(ct);
 
         return UpdateEntityResponse<string>.Success(user.Credentials.Email, "Email updated successfully");
