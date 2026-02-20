@@ -1,5 +1,6 @@
 using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Moderation.Domain.Entities;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using ModerationReview = CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate.ModerationReview;
 using ModerationShop = CoffeePeek.Moderation.Domain.Aggregates.ModerationShop;
@@ -19,6 +20,8 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ModerationDbContext).Assembly);
+        
+        MassTransitOutbox(modelBuilder);
         
         modelBuilder.Entity<PhotoMetadata>(entity =>
         {
@@ -57,6 +60,13 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
             entity.HasIndex(e => e.ShopId);
             entity.HasIndex(e => e.BrewMethodId);
         });
+    }
+    
+    private static void MassTransitOutbox(ModelBuilder modelBuilder)
+    {
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
     }
 }
 

@@ -40,7 +40,7 @@ public static class DependencyInjection
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
-        services.AddMessaging<AccountDbContext>(typeof(CheckinCreatedHandler).Assembly);
+        services.AddMessaging<AccountDbContext>(typeof(CheckinCreatedConsumer).Assembly);
         
         return services;
     }

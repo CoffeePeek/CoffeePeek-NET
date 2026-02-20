@@ -1,16 +1,16 @@
 using System.Net;
 using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Response;
-using Wolverine.Attributes;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
 
 public static class UpdateCoffeeShopReviewHandler
 {
-    [Transactional]
     public static async Task<Response<UpdateCoffeeShopReviewResponse>> Handle(
         UpdateCoffeeShopReviewCommand command,
         IModerationReviewRepository reviewRepository,
+        IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
         var review = await reviewRepository.GetById(command.ReviewId, ct);
@@ -34,6 +34,8 @@ public static class UpdateCoffeeShopReviewHandler
             command.Rating.Service, 
             command.Rating.Coffee);
 
+        await unitOfWork.SaveChangesAsync(ct);
+        
         return Response<UpdateCoffeeShopReviewResponse>.Success(new UpdateCoffeeShopReviewResponse(review.Id));
     }
 }

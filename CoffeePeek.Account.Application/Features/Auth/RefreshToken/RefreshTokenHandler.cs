@@ -5,13 +5,11 @@ using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.Extensions.Options;
-using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.Auth.RefreshToken;
 
 public class RefreshTokenHandler
 {
-    [Transactional]
     public static async Task<Response<RefreshTokenResponse>> Handle(
         RefreshTokenCommand request,
         IUserRepository repository,

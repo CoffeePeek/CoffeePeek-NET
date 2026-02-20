@@ -2,25 +2,23 @@ using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Events;
 using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Domain.Aggregates;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
-using Microsoft.Extensions.Logging;
 using Wolverine;
-using Wolverine.Attributes;
 using DomainPriceRange = CoffeePeek.Moderation.Domain.Aggregates.Enums.PriceRange;
 
 namespace CoffeePeek.Moderation.Application.Features.Shop.UpdateShop;
 
 public static class UpdateModerationCoffeeShopHandler
 {
-    [Transactional]
     public static async Task<UpdateEntityResponse<ModerationShopDto>> Handle(
         UpdateModerationCoffeeShopCommand command,
         IModerationShopRepository repository,
         IYandexGeocodingService geocodingService,
         IMapper mapper,
         OutgoingMessages outgoingMessages,
-        ILogger<UpdateModerationCoffeeShopCommand> logger,
+        IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
         var moderationShopDto = command.ModerationShopDto;
@@ -85,9 +83,9 @@ public static class UpdateModerationCoffeeShopHandler
             }
         }
 
+        await unitOfWork.SaveChangesAsync(ct);
+        
         var result = mapper.Map<ModerationShopDto>(shop);
-
-        logger.LogInformation("Shop {ShopId} updated by user {UserId}", shop.Id, command.UserId);
 
         return UpdateEntityResponse<ModerationShopDto>.Success(result, "Shop updated successfully");
     }

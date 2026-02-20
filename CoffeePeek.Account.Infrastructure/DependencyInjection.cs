@@ -20,10 +20,10 @@ public static class DependencyInjection
         services.AddScoped<IJWTTokenService, JWTTokenService>();
 
         // 2. Event Handlers
-        services.AddScoped<CheckinCreatedHandler>();
-        services.AddScoped<ReviewAddedHandler>();
-        services.AddScoped<ModerationShopApprovedAccountHandler>();
-        services.AddScoped<UserPhotoUploadedHandler>();
+        services.AddScoped<CheckinCreatedConsumer>();
+        services.AddScoped<ReviewAddedConsumer>();
+        services.AddScoped<ModerationShopApprovedAccountConsumer>();
+        services.AddScoped<UserPhotoUploadedConsumer>();
 
         // 3 Email Service
         services.AddHttpClient<ResendClient>();

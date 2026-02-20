@@ -1,6 +1,5 @@
 using System.Reflection;
 using CoffeePeek.Shared.Kernel;
-using CoffeePeek.Shared.Kernel.Extentions;
 using CoffeePeek.Shared.Persistence;
 using CoffeePeek.Shared.Persistence.Data;
 using CoffeePeek.Shared.Persistence.Extensions;
@@ -15,8 +14,6 @@ using CoffeePeek.Shops.Persistance.Configuration;
 using CoffeePeek.Shops.Persistance.Queries;
 using CoffeePeek.Shops.Persistance.Repositories;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -54,6 +51,8 @@ public static class DependencyInjection
             return services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
         }
 #endif
+        
+        services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
         
         // Queries
         services.AddScoped<ICheckInQueries, CheckInQueries>();

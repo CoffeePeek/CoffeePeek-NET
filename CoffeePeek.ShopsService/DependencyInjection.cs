@@ -34,7 +34,7 @@ public static class DependencyInjection
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
-        services.AddMessaging<ShopsDbContext>(typeof(ModerationShopApprovedHandler).Assembly);
+        services.AddMessaging<ShopsDbContext>(typeof(ModerationShopApprovedConsumer).Assembly);
         
         return services;
     }

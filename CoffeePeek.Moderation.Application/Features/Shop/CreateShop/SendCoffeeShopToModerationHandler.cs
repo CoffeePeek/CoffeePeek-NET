@@ -1,6 +1,7 @@
 using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Application.Common.Models;
 using CoffeePeek.Moderation.Domain.Aggregates;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.Extensions.Logging;
 using Wolverine.Attributes;
@@ -9,7 +10,6 @@ namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
 public static class SendCoffeeShopToModerationHandler
 {
-    [Transactional]
     public static async Task<Response<SendCoffeeShopToModerationResponse>> Handle(
         SendCoffeeShopToModerationCommand command,
         IModerationShopRepository repository,

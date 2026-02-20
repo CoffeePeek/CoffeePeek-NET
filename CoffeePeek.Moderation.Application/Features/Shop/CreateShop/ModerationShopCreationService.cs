@@ -1,13 +1,12 @@
 using CoffeePeek.Moderation.Application.Common.Models;
 using CoffeePeek.Moderation.Domain.Aggregates;
-using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Shared.Kernel;
 using DomainPriceRange = CoffeePeek.Moderation.Domain.Aggregates.Enums.PriceRange;
 using ModerationShop = CoffeePeek.Moderation.Domain.Aggregates.ModerationShop;
 
 namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
-public class ModerationShopCreationService(
-    IModerationShopRepository shopRepository)
+public class ModerationShopCreationService(IModerationShopRepository shopRepository, IUnitOfWork unitOfWork)
     : IModerationShopCreationService
 {
     public async Task<Guid> Create(
@@ -57,6 +56,8 @@ public class ModerationShopCreationService(
 
         await shopRepository.AddAsync(shop);
 
+        await unitOfWork.SaveChangesAsync(ct);
+        
         return shop.Id;
     }
 }

@@ -694,3 +694,4 @@ fabric.properties
 appsettings.Development.json
 .aspire
 .digitalocean
+postgres-data

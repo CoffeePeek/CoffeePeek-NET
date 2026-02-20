@@ -48,6 +48,8 @@ public static class DependencyInjection
         }
 #endif
         
+        services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
+        
         services.AddScoped<IQueryModerationReviewRepository, QueryModerationReviewRepository>();
         services.AddScoped<IQueryModerationShopRepository, QueryModerationShopRepository>();
         services.AddScoped<IModerationShopRepository, ModerationShopRepository>();

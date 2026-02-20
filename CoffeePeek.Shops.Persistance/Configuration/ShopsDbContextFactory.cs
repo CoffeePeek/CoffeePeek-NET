@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
-namespace CoffeePeek.MediaService.Data;
+namespace CoffeePeek.Shops.Persistance.Configuration;
 
-public class MediaDbContextFactory : IDesignTimeDbContextFactory<MediaDbContext>
+public class ShopsDbContextFactory : IDesignTimeDbContextFactory<ShopsDbContext>
 {
-    public MediaDbContext CreateDbContext(string[] args)
+    public ShopsDbContext CreateDbContext(string[] args)
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -14,7 +15,7 @@ public class MediaDbContextFactory : IDesignTimeDbContextFactory<MediaDbContext>
             .AddEnvironmentVariables()
             .Build();
         
-        var optionsBuilder = new DbContextOptionsBuilder<MediaDbContext>();
+        var optionsBuilder = new DbContextOptionsBuilder<ShopsDbContext>();
 
         var connectionString = configuration.GetSection("PostgresCpOptions:ConnectionString").Value;
 
@@ -25,6 +26,6 @@ public class MediaDbContextFactory : IDesignTimeDbContextFactory<MediaDbContext>
 
         optionsBuilder.UseNpgsql(connectionString);
 
-        return new MediaDbContext(optionsBuilder.Options);
+        return new ShopsDbContext(optionsBuilder.Options);
     }
 }

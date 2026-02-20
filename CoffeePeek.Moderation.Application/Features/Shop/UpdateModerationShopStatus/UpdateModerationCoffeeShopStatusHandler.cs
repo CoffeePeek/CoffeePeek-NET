@@ -2,45 +2,42 @@ using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Moderation.Domain.Aggregates;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
-using Microsoft.Extensions.Logging;
-using Wolverine.Attributes;
 
 namespace CoffeePeek.Moderation.Application.Features.Shop.UpdateModerationShopStatus;
 
 public static class UpdateModerationCoffeeShopStatusHandler
 {
-    [Transactional]
-    public static async Task<(Response, ModerationShopApprovedEvent?)> Handle(
+    public static async Task<Response> Handle(
         UpdateModerationCoffeeShopStatusCommand command,
         IModerationShopRepository repository,
+        IUnitOfWork unitOfWork,
+        IEventPublisher eventPublisher,
         IMapper mapper,
-        ILogger<UpdateModerationCoffeeShopStatusCommand> logger,
         CancellationToken ct)
     {
         var shop = await repository.GetByIdAsync(command.Id, ct);
 
         if (shop == null)
-        {
-            logger.LogWarning("Shop {ShopId} not found.", command.Id);
-            return (Response.Error("CoffeeShop not found"), null);
-        }
-
-        ModerationShopApprovedEvent? approvedEvent = null;
+            return Response.Error("CoffeeShop not found");
 
         if (command.ModerationStatus == ModerationStatus.Approved)
         {
             shop.Approve();
 
-            var shopDto = mapper.Map<ShopDto>(shop);
-            approvedEvent = new ModerationShopApprovedEvent(shop.UserId, shopDto);
+            await eventPublisher.Publish(new ModerationShopApprovedEvent(
+                shop.UserId,
+                mapper.Map<ShopDto>(shop)), ct);
         }
         else if (command.ModerationStatus == ModerationStatus.Rejected)
         {
             shop.Reject("Rejected by moderator");
         }
 
-        return (Response.Success(), approvedEvent);
+        await unitOfWork.SaveChangesAsync(ct);
+
+        return Response.Success();
     }
 }

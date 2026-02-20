@@ -18,6 +18,8 @@ public static class MassTransitExtensions
         
         services.AddMassTransit(x =>
         {
+            x.AddMessageScheduler(new Uri("queue:scheduler"));
+            
             x.AddConsumers(consumersAssembly);
 
             x.AddEntityFrameworkOutbox<TDbContext>(o =>

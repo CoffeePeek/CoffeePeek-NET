@@ -1,31 +1,29 @@
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Responses;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shops.Application.Services;
-using Microsoft.Extensions.Logging;
-using Wolverine.Attributes;
+using MassTransit;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
-public static class ModerationShopApprovedHandler
+public class ModerationShopApprovedConsumer(
+    ICreateShopFromModerationService createShopService,
+    IEventPublisher eventPublisher,
+    IUnitOfWork unitOfWork) : IConsumer<ModerationShopApprovedEvent>
 {
-    [Transactional]
-    public static async Task<ModerationShopApproveCompleteResponse> Handle(
-        ModerationShopApprovedEvent @event,
-        ICreateShopFromModerationService createShopService,
-        ILogger logger,
-        CancellationToken ct)
+    public async Task Consume(ConsumeContext<ModerationShopApprovedEvent> context)
     {
-        var shopDto = @event.Shop;
-
-        logger.LogInformation("Processing approval for ShopId: {ShopId} by User: {UserId}", 
-            shopDto.Id, @event.UserId);
+        var @event = context.Message;
+        var ct = context.CancellationToken;
 
         var shopId = await createShopService.CreateShopFromApprovedEventAsync(
-            shopDto,
+            @event.Shop,
             creatorId: @event.UserId,
-            moderationId: shopDto.Id,
+            moderationId: @event.Shop.Id,
             ct);
-        
-        return new ModerationShopApproveCompleteResponse(shopDto.Id, shopId);
+
+        await eventPublisher.Publish(new ModerationShopApproveCompleteResponse(@event.Shop.Id, shopId), ct);
+
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

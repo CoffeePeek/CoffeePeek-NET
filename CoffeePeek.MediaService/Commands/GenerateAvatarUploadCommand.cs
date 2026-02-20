@@ -1,9 +1,9 @@
-﻿namespace CoffeePeek.MediaService.Commands;
+﻿using System.Text.Json.Serialization;
 
-public record GenerateAvatarUploadCommand
-{
-    public int SizeBytes { get; init; }
-    public string FileName { get; set; }
-    public string ContentType { get; set; }
-    public Guid OwnerId { get; set; }
-}
+namespace CoffeePeek.MediaService.Commands;
+
+public record GenerateAvatarUploadCommand(
+    int SizeBytes,
+    string FileName,
+    string ContentType,
+    [property: JsonIgnore] Guid OwnerId);

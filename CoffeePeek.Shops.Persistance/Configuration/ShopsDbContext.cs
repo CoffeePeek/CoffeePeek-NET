@@ -3,6 +3,7 @@ using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shops.Domain.Entities;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
@@ -35,6 +36,8 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     {
         modelBuilder.ApplyConfiguration(new CoffeeShopConfiguration());
 
+        MassTransitOutbox(modelBuilder);
+        
         modelBuilder.Entity<Review>(entity =>
         {
             entity.HasKey(r => r.Id);
@@ -110,5 +113,12 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(BusinessConstants.MaxEquipmentCategoryNameLength);
         });
+    }
+    
+    private static void MassTransitOutbox(ModelBuilder modelBuilder)
+    {
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
     }
 }

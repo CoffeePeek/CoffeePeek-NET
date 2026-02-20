@@ -2,20 +2,20 @@ using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
-using Wolverine.Attributes;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.ChangeStatusModerationReview;
 
 public static class ChangeStatusModerationReviewHandler
 {
-    [Transactional]
     public static async Task<(UpdateEntityResponse<ModerationStatus>, ModerationReviewApprovedEvent?)> Handle(
         ChangeStatusModerationReviewCommand command,
         IModerationReviewRepository repository,
         IMapper mapper,
+        IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
         var review = await repository.GetById(command.ModerationReviewId, ct);
@@ -44,6 +44,8 @@ public static class ChangeStatusModerationReviewHandler
                 break;
         }
 
+        await unitOfWork.SaveChangesAsync(ct);
+        
         var response = UpdateEntityResponse<ModerationStatus>.Success((ModerationStatus)review.ModerationStatus, oldEntity: (ModerationStatus)oldStatus);
         
         return (response, approvedEvent);

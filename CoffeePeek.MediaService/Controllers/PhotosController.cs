@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using CoffeePeek.MediaService.Requests;
+using CoffeePeek.MediaService.Commands;
 using CoffeePeek.MediaService.Responses;
 using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Kernel.Response;
@@ -16,7 +16,7 @@ public class PhotosController(IMessageBus bus, IUserContext userContext) : Contr
     /// <summary>
     /// Generate presigned upload url for avatar photo
     /// </summary>
-    /// <param name="request"></param>
+    /// <param name="command"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
     [HttpPost("avatar")]
@@ -24,10 +24,10 @@ public class PhotosController(IMessageBus bus, IUserContext userContext) : Contr
     [ProducesResponseType<Response<GenerateUploadUrlResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GenerateUploadUrl([FromBody] UploadUrlRequest request, CancellationToken ct)
+    public async Task<IActionResult> GenerateUploadUrl([FromBody] GenerateAvatarUploadCommand command, CancellationToken ct)
     {
-        request = request with { OwnerId = userContext.GetUserIdOrThrow() };
-        var response = await bus.InvokeAsync<Response<GenerateUploadUrlResponse>>(request, ct);
+        command = command with { OwnerId = userContext.GetUserIdOrThrow() };
+        var response = await bus.InvokeAsync<Response<GenerateUploadUrlResponse>>(command, ct);
         return Ok(response);
     }
     
@@ -42,7 +42,7 @@ public class PhotosController(IMessageBus bus, IUserContext userContext) : Contr
     [ProducesResponseType<Response<List<GenerateUploadUrlResponse>>>( StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GenerateUploadUrls([FromBody] List<UploadUrlRequest> requests, CancellationToken ct)
+    public async Task<IActionResult> GenerateUploadUrls([FromBody] List<GenerateAvatarUploadCommand> requests, CancellationToken ct)
     {
         var ownerId = userContext.GetUserIdOrThrow();
         requests = requests.Select(x => x with { OwnerId = ownerId }).ToList();

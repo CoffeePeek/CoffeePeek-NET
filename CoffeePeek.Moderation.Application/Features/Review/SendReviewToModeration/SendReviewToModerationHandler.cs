@@ -1,20 +1,20 @@
 ﻿using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
 using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
-using Wolverine.Attributes;
 using ModerationReview = CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate.ModerationReview;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
 
 public static class SendReviewToModerationHandler
 {
-    [Transactional]
     public static async Task<CreateEntityResponse> Handle(
         SendReviewToModerationCommand command,
         IQueryModerationShopRepository moderationShopRepository,
         IModerationReviewRepository repository,
+        IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
         var moderationShop = await moderationShopRepository.GetById(command.ShopId, ct);
@@ -47,6 +47,8 @@ public static class SendReviewToModerationHandler
             photos);
 
         repository.Add(review);
+        
+        await unitOfWork.SaveChangesAsync(ct);
         
         return CreateEntityResponse.Success();
     }

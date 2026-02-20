@@ -3,17 +3,20 @@ using System;
 using CoffeePeek.Shops.Persistance.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace CoffeePeek.Shops.Infrastructure.Migrations
+namespace CoffeePeek.Shops.Persistance.Migrations
 {
     [DbContext(typeof(ShopsDbContext))]
-    partial class ShopsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260220072749_AddOutbox3")]
+    partial class AddOutbox3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

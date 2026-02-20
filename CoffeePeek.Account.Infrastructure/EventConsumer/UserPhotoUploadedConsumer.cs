@@ -1,18 +1,20 @@
 using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Events;
-using Wolverine.Attributes;
+using CoffeePeek.Shared.Kernel;
+using MassTransit;
 
 namespace CoffeePeek.Account.Infrastructure.EventConsumer;
 
-public class UserPhotoUploadedHandler
+public class UserPhotoUploadedConsumer(
+    IUserRepository userRepository,
+    IUnitOfWork unitOfWork) : IConsumer<PhotoUploadedEvent>
 {
-    [Transactional]
-    public async Task Handle(
-        PhotoUploadedEvent @event, 
-        IUserRepository userRepository, 
-        CancellationToken ct)
+    public async Task Consume(ConsumeContext<PhotoUploadedEvent> context)
     {
+        var @event = context.Message;
+        var ct = context.CancellationToken;
+
         var user = await userRepository.GetById(@event.OwnerId, ct);
 
         if (user == null) return;
@@ -24,5 +26,7 @@ public class UserPhotoUploadedHandler
             @event.SizeBytes);
             
         user.UpdateAvatar(photo);
+
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

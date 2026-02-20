@@ -1,19 +1,21 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Events.Moderation;
+using CoffeePeek.Shared.Kernel;
+using MassTransit;
 using Microsoft.Extensions.Logging;
-using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Infrastructure.EventConsumer;
 
-public class ModerationShopApprovedAccountHandler
+public class ModerationShopApprovedAccountConsumer(
+    IUserRepository userRepository,
+    IUnitOfWork unitOfWork,
+    ILogger<ModerationShopApprovedAccountConsumer> logger) : IConsumer<ModerationShopApprovedEvent>
 {
-    [Transactional]
-    public async Task Handle(
-        ModerationShopApprovedEvent @event, 
-        IUserRepository userRepository,
-        ILogger<ModerationShopApprovedAccountHandler> logger,
-        CancellationToken ct)
+    public async Task Consume(ConsumeContext<ModerationShopApprovedEvent> context)
     {
+        var @event = context.Message;
+        var ct = context.CancellationToken;
+
         logger.LogInformation("Received ModerationShopApprovedEvent for UserId: {UserId}", @event.UserId);
 
         var user = await userRepository.GetById(@event.UserId, ct)
@@ -23,5 +25,7 @@ public class ModerationShopApprovedAccountHandler
 
         logger.LogInformation("Updated UserStatistics for UserId: {UserId}. New AddedShopsCount: {AddedShopsCount}",
             @event.UserId, user.Statistics.AddedShopsCount);
+
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

@@ -6,7 +6,6 @@ using CoffeePeek.Account.Persistence.Configuration;
 using CoffeePeek.Account.Persistence.Repositories;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
-using CoffeePeek.Shared.Kernel.Extentions;
 using CoffeePeek.Shared.Persistence;
 using CoffeePeek.Shared.Persistence.Data;
 using CoffeePeek.Shared.Persistence.Extensions;
