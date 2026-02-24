@@ -18,8 +18,6 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AccountDbContext).Assembly);
 
-        MassTransitOutbox(modelBuilder);
-
         modelBuilder.Entity<PhotoMetadata>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -32,12 +30,5 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
             entity.Property(x => x.DeviceName).HasMaxLength(BusinessConstants.MaxDeviceNameLength);
             entity.Property(x => x.IpAddress).HasMaxLength(BusinessConstants.MaxIpAddressLength);
         });
-    }
-
-    private static void MassTransitOutbox(ModelBuilder modelBuilder)
-    {
-        modelBuilder.AddInboxStateEntity();
-        modelBuilder.AddOutboxMessageEntity();
-        modelBuilder.AddOutboxStateEntity();
     }
 }

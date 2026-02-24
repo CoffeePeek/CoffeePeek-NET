@@ -10,12 +10,10 @@ namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateA
 
 public static class UpdateUserAvatarRequestHandler
 {
-    public static async Task<UpdateEntityResponse<PhotoMetadata>> Handle(
+    public static async Task<(UpdateEntityResponse<PhotoMetadata>, PhotoReplacedEvent?)> Handle(
         UpdateUserAvatarCommand request, 
         IUserRepository userRepository,
         IPhotoMetadataRepository photoMetadataRepository,
-        IUnitOfWork unitOfWork,
-        IEventPublisher publishEndpoint,
         CancellationToken ct)
     {
         var user = await userRepository.GetById(request.UserId, ct)
@@ -32,19 +30,21 @@ public static class UpdateUserAvatarRequestHandler
         photoMetadataRepository.Add(photoMetadata);
         user.UpdateAvatar(photoMetadata);
 
+        PhotoReplacedEvent? replacedEvent = null;
         if (oldPhoto != null)
         {
-            await publishEndpoint.Publish(new PhotoReplacedEvent(
+            replacedEvent = new PhotoReplacedEvent(
                 oldPhoto.Id,
                 oldPhoto.StorageKey,
                 photoMetadata.Id,
                 "User",
                 user.Id,
-                DateTime.UtcNow), ct);
+                DateTime.UtcNow);
         }
 
-        await unitOfWork.SaveChangesAsync(ct);
-
-        return UpdateEntityResponse<PhotoMetadata>.Success(user.PhotoMetadata!, "Photo updated successfully");
+        return (
+            UpdateEntityResponse<PhotoMetadata>.Success(user.PhotoMetadata!, "Photo updated successfully"), 
+            replacedEvent
+        );
     }
 }

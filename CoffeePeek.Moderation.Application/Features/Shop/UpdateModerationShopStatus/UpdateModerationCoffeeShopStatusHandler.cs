@@ -10,34 +10,32 @@ namespace CoffeePeek.Moderation.Application.Features.Shop.UpdateModerationShopSt
 
 public static class UpdateModerationCoffeeShopStatusHandler
 {
-    public static async Task<Response> Handle(
+    public static async Task<(Response, object?)> Handle(
         UpdateModerationCoffeeShopStatusCommand command,
         IModerationShopRepository repository,
-        IUnitOfWork unitOfWork,
-        IEventPublisher eventPublisher,
         IMapper mapper,
         CancellationToken ct)
     {
         var shop = await repository.GetByIdAsync(command.Id, ct);
 
         if (shop == null)
-            return Response.Error("CoffeeShop not found");
+            return (Response.Error("CoffeeShop not found"), null);
+
+        object? outboundEvent = null;
 
         if (command.ModerationStatus == ModerationStatus.Approved)
         {
             shop.Approve();
-
-            await eventPublisher.Publish(new ModerationShopApprovedEvent(
+            
+            outboundEvent = new ModerationShopApprovedEvent(
                 shop.UserId,
-                mapper.Map<ShopDto>(shop)), ct);
+                mapper.Map<ShopDto>(shop));
         }
         else if (command.ModerationStatus == ModerationStatus.Rejected)
         {
             shop.Reject("Rejected by moderator");
         }
 
-        await unitOfWork.SaveChangesAsync(ct);
-
-        return Response.Success();
+        return (Response.Success(), outboundEvent);
     }
 }

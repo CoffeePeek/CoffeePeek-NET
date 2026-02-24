@@ -18,13 +18,7 @@ namespace CoffeePeek.Account.Persistence;
 
 public static class DependencyInjection
 {
-    public static IHostBuilder AddPersistence(this IHostBuilder hostBuilder, Assembly handlersAssembly)
-    {
-        hostBuilder.AddWolverine(handlersAssembly);
-
-        return hostBuilder;
-    }
-
+    
     public static IServiceCollection AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
     {
 #if DEBUG
@@ -48,7 +42,6 @@ public static class DependencyInjection
             return services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
         }
 #endif
-        services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
         
         // 2. Repository Implementations
         services.AddScoped<UserRepository>();

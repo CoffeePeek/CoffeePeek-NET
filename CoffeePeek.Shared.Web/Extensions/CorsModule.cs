@@ -17,10 +17,15 @@ public static class CorsModule
             {
 #if DEBUG
                 policy
-                    .WithOrigins(
-                        "http://localhost:5173",
-                        "http://127.0.0.1:5173"
-                    )
+                    .SetIsOriginAllowed(origin => 
+                    {
+                        var host = new Uri(origin).Host;
+                        return host == "localhost" || 
+                               host == "127.0.0.1" || 
+                               host.StartsWith("192.168.") ||
+                               host.StartsWith("10.") ||
+                               host.EndsWith(".local");
+                    })
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();

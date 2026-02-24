@@ -8,25 +8,22 @@ using MassTransit;
 
 namespace CoffeePeek.MediaService.Consumers;
 
-public class DeletePhotoConsumer(
+public class DeletePhotoHandler(
     IPhotoRepository photoRepository,
     IUnitOfWork unitOfWork,
-    IStorageService storageService) : IConsumer<DeletePhotoFromStorageEvent>
+    IStorageService storageService)
 {
-    public async Task Consume(ConsumeContext<DeletePhotoFromStorageEvent> context)
+    public async Task Handle(DeletePhotoFromStorageEvent message)
     {
-        var command = context.Message;
-        var ct = context.CancellationToken;
-
-        var photo = await photoRepository.GetByIdAsync(command.PhotoId, ct);
+        var photo = await photoRepository.GetByIdAsync(message.PhotoId);
         
         if (photo == null || photo.Status == PhotoStatus.Deleted) return;
 
-        await storageService.Delete(photo.StorageKey, (BucketType)(int)photo.BucketType, ct);
+        await storageService.Delete(photo.StorageKey, (BucketType)(int)photo.BucketType);
 
         photo.Status = PhotoStatus.Deleted;
         photo.DeletedAt = DateTime.UtcNow;
 
-        await unitOfWork.SaveChangesAsync(ct);
+        await unitOfWork.SaveChangesAsync();
     }
 }

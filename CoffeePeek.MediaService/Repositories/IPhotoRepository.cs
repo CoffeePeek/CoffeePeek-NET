@@ -6,5 +6,5 @@ public interface IPhotoRepository
 {
     void Add(PhotoMetadata metadata);
     void AddRange(IEnumerable<PhotoMetadata> photoMetadatas);
-    Task<PhotoMetadata?> GetByIdAsync(Guid commandPhotoId, CancellationToken ct);
+    Task<PhotoMetadata?> GetByIdAsync(Guid commandPhotoId, CancellationToken ct = default);
 }

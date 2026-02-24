@@ -21,8 +21,6 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ModerationDbContext).Assembly);
         
-        MassTransitOutbox(modelBuilder);
-        
         modelBuilder.Entity<PhotoMetadata>(entity =>
         {
             entity.UsePropertyAccessMode(PropertyAccessMode.Field);
@@ -61,12 +59,4 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
             entity.HasIndex(e => e.BrewMethodId);
         });
     }
-    
-    private static void MassTransitOutbox(ModelBuilder modelBuilder)
-    {
-        modelBuilder.AddInboxStateEntity();
-        modelBuilder.AddOutboxMessageEntity();
-        modelBuilder.AddOutboxStateEntity();
-    }
 }
-

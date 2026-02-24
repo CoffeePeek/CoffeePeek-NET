@@ -8,11 +8,9 @@ namespace CoffeePeek.Account.Application.Features.Auth.Email.ResendEmailConfirma
 
 public static class ResendEmailConfirmationHandler
 {
-    public static async Task<Response> Handle(
+    public static async Task<(Response, UserRegisteredInternalEvent)> Handle(
         ResendEmailConfirmationCommand request, 
         IUserRepository userRepository,
-        IUnitOfWork unitOfWork,
-        IEventPublisher publishEndpoint,
         CancellationToken ct)
     {
         var user = await userRepository.GetById(request.UserId, ct)
@@ -23,14 +21,15 @@ public static class ResendEmailConfirmationHandler
 
         user.Credentials.ResetEmailConfirmedFlow();
         
-        await publishEndpoint.Publish(new UserRegisteredInternalEvent(
+        var @event = new UserRegisteredInternalEvent(
             user.Id,
             user.Credentials.Email.Value, 
             user.Username.Value, 
-            user.Credentials.EmailConfirmationToken!), ct);
+            user.Credentials.EmailConfirmationToken!);
 
-        await unitOfWork.SaveChangesAsync(ct);
-
-        return Response.Success(new { message = "Confirmation email is on its way!" });
+        return (
+            Response.Success(new { message = "Confirmation email is on its way!" }), 
+            @event
+        );
     }
 }

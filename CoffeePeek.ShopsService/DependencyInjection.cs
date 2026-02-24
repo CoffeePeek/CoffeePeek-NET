@@ -1,12 +1,8 @@
-using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Extensions;
-using CoffeePeek.Shared.Persistence.Extensions;
 using CoffeePeek.Shared.Web;
 using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
-using CoffeePeek.Shops.Infrastructure.Consumers;
-using CoffeePeek.Shops.Persistance.Configuration;
 
 namespace CoffeePeek.ShopsService;
 
@@ -34,8 +30,6 @@ public static class DependencyInjection
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
-        services.AddMessaging<ShopsDbContext>(typeof(ModerationShopApprovedConsumer).Assembly);
-        
         return services;
     }
 

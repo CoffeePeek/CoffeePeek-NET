@@ -9,33 +9,29 @@ namespace CoffeePeek.MediaService.Handlers;
 
 public static class ConfirmPhotoHandler
 {
-    public static async Task<Response<object>> Handle(
+    public static async Task<(Response<object>, PhotoConfirmedEvent[])> Handle(
         ConfirmPhotoCommand command,
         IPhotoRepository repository,
-        IUnitOfWork unitOfWork,
-        IEventPublisher eventPublisher,
         CancellationToken ct)
     {
         var photo = await repository.GetByIdAsync(command.PhotoId, ct);
         
         if (photo == null) 
-            return Response<object>.Error("Photo not found");
+            return (Response<object>.Error("Photo not found"), []);
 
         if (photo.Status != PhotoStatus.Pending)
-            return Response<object>.Error("Only pending photos can be confirmed");
+            return (Response<object>.Error("Only pending photos can be confirmed"), []);
 
         photo.Status = PhotoStatus.Confirmed;
 
-        await eventPublisher.Publish(new PhotoConfirmedEvent(
+        var photoEvent = new PhotoConfirmedEvent(
             photo.Id,
             photo.StorageKey,
             photo.OwnerType.ToString(),
             photo.OwnerId,
             photo.Id,
-            DateTime.UtcNow), ct);
+            DateTime.UtcNow);
 
-        await unitOfWork.SaveChangesAsync(ct);
-
-        return Response<object>.Success(null, "Confirmed");
+        return (Response<object>.Success(null, "Confirmed"), [photoEvent]);
     }
 }

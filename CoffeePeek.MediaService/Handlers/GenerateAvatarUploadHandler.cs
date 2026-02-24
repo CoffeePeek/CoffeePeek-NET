@@ -14,12 +14,10 @@ namespace CoffeePeek.MediaService.Handlers;
 
 public static class GenerateAvatarUploadHandler
 {
-    public static async Task<Response<GenerateUploadUrlResponse>> Handle(
+    public static async Task<(Response<GenerateUploadUrlResponse>, PhotoUploadedEvent)> Handle(
         GenerateAvatarUploadCommand command,
         IStorageService storageService,
         IPhotoRepository repository,
-        IUnitOfWork unitOfWork,
-        IEventPublisher eventPublisher,
         CancellationToken ct)
     {
         if (command.SizeBytes > 5 * 1024 * 1024)
@@ -34,7 +32,7 @@ public static class GenerateAvatarUploadHandler
 
         repository.Add(metadata);
 
-        await eventPublisher.Publish(new PhotoUploadedEvent(
+        var uploadedEvent = new PhotoUploadedEvent(
             metadata.Id,
             metadata.StorageKey,
             metadata.FileName,
@@ -42,10 +40,11 @@ public static class GenerateAvatarUploadHandler
             metadata.SizeBytes,
             metadata.OwnerType.ToString(),
             metadata.OwnerId,
-            DateTime.UtcNow), ct);
+            DateTime.UtcNow);
 
-        await unitOfWork.SaveChangesAsync(ct);
+        var response = Response<GenerateUploadUrlResponse>.Success(
+            new GenerateUploadUrlResponse(metadata.Id, presigned.Url, metadata.StorageKey));
 
-        return Response<GenerateUploadUrlResponse>.Success(new GenerateUploadUrlResponse(metadata.Id, presigned.Url, metadata.StorageKey));
+        return (response, uploadedEvent);
     }
 }

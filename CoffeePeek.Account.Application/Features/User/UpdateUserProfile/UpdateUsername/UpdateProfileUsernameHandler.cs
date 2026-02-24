@@ -8,11 +8,9 @@ namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateU
 
 public static class UpdateUsernameHandler
 {
-    public static async Task<UpdateEntityResponse<string>> Handle(
+    public static async Task<(UpdateEntityResponse<string>, UserNameChangedEvent)> Handle(
         UpdateProfileUsernameCommand command,
         IUserRepository userRepository,
-        IUnitOfWork unitOfWork,
-        IEventPublisher publishEndpoint,
         CancellationToken ct)
     {
         var user = await userRepository.GetById(command.UserId, ct)
@@ -21,17 +19,16 @@ public static class UpdateUsernameHandler
         var userName = Username.Create(command.Username);
         user.UpdateUsername(userName);
 
-        await publishEndpoint.Publish(new UserNameChangedEvent
+        var @event = new UserNameChangedEvent
         {
             UserId = user.Id,
             NewUserName = userName.Value,
             ChangedAt = DateTime.UtcNow
-        }, ct);
+        };
 
-        await unitOfWork.SaveChangesAsync(ct);
-
-        return UpdateEntityResponse<string>.Success(
-            userName.ToString(), 
-            "Username updated successful");
+        return (
+            UpdateEntityResponse<string>.Success(userName.ToString(), "Username updated successful"),
+            @event
+        );
     }
 }

@@ -7,14 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MassTransit.EntityFrameworkCore" Version="9.0.1" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="9.0.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
         <PackageReference Include="StackExchange.Redis" Version="2.10.1" />
-        <PackageReference Include="WolverineFx" Version="5.15.0" />
-        <PackageReference Include="WolverineFx.EntityFrameworkCore" Version="5.14.0" />
-        <PackageReference Include="WolverineFx.Postgresql" Version="5.15.0" />
+        <PackageReference Include="WolverineFx" Version="5.16.2" />
+        <PackageReference Include="WolverineFx.EntityFrameworkCore" Version="5.16.2" />
+        <PackageReference Include="WolverineFx.Postgresql" Version="5.16.2" />
+        <PackageReference Include="WolverineFx.RabbitMQ" Version="5.16.2" />
         <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="10.105.2.1" />
     </ItemGroup>
 

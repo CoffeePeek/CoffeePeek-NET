@@ -35,8 +35,6 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new CoffeeShopConfiguration());
-
-        MassTransitOutbox(modelBuilder);
         
         modelBuilder.Entity<Review>(entity =>
         {
@@ -113,12 +111,5 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(BusinessConstants.MaxEquipmentCategoryNameLength);
         });
-    }
-    
-    private static void MassTransitOutbox(ModelBuilder modelBuilder)
-    {
-        modelBuilder.AddInboxStateEntity();
-        modelBuilder.AddOutboxMessageEntity();
-        modelBuilder.AddOutboxStateEntity();
     }
 }

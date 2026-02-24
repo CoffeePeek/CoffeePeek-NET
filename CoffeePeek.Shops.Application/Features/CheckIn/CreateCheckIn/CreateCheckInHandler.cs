@@ -7,6 +7,7 @@ using CoffeePeek.Shared.Validation;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using MapsterMapper;
+using Wolverine;
 using Wolverine.Attributes;
 
 namespace CoffeePeek.Shops.Application.Features.CheckIn.CreateCheckIn;
@@ -19,7 +20,7 @@ public static class CreateCheckInHandler
         CreateCheckInCommand command,
         IQueryCheckInRepository queryCheckInRepository,
         IUnitOfWork unitOfWork,
-        IEventPublisher publishEndpoint,
+        IMessageBus bus,
         IAsyncValidationStrategy<CreateCheckInCommand> validationStrategy,
         IMapper mapper,
         CancellationToken ct)
@@ -62,13 +63,13 @@ public static class CreateCheckInHandler
                     ratingService: command.Rating.Service, 
                     ratingCoffee: command.Rating.Coffee);
 
-                await publishEndpoint.Publish(new CheckinCreatedEvent
+                await bus.PublishAsync(new CheckinCreatedEvent
                 {
                     UserId = command.UserId,
                     ShopId = command.CoffeeShopId,
                     CreatedAt = checkIn.CreatedAtUtc,
                     ReviewDto = mapper.Map<ReviewDto>(review)
-                }, ct);
+                });
             }
             catch (DomainException) { /* ignore */ }
         }

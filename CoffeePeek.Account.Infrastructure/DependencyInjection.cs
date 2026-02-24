@@ -1,6 +1,6 @@
 ﻿using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Services;
-using CoffeePeek.Account.Infrastructure.EventConsumer;
+using CoffeePeek.Account.Infrastructure.Consumers;
 using CoffeePeek.Account.Infrastructure.Identity;
 using CoffeePeek.Shared.Auth.Options;
 using CoffeePeek.Shared.Kernel.Extentions;
@@ -20,10 +20,10 @@ public static class DependencyInjection
         services.AddScoped<IJWTTokenService, JWTTokenService>();
 
         // 2. Event Handlers
-        services.AddScoped<CheckinCreatedConsumer>();
-        services.AddScoped<ReviewAddedConsumer>();
-        services.AddScoped<ModerationShopApprovedAccountConsumer>();
-        services.AddScoped<UserPhotoUploadedConsumer>();
+        services.AddScoped<CheckinCreatedHandler>();
+        services.AddScoped<ReviewAddedHandler>();
+        services.AddScoped<ModerationShopApprovedAccountHandler>();
+        services.AddScoped<UserPhotoUploadedHandler>();
 
         // 3 Email Service
         services.AddHttpClient<ResendClient>();

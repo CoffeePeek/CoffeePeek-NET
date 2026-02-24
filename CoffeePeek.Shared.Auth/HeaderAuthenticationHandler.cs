@@ -22,11 +22,8 @@ public class HeaderAuthenticationHandler(
             return Task.FromResult(AuthenticateResult.NoResult());
         }
 
-        var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
+        var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, userId) };
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var identity = new ClaimsIdentity(claims, Scheme.Name);
         var principal = new ClaimsPrincipal(identity);

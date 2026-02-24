@@ -9,8 +9,6 @@ public class MediaDbContext(DbContextOptions<MediaDbContext> options) : DbContex
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        MassTransitOutbox(modelBuilder);
-        
         modelBuilder.Entity<PhotoMetadata>(entity =>
         {
             entity.HasKey(p => p.Id);
@@ -37,12 +35,5 @@ public class MediaDbContext(DbContextOptions<MediaDbContext> options) : DbContex
         });
 
         base.OnModelCreating(modelBuilder);
-    }
-    
-    private static void MassTransitOutbox(ModelBuilder modelBuilder)
-    {
-        modelBuilder.AddInboxStateEntity();
-        modelBuilder.AddOutboxMessageEntity();
-        modelBuilder.AddOutboxStateEntity();
     }
 }

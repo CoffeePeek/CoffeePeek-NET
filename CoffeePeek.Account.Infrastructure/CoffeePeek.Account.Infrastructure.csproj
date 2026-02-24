@@ -10,8 +10,4 @@
       <ProjectReference Include="..\CoffeePeek.Account.Application\CoffeePeek.Account.Application.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="MassTransit.Abstractions" Version="9.0.1" />
-    </ItemGroup>
-
 </Project>

@@ -1,23 +1,40 @@
 using System.Reflection;
-using JasperFx.CodeGeneration;
-using Microsoft.Extensions.Hosting;
+using CoffeePeek.Shared.Kernel.Extentions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Wolverine;
+using Wolverine.Postgresql;
+using Wolverine.RabbitMQ;
 
 namespace CoffeePeek.Shared.Persistence.Extensions;
 
 public static class WolverineModule
 {
-    extension(IHostBuilder hostBuilder)
+    extension(WebApplicationBuilder builder)
     {
-        public IHostBuilder AddWolverine(Assembly handlerAssembly)
+        public void AddWolverine(Assembly handlerAssembly)
         {
-            hostBuilder.UseWolverine(opts =>
+            var rabbitMqOptions = builder.Services.AddValidateOptions<RabbitMqOptions>();
+            var postgresCpOptions = builder.Services.AddValidateOptions<PostgresCpOptions>();
+            
+            builder.Host.UseWolverine(opts =>
             {
-                opts.CodeGeneration.TypeLoadMode = TypeLoadMode.Dynamic;
-                opts.Discovery.IncludeAssembly(handlerAssembly);
-            });
+                opts.UseRabbitMq(o =>
+                    {
+                        o.VirtualHost = rabbitMqOptions.VirtualHost;
+                        o.Password = rabbitMqOptions.Password;
+                        o.UserName = rabbitMqOptions.Username;
+                        o.HostName = rabbitMqOptions.HostName;
+                        o.Port = rabbitMqOptions.Port;
+                    })
+                    .AutoProvision();
 
-            return hostBuilder;
+                opts.PersistMessagesWithPostgresql(postgresCpOptions.ConnectionString);
+
+                opts.Discovery.IncludeAssembly(handlerAssembly);
+
+                opts.Policies.AutoApplyTransactions();
+            });
         }
     }
 }

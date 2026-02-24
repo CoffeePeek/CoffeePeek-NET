@@ -17,7 +17,7 @@ public class PhotoRepository(MediaDbContext dbContext) : IPhotoRepository
         _repository.AddRange(photoMetadatas);
     }
     
-    public Task<PhotoMetadata?> GetByIdAsync(Guid photoId, CancellationToken ct)
+    public Task<PhotoMetadata?> GetByIdAsync(Guid photoId, CancellationToken ct = default)
     {
         return _repository.FirstOrDefaultAsync(x => x.Id == photoId, ct);
     }

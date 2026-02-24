@@ -12,7 +12,6 @@
 
     <ItemGroup>
       <PackageReference Include="Bogus" Version="35.6.5" />
-      <PackageReference Include="MassTransit.Abstractions" Version="9.0.1" />
     </ItemGroup>
 
 </Project>

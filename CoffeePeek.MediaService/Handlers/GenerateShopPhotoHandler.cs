@@ -11,18 +11,16 @@ using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.MediaService.Handlers;
 
-public class GenerateShopPhotoHandler
+public static class GenerateShopPhotoHandler
 {
-    public static async Task<Response<List<GenerateUploadUrlResponse>>> Handle(
+    public static async Task<(Response<List<GenerateUploadUrlResponse>>, PhotosUploadedEvent)> Handle(
         GenerateShopPhotosCommand command,
         IStorageService storageService,
         IPhotoRepository repository,
-        IUnitOfWork unitOfWork,
-        IEventPublisher eventPublisher,
         CancellationToken ct)
     {
         var metadataList = new List<PhotoMetadata>();
-        var uploadUrls = new Dictionary<Guid, string>();
+        var results = new List<GenerateUploadUrlResponse>();
 
         foreach (var request in command.Requests)
         {
@@ -34,28 +32,21 @@ public class GenerateShopPhotoHandler
                 request.SizeBytes, BucketType.Shop, OwnerType.Shop, command.OwnerId);
 
             metadataList.Add(metadata);
-            uploadUrls[metadata.Id] = presigned.Url;
+            results.Add(new GenerateUploadUrlResponse(metadata.Id, presigned.Url, metadata.StorageKey));
         }
 
         repository.AddRange(metadataList);
 
-        await eventPublisher.Publish(
-            new PhotosUploadedEvent(metadataList.Select(e => new PhotoUploadedEvent(
-                e.Id,
-                e.StorageKey,
-                e.FileName,
-                e.ContentType,
-                e.SizeBytes,
-                e.OwnerType.ToString(),
-                e.OwnerId,
-                DateTime.UtcNow))), ct);
+        var photosEvent = new PhotosUploadedEvent(metadataList.Select(e => new PhotoUploadedEvent(
+            e.Id,
+            e.StorageKey,
+            e.FileName,
+            e.ContentType,
+            e.SizeBytes,
+            e.OwnerType.ToString(),
+            e.OwnerId,
+            DateTime.UtcNow)));
 
-        await unitOfWork.SaveChangesAsync(ct);
-
-        var results =  metadataList
-            .Select(m => new GenerateUploadUrlResponse(m.Id, uploadUrls[m.Id], m.StorageKey))
-            .ToList();
-        
-        return Response<List<GenerateUploadUrlResponse>>.Success(results);
+        return (Response<List<GenerateUploadUrlResponse>>.Success(results), photosEvent);
     }
 }

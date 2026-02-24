@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using Asp.Versioning.ApiExplorer;
-using CoffeePeek.Account.Infrastructure.EventConsumer;
+using CoffeePeek.Account.Infrastructure.Consumers;
 using CoffeePeek.Account.Persistence.Configuration;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Extensions;
@@ -39,8 +39,6 @@ public static class DependencyInjection
 
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
-
-        services.AddMessaging<AccountDbContext>(typeof(CheckinCreatedConsumer).Assembly);
         
         return services;
     }

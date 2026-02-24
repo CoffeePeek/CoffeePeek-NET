@@ -1,6 +1,6 @@
 using System.Net;
-using CoffeePeek.Shared.Infrastructure.Options;
 using CoffeePeek.Shared.Kernel.Extentions;
+using CoffeePeek.Shared.Persistence.Options;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 

@@ -12,7 +12,7 @@
         <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
         <PackageReference Include="Resend" Version="0.2.1" />
         <PackageReference Include="System.IO.Hashing" Version="9.0.10" />
-        <PackageReference Include="WolverineFx" Version="5.15.0" />
+        <PackageReference Include="WolverineFx" Version="5.16.2" />
     </ItemGroup>
 
     <ItemGroup>

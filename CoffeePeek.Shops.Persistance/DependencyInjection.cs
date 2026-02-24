@@ -22,13 +22,6 @@ namespace CoffeePeek.Shops.Persistance;
 
 public static class DependencyInjection
 {
-    public static IHostBuilder AddPersistence(this IHostBuilder hostBuilder, Assembly handlersAssembly)
-    {
-        hostBuilder.AddWolverine(handlersAssembly);
-        
-        return hostBuilder;
-    }
-
     public static IServiceCollection AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
     {
 #if DEBUG
@@ -53,7 +46,6 @@ public static class DependencyInjection
         }
 #endif
         
-        services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
         
         // Queries
         services.AddScoped<ICheckInQueries, CheckInQueries>();

@@ -59,11 +59,9 @@ services.AddMinio(client => client
     .Build()
 );
 
-services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
-services.AddMessaging<MediaDbContext>(typeof(DeletePhotoConsumer).Assembly);
 
 var handlersAssembly = typeof(ConfirmPhotoHandler).Assembly;
-builder.Host.AddWolverine(handlersAssembly);
+builder.AddWolverine(handlersAssembly);
 
 var app = builder.Build();
 

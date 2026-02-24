@@ -11,8 +11,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="MassTransit.Abstractions" Version="9.0.1" />
-        <PackageReference Include="WolverineFx" Version="5.15.0" />
+        <PackageReference Include="WolverineFx" Version="5.16.2" />
     </ItemGroup>
 
 </Project>

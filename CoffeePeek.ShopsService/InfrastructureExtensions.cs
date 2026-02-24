@@ -20,8 +20,7 @@ public static class InfrastructureExtensions
             .ConfigureWebhost();
 
         var handlersAssembly = typeof(GetCoffeeShopHandler).Assembly;
-        builder.Host
-            .AddPersistence(handlersAssembly);
+        builder.AddWolverine(handlersAssembly);
         
         builder.Services
             .AddApplication()

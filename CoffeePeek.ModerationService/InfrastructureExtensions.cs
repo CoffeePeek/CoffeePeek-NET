@@ -19,8 +19,7 @@ public static class InfrastructureExtensions
         builder.WebHost
             .ConfigureWebhost();
         var handlersAssembly = typeof(SendCoffeeShopToModerationHandler).Assembly;
-        builder.Host
-            .AddPersistence(handlersAssembly);
+        builder.AddWolverine(handlersAssembly);
         
         builder.Services
             .AddApplication()
