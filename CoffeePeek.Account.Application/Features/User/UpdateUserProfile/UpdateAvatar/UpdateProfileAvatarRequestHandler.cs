@@ -2,14 +2,15 @@
 using CoffeePeek.Account.Domain.Entities.PhotoMetadataAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Contract.Events;
-using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
+using Wolverine.Attributes;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateAvatar;
 
 public static class UpdateUserAvatarRequestHandler
 {
+    [Transactional]
     public static async Task<(UpdateEntityResponse<PhotoMetadata>, PhotoReplacedEvent?)> Handle(
         UpdateUserAvatarCommand request, 
         IUserRepository userRepository,

@@ -1,8 +1,10 @@
 using System.Reflection;
 using CoffeePeek.Shared.Kernel.Extentions;
+using JasperFx.CodeGeneration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Wolverine;
+using Wolverine.EntityFrameworkCore;
 using Wolverine.Postgresql;
 using Wolverine.RabbitMQ;
 
@@ -19,6 +21,10 @@ public static class WolverineModule
             
             builder.Host.UseWolverine(opts =>
             {
+                #if DEBUG
+                opts.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto;
+                #endif
+                
                 opts.UseRabbitMq(o =>
                     {
                         o.VirtualHost = rabbitMqOptions.VirtualHost;
@@ -30,7 +36,7 @@ public static class WolverineModule
                     .AutoProvision();
 
                 opts.PersistMessagesWithPostgresql(postgresCpOptions.ConnectionString);
-
+                opts.UseEntityFrameworkCoreTransactions();
                 opts.Discovery.IncludeAssembly(handlerAssembly);
 
                 opts.Policies.AutoApplyTransactions();

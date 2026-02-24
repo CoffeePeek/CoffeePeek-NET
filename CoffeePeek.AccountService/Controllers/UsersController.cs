@@ -33,7 +33,7 @@ public class UsersController(IMessageBus bus, IUserContext userContext) : Contro
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById(Guid? id)
     {
-        var command = new GetPublicUserProfileQuery(id ?? userContext.GetUserIdOrThrow());
+        var command = new GetPublicUserProfileCommand(id ?? userContext.GetUserIdOrThrow());
         var response = await bus.InvokeAsync<Response<UserProfileResponse>>(command);
         return Ok(response);
     }
@@ -79,7 +79,7 @@ public class UsersController(IMessageBus bus, IUserContext userContext) : Contro
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById()
     {
-        var request = new GetPublicUserProfileQuery(userContext.GetUserIdOrThrow());
+        var request = new GetPublicUserProfileCommand(userContext.GetUserIdOrThrow());
         var response = await bus.InvokeAsync<Response<UserProfileResponse>>(request);
         return Ok(response);
     }
