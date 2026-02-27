@@ -228,24 +228,20 @@ public class UpdateUserAvatarRequestHandlerTest
     }
 
     [Fact]
-    public async Task Handle_UnitOfWorkSaveChangesThrowsException_ShouldPropagateException()
+    public async Task Handle_UserRepositoryGetByIdThrowsException_ShouldPropagateException()
     {
         // Arrange
         var userId = Guid.NewGuid();
         var uploadedPhoto = new UploadedPhotoDto("avatar.jpg", "image/jpeg", "avatars/user123.jpg", 102400);
         var command = new UpdateUserAvatarCommand(userId, uploadedPhoto);
 
-        var existingUser = CreateUserMock(userId, "testuser");
-        _userRepositoryMock.Setup(repo => repo.GetById(userId, _cancellationToken))
-            .ReturnsAsync(existingUser);
-
         var exception = new Exception("Database error");
-        _unitOfWorkMock.Setup(uow => uow.SaveChangesAsync(_cancellationToken))
+        _userRepositoryMock.Setup(repo => repo.GetById(userId, _cancellationToken))
             .ThrowsAsync(exception);
 
         // Act
-        Func<Task> act = async () => await UpdateUserAvatarRequestHandler.Handle(command, 
-            _userRepositoryMock.Object, 
+        Func<Task> act = async () => await UpdateUserAvatarRequestHandler.Handle(command,
+            _userRepositoryMock.Object,
             _photoMetadataRepositoryMock.Object,
             _cancellationToken);
 
@@ -254,8 +250,7 @@ public class UpdateUserAvatarRequestHandlerTest
             .WithMessage("Database error");
 
         _userRepositoryMock.Verify(repo => repo.GetById(userId, _cancellationToken), Times.Once);
-        _photoMetadataRepositoryMock.Verify(repo => repo.Add(It.IsAny<Domain.Entities.PhotoMetadata>()), Times.Once);
-        _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(_cancellationToken), Times.Once);
+        _photoMetadataRepositoryMock.Verify(repo => repo.Add(It.IsAny<Domain.Entities.PhotoMetadata>()), Times.Never);
     }
 
     [Fact]
@@ -306,21 +301,17 @@ public class UpdateUserAvatarRequestHandlerTest
         _userRepositoryMock.Setup(repo => repo.GetById(userId, _cancellationToken))
             .ReturnsAsync(existingUser);
 
-        _unitOfWorkMock.Setup(uow => uow.SaveChangesAsync(_cancellationToken))
-            .ReturnsAsync(1);  // Return 1 to indicate one record was saved
-
         // Act
-        var result = await UpdateUserAvatarRequestHandler.Handle(command, _userRepositoryMock.Object, 
+        var (result, _) = await UpdateUserAvatarRequestHandler.Handle(command, _userRepositoryMock.Object,
             _photoMetadataRepositoryMock.Object, _cancellationToken);
 
         // Assert
-        result.Item1.IsSuccess.Should().BeTrue();
-        result.Item1.Data.Should().NotBeNull();
-        result.Item1.Message.Should().Be("Photo updated successfully");
+        result.IsSuccess.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        result.Message.Should().Be("Photo updated successfully");
 
         _userRepositoryMock.Verify(repo => repo.GetById(userId, _cancellationToken), Times.Once);
         _photoMetadataRepositoryMock.Verify(repo => repo.Add(It.IsAny<Domain.Entities.PhotoMetadata>()), Times.Once);
-        _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(_cancellationToken), Times.Once);
 
         existingUser.PhotoMetadata.Should().NotBeNull();
         existingUser.PhotoMetadata!.FileName.Should().Be(fileName);
