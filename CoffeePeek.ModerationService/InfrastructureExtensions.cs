@@ -1,6 +1,7 @@
 ﻿using CoffeePeek.Moderation.Application;
 using CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 using CoffeePeek.Moderation.Infrastructure;
+using CoffeePeek.Moderation.Infrastructure.Consumers;
 using CoffeePeek.Shared.Persistence.Extensions;
 using CoffeePeek.Shared.Web.Logging;
 using CoffeeShop.Moderation.Persistence;
@@ -18,8 +19,9 @@ public static class InfrastructureExtensions
         builder.AddServiceDefaults();
         builder.WebHost
             .ConfigureWebhost();
-        var handlersAssembly = typeof(SendCoffeeShopToModerationHandler).Assembly;
-        builder.AddWolverine(handlersAssembly);
+        var applicationAssembly = typeof(SendCoffeeShopToModerationHandler).Assembly;
+        var infrastructureAssembly = typeof(CheckInCreatedHandler).Assembly;
+        builder.AddWolverine([applicationAssembly, infrastructureAssembly]);
         
         builder.Services
             .AddApplication()
@@ -42,7 +44,6 @@ public static class InfrastructureExtensions
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
-            //await app.ApplyMigrations<ModerationDbContext>();
         }
 
         app.MapDefaultEndpoints();

@@ -14,7 +14,7 @@ public static class WolverineModule
 {
     extension(WebApplicationBuilder builder)
     {
-        public void AddWolverine(Assembly handlerAssembly)
+        public void AddWolverine(Assembly[] handlerAssembly)
         {
             var rabbitMqOptions = builder.Services.AddValidateOptions<RabbitMqOptions>();
             var postgresCpOptions = builder.Services.AddValidateOptions<PostgresCpOptions>();
@@ -37,7 +37,10 @@ public static class WolverineModule
 
                 opts.PersistMessagesWithPostgresql(postgresCpOptions.ConnectionString);
                 opts.UseEntityFrameworkCoreTransactions();
-                opts.Discovery.IncludeAssembly(handlerAssembly);
+                foreach (var assembly in handlerAssembly)
+                {
+                    opts.Discovery.IncludeAssembly(assembly);
+                }
 
                 opts.Policies.AutoApplyTransactions();
             });

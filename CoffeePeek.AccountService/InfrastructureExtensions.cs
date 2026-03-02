@@ -1,7 +1,9 @@
 ﻿using CoffeePeek.Account.Application;
 using CoffeePeek.Account.Application.Features.Auth.RegisterUser;
 using CoffeePeek.Account.Infrastructure;
+using CoffeePeek.Account.Infrastructure.Consumers;
 using CoffeePeek.Account.Persistence;
+using CoffeePeek.Account.Persistence.Configuration;
 using CoffeePeek.Shared.Persistence.Extensions;
 using CoffeePeek.Shared.Web.Logging;
 using CoffePeek.ServiceDefaults;
@@ -18,8 +20,9 @@ public static class InfrastructureExtensions
         builder.WebHost
             .ConfigureWebhost();
         
-        var handlersAssembly = typeof(RegisterUserHandler).Assembly;
-        builder.AddWolverine(handlersAssembly);
+        var applicationAssembly = typeof(RegisterUserHandler).Assembly;
+        var infrastructureAssembly = typeof(CheckinCreatedHandler).Assembly;
+        builder.AddWolverine([applicationAssembly, infrastructureAssembly]);
         
         builder.Services
             .AddApplication()

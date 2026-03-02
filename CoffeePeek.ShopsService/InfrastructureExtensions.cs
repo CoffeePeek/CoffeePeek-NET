@@ -4,6 +4,7 @@ using CoffeePeek.Shops.Persistance;
 using CoffeePeek.Shared.Persistence.Extensions;
 using CoffeePeek.Shared.Web.Logging;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
+using CoffeePeek.Shops.Infrastructure.Consumers;
 using CoffeePeek.Shops.Persistance.Configuration;
 using CoffePeek.ServiceDefaults;
 using Serilog;
@@ -19,8 +20,9 @@ public static class InfrastructureExtensions
         builder.WebHost
             .ConfigureWebhost();
 
-        var handlersAssembly = typeof(GetCoffeeShopHandler).Assembly;
-        builder.AddWolverine(handlersAssembly);
+        var applicationAssembly = typeof(GetCoffeeShopHandler).Assembly;
+        var infrastructureAssembly = typeof(ModerationShopApproveHandler).Assembly;
+        builder.AddWolverine([applicationAssembly, infrastructureAssembly]);
         
         builder.Services
             .AddApplication()

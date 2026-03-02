@@ -61,7 +61,7 @@ services.AddMinio(client => client
 
 
 var handlersAssembly = typeof(ConfirmPhotoHandler).Assembly;
-builder.AddWolverine(handlersAssembly);
+builder.AddWolverine([handlersAssembly]);
 
 var app = builder.Build();
 
