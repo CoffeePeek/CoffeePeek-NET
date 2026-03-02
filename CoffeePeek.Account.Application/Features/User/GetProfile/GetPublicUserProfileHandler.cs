@@ -8,7 +8,6 @@ namespace CoffeePeek.Account.Application.Features.User.GetProfile;
 
 public class GetPublicUserProfileHandler
 {
-    [Transactional]
     public async Task<Response<UserProfileResponse>> Handle(
         GetPublicUserProfileCommand command, 
         IUserRepository userRepository, 
@@ -23,7 +22,6 @@ public class GetPublicUserProfileHandler
         }
 
         var result = mapper.Map<UserProfileResponse>(user);
-        user.UpdateAbout("Test about");
         
         return Response<UserProfileResponse>.Success(result);
     }
