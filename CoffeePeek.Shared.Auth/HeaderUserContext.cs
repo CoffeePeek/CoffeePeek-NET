@@ -1,15 +1,11 @@
 using System.Security.Claims;
+using CoffeePeek.Shared.Auth.Constants;
 using Microsoft.AspNetCore.Http;
 
 namespace CoffeePeek.Shared.Auth;
 
 public class HeaderUserContext(IHttpContextAccessor httpContextAccessor) : IUserContext
 {
-    public const string XUserId = "X-User-Id";
-    public const string XUserName = "X-User-Name";
-    public const string XUserRole = "X-User-Role";
-    public const string XUserEmail = "X-User-Email";
-
     public bool IsAuthenticated => GetUserId() is { } id && id != Guid.Empty;
 
     public Guid? GetUserId()
@@ -18,14 +14,13 @@ public class HeaderUserContext(IHttpContextAccessor httpContextAccessor) : IUser
         if (httpContext == null)
             return null;
 
-        
         // Fallback to claims (if JWT is still present)
         var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!string.IsNullOrEmpty(userIdClaim) && Guid.TryParse(userIdClaim, out var claimUserId))
             return claimUserId;
-        
+
         // First try to get from headers (from Gateway)
-        if (httpContext.Request.Headers.TryGetValue(XUserId, out var userIdHeader))
+        if (httpContext.Request.Headers.TryGetValue(GatewayHeaderConsts.XUserId, out var userIdHeader))
         {
             if (Guid.TryParse(userIdHeader.FirstOrDefault(), out var userId))
                 return userId;
@@ -47,7 +42,7 @@ public class HeaderUserContext(IHttpContextAccessor httpContextAccessor) : IUser
             return null;
 
         // First try to get from headers (from Gateway)
-        if (httpContext.Request.Headers.TryGetValue(XUserName, out var userNameHeader))
+        if (httpContext.Request.Headers.TryGetValue(GatewayHeaderConsts.XUserName, out var userNameHeader))
         {
             var username = userNameHeader.FirstOrDefault();
             if (!string.IsNullOrEmpty(username))
@@ -73,7 +68,7 @@ public class HeaderUserContext(IHttpContextAccessor httpContextAccessor) : IUser
             return null;
 
         // First try to get from headers (from Gateway)
-        if (httpContext.Request.Headers.TryGetValue(XUserRole, out var roleHeader))
+        if (httpContext.Request.Headers.TryGetValue(GatewayHeaderConsts.XUserRole, out var roleHeader))
         {
             var role = roleHeader.FirstOrDefault();
             if (!string.IsNullOrEmpty(role))

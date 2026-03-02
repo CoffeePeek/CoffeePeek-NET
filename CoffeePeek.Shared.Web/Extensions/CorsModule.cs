@@ -35,9 +35,9 @@ public static class CorsModule
 
                 policy
                     .WithOrigins(origins)
-                    .AllowAnyOrigin()
                     .AllowAnyHeader()
-                    .AllowAnyMethod();
+                    .AllowAnyMethod()
+                    .AllowCredentials();
 #endif
             });
         });

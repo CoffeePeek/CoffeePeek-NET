@@ -1,14 +1,19 @@
 using System.Security.Claims;
+using CoffeePeek.Shared.Auth.Constants;
 
 namespace CoffeePeek.Gateway.Extensions;
 
+/// <summary>
+/// Utility methods for extracting JWT claims and mapping them to the
+/// <see cref="GatewayHeaderConsts"/> headers that are forwarded to downstream services.
+/// </summary>
 public static class ClaimsTransformationExtensions
 {
-    public const string XUserId = "X-User-Id";
-    public const string XUserName = "X-User-Name";
-    public const string XUserRole = "X-User-Role";
-    public const string XUserEmail = "X-User-Email";
-
+    /// <summary>
+    /// Extracts the authenticated user's claims from <paramref name="user"/> and returns
+    /// them as a dictionary keyed by the canonical <see cref="GatewayHeaderConsts"/> header names.
+    /// Returns an empty dictionary when the user is not authenticated.
+    /// </summary>
     public static Dictionary<string, string> ExtractClaimsAsHeaders(ClaimsPrincipal user)
     {
         var headers = new Dictionary<string, string>();
@@ -18,16 +23,16 @@ public static class ClaimsTransformationExtensions
 
         var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!string.IsNullOrEmpty(userId))
-            headers[XUserId] = userId;
+            headers[GatewayHeaderConsts.XUserId] = userId;
 
         var userName = user.FindFirst(ClaimTypes.Name)?.Value
                        ?? user.FindFirst("preferred_username")?.Value;
         if (!string.IsNullOrEmpty(userName))
-            headers[XUserName] = userName;
+            headers[GatewayHeaderConsts.XUserName] = userName;
 
         var email = user.FindFirst(ClaimTypes.Email)?.Value;
         if (!string.IsNullOrEmpty(email))
-            headers[XUserEmail] = email;
+            headers[GatewayHeaderConsts.XUserEmail] = email;
 
         var roles = user.FindAll(ClaimTypes.Role)
             .Select(r => r.Value)
@@ -35,7 +40,7 @@ public static class ClaimsTransformationExtensions
             .Distinct()
             .ToArray();
         if (roles.Length > 0)
-            headers[XUserRole] = string.Join(",", roles);
+            headers[GatewayHeaderConsts.XUserRole] = string.Join(",", roles);
 
         return headers;
     }
