@@ -1,0 +1,167 @@
+<UserControl
+    d:DesignWidth="1200"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.WelcomeFlow.Welcome.WelcomePageView"
+    x:DataType="welcome:WelcomePageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:welcome="clr-namespace:CoffeePeek.Client.App.ViewModels.WelcomeFlow.Welcome"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Padding="24">
+
+        <StackPanel MaxWidth="1024">
+            <Border
+                Background="{DynamicResource AppBackgroundBrush}"
+                BorderBrush="{DynamicResource AppBorderBrush}"
+                BorderThickness="{StaticResource DefaultThickness}"
+                CornerRadius="100"
+                HorizontalAlignment="Center"
+                Margin="0,0,0,32"
+                Padding="16,8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Grid>
+                        <Ellipse
+                            Fill="{DynamicResource PrimaryBrush}"
+                            Height="8"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Width="8">
+                            <Ellipse.Styles>
+                                <Style Selector="Ellipse">
+                                    <Style.Animations>
+                                        <Animation
+                                            Duration="0:0:1.5"
+                                            Easing="LinearEasing"
+                                            IterationCount="Infinite">
+                                            <KeyFrame KeyTime="0:0:0">
+                                                <Setter Property="ScaleTransform.ScaleX" Value="1.0" />
+                                                <Setter Property="ScaleTransform.ScaleY" Value="1.0" />
+                                                <Setter Property="Opacity" Value="0.75" />
+                                            </KeyFrame>
+                                            <KeyFrame KeyTime="0:0:1.5">
+                                                <Setter Property="ScaleTransform.ScaleX" Value="2" />
+                                                <Setter Property="ScaleTransform.ScaleY" Value="2" />
+                                                <Setter Property="Opacity" Value="0" />
+                                            </KeyFrame>
+                                        </Animation>
+                                    </Style.Animations>
+                                </Style>
+                            </Ellipse.Styles>
+                        </Ellipse>
+
+                        <Ellipse
+                            Fill="{DynamicResource PrimaryBrush}"
+                            Height="8"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Width="8" />
+                    </Grid>
+                    <TextBlock
+                        FontWeight="Medium"
+                        Foreground="{DynamicResource PrimaryBrush}"
+                        Text="{x:Static lang:Resources.WelcomePage_Slogan}" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock
+                    FontSize="72"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
+                    HorizontalAlignment="Center"
+                    Text="{x:Static lang:Resources.WelcomePage_MainTitle}" />
+                <TextBlock
+                    FontSize="72"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource PrimaryBrush}"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,24"
+                    Text="{x:Static lang:Resources.ApplicationName}" />
+
+                <TextBlock
+                    FontSize="20"
+                    HorizontalAlignment="Center"
+                    Text="{x:Static lang:Resources.WelcomePage_MainDescription}"
+                    TextWrapping="Wrap" />
+
+                <UniformGrid
+                    Columns="2"
+                    HorizontalAlignment="Center"
+                    Margin="0,32,0,0"
+                    MaxWidth="500"
+                    Rows="1">
+                    <Button
+                        Content="{x:Static lang:Resources.LoginPage_LoginButton}"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Margin="4"
+                        Padding="16,20" />
+                    <Button
+                        Classes="Secondary"
+                        Content="{x:Static lang:Resources.RegisterPage_RegisterButton}"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Margin="4"
+                        Padding="16,20" />
+                </UniformGrid>
+            </StackPanel>
+
+            <ItemsControl
+                HorizontalAlignment="Center"
+                ItemsSource="{Binding Path=Features}"
+                Margin="0,42,0,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid
+                            ColumnSpacing="16"
+                            Columns="3"
+                            RowSpacing="16"
+                            Rows="2" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            Background="{DynamicResource AppSurfaceColor}"
+                            BorderThickness="{StaticResource DefaultThickness}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            MaxHeight="150"
+                            MaxWidth="300"
+                            Padding="{StaticResource DefaultPadding}">
+                            <StackPanel>
+                                <Rectangle
+                                    Fill="{DynamicResource PrimaryBrush}"
+                                    Height="48"
+                                    HorizontalAlignment="Left"
+                                    Margin="0,0,0,16"
+                                    Width="48" />
+                                <TextBlock
+                                    FontSize="18"
+                                    FontWeight="Bold"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding Path=Title}" />
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="Normal"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding Path=Description}" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Separator Margin="0,48" />
+
+            <TextBlock Classes="Secondary" Text="{x:Static lang:Resources.WelcomePage_Footer}" />
+
+        </StackPanel>
+    </Border>
+</UserControl>

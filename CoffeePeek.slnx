@@ -4,6 +4,14 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/Client/">
+    <Project Path="CoffeePeek.Client.App.Android/CoffeePeek.Client.App.Android.csproj">
+      <Deploy />
+    </Project>
+    <Project Path="CoffeePeek.Client.App.Browser/CoffeePeek.Client.App.Browser.csproj" />
+    <Project Path="CoffeePeek.Client.App.Desktop/CoffeePeek.Client.App.Desktop.csproj" />
+    <Project Path="CoffeePeek.Client.App/CoffeePeek.Client.App.csproj" />
+  </Folder>
   <Folder Name="/CoffeePeek.Development/">
     <Project Path="CoffePeek.AppHost/CoffePeek.AppHost.csproj" />
     <Project Path="CoffePeek.ServiceDefaults/CoffePeek.ServiceDefaults.csproj" />
@@ -53,6 +61,7 @@
   <Folder Name="/Solution Items/">
     <File Path=".github/workflows/ci-cd.yml" />
     <File Path="CHANGELOG.md" />
+    <File Path="Directory.Packages.props" />
     <File Path="Makefile" />
   </Folder>
 </Solution>

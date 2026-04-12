@@ -1,0 +1,62 @@
+<UserControl
+    d:DesignHeight="220"
+    d:DesignWidth="400"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.WelcomeFlow.Welcome.WelcomePageCardItemView"
+    x:DataType="welcome:WelcomePageCardItemViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:welcome="clr-namespace:CoffeePeek.Client.App.ViewModels.WelcomeFlow.Welcome"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.DataContext>
+        <welcome:WelcomePageCardItemViewModel Description="Description" Title="Title" />
+    </Design.DataContext>
+    <Border
+        Background="{DynamicResource AppSurfaceColor}"
+        BorderBrush="{DynamicResource AppBorderBrush}"
+        BorderThickness="{StaticResource DefaultThickness}"
+        CornerRadius="{StaticResource DefaultCornerRadius}"
+        MaxHeight="150"
+        MaxWidth="300"
+        Padding="{StaticResource DefaultPadding}">
+        <Border.Transitions>
+            <Transitions>
+                <BrushTransition Duration="0:0:0.2" Property="Background" />
+            </Transitions>
+        </Border.Transitions>
+
+        <Border.Styles>
+            <Style Selector="Border:pointerover">
+                <Setter Property="Background" Value="{DynamicResource AppSurfaceBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHoverBrush}" />
+                <Style.Animations>
+                    <Animation Duration="0:0:0.15" FillMode="Forward">
+                        <KeyFrame KeyTime="0:0:0.15">
+                            <Setter Property="ScaleTransform.ScaleX" Value="1.05" />
+                            <Setter Property="ScaleTransform.ScaleY" Value="1.05" />
+                        </KeyFrame>
+                    </Animation>
+                </Style.Animations>
+            </Style>
+        </Border.Styles>
+        <StackPanel>
+            <Rectangle
+                Fill="{DynamicResource PrimaryBrush}"
+                Height="48"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,16"
+                Width="48" />
+            <TextBlock
+                FontSize="18"
+                FontWeight="Bold"
+                HorizontalAlignment="Center"
+                Text="{Binding Path=Title}" />
+            <TextBlock
+                Classes="Secondary"
+                HorizontalAlignment="Center"
+                Text="{Binding Path=Description}"
+                TextWrapping="Wrap" />
+        </StackPanel>
+    </Border>
+</UserControl>

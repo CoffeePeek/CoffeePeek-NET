@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="LoginPage_LoginButton" xml:space="preserve">
+        <value>Login</value>
+    </data>
+    <data name="ApplicationName" xml:space="preserve">
+        <value>CoffeePeek</value>
+    </data>
+    <data name="WelcomePage_Slogan" xml:space="preserve">
+        <value>CoffeePeek — Your guide to the world of coffee</value>
+    </data>
+    <data name="WelcomePage_MainTitle" xml:space="preserve">
+        <value>Welcome to</value>
+    </data>
+    <data name="WelcomePage_MainDescription" xml:space="preserve">
+        <value>The ultimate companion for coffee enthusiasts. Discover the finest coffee shops, find your dream job in the coffee industry, explore brewing tools, and share your experiences with a like-minded community.</value>
+    </data>
+    <data name="RegisterPage_RegisterButton" xml:space="preserve">
+        <value>Register</value>
+    </data>
+    <data name="WelcomePage_Card1Title" xml:space="preserve">
+        <value>Coffee Map</value>
+    </data>
+    <data name="WelcomePage_Card2Title" xml:space="preserve">
+        <value>Job Board.</value>
+    </data>
+    <data name="WelcomePage_Card3Title" xml:space="preserve">
+        <value>Brewing Tools</value>
+    </data>
+    <data name="WelcomePage_Card4Title" xml:space="preserve">
+        <value>Check-ins &amp; Reviews</value>
+    </data>
+    <data name="WelcomePage_Card5Title" xml:space="preserve">
+        <value>Ranking</value>
+    </data>
+    <data name="WelcomePage_Card6Title" xml:space="preserve">
+        <value>Community</value>
+    </data>
+    <data name="WelcomePage_Card1Description" xml:space="preserve">
+        <value>Find the best coffee shops nearby with detailed info and reviews.</value>
+    </data>
+    <data name="WelcomePage_Card2Description" xml:space="preserve">
+        <value>Careers in the coffee industry for baristas, roasters, and other pros</value>
+    </data>
+    <data name="WelcomePage_Card3Description" xml:space="preserve">
+        <value>In-depth guides for all types of coffee brewing equipment.</value>
+    </data>
+    <data name="WelcomePage_Card4Description" xml:space="preserve">
+        <value>Rate coffee shops, leave feedback, and share your experiences.</value>
+    </data>
+    <data name="WelcomePage_Card5Description" xml:space="preserve">
+        <value>A recommendation system based on your personal preferences.</value>
+    </data>
+    <data name="WelcomePage_Card6Description" xml:space="preserve">
+        <value>Connect with fellow coffee lovers and share your expertise.</value>
+    </data>
+    <data name="WelcomePage_Footer" xml:space="preserve">
+        <value>Join our community of coffee enthusiasts! Share your expertise, discover new spots, and grow your career in the coffee industry with CoffeePeek.</value>
+    </data>
+</root>

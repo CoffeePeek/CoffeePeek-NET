@@ -13,9 +13,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
-        <PackageReference Include="WolverineFx" Version="5.16.2" />
-        <PackageReference Include="Mapster" Version="7.4.0" />
+        <PackageReference Include="Mapster.DependencyInjection" />
+        <PackageReference Include="WolverineFx"  />
+        <PackageReference Include="Mapster"  />
     </ItemGroup>
 
 </Project>

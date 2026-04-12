@@ -10,7 +10,4 @@
         <ProjectReference Include="..\CoffeePeek.Shared.Domain\CoffeePeek.Shared.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Aggregates\" />
-    </ItemGroup>
 </Project>

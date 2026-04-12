@@ -1,0 +1,71 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ApplicationName" xml:space="preserve">
+        <value>CoffeePeek</value>
+    </data>
+    <data name="LoginPage_LoginButton" xml:space="preserve">
+        <value>Войти</value>
+    </data>
+    <data name="WelcomePage_Slogan" xml:space="preserve">
+        <value>CoffeePeek — ваш проводник в мире кофе</value>
+    </data>
+    <data name="WelcomePage_MainTitle" xml:space="preserve">
+        <value>Добро пожаловать в</value>
+    </data>
+    <data name="WelcomePage_MainDescription" xml:space="preserve">
+        <value>Удобный инструмент для любителей кофе. Откройте для себя лучшие кофейни, найдите работу в кофейной индустрии, изучайте инструменты приготовления и делитесь впечатлениями с единомышленниками.</value>
+    </data>
+    <data name="RegisterPage_RegisterButton" xml:space="preserve">
+        <value>Зарегистрироваться</value>
+    </data>
+    <data name="WelcomePage_Card1Title" xml:space="preserve">
+        <value>Карта кофеен</value>
+    </data>
+    <data name="WelcomePage_Card2Title" xml:space="preserve">
+        <value>Поиск работы</value>
+    </data>
+    <data name="WelcomePage_Card3Title" xml:space="preserve">
+        <value>Инструменты</value>
+    </data>
+    <data name="WelcomePage_Card4Title" xml:space="preserve">
+        <value>Чекины и отзывы</value>
+    </data>
+    <data name="WelcomePage_Card5Title" xml:space="preserve">
+        <value>Рейтинги</value>
+    </data>
+    <data name="WelcomePage_Card6Title" xml:space="preserve">
+        <value>Сообщество</value>
+    </data>
+    <data name="WelcomePage_Card6Description" xml:space="preserve">
+        <value>Общайтесь с другими любителями кофе и делитесь опытом</value>
+    </data>
+    <data name="WelcomePage_Card5Description" xml:space="preserve">
+        <value>Система оценок и рекомендаций на основе ваших предпочтений</value>
+    </data>
+    <data name="WelcomePage_Card4Description" xml:space="preserve">
+        <value>Оценивайте кофейни, оставляйте отзывы и делитесь впечатлениями</value>
+    </data>
+    <data name="WelcomePage_Card3Description" xml:space="preserve">
+        <value>Подробные описания всех инструментов для приготовления кофе</value>
+    </data>
+    <data name="WelcomePage_Card2Description" xml:space="preserve">
+        <value>Вакансии в кофейной индустрии для бариста, обжарщиков и других специалистов</value>
+    </data>
+    <data name="WelcomePage_Card1Description" xml:space="preserve">
+        <value>Найдите лучшие кофейни поблизости с подробной информацией и отзывами</value>
+    </data>
+    <data name="WelcomePage_Footer" xml:space="preserve">
+        <value>Присоединяйтесь к сообществу кофеманов, делитесь опытом, открывайте новые места и развивайтесь в кофейной индустрии вместе с CoffeePeek.</value>
+    </data>
+</root>

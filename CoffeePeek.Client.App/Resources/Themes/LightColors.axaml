@@ -1,0 +1,21 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="AppBackgroundColor">#FAFAF9</Color>
+    <Color x:Key="AppSurfaceColor">#FFFFFF</Color>
+    <Color x:Key="AppSurfaceAltColor">#F9F8F6</Color>
+    <Color x:Key="TextPrimaryColor">#1C1917</Color>
+    <Color x:Key="TextSecondaryColor">#78716C</Color>
+    <Color x:Key="TextMutedColor">#75706B</Color>
+    <Color x:Key="AppBorderColor">#E7E5E4</Color>
+    <Color x:Key="AppBorderSubtleColor">#E5E1DA</Color>
+
+    <SolidColorBrush Color="{StaticResource AppBackgroundColor}" x:Key="AppBackgroundBrush" />
+    <SolidColorBrush Color="{StaticResource AppSurfaceColor}" x:Key="AppSurfaceBrush" />
+    <SolidColorBrush Color="{StaticResource AppSurfaceAltColor}" x:Key="AppSurfaceAltBrush" />
+
+    <SolidColorBrush Color="{StaticResource TextPrimaryColor}" x:Key="TextPrimaryBrush" />
+    <SolidColorBrush Color="{StaticResource TextSecondaryColor}" x:Key="TextSecondaryBrush" />
+    <SolidColorBrush Color="{StaticResource TextMutedColor}" x:Key="TextMuted" />
+
+    <SolidColorBrush Color="{StaticResource AppBorderColor}" x:Key="AppBorderBrush" />
+    <SolidColorBrush Color="{StaticResource AppBorderSubtleColor}" x:Key="AppBorderSubtleBrush" />
+</ResourceDictionary>

@@ -1,0 +1,22 @@
+<Window
+    Background="{DynamicResource AppBackgroundBrush}"
+    Icon="/Assets/avalonia-logo.ico"
+    MinHeight="800"
+    MinWidth="450"
+    Title="{x:Static lang:Resources.ApplicationName}"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.MainWindow"
+    x:DataType="vm:MainViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:CoffeePeek.Client.App.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Border>
+        <StackPanel>
+            <ContentControl Content="{Binding Path=WelcomePageViewModel}" />
+        </StackPanel>
+    </Border>
+</Window>

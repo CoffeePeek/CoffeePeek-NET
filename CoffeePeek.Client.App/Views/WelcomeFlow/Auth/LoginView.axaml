@@ -1,0 +1,48 @@
+<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.WelcomeFlow.Auth.LoginView"
+    x:DataType="auth:LoginViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:auth="clr-namespace:CoffeePeek.Client.App.ViewModels.Auth"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border
+        Background="{DynamicResource AppBackgroundBrush}"
+        CornerRadius="{StaticResource DefaultCornerRadius}"
+        MaxWidth="400"
+        Padding="{StaticResource DefaultThickness}"
+        VerticalAlignment="Center">
+
+        <StackPanel Spacing="15">
+            <TextBlock Text="{x:Static lang:Resources.ApplicationName}" />
+            <TextBox
+                PlaceholderText="{Binding Path=Email}"
+                Text="{Binding Email}"
+                UseFloatingPlaceholder="True" />
+
+            <TextBox
+                PasswordChar="*"
+                PlaceholderText="Password"
+                Text="{Binding Password}"
+                UseFloatingPlaceholder="True" />
+
+            <Button
+                Command="{Binding LoginCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                IsEnabled="{Binding Path=!LoginCommand.IsRunning}">
+                <Button.Content>
+                    <StackPanel>
+                        <TextBlock IsVisible="{Binding Path=!LoginCommand.IsRunning}" Text="{x:Static lang:Resources.LoginPage_LoginButton}" />
+                        <ProgressBar IsIndeterminate="True" IsVisible="{Binding LoginCommand.IsRunning}" />
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+
+        </StackPanel>
+    </Border>
+</UserControl>
