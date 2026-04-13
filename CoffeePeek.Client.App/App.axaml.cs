@@ -1,6 +1,4 @@
-using System.Globalization;
 using Autofac;
-using Autofac.Core;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;

@@ -158,5 +158,125 @@ namespace CoffeePeek.Client.App.Resources.Lang {
                 return ResourceManager.GetString("WelcomePage_Footer", resourceCulture);
             }
         }
+        
+        public static string LoginPage_Title {
+            get {
+                return ResourceManager.GetString("LoginPage_Title", resourceCulture);
+            }
+        }
+        
+        public static string Auth_FillAllFields {
+            get {
+                return ResourceManager.GetString("Auth_FillAllFields", resourceCulture);
+            }
+        }
+        
+        public static string Auth_LoginFailed {
+            get {
+                return ResourceManager.GetString("Auth_LoginFailed", resourceCulture);
+            }
+        }
+        
+        public static string Auth_InvalidEmail {
+            get {
+                return ResourceManager.GetString("Auth_InvalidEmail", resourceCulture);
+            }
+        }
+        
+        public static string Auth_EmailCheckFailed {
+            get {
+                return ResourceManager.GetString("Auth_EmailCheckFailed", resourceCulture);
+            }
+        }
+        
+        public static string Auth_PasswordMismatch {
+            get {
+                return ResourceManager.GetString("Auth_PasswordMismatch", resourceCulture);
+            }
+        }
+        
+        public static string Auth_RegisterFailed {
+            get {
+                return ResourceManager.GetString("Auth_RegisterFailed", resourceCulture);
+            }
+        }
+        
+        public static string Auth_LoginAfterRegisterFailed {
+            get {
+                return ResourceManager.GetString("Auth_LoginAfterRegisterFailed", resourceCulture);
+            }
+        }
+        
+        public static string LoginPage_EmailPlaceholder {
+            get {
+                return ResourceManager.GetString("LoginPage_EmailPlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string LoginPage_PasswordPlaceholder {
+            get {
+                return ResourceManager.GetString("LoginPage_PasswordPlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string Common_Back {
+            get {
+                return ResourceManager.GetString("Common_Back", resourceCulture);
+            }
+        }
+        
+        public static string RegisterEmailPage_Title {
+            get {
+                return ResourceManager.GetString("RegisterEmailPage_Title", resourceCulture);
+            }
+        }
+        
+        public static string RegisterEmailPage_Description {
+            get {
+                return ResourceManager.GetString("RegisterEmailPage_Description", resourceCulture);
+            }
+        }
+        
+        public static string RegisterEmailPage_Continue {
+            get {
+                return ResourceManager.GetString("RegisterEmailPage_Continue", resourceCulture);
+            }
+        }
+        
+        public static string RegisterPage_Title {
+            get {
+                return ResourceManager.GetString("RegisterPage_Title", resourceCulture);
+            }
+        }
+        
+        public static string RegisterPage_UserNamePlaceholder {
+            get {
+                return ResourceManager.GetString("RegisterPage_UserNamePlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string RegisterPage_ConfirmPasswordPlaceholder {
+            get {
+                return ResourceManager.GetString("RegisterPage_ConfirmPasswordPlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string Home_Title {
+            get {
+                return ResourceManager.GetString("Home_Title", resourceCulture);
+            }
+        }
+        
+        public static string Home_Subtitle {
+            get {
+                return ResourceManager.GetString("Home_Subtitle", resourceCulture);
+            }
+        }
+        
+        public static string Home_SignOut {
+            get {
+                return ResourceManager.GetString("Home_SignOut", resourceCulture);
+            }
+        }
     }
 }

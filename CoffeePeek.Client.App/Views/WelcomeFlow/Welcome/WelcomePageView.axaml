@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:welcome="clr-namespace:CoffeePeek.Client.App.ViewModels.WelcomeFlow.Welcome"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
     <Border Padding="24">
 
         <StackPanel MaxWidth="1024">
@@ -86,30 +87,32 @@
                     Text="{x:Static lang:Resources.WelcomePage_MainDescription}"
                     TextWrapping="Wrap" />
 
-                <UniformGrid
-                    Columns="2"
+                <WrapPanel
                     HorizontalAlignment="Center"
                     Margin="0,32,0,0"
-                    MaxWidth="500"
-                    Rows="1">
+                    MaxWidth="520">
                     <Button
+                        Command="{Binding GoToLoginCommand}"
                         Content="{x:Static lang:Resources.LoginPage_LoginButton}"
                         FontSize="18"
                         FontWeight="SemiBold"
-                        HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
-                        Margin="4"
+                        Margin="0,0,8,8"
+                        MinHeight="52"
+                        MinWidth="200"
                         Padding="16,20" />
                     <Button
                         Classes="Secondary"
+                        Command="{Binding GoToRegisterCommand}"
                         Content="{x:Static lang:Resources.RegisterPage_RegisterButton}"
                         FontSize="18"
                         FontWeight="SemiBold"
-                        HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
-                        Margin="4"
+                        Margin="0,0,0,8"
+                        MinHeight="52"
+                        MinWidth="200"
                         Padding="16,20" />
-                </UniformGrid>
+                </WrapPanel>
             </StackPanel>
 
             <ItemsControl
@@ -164,4 +167,5 @@
 
         </StackPanel>
     </Border>
+    </ScrollViewer>
 </UserControl>

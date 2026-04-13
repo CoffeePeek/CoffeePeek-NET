@@ -1,9 +1,9 @@
 <UserControl
-    d:DesignHeight="520"
+    d:DesignHeight="700"
     d:DesignWidth="480"
     mc:Ignorable="d"
-    x:Class="CoffeePeek.Client.App.Views.WelcomeFlow.Auth.LoginView"
-    x:DataType="auth:LoginViewModel"
+    x:Class="CoffeePeek.Client.App.Views.WelcomeFlow.Auth.RegisterView"
+    x:DataType="auth:RegisterViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:auth="clr-namespace:CoffeePeek.Client.App.ViewModels.WelcomeFlow.Auth"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -28,8 +28,13 @@
                     FontSize="28"
                     FontWeight="Bold"
                     Foreground="{DynamicResource TextPrimaryBrush}"
-                    Text="{x:Static lang:Resources.LoginPage_Title}" />
+                    Text="{x:Static lang:Resources.RegisterPage_Title}" />
                 <TextBox
+                    PlaceholderText="{x:Static lang:Resources.RegisterPage_UserNamePlaceholder}"
+                    Text="{Binding UserName}"
+                    UseFloatingPlaceholder="True" />
+                <TextBox
+                    IsReadOnly="True"
                     PlaceholderText="{x:Static lang:Resources.LoginPage_EmailPlaceholder}"
                     Text="{Binding Email}"
                     UseFloatingPlaceholder="True" />
@@ -38,24 +43,29 @@
                     PlaceholderText="{x:Static lang:Resources.LoginPage_PasswordPlaceholder}"
                     Text="{Binding Password}"
                     UseFloatingPlaceholder="True" />
+                <TextBox
+                    PasswordChar="*"
+                    PlaceholderText="{x:Static lang:Resources.RegisterPage_ConfirmPasswordPlaceholder}"
+                    Text="{Binding ConfirmPassword}"
+                    UseFloatingPlaceholder="True" />
                 <TextBlock
                     Foreground="{DynamicResource SystemAccentColor}"
                     Text="{Binding ErrorMessage}"
                     TextWrapping="Wrap" />
                 <Button
-                    Command="{Binding LoginCommand}"
+                    Command="{Binding RegisterCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center">
                     <Button.Content>
                         <StackPanel>
                             <TextBlock
                                 HorizontalAlignment="Center"
-                                IsVisible="{Binding !LoginCommand.IsRunning}"
-                                Text="{x:Static lang:Resources.LoginPage_LoginButton}" />
+                                IsVisible="{Binding !RegisterCommand.IsRunning}"
+                                Text="{x:Static lang:Resources.RegisterPage_RegisterButton}" />
                             <ProgressBar
                                 Height="4"
                                 IsIndeterminate="True"
-                                IsVisible="{Binding LoginCommand.IsRunning}" />
+                                IsVisible="{Binding RegisterCommand.IsRunning}" />
                         </StackPanel>
                     </Button.Content>
                 </Button>

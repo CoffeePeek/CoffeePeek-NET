@@ -9,8 +9,6 @@
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <AndroidPackageFormat>apk</AndroidPackageFormat>
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
-        <AotAssemblies>true</AotAssemblies>
-        <EnableLLVM>true</EnableLLVM>
     </PropertyGroup>
 
     <ItemGroup>

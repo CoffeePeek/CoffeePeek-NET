@@ -1,0 +1,32 @@
+<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Home.HomeView"
+    x:DataType="home:HomeViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:home="clr-namespace:CoffeePeek.Client.App.ViewModels.Home"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Border Padding="{StaticResource DefaultPadding}">
+            <StackPanel MaxWidth="720" Spacing="16">
+                <TextBlock
+                    FontSize="32"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
+                    Text="{x:Static lang:Resources.Home_Title}" />
+                <TextBlock
+                    Text="{x:Static lang:Resources.Home_Subtitle}"
+                    TextWrapping="Wrap" />
+                <Button
+                    Classes="Secondary"
+                    Command="{Binding SignOutCommand}"
+                    Content="{x:Static lang:Resources.Home_SignOut}"
+                    HorizontalAlignment="Left" />
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

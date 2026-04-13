@@ -5,12 +5,18 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/Client/">
+    <Project Path="CoffeePeek.Client.App.Contract/CoffeePeek.Client.App.Contract.csproj" />
+    <Project Path="CoffeePeek.Client.App.Core/CoffeePeek.Client.App.Core.csproj" />
+    <Project Path="CoffeePeek.Client.App.Infrastructure.HTTP/CoffeePeek.Client.App.Infrastructure.HTTP.csproj" />
+    <Project Path="CoffeePeek.Client.App.Infrastructure/CoffeePeek.Client.App.Infrastructure.csproj" />
+    <Project Path="CoffeePeek.Client.App/CoffeePeek.Client.App.csproj" />
+  </Folder>
+  <Folder Name="/Client/Platforms/">
     <Project Path="CoffeePeek.Client.App.Android/CoffeePeek.Client.App.Android.csproj">
       <Deploy />
     </Project>
     <Project Path="CoffeePeek.Client.App.Browser/CoffeePeek.Client.App.Browser.csproj" />
     <Project Path="CoffeePeek.Client.App.Desktop/CoffeePeek.Client.App.Desktop.csproj" />
-    <Project Path="CoffeePeek.Client.App/CoffeePeek.Client.App.csproj" />
   </Folder>
   <Folder Name="/CoffeePeek.Development/">
     <Project Path="CoffePeek.AppHost/CoffePeek.AppHost.csproj" />

@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using CoffeePeek.Client.App.ViewModels;
+using CoffeePeek.Client.App.ViewModels.Abstract;
 
 namespace CoffeePeek.Client.App;
 
