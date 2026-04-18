@@ -135,4 +135,40 @@
     <data name="Home_SignOut" xml:space="preserve">
         <value>Sign out</value>
     </data>
+    <data name="Header_Shops" xml:space="preserve">
+        <value>Shops</value>
+    </data>
+    <data name="Header_Map" xml:space="preserve">
+        <value>Map</value>
+    </data>
+    <data name="ShopPage_SearchPlaceholder" xml:space="preserve">
+        <value>Search for your perfect brew...</value>
+    </data>
+    <data name="ShopPage_Filter" xml:space="preserve">
+        <value>Filters</value>
+    </data>
+    <data name="ShopPage_Filter_City" xml:space="preserve">
+        <value>Minsk</value>
+    </data>
+    <data name="ShopPage_Filter_OpenTime" xml:space="preserve">
+        <value>Open</value>
+    </data>
+    <data name="ShopPage_Filter_New" xml:space="preserve">
+        <value>New</value>
+    </data>
+    <data name="ShopPage_Filter_Favorite" xml:space="preserve">
+        <value>Favorite</value>
+    </data>
+    <data name="ShopPage_Filter_Visited" xml:space="preserve">
+        <value>Visited</value>
+    </data>
+    <data name="ShopPage_CityPopupTitle" xml:space="preserve">
+        <value>City</value>
+    </data>
+    <data name="ShopPage_AdditionalFiltersHint" xml:space="preserve">
+        <value>Bean, roaster, brew method, and more filters will appear here.</value>
+    </data>
+    <data name="ShopPage_Trending" xml:space="preserve">
+        <value>TRENDING</value>
+    </data>
 </root>

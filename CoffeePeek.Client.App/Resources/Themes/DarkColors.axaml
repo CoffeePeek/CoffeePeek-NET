@@ -1,23 +1,27 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="AppBackgroundColor">#1A1412</Color>
-    <Color x:Key="AppSurfaceColor">#2D241F</Color>
-    <Color x:Key="AppSurfaceAltColor">#2D241F</Color>
+    <Color x:Key="Surface">#1C1917</Color>
+    <Color x:Key="SurfaceBright">#292524</Color>
+    <Color x:Key="SurfaceContainer">#44403C</Color>
 
-    <Color x:Key="TextPrimaryColor">#FFFFFF</Color>
-    <Color x:Key="TextSecondaryColor">#A39E93</Color>
-    <Color x:Key="TextMutedColor">#A8A8A8</Color>
+    <Color x:Key="OnSurface">#F5F5F4</Color>
 
-    <Color x:Key="AppBorderColor">#3D2F28</Color>
-    <Color x:Key="AppBorderSubtleColor">#3D2F28</Color>
+    <Color x:Key="PrimaryGold">#EAB308</Color>
+    <Color x:Key="PrimaryGoldHover">#CA8A04</Color>
+    <Color x:Key="PrimaryGoldTransparent">#4DCA8A04</Color>
 
-    <SolidColorBrush Color="{StaticResource AppBackgroundColor}" x:Key="AppBackgroundBrush" />
-    <SolidColorBrush Color="{StaticResource AppSurfaceColor}" x:Key="AppSurfaceBrush" />
-    <SolidColorBrush Color="{StaticResource AppSurfaceAltColor}" x:Key="AppSurfaceAltBrush" />
+    <Color x:Key="NeutralDark">#A8A29E</Color>
+    <Color x:Key="BorderDark">#57534E</Color>
 
-    <SolidColorBrush Color="{StaticResource TextPrimaryColor}" x:Key="TextPrimaryBrush" />
-    <SolidColorBrush Color="{StaticResource TextSecondaryColor}" x:Key="TextSecondaryBrush" />
-    <SolidColorBrush Color="{StaticResource TextMutedColor}" x:Key="TextMuted" />
+    <SolidColorBrush Color="{StaticResource PrimaryGold}" x:Key="PrimaryBrush" />
+    <SolidColorBrush Color="{StaticResource PrimaryGoldHover}" x:Key="PrimaryHoverBrush" />
+    <SolidColorBrush Color="{StaticResource NeutralDark}" x:Key="TextPrimaryBrush" />
+    <SolidColorBrush Color="{StaticResource BorderDark}" x:Key="BorderBrush" />
 
-    <SolidColorBrush Color="{StaticResource AppBorderColor}" x:Key="AppBorderBrush" />
-    <SolidColorBrush Color="{StaticResource AppBorderSubtleColor}" x:Key="AppBorderSubtleBrush" />
+    <SolidColorBrush Color="{StaticResource PrimaryGoldTransparent}" x:Key="TextSelectionBrush" />
+    <SolidColorBrush Color="{StaticResource OnSurface}" x:Key="TextSelectionForegroundBrush" />
+    <SolidColorBrush Color="{StaticResource OnSurface}" x:Key="OnSurfaceBrush" />
+    <SolidColorBrush Color="{StaticResource Surface}" x:Key="SurfaceBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceBright}" x:Key="SurfaceBrightBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainer}" x:Key="SurfaceContainerBrush" />
+
 </ResourceDictionary>

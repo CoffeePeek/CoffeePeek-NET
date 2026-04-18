@@ -6,7 +6,8 @@
 
     <Thickness x:Key="DefaultPadding">8</Thickness>
 
+    <CornerRadius x:Key="SuperLargeRadius">16</CornerRadius>
+    <CornerRadius x:Key="LargeRadius">12</CornerRadius>
     <CornerRadius x:Key="DefaultCornerRadius">8</CornerRadius>
-    <CornerRadius x:Key="SmallCornerRadius">8</CornerRadius>
-
+    <CornerRadius x:Key="SmallCornerRadius">4</CornerRadius>
 </ResourceDictionary>

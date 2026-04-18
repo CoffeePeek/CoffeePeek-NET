@@ -51,6 +51,12 @@ namespace CoffeePeek.Client.App.Resources.Lang {
             }
         }
         
+        public static string LoginPage_Title {
+            get {
+                return ResourceManager.GetString("LoginPage_Title", resourceCulture);
+            }
+        }
+        
         public static string ApplicationName {
             get {
                 return ResourceManager.GetString("ApplicationName", resourceCulture);
@@ -156,12 +162,6 @@ namespace CoffeePeek.Client.App.Resources.Lang {
         public static string WelcomePage_Footer {
             get {
                 return ResourceManager.GetString("WelcomePage_Footer", resourceCulture);
-            }
-        }
-        
-        public static string LoginPage_Title {
-            get {
-                return ResourceManager.GetString("LoginPage_Title", resourceCulture);
             }
         }
         
@@ -276,6 +276,78 @@ namespace CoffeePeek.Client.App.Resources.Lang {
         public static string Home_SignOut {
             get {
                 return ResourceManager.GetString("Home_SignOut", resourceCulture);
+            }
+        }
+        
+        public static string Header_Shops {
+            get {
+                return ResourceManager.GetString("Header_Shops", resourceCulture);
+            }
+        }
+        
+        public static string Header_Map {
+            get {
+                return ResourceManager.GetString("Header_Map", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_SearchPlaceholder {
+            get {
+                return ResourceManager.GetString("ShopPage_SearchPlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_Filter {
+            get {
+                return ResourceManager.GetString("ShopPage_Filter", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_Filter_City {
+            get {
+                return ResourceManager.GetString("ShopPage_Filter_City", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_Filter_OpenTime {
+            get {
+                return ResourceManager.GetString("ShopPage_Filter_OpenTime", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_Filter_New {
+            get {
+                return ResourceManager.GetString("ShopPage_Filter_New", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_Filter_Favorite {
+            get {
+                return ResourceManager.GetString("ShopPage_Filter_Favorite", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_Filter_Visited {
+            get {
+                return ResourceManager.GetString("ShopPage_Filter_Visited", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_CityPopupTitle {
+            get {
+                return ResourceManager.GetString("ShopPage_CityPopupTitle", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_AdditionalFiltersHint {
+            get {
+                return ResourceManager.GetString("ShopPage_AdditionalFiltersHint", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_Trending {
+            get {
+                return ResourceManager.GetString("ShopPage_Trending", resourceCulture);
             }
         }
     }

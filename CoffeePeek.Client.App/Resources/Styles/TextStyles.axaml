@@ -2,21 +2,40 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="8">
-                <TextBlock Text="Primary text" />
-                <TextBlock Classes="Secondary" Text="Secondary" />
+                <TextBlock Classes="Headline" Text="Headline" />
+                <TextBlock Classes="Body" Text="Body" />
+                <TextBlock Classes="Label" Text="Label" />
             </StackPanel>
 
         </Border>
     </Design.PreviewWith>
 
-    <Style Selector="TextBlock">
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-        <Setter Property="FontSize" Value="20" />
-        <Setter Property="FontWeight" Value="Normal" />
-    </Style>
+    <Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Sora}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
 
-    <Style Selector="TextBlock.Secondary">
-        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-        <Setter Property="FontSize" Value="16" />
-    </Style>
+        <Style Selector="TextBlock.Headline">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.Body">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="LineHeight" Value="21" />
+            <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.Label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+
+        <Style Selector="ListBox">
+            <Setter Property="FontFamily" Value="{StaticResource Sora}" />
+        </Style>
+    </Styles>
+
 </Styles>

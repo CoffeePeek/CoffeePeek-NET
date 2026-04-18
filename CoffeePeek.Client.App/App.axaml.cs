@@ -1,3 +1,4 @@
+using System;
 using Autofac;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -30,10 +31,11 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleView)
         {
-             singleView.MainView = new MainView
-             {
-                 DataContext = mainViewModel
-             };
+            var mainView = new MainView { DataContext = mainViewModel };
+            // Android: inset from system bars / notch; keyboard handled by MainActivity (AdjustResize).
+            if (OperatingSystem.IsAndroid())
+                mainView.Padding = new Thickness(12, 28, 12, 12);
+            singleView.MainView = mainView;
         }
 
         base.OnFrameworkInitializationCompleted();

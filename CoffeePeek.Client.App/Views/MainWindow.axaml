@@ -1,5 +1,5 @@
 <Window
-    Background="{DynamicResource AppBackgroundBrush}"
+    FontFamily="{StaticResource Sora}"
     Icon="/Assets/avalonia-logo.ico"
     MinHeight="800"
     MinWidth="450"
@@ -14,7 +14,17 @@
     xmlns:vm="using:CoffeePeek.Client.App.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Border>
-        <ContentControl Content="{Binding CurrentPage}" />
-    </Border>
+    <Grid RowDefinitions="Auto,*">
+        <Border Grid.Row="0" Margin="{StaticResource DefaultPadding}">
+            <ContentControl Content="{Binding HeaderViewModel}" />
+        </Border>
+        <Border Grid.Row="1" Margin="32">
+            <ContentControl Content="{Binding WorkspaceViewModel}" />
+        </Border>
+        <ContentControl
+            Content="{Binding HomeViewModel}"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            IsVisible="False" />
+    </Grid>
 </Window>

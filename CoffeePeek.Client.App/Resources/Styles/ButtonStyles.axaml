@@ -6,13 +6,25 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="8">
-                <Button Content="Primary" />
+                <Button Classes="Primary" Content="Primary" />
                 <Button Classes="Secondary" Content="Secondary" />
+                <Button Classes="Transparent" Content="Transparent" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
+    <Style Selector="Button.Primary">
+        <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Padding" Value="20 10" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="{StaticResource LargeRadius}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+
     <Style Selector="Button">
+        <Setter Property="FontFamily" Value="{StaticResource Sora}" />
         <Setter Property="BorderThickness" Value="{StaticResource DefaultThickness}" />
         <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
         <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
@@ -32,5 +44,15 @@
     <Style Selector="Button.Secondary:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource AppSurfaceAltBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource AppBorderSubtleBrush}" />
+    </Style>
+
+
+    <Style Selector="Button.Transparent">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="Button.Transparent:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
     </Style>
 </Styles>

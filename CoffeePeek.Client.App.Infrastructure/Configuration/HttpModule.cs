@@ -1,13 +1,13 @@
-using System.Net.Http;
 using Autofac;
+using CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Abstract;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Services;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Services.Headers;
 using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
-using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients.Interfaces;
+using CoffeePeek.Client.App.Infrastructure.WebClient;
 
-namespace CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
+namespace CoffeePeek.Client.App.Infrastructure.Configuration;
 
 public sealed class HttpModule : Module
 {

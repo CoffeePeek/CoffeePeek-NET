@@ -1,8 +1,1 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="PrimaryColor">#EAB308</Color>
-    <Color x:Key="PrimaryHoverColor">#FACC15</Color>
-
-    <SolidColorBrush Color="{StaticResource PrimaryColor}" x:Key="PrimaryBrush" />
-    <SolidColorBrush Color="{StaticResource PrimaryHoverColor}" x:Key="PrimaryHoverBrush" />
-    <SolidColorBrush Color="Black" x:Key="PrimaryButtonBorderBrush" />
-</ResourceDictionary>
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />

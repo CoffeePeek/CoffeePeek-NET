@@ -2,7 +2,7 @@ using CoffeePeek.Client.App.Infrastructure.HTTP.Requests.Auth;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Responses.Auth;
 using FluentResults;
 
-namespace CoffeePeek.Client.App.Infrastructure.HTTP.WebClients.Interfaces;
+namespace CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 
 public interface IWebAuthenticationClient
 {

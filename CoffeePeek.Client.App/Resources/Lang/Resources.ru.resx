@@ -14,9 +14,6 @@
     <data name="ApplicationName" xml:space="preserve">
         <value>CoffeePeek</value>
     </data>
-    <data name="LoginPage_LoginButton" xml:space="preserve">
-        <value>Войти</value>
-    </data>
     <data name="WelcomePage_Slogan" xml:space="preserve">
         <value>CoffeePeek — ваш проводник в мире кофе</value>
     </data>
@@ -67,5 +64,41 @@
     </data>
     <data name="WelcomePage_Footer" xml:space="preserve">
         <value>Присоединяйтесь к сообществу кофеманов, делитесь опытом, открывайте новые места и развивайтесь в кофейной индустрии вместе с CoffeePeek.</value>
+    </data>
+    <data name="Header_Shops" xml:space="preserve">
+        <value>Кофейни</value>
+    </data>
+    <data name="Header_Map" xml:space="preserve">
+        <value>Карта</value>
+    </data>
+    <data name="ShopPage_SearchPlaceholder" xml:space="preserve">
+        <value>Поиск идеальной кофейни...</value>
+    </data>
+    <data name="ShopPage_Filter" xml:space="preserve">
+        <value>Фильтры</value>
+    </data>
+    <data name="ShopPage_Filter_City" xml:space="preserve">
+        <value>Минск</value>
+    </data>
+    <data name="ShopPage_CityPopupTitle" xml:space="preserve">
+        <value>Город</value>
+    </data>
+    <data name="ShopPage_AdditionalFiltersHint" xml:space="preserve">
+        <value>Здесь будут зерно, обжарщик, способ заваривания и другие фильтры.</value>
+    </data>
+    <data name="ShopPage_Trending" xml:space="preserve">
+        <value>В тренде</value>
+    </data>
+    <data name="ShopPage_Filter_OpenTime" xml:space="preserve">
+        <value>Открыты</value>
+    </data>
+    <data name="ShopPage_Filter_New" xml:space="preserve">
+        <value>Новые</value>
+    </data>
+    <data name="ShopPage_Filter_Favorite" xml:space="preserve">
+        <value>Любимые</value>
+    </data>
+    <data name="ShopPage_Filter_Visited" xml:space="preserve">
+        <value>Посещённые</value>
     </data>
 </root>

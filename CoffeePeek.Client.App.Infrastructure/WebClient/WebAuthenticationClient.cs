@@ -4,10 +4,10 @@ using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Models;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Requests.Auth;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Responses.Auth;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Services;
-using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients.Interfaces;
+using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 using FluentResults;
 
-namespace CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
+namespace CoffeePeek.Client.App.Infrastructure.WebClient;
 
 public sealed class WebAuthenticationClient(IHttpCommandExecutor commandExecutor, ITokenRefresher tokenRefresher)
     : WebClientBase(commandExecutor), IWebAuthenticationClient
