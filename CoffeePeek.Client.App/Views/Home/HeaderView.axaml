@@ -33,7 +33,7 @@
                             <ContentPresenter
                                 Content="{TemplateBinding Header}"
                                 ContentTemplate="{TemplateBinding HeaderTemplate}"
-                                Foreground="{DynamicResource PrimaryBrush}"
+                                Foreground="{TemplateBinding Foreground}"
                                 HorizontalAlignment="Center"
                                 Name="PART_ContentPresenter"
                                 VerticalAlignment="Center" />

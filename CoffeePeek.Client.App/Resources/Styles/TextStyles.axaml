@@ -10,7 +10,6 @@
         </Border>
     </Design.PreviewWith>
 
-    <Styles>
         <Style Selector="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Sora}" />
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
@@ -36,6 +35,5 @@
         <Style Selector="ListBox">
             <Setter Property="FontFamily" Value="{StaticResource Sora}" />
         </Style>
-    </Styles>
 
 </Styles>

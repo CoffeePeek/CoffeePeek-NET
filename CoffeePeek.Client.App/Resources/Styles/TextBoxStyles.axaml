@@ -1,4 +1,4 @@
-2<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style Selector="TextBox">
         <Setter Property="FontFamily" Value="{StaticResource Sora}" />
         <Setter Property="SelectionBrush" Value="{DynamicResource TextSelectionBrush}" />

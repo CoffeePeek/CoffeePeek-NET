@@ -27,7 +27,6 @@
         <Setter Property="FontFamily" Value="{StaticResource Sora}" />
         <Setter Property="BorderThickness" Value="{StaticResource DefaultThickness}" />
         <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
-        <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
         <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />
     </Style>
     <Style Selector="Button:pointerover /template/ ContentPresenter">

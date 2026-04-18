@@ -28,7 +28,7 @@ public class MainActivity : AvaloniaMainActivity
 
         // Resize layout when the keyboard opens (search and auth fields).
         Window?.SetSoftInputMode(SoftInput.AdjustResize);
-
+        
         if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
         {
             // Align with app palette (LightColors / stone surfaces).

@@ -2,6 +2,7 @@ using Android.App;
 using Android.Runtime;
 using Avalonia;
 using Avalonia.Android;
+using Avalonia.Logging;
 
 namespace CoffeePeek.Client.App.Android;
 
@@ -15,6 +16,7 @@ public class Application : AvaloniaAndroidApplication<App>
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
         return base.CustomizeAppBuilder(builder)
+            .LogToTrace(LogEventLevel.Error)
             .UseSkia();
     }
 }
