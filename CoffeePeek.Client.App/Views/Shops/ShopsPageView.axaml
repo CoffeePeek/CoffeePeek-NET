@@ -148,15 +148,54 @@
                 </Popup>
             </Panel>
 
-            <!--  Content area: loading / error / shop cards  -->
+            <!--  Content area: shimmer / error / shop cards  -->
             <Grid Grid.Row="3" Margin="0,20,0,0">
-                <!--  Loading indicator  -->
-                <ProgressBar
-                    HorizontalAlignment="Stretch"
-                    IsIndeterminate="True"
+                <!--  Shimmer skeleton cards  -->
+                <WrapPanel
+                    HorizontalAlignment="Center"
                     IsVisible="{Binding IsLoading}"
-                    VerticalAlignment="Top"
-                    Height="3" />
+                    Orientation="Horizontal">
+                    <Border Classes="shop-card">
+                        <Grid RowDefinitions="Auto,Auto">
+                            <Border Classes="shimmer" CornerRadius="8,8,0,0" Grid.Row="0" Height="160" />
+                            <StackPanel Grid.Row="1" Margin="14,12,14,14" Spacing="8">
+                                <Border Classes="shimmer-line" Height="18" Width="180" HorizontalAlignment="Left" />
+                                <Border Classes="shimmer-line" Height="13" Width="100" HorizontalAlignment="Left" />
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Border Classes="shimmer-line" Height="22" Width="60" CornerRadius="8" />
+                                    <Border Classes="shimmer-line" Height="22" Width="70" CornerRadius="8" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Border Classes="shop-card">
+                        <Grid RowDefinitions="Auto,Auto">
+                            <Border Classes="shimmer" CornerRadius="8,8,0,0" Grid.Row="0" Height="160" />
+                            <StackPanel Grid.Row="1" Margin="14,12,14,14" Spacing="8">
+                                <Border Classes="shimmer-line" Height="18" Width="140" HorizontalAlignment="Left" />
+                                <Border Classes="shimmer-line" Height="13" Width="80" HorizontalAlignment="Left" />
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Border Classes="shimmer-line" Height="22" Width="50" CornerRadius="8" />
+                                    <Border Classes="shimmer-line" Height="22" Width="80" CornerRadius="8" />
+                                    <Border Classes="shimmer-line" Height="22" Width="55" CornerRadius="8" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Border Classes="shop-card">
+                        <Grid RowDefinitions="Auto,Auto">
+                            <Border Classes="shimmer" CornerRadius="8,8,0,0" Grid.Row="0" Height="160" />
+                            <StackPanel Grid.Row="1" Margin="14,12,14,14" Spacing="8">
+                                <Border Classes="shimmer-line" Height="18" Width="160" HorizontalAlignment="Left" />
+                                <Border Classes="shimmer-line" Height="13" Width="110" HorizontalAlignment="Left" />
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Border Classes="shimmer-line" Height="22" Width="65" CornerRadius="8" />
+                                    <Border Classes="shimmer-line" Height="22" Width="45" CornerRadius="8" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </WrapPanel>
 
                 <!--  Error message  -->
                 <Border

@@ -44,5 +44,6 @@
         <StyleInclude Source="Resources/Styles/ButtonStyles.axaml" />
         <StyleInclude Source="Resources/Styles/GeneralStyles.axaml" />
         <StyleInclude Source="Resources/Styles/ShopsPageStyles.axaml" />
+        <StyleInclude Source="Resources/Styles/ShimmerStyles.axaml" />
     </Application.Styles>
 </Application>
