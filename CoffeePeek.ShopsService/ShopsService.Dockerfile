@@ -7,6 +7,7 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Packages.props", "."]
 COPY ["CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj", "CoffeePeek.ShopsService/"]
 COPY ["CoffeePeek.Shops.Infrastructure/CoffeePeek.Shops.Infrastructure.csproj", "CoffeePeek.Shops.Infrastructure/"]
 COPY ["CoffeePeek.Shops.Application/CoffeePeek.Shops.Application.csproj", "CoffeePeek.Shops.Application/"]
