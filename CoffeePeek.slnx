@@ -67,6 +67,9 @@
     <Project Path="CoffeePeek.Shared.Validation/CoffeePeek.Shared.Validation.csproj" />
     <Project Path="CoffeePeek.Shared.Web/CoffeePeek.Shared.Web.csproj" />
   </Folder>
+  <Folder Name="/CoffeePeek/Tests/">
+    <Project Path="CoffeePeek.Backend.Tests/CoffeePeek.Backend.Tests.csproj" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".github/workflows/ci-cd.yml" />
     <File Path="CHANGELOG.md" />

@@ -4,6 +4,7 @@ using CoffeePeek.MediaService.Commands.Base;
 using CoffeePeek.MediaService.Responses;
 using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Kernel.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 
@@ -11,6 +12,7 @@ namespace CoffeePeek.MediaService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class PhotosController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {

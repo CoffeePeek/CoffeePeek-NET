@@ -29,11 +29,31 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props', '**/global.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Cache .NET workloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.dotnet
+          key: ${{ runner.os }}-dotnet-workloads-${{ hashFiles('**/*.csproj', '**/global.json') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-workloads-
+
       - name: Restore .NET workloads
         run: dotnet workload restore "CoffeePeek.slnx"
 
       - name: Restore NuGet packages
         run: dotnet restore "CoffeePeek.slnx" -p:AllowMissingPrunePackageData=true
+
+      - name: Audit dependencies
+        continue-on-error: true
+        run: dotnet list "CoffeePeek.slnx" package --vulnerable --include-transitive
 
       - name: Build solution
         run: |
@@ -48,6 +68,21 @@ jobs:
 
           for project in "${projects[@]}"; do
             dotnet build "$project" --configuration Release --no-restore -p:AllowMissingPrunePackageData=true
+          done
+
+      - name: Verify formatting and analyzers
+        run: |
+          projects=(
+            "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj"
+            "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj"
+            "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj"
+            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj"
+            "CoffeePeek.Gateway/CoffeePeek.Gateway.csproj"
+            "CoffeePeek.Backend.Tests/CoffeePeek.Backend.Tests.csproj"
+          )
+
+          for project in "${projects[@]}"; do
+            dotnet format "$project" --verify-no-changes --no-restore --verbosity minimal
           done
 
       - name: Run tests

@@ -14,6 +14,7 @@ COPY ["CoffeePeek.Contract/CoffeePeek.Contract.csproj", "CoffeePeek.Contract/"]
 COPY ["CoffeePeek.Shared.Kernel/CoffeePeek.Shared.Kernel.csproj", "CoffeePeek.Shared.Kernel/"]
 COPY ["CoffeePeek.Shared.Persistence/CoffeePeek.Shared.Persistence.csproj", "CoffeePeek.Shared.Persistence/"]
 COPY ["CoffeePeek.Shared.Domain/CoffeePeek.Shared.Domain.csproj", "CoffeePeek.Shared.Domain/"]
+COPY ["CoffePeek.ServiceDefaults/CoffePeek.ServiceDefaults.csproj", "CoffePeek.ServiceDefaults/"]
 RUN dotnet restore "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj"
 COPY . .
 WORKDIR "/src/CoffeePeek.MediaService"

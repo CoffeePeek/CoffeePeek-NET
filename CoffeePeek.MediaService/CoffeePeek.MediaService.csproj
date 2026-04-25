@@ -19,6 +19,8 @@
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Shared.Auth\CoffeePeek.Shared.Auth.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shared.Persistence\CoffeePeek.Shared.Persistence.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shared.Web\CoffeePeek.Shared.Web.csproj" />
+      <ProjectReference Include="..\CoffePeek.ServiceDefaults\CoffePeek.ServiceDefaults.csproj" />
     </ItemGroup>
 
     <ItemGroup>

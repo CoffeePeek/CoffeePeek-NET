@@ -39,6 +39,9 @@ public static class InfrastructureExtensions
 
         app.UseExceptionHandler();
 
+        app.UseAuthentication();
+        app.UseAuthorization();
+
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
