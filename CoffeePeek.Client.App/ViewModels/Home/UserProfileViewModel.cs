@@ -32,6 +32,7 @@ public partial class UserProfileViewModel(
     IImagePickerService imagePickerService) : ViewModelBase
 {
     private CancellationTokenSource? _loadCts;
+    private CancellationTokenSource? _avatarUploadCts;
     private Guid? _userId;
 
     [ObservableProperty]
@@ -144,6 +145,7 @@ public partial class UserProfileViewModel(
         _loadCts?.Cancel();
         _loadCts?.Dispose();
         _loadCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        _avatarUploadCts?.Cancel();
         var ct = _loadCts.Token;
 
         var currentUserId = identityAccessor.GetCurrentUserIdOrNull();
@@ -455,25 +457,30 @@ public partial class UserProfileViewModel(
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(AllowConcurrentExecutions = false)]
     private async Task UploadAvatarAsync()
     {
-        if (!IsOwnProfile || _userId is null || IsUploadingAvatar)
+        if (!IsOwnProfile || _userId is null)
             return;
 
         AvatarUploadErrorMessage = null;
         IsUploadingAvatar = true;
+        _avatarUploadCts?.Cancel();
+        _avatarUploadCts?.Dispose();
+        _avatarUploadCts = CancellationTokenSource.CreateLinkedTokenSource(_loadCts?.Token ?? CancellationToken.None);
+        var ct = _avatarUploadCts.Token;
 
         try
         {
-            var picked = await imagePickerService.PickImageAsync();
+            var picked = await imagePickerService.PickImageAsync(ct);
             if (picked is null)
                 return;
 
             var uploadResult = await profileClient.UploadAvatarAsync(
                 picked.FileName,
                 picked.ContentType,
-                picked.Content);
+                picked.Content,
+                ct);
 
             if (uploadResult.IsFailed)
             {
@@ -482,9 +489,13 @@ public partial class UserProfileViewModel(
                 return;
             }
 
-            await LoadAsync(_userId.Value);
+            await LoadAsync(_userId.Value, ct);
         }
-        catch
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception)
         {
             AvatarUploadErrorMessage = Lang.Profile_AvatarUploadError;
         }
@@ -509,6 +520,7 @@ public partial class UserProfileViewModel(
     [RelayCommand]
     private async Task SignOutAsync()
     {
+        _avatarUploadCts?.Cancel();
         workspaceShellNavigator.CloseUserProfile();
         _ = await authenticationClient.Logout();
         clientSession.Clear();

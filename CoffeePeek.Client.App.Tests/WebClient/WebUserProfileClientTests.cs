@@ -3,6 +3,7 @@ using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Models;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Responses;
 using CoffeePeek.Client.App.Infrastructure.WebClient;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using System.Net;
@@ -12,12 +13,13 @@ namespace CoffeePeek.Client.App.Tests.WebClient;
 public class WebUserProfileClientTests
 {
     private readonly Mock<IHttpCommandExecutor> _executorMock = new();
+    private readonly Mock<ILogger<WebUserProfileClient>> _loggerMock = new();
     private readonly FakeHttpMessageHandler _httpMessageHandler = new();
 
     private WebUserProfileClient CreateSut()
     {
         var httpClient = new HttpClient(_httpMessageHandler);
-        return new WebUserProfileClient(_executorMock.Object, httpClient);
+        return new WebUserProfileClient(_executorMock.Object, httpClient, _loggerMock.Object);
     }
 
     [Fact]
@@ -189,6 +191,66 @@ public class WebUserProfileClientTests
 
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().ContainSingle(e => e.Message.Contains("Avatar upload failed"));
+        _executorMock.Verify(e => e.Execute(It.Is<HttpCommand>(c => c.Endpoint == "api/Users/me/avatar"), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UploadAvatarAsync_ReturnsFailure_WhenFileNameIsEmpty()
+    {
+        var sut = CreateSut();
+        var result = await sut.UploadAvatarAsync(" ", "image/jpeg", [1, 2, 3]);
+
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "Avatar file is invalid.");
+        _executorMock.Verify(e => e.Execute<GenerateUploadUrlResponseDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        _executorMock.Verify(e => e.Execute(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        _httpMessageHandler.LastRequest.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task UploadAvatarAsync_ReturnsFailure_WhenFileContentEmpty()
+    {
+        var sut = CreateSut();
+        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", []);
+
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "Avatar file is invalid.");
+        _executorMock.Verify(e => e.Execute<GenerateUploadUrlResponseDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        _executorMock.Verify(e => e.Execute(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        _httpMessageHandler.LastRequest.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task UploadAvatarAsync_ReturnsFailure_WhenFileContentNull()
+    {
+        var sut = CreateSut();
+        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", null!);
+
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "Avatar file is invalid.");
+        _executorMock.Verify(e => e.Execute<GenerateUploadUrlResponseDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        _executorMock.Verify(e => e.Execute(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        _httpMessageHandler.LastRequest.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task UploadAvatarAsync_ReturnsFailure_WhenPrepareStepFails()
+    {
+        _executorMock
+            .Setup(e => e.Execute<GenerateUploadUrlResponseDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ApiResponse<GenerateUploadUrlResponseDto>
+            {
+                IsSuccess = false,
+                StatusCode = (int)HttpStatusCode.BadRequest,
+                Message = "prepare failed"
+            });
+
+        var sut = CreateSut();
+        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", [1, 2, 3]);
+
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message == "prepare failed");
+        _httpMessageHandler.LastRequest.Should().BeNull();
         _executorMock.Verify(e => e.Execute(It.Is<HttpCommand>(c => c.Endpoint == "api/Users/me/avatar"), It.IsAny<CancellationToken>()), Times.Never);
     }
 

@@ -7,6 +7,8 @@ namespace CoffeePeek.Client.App.Services;
 
 public sealed class ImagePickerService : IImagePickerService
 {
+    private const ulong MaxImageBytes = 10 * 1024 * 1024;
+
     private static readonly FilePickerFileType ImagePickerType = new("Images")
     {
         Patterns = ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.gif"]
@@ -26,6 +28,11 @@ public sealed class ImagePickerService : IImagePickerService
 
         var file = files.FirstOrDefault();
         if (file is null)
+            return null;
+
+        ct.ThrowIfCancellationRequested();
+        var properties = await file.GetBasicPropertiesAsync();
+        if (properties.Size > MaxImageBytes)
             return null;
 
         await using var stream = await file.OpenReadAsync();

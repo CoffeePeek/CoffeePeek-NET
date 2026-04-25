@@ -217,6 +217,10 @@ public class UserProfileEditTests
         _profileClientMock.Verify(
             c => c.UploadAvatarAsync("avatar.jpg", "image/jpeg", It.Is<byte[]>(b => b.Length == 3), It.IsAny<CancellationToken>()),
             Times.Once);
+        _profileClientMock.Verify(
+            c => c.GetPublicProfileAsync(OwnUserId, It.IsAny<CancellationToken>()),
+            Times.AtLeast(2));
+        sut.IsUploadingAvatar.Should().BeFalse();
         sut.HasAvatarUploadError.Should().BeFalse();
     }
 
