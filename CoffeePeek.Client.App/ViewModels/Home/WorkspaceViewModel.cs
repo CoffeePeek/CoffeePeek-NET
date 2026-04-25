@@ -21,6 +21,7 @@ public partial class WorkspaceViewModel : ViewModelBase
     {
         ShopPage = shopsPageViewModel;
         UserProfile = userProfileViewModel;
+        _ = ShopPage.InitializeAsync();
         shellNavigator.Attach(
             id =>
             {

@@ -6,6 +6,7 @@
     x:DataType="shops:ShopsPageViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:cities="clr-namespace:CoffeePeek.Contract.Dtos.Internal;assembly=CoffeePeek.Contract"
     xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
@@ -120,7 +121,7 @@
                             <ScrollViewer Grid.Row="1" MaxHeight="220">
                                 <ItemsControl ItemsSource="{Binding Cities}">
                                     <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
+                                        <DataTemplate x:DataType="cities:CityDto">
                                             <Button
                                                 MinHeight="48"
                                                 Classes="Transparent"
@@ -136,7 +137,7 @@
                                                         <Setter Property="Background" Value="{DynamicResource SurfaceContainerBrush}" />
                                                     </Style>
                                                 </Button.Styles>
-                                                <TextBlock Text="{Binding}" />
+                                                <TextBlock Text="{Binding Name}" />
                                             </Button>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -147,118 +148,167 @@
                 </Popup>
             </Panel>
 
-            <!--  Shop cards  -->
-            <ScrollViewer
-                Grid.Row="3"
-                HorizontalScrollBarVisibility="Disabled"
-                Margin="0,20,0,0">
-                <ItemsControl
-                    HorizontalAlignment="Center"
-                    ItemsSource="{Binding Shops}"
-                    MaxWidth="1120">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="shops:ShopCardViewModel">
-                            <Border Classes="shop-card">
-                                <Grid RowDefinitions="Auto,Auto">
-                                    <Panel Grid.Row="0">
-                                        <Border
-                                            Background="{DynamicResource CardToneGradientBrush}"
-                                            ClipToBounds="True"
-                                            CornerRadius="8,8,0,0"
-                                            Height="160" />
-                                        <Border
-                                            Background="{DynamicResource SurfaceContainerHighBrush}"
-                                            CornerRadius="{StaticResource DefaultCornerRadius}"
-                                            HorizontalAlignment="Right"
-                                            Margin="10"
-                                            Opacity="0.95"
-                                            Padding="8,4"
-                                            VerticalAlignment="Top">
-                                            <StackPanel Orientation="Horizontal" Spacing="4">
-                                                <TextBlock
-                                                    FontSize="12"
-                                                    Foreground="{DynamicResource PrimaryBrush}"
-                                                    Text="★" />
-                                                <TextBlock
-                                                    FontSize="13"
-                                                    FontWeight="SemiBold"
-                                                    Foreground="{DynamicResource OnSurfaceBrush}"
-                                                    Text="{Binding Rating}" />
-                                            </StackPanel>
-                                        </Border>
-                                        <Border
-                                            Background="{DynamicResource PrimaryGradientBrush}"
-                                            CornerRadius="{StaticResource SmallCornerRadius}"
-                                            HorizontalAlignment="Left"
-                                            IsVisible="{Binding IsTrending}"
-                                            Margin="10"
-                                            Padding="8,4"
-                                            VerticalAlignment="Bottom">
-                                            <StackPanel Orientation="Horizontal" Spacing="4">
-                                                <TextBlock FontSize="10" Text="🔥" />
-                                                <TextBlock
-                                                    FontSize="10"
-                                                    FontWeight="Bold"
-                                                    Foreground="{DynamicResource OnPrimaryBrush}"
-                                                    Text="{x:Static lang:Resources.ShopPage_Trending}" />
-                                            </StackPanel>
-                                        </Border>
-                                    </Panel>
+            <!--  Content area: loading / error / shop cards  -->
+            <Grid Grid.Row="3" Margin="0,20,0,0">
+                <!--  Loading indicator  -->
+                <ProgressBar
+                    HorizontalAlignment="Stretch"
+                    IsIndeterminate="True"
+                    IsVisible="{Binding IsLoading}"
+                    VerticalAlignment="Top"
+                    Height="3" />
 
-                                    <StackPanel
-                                        Grid.Row="1"
-                                        Margin="14,12,14,14"
-                                        Spacing="8">
-                                        <TextBlock
-                                            FontSize="18"
-                                            FontWeight="Bold"
-                                            Foreground="{DynamicResource OnSurfaceBrush}"
-                                            Text="{Binding Name}" />
-                                        <TextBlock
-                                            FontSize="13"
-                                            Foreground="{DynamicResource TextPrimaryBrush}"
-                                            Text="{Binding DistanceAndHours}" />
-                                        <TextBlock
-                                            FontSize="14"
-                                            FontStyle="Italic"
-                                            Foreground="{DynamicResource OnSurfaceBrush}"
-                                            Text="{Binding Quote}"
-                                            TextWrapping="Wrap" />
-                                        <ItemsControl ItemsSource="{Binding Tags}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <WrapPanel Orientation="Horizontal" />
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
+                <!--  Error message  -->
+                <Border
+                    Background="{DynamicResource AuthErrorBackgroundBrush}"
+                    BorderThickness="0"
+                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding HasError}"
+                    Margin="0,12,0,0"
+                    Padding="16,12"
+                    VerticalAlignment="Top">
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="{DynamicResource AuthErrorForegroundBrush}"
+                        Text="{Binding ErrorMessage}"
+                        TextWrapping="Wrap" />
+                </Border>
+
+                <!--  Shop cards  -->
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Disabled"
+                    IsVisible="{Binding !IsLoading}">
+                    <StackPanel>
+                        <ItemsControl
+                            HorizontalAlignment="Center"
+                            ItemsSource="{Binding Shops}"
+                            MaxWidth="1120">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="shops:ShopCardViewModel">
+                                    <Border Classes="shop-card">
+                                        <Grid RowDefinitions="Auto,Auto">
+                                            <Panel Grid.Row="0">
+                                                <Border
+                                                    Background="{DynamicResource CardToneGradientBrush}"
+                                                    ClipToBounds="True"
+                                                    CornerRadius="8,8,0,0"
+                                                    Height="160" />
+                                                <Border
+                                                    Background="{DynamicResource SurfaceContainerHighBrush}"
+                                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                                    HorizontalAlignment="Right"
+                                                    Margin="10"
+                                                    Opacity="0.95"
+                                                    Padding="8,4"
+                                                    VerticalAlignment="Top">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <TextBlock
+                                                            FontSize="12"
+                                                            Foreground="{DynamicResource PrimaryBrush}"
+                                                            Text="★" />
+                                                        <TextBlock
+                                                            FontSize="13"
+                                                            FontWeight="SemiBold"
+                                                            Foreground="{DynamicResource OnSurfaceBrush}"
+                                                            Text="{Binding Rating}" />
+                                                    </StackPanel>
+                                                </Border>
+                                                <Border
+                                                    Background="{DynamicResource PrimaryGradientBrush}"
+                                                    CornerRadius="{StaticResource SmallCornerRadius}"
+                                                    HorizontalAlignment="Left"
+                                                    IsVisible="{Binding IsTrending}"
+                                                    Margin="10"
+                                                    Padding="8,4"
+                                                    VerticalAlignment="Bottom">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <TextBlock FontSize="10" Text="🔥" />
+                                                        <TextBlock
+                                                            FontSize="10"
+                                                            FontWeight="Bold"
+                                                            Foreground="{DynamicResource OnPrimaryBrush}"
+                                                            Text="{x:Static lang:Resources.ShopPage_Trending}" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </Panel>
+
+                                            <StackPanel
+                                                Grid.Row="1"
+                                                Margin="14,12,14,14"
+                                                Spacing="8">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <TextBlock
+                                                        Grid.Column="0"
+                                                        FontSize="18"
+                                                        FontWeight="Bold"
+                                                        Foreground="{DynamicResource OnSurfaceBrush}"
+                                                        Text="{Binding Name}"
+                                                        TextTrimming="CharacterEllipsis" />
                                                     <Border
+                                                        Grid.Column="1"
                                                         Background="{DynamicResource SurfaceContainerBrush}"
-                                                        BorderThickness="0"
-                                                        CornerRadius="{StaticResource DefaultCornerRadius}"
-                                                        Margin="0,0,6,6"
-                                                        Padding="8,4">
+                                                        CornerRadius="{StaticResource SmallCornerRadius}"
+                                                        Padding="6,2"
+                                                        VerticalAlignment="Center"
+                                                        IsVisible="{Binding IsOpen}">
                                                         <TextBlock
                                                             FontSize="11"
                                                             FontWeight="SemiBold"
-                                                            Foreground="{DynamicResource TextPrimaryBrush}"
-                                                            Text="{Binding}" />
+                                                            Foreground="{DynamicResource PrimaryBrush}"
+                                                            Text="OPEN" />
                                                     </Border>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                                                </Grid>
+                                                <TextBlock
+                                                    FontSize="13"
+                                                    Foreground="{DynamicResource TextPrimaryBrush}"
+                                                    Text="{Binding ReviewCount, StringFormat='{}{0} reviews'}" />
+                                                <ItemsControl ItemsSource="{Binding Tags}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel Orientation="Horizontal" />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Border
+                                                                Background="{DynamicResource SurfaceContainerBrush}"
+                                                                BorderThickness="0"
+                                                                CornerRadius="{StaticResource DefaultCornerRadius}"
+                                                                Margin="0,0,6,6"
+                                                                Padding="8,4">
+                                                                <TextBlock
+                                                                    FontSize="11"
+                                                                    FontWeight="SemiBold"
+                                                                    Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                    Text="{Binding}" />
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!--  Load more button  -->
+                        <Button
+                            HorizontalAlignment="Center"
+                            Command="{Binding LoadNextPageCommand}"
+                            Content="{x:Static lang:Resources.ShopPage_LoadMore}"
+                            IsVisible="{Binding HasMorePages}"
+                            Margin="0,16,0,24"
+                            Padding="24,10" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

@@ -273,4 +273,10 @@
     <data name="Profile_ReviewDefaultTitle" xml:space="preserve">
         <value>Отзыв о кофейне</value>
     </data>
+    <data name="ShopPage_LoadError" xml:space="preserve">
+        <value>Не удалось загрузить кофейни</value>
+    </data>
+    <data name="ShopPage_LoadMore" xml:space="preserve">
+        <value>Загрузить ещё</value>
+    </data>
 </root>

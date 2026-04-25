@@ -1,7 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 using CoffeePeek.Client.App.ViewModels.Abstract;
 using CoffeePeek.Client.App.ViewModels.Shops.Search;
+using CoffeePeek.Contract.Dtos.Internal;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Lang = CoffeePeek.Client.App.Resources.Lang.Resources;
@@ -10,10 +13,20 @@ namespace CoffeePeek.Client.App.ViewModels.Shops;
 
 public partial class ShopsPageViewModel : ViewModelBase
 {
+    private readonly IWebCoffeeShopsClient _shopsClient;
     private bool _isInitializing = true;
 
-    public ShopsPageViewModel()
+    private int _currentPage = 1;
+    private int _totalPages = 1;
+    private const int PageSize = 10;
+
+    private CancellationTokenSource? _searchCts;
+    private bool _initialLoadDone;
+
+    public ShopsPageViewModel(IWebCoffeeShopsClient shopsClient)
     {
+        _shopsClient = shopsClient;
+
         try
         {
             foreach (var chip in BuildFilterChips())
@@ -21,14 +34,6 @@ public partial class ShopsPageViewModel : ViewModelBase
 
             SelectedFilterChip = FilterChips[0];
             FilterChips[0].IsSelected = true;
-
-            foreach (var shop in BuildMockShops())
-                Shops.Add(shop);
-
-            foreach (var city in MockCities)
-                Cities.Add(city);
-
-            SelectedCity = Cities[0];
         }
         finally
         {
@@ -38,6 +43,16 @@ public partial class ShopsPageViewModel : ViewModelBase
 
     [ObservableProperty]
     public partial string SearchQuery { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool IsLoading { get; set; }
+
+    [ObservableProperty]
+    public partial string? ErrorMessage { get; set; }
+
+    public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+
+    public bool HasMorePages => _currentPage < _totalPages;
 
     public ObservableCollection<FilterChipViewModel> FilterChips { get; } = [];
 
@@ -52,22 +67,136 @@ public partial class ShopsPageViewModel : ViewModelBase
     [ObservableProperty]
     public partial bool IsCityPopupOpen { get; set; }
 
-    public ObservableCollection<string> Cities { get; } = [];
+    public ObservableCollection<CityDto> Cities { get; } = [];
 
     [ObservableProperty]
-    public partial string? SelectedCity { get; set; }
+    public partial CityDto? SelectedCity { get; set; }
 
-    private static IEnumerable<string> MockCities => ["Minsk", "Gomel", "Brest", "Grodno", "Mogilev"];
+    partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
+
+    partial void OnSearchQueryChanged(string value) => DebounceSearch();
+
+    partial void OnSelectedCityChanged(CityDto? value)
+    {
+        if (_isInitializing || value is null)
+            return;
+
+        _currentPage = 1;
+        LoadShopsCommand.ExecuteAsync(null);
+    }
+
+    public async Task InitializeAsync()
+    {
+        if (_initialLoadDone)
+            return;
+
+        _initialLoadDone = true;
+        await Task.WhenAll(LoadCitiesCommand.ExecuteAsync(null), LoadShopsCommand.ExecuteAsync(null));
+    }
+
+    [RelayCommand]
+    private async Task LoadShopsAsync()
+    {
+        ErrorMessage = null;
+        IsLoading = true;
+
+        try
+        {
+            var result = await _shopsClient.SearchAsync(
+                string.IsNullOrWhiteSpace(SearchQuery) ? null : SearchQuery.Trim(),
+                SelectedCity?.Id,
+                _currentPage,
+                PageSize);
+
+            if (result.IsFailed)
+            {
+                ErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.ShopPage_LoadError;
+                return;
+            }
+
+            var data = result.Value;
+            _totalPages = data.TotalPages;
+
+            Shops.Clear();
+            foreach (var dto in data.CoffeeShops)
+                Shops.Add(ShopCardViewModel.FromDto(dto));
+
+            OnPropertyChanged(nameof(HasMorePages));
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task LoadNextPageAsync()
+    {
+        if (!HasMorePages || IsLoading)
+            return;
+
+        _currentPage++;
+        ErrorMessage = null;
+        IsLoading = true;
+
+        try
+        {
+            var result = await _shopsClient.SearchAsync(
+                string.IsNullOrWhiteSpace(SearchQuery) ? null : SearchQuery.Trim(),
+                SelectedCity?.Id,
+                _currentPage,
+                PageSize);
+
+            if (result.IsFailed)
+            {
+                _currentPage--;
+                ErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.ShopPage_LoadError;
+                return;
+            }
+
+            var data = result.Value;
+            _totalPages = data.TotalPages;
+
+            foreach (var dto in data.CoffeeShops)
+                Shops.Add(ShopCardViewModel.FromDto(dto));
+
+            OnPropertyChanged(nameof(HasMorePages));
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task LoadCitiesAsync()
+    {
+        var result = await _shopsClient.GetCitiesAsync();
+        if (result.IsFailed)
+            return;
+
+        Cities.Clear();
+        foreach (var city in result.Value.Cities)
+            Cities.Add(city);
+
+        if (Cities.Count > 0)
+        {
+            SelectedCity = Cities[0];
+            var cityChip = FilterChips.FirstOrDefault(c => c.FilterType == FilterType.City);
+            if (cityChip is not null)
+                cityChip.DisplayName = Cities[0].Name;
+        }
+    }
 
     [RelayCommand]
     private void ToggleAdditionalFilters() => IsAdditionalFiltersPanelOpen = !IsAdditionalFiltersPanelOpen;
 
     [RelayCommand]
-    private void SelectCity(string city)
+    private void SelectCity(CityDto city)
     {
         SelectedCity = city;
         var cityChip = FilterChips.First(c => c.FilterType == FilterType.City);
-        cityChip.DisplayName = city;
+        cityChip.DisplayName = city.Name;
         IsCityPopupOpen = false;
     }
 
@@ -88,6 +217,19 @@ public partial class ShopsPageViewModel : ViewModelBase
             IsCityPopupOpen = false;
     }
 
+    private void DebounceSearch()
+    {
+        _searchCts?.Cancel();
+        _searchCts = new CancellationTokenSource();
+        var token = _searchCts.Token;
+
+        _ = Task.Delay(350, token).ContinueWith(_ =>
+        {
+            _currentPage = 1;
+            LoadShopsCommand.ExecuteAsync(null);
+        }, token, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
+    }
+
     private static IEnumerable<FilterChipViewModel> BuildFilterChips() =>
     [
         new(Lang.ShopPage_Filter_City, FilterType.City),
@@ -96,42 +238,4 @@ public partial class ShopsPageViewModel : ViewModelBase
         new(Lang.ShopPage_Filter_Favorite, FilterType.Favorite),
         new(Lang.ShopPage_Filter_Visited, FilterType.Visited)
     ];
-
-    private static IEnumerable<ShopCardViewModel> BuildMockShops()
-    {
-        var a = new ShopCardViewModel
-        {
-            Name = "Bean There",
-            Rating = 4.9,
-            IsTrending = true,
-            DistanceAndHours = "1.2 mi • Open until 8 PM",
-            Quote = "Best for quiet work!"
-        };
-        foreach (var t in new[] { "ARTISAN", "DOWNTOWN", "QUIET" })
-            a.Tags.Add(t);
-
-        var b = new ShopCardViewModel
-        {
-            Name = "The Roasted Bean",
-            Rating = 4.8,
-            IsTrending = false,
-            DistanceAndHours = "0.5 mi • Open until 8 PM",
-            Quote = "Best for lattes!"
-        };
-        foreach (var t in new[] { "FREE WIFI", "VEGAN", "QUIET" })
-            b.Tags.Add(t);
-
-        var c = new ShopCardViewModel
-        {
-            Name = "Espresso Lab",
-            Rating = 4.7,
-            IsTrending = true,
-            DistanceAndHours = "0.8 mi • Closes soon",
-            Quote = "Modern and chic ambiance!"
-        };
-        foreach (var t in new[] { "MODERN", "UPTOWN", "HIRING" })
-            c.Tags.Add(t);
-
-        return [a, b, c];
-    }
 }

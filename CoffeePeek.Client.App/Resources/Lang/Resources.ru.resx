@@ -134,4 +134,10 @@
     <data name="Common_Back" xml:space="preserve">
         <value>Назад</value>
     </data>
+    <data name="ShopPage_LoadError" xml:space="preserve">
+        <value>Не удалось загрузить кофейни</value>
+    </data>
+    <data name="ShopPage_LoadMore" xml:space="preserve">
+        <value>Загрузить ещё</value>
+    </data>
 </root>
