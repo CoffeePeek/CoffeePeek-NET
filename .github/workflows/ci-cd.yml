@@ -36,10 +36,32 @@ jobs:
         run: dotnet restore "CoffeePeek.slnx" -p:AllowMissingPrunePackageData=true
 
       - name: Build solution
-        run: dotnet build "CoffeePeek.slnx" --configuration Release --no-restore -p:AllowMissingPrunePackageData=true
+        run: |
+          projects=(
+            "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj"
+            "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj"
+            "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj"
+            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj"
+            "CoffeePeek.Gateway/CoffeePeek.Gateway.csproj"
+            "CoffeePeek.Client.App.Desktop/CoffeePeek.Client.App.Desktop.csproj"
+          )
+
+          for project in "${projects[@]}"; do
+            dotnet build "$project" --configuration Release --no-restore -p:AllowMissingPrunePackageData=true
+          done
 
       - name: Run tests
-        run: dotnet test "CoffeePeek.slnx" --configuration Release --no-build --no-restore -p:AllowMissingPrunePackageData=true
+        run: |
+          projects=(
+            "CoffeePeek.Account.Application.Tests/CoffeePeek.Account.Application.Tests.csproj"
+            "CoffeePeek.Account.Domain.Tests/CoffeePeek.Account.Domain.Tests.csproj"
+            "CoffeePeek.Account.Infrastructure.Tests/CoffeePeek.Account.Infrastructure.Tests.csproj"
+            "CoffeePeek.Shops.Domain.Tests/CoffeePeek.Shops.Domain.Tests.csproj"
+          )
+
+          for project in "${projects[@]}"; do
+            dotnet test "$project" --configuration Release --no-build --no-restore -p:AllowMissingPrunePackageData=true
+          done
 
   build_and_push_images:
     needs: build_and_test
