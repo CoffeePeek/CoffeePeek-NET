@@ -23,14 +23,45 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Setup Java SDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Restore .NET workloads
+        run: dotnet workload restore "CoffeePeek.slnx"
+
       - name: Restore NuGet packages
-        run: dotnet restore "CoffeePeek.slnx"
+        run: dotnet restore "CoffeePeek.slnx" -p:AllowMissingPrunePackageData=true
 
       - name: Build solution
-        run: dotnet build "CoffeePeek.slnx" --configuration Release --no-restore
+        run: |
+          projects=(
+            "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj"
+            "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj"
+            "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj"
+            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj"
+            "CoffeePeek.Gateway/CoffeePeek.Gateway.csproj"
+            "CoffeePeek.Client.App.Desktop/CoffeePeek.Client.App.Desktop.csproj"
+          )
+
+          for project in "${projects[@]}"; do
+            dotnet build "$project" --configuration Release --no-restore -p:AllowMissingPrunePackageData=true
+          done
 
       - name: Run tests
-        run: dotnet test "CoffeePeek.slnx" --configuration Release --no-build --no-restore
+        run: |
+          projects=(
+            "CoffeePeek.Account.Application.Tests/CoffeePeek.Account.Application.Tests.csproj"
+            "CoffeePeek.Account.Domain.Tests/CoffeePeek.Account.Domain.Tests.csproj"
+            "CoffeePeek.Account.Infrastructure.Tests/CoffeePeek.Account.Infrastructure.Tests.csproj"
+            "CoffeePeek.Shops.Domain.Tests/CoffeePeek.Shops.Domain.Tests.csproj"
+          )
+
+          for project in "${projects[@]}"; do
+            dotnet test "$project" --configuration Release --no-restore -p:AllowMissingPrunePackageData=true
+          done
 
   build_and_push_images:
     needs: build_and_test
@@ -119,7 +150,7 @@ jobs:
           dotnet-version: '10.0.x'
           
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore "CoffeePeek.slnx" -p:AllowMissingPrunePackageData=true
   
       - name: Install dotnet-ef tool
         run: dotnet tool install --global dotnet-ef
@@ -129,7 +160,16 @@ jobs:
           PostgresCpOptions__ConnectionString: ${{ secrets.DB_CONNECTION_ACCOUNT }}
           
         run: |
-          dotnet build CoffeePeek.slnx
+          projects=(
+            "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj"
+            "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj"
+            "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj"
+            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj"
+          )
+
+          for project in "${projects[@]}"; do
+            dotnet build "$project" --configuration Release --no-restore -p:AllowMissingPrunePackageData=true
+          done
           
           echo "--- Applying AccountService migrations ---"
           export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_ACCOUNT }}"

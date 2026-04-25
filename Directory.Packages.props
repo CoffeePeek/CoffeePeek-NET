@@ -70,6 +70,9 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.5" />
   </ItemGroup>
   <ItemGroup Label="Avalonia">
     <PackageVersion Include="Avalonia" Version="12.0.0" />

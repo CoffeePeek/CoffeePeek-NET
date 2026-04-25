@@ -13,6 +13,10 @@ public sealed class WebCoffeeShopsClient(IHttpCommandExecutor httpCommandExecuto
     public async Task<Result<SearchShopsResultDto>> SearchAsync(
         string? query = null,
         Guid? cityId = null,
+        Guid[]? roasters = null,
+        Guid[]? beans = null,
+        Guid[]? brewMethods = null,
+        Guid[]? equipment = null,
         int page = 1,
         int pageSize = 10,
         CancellationToken ct = default)
@@ -28,15 +32,12 @@ public sealed class WebCoffeeShopsClient(IHttpCommandExecutor httpCommandExecuto
         if (cityId.HasValue)
             command.WithQuery("cityId", cityId.Value.ToString("D"));
 
+        AppendGuidArray(command, "roasters", roasters);
+        AppendGuidArray(command, "beans", beans);
+        AppendGuidArray(command, "brewMethods", brewMethods);
+        AppendGuidArray(command, "equipments", equipment);
+
         return await Execute<SearchShopsResultDto>(command, ct);
-    }
-
-    public Task<Result<GetCitiesResultDto>> GetCitiesAsync(CancellationToken ct = default)
-    {
-        var command = new HttpCommand()
-            .WithEndpoint("api/Catalogs/cities");
-
-        return Execute<GetCitiesResultDto>(command, ct);
     }
 
     public Task<Result<ShopDetailResultDto>> GetByIdAsync(Guid shopId, CancellationToken ct = default)
@@ -45,5 +46,12 @@ public sealed class WebCoffeeShopsClient(IHttpCommandExecutor httpCommandExecuto
             .WithEndpoint($"api/CoffeeShops/{shopId:D}");
 
         return Execute<ShopDetailResultDto>(command, ct);
+    }
+
+    internal static void AppendGuidArray(HttpCommand command, string key, Guid[]? ids)
+    {
+        if (ids is null) return;
+        for (var i = 0; i < ids.Length; i++)
+            command.WithQuery($"{key}[{i}]", ids[i].ToString("D"));
     }
 }
