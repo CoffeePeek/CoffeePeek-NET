@@ -70,10 +70,28 @@ public partial class ShopsPageViewModel : ViewModelBase
     [ObservableProperty]
     public partial bool IsCityPopupOpen { get; set; }
 
+    [ObservableProperty]
+    public partial bool IsLoadingFilters { get; set; }
+
     public ObservableCollection<CityDto> Cities { get; } = [];
 
     [ObservableProperty]
     public partial CityDto? SelectedCity { get; set; }
+
+    public ObservableCollection<CatalogFilterItemViewModel> BeanFilters { get; } = [];
+    public ObservableCollection<CatalogFilterItemViewModel> RoasterFilters { get; } = [];
+    public ObservableCollection<CatalogFilterItemViewModel> EquipmentFilters { get; } = [];
+    public ObservableCollection<CatalogFilterItemViewModel> BrewMethodFilters { get; } = [];
+
+    public bool HasBeanFilters => BeanFilters.Count > 0;
+    public bool HasRoasterFilters => RoasterFilters.Count > 0;
+    public bool HasEquipmentFilters => EquipmentFilters.Count > 0;
+    public bool HasBrewMethodFilters => BrewMethodFilters.Count > 0;
+
+    public int ActiveFilterCount => BeanFilters.Count(f => f.IsSelected)
+                                    + RoasterFilters.Count(f => f.IsSelected)
+                                    + EquipmentFilters.Count(f => f.IsSelected)
+                                    + BrewMethodFilters.Count(f => f.IsSelected);
 
     partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
 
@@ -94,7 +112,10 @@ public partial class ShopsPageViewModel : ViewModelBase
             return;
 
         _initialLoadDone = true;
-        await Task.WhenAll(LoadCitiesCommand.ExecuteAsync(null), LoadShopsCommand.ExecuteAsync(null));
+        await Task.WhenAll(
+            LoadCitiesCommand.ExecuteAsync(null),
+            LoadShopsCommand.ExecuteAsync(null),
+            LoadCatalogFiltersCommand.ExecuteAsync(null));
     }
 
     [RelayCommand]
@@ -108,6 +129,10 @@ public partial class ShopsPageViewModel : ViewModelBase
             var result = await _shopsClient.SearchAsync(
                 string.IsNullOrWhiteSpace(SearchQuery) ? null : SearchQuery.Trim(),
                 SelectedCity?.Id,
+                GetSelectedIds(RoasterFilters),
+                GetSelectedIds(BeanFilters),
+                GetSelectedIds(BrewMethodFilters),
+                GetSelectedIds(EquipmentFilters),
                 _currentPage,
                 PageSize);
 
@@ -147,6 +172,10 @@ public partial class ShopsPageViewModel : ViewModelBase
             var result = await _shopsClient.SearchAsync(
                 string.IsNullOrWhiteSpace(SearchQuery) ? null : SearchQuery.Trim(),
                 SelectedCity?.Id,
+                GetSelectedIds(RoasterFilters),
+                GetSelectedIds(BeanFilters),
+                GetSelectedIds(BrewMethodFilters),
+                GetSelectedIds(EquipmentFilters),
                 _currentPage,
                 PageSize);
 
@@ -192,6 +221,71 @@ public partial class ShopsPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task LoadCatalogFiltersAsync()
+    {
+        IsLoadingFilters = true;
+
+        var beansResult = await _shopsClient.GetBeansAsync();
+        if (beansResult.IsSuccess)
+        {
+            BeanFilters.Clear();
+            foreach (var b in beansResult.Value.Beans)
+                BeanFilters.Add(new CatalogFilterItemViewModel { Id = b.Id, Name = b.Name });
+            OnPropertyChanged(nameof(HasBeanFilters));
+        }
+
+        var roastersResult = await _shopsClient.GetRoastersAsync();
+        if (roastersResult.IsSuccess)
+        {
+            RoasterFilters.Clear();
+            foreach (var r in roastersResult.Value.Roasters)
+                RoasterFilters.Add(new CatalogFilterItemViewModel { Id = r.Id, Name = r.Name });
+            OnPropertyChanged(nameof(HasRoasterFilters));
+        }
+
+        var equipmentResult = await _shopsClient.GetEquipmentAsync();
+        if (equipmentResult.IsSuccess)
+        {
+            EquipmentFilters.Clear();
+            foreach (var e in equipmentResult.Value.Equipments)
+                EquipmentFilters.Add(new CatalogFilterItemViewModel { Id = e.Id, Name = e.Name });
+            OnPropertyChanged(nameof(HasEquipmentFilters));
+        }
+
+        var brewMethodsResult = await _shopsClient.GetBrewMethodsAsync();
+        if (brewMethodsResult.IsSuccess)
+        {
+            BrewMethodFilters.Clear();
+            foreach (var m in brewMethodsResult.Value.BrewMethods)
+                BrewMethodFilters.Add(new CatalogFilterItemViewModel { Id = m.Id, Name = m.Name });
+            OnPropertyChanged(nameof(HasBrewMethodFilters));
+        }
+
+        IsLoadingFilters = false;
+    }
+
+    [RelayCommand]
+    private void ApplyFilters()
+    {
+        _currentPage = 1;
+        OnPropertyChanged(nameof(ActiveFilterCount));
+        LoadShopsCommand.ExecuteAsync(null);
+    }
+
+    [RelayCommand]
+    private void ClearFilters()
+    {
+        foreach (var f in BeanFilters) f.IsSelected = false;
+        foreach (var f in RoasterFilters) f.IsSelected = false;
+        foreach (var f in EquipmentFilters) f.IsSelected = false;
+        foreach (var f in BrewMethodFilters) f.IsSelected = false;
+
+        _currentPage = 1;
+        OnPropertyChanged(nameof(ActiveFilterCount));
+        LoadShopsCommand.ExecuteAsync(null);
+    }
+
+    [RelayCommand]
     private void OpenShop(Guid shopId) => _shellNavigator.OpenShopDetail(shopId);
 
     [RelayCommand]
@@ -234,6 +328,12 @@ public partial class ShopsPageViewModel : ViewModelBase
             _currentPage = 1;
             LoadShopsCommand.ExecuteAsync(null);
         }, token, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
+    }
+
+    internal static Guid[]? GetSelectedIds(ObservableCollection<CatalogFilterItemViewModel> filters)
+    {
+        var selected = filters.Where(f => f.IsSelected).Select(f => f.Id).ToArray();
+        return selected.Length > 0 ? selected : null;
     }
 
     private static IEnumerable<FilterChipViewModel> BuildFilterChips() =>

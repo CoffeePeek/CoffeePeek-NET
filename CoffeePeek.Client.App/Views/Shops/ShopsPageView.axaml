@@ -9,6 +9,7 @@
     xmlns:cities="clr-namespace:CoffeePeek.Contract.Dtos.Internal;assembly=CoffeePeek.Contract"
     xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:search="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops.Search"
     xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid HorizontalAlignment="Center" MaxWidth="1120">
@@ -48,7 +49,7 @@
                 </TextBox.InnerRightContent>
             </TextBox>
 
-            <!--  Extra filters (bean, roaster, brew, …)  -->
+            <!--  Advanced catalog filters panel  -->
             <Border
                 Background="{DynamicResource SurfaceContainerLowBrush}"
                 BorderThickness="0"
@@ -56,11 +57,132 @@
                 Grid.Row="1"
                 IsVisible="{Binding IsAdditionalFiltersPanelOpen}"
                 Margin="0,12,0,0"
-                Padding="16">
-                <TextBlock
-                    Classes="Body"
-                    Text="{x:Static lang:Resources.ShopPage_AdditionalFiltersHint}"
-                    TextWrapping="Wrap" />
+                Padding="20">
+                <StackPanel Spacing="16">
+                    <!-- Beans -->
+                    <StackPanel IsVisible="{Binding HasBeanFilters}" Spacing="8">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Bold"
+                            Foreground="{DynamicResource OnSurfaceBrush}"
+                            Text="{x:Static lang:Resources.ShopPage_FilterBeans}" />
+                        <ItemsControl ItemsSource="{Binding BeanFilters}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="search:CatalogFilterItemViewModel">
+                                    <ToggleButton
+                                        Classes="Secondary"
+                                        Content="{Binding Name}"
+                                        FontSize="12"
+                                        IsChecked="{Binding IsSelected}"
+                                        Margin="0,0,6,6"
+                                        Padding="10,5" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Roasters -->
+                    <StackPanel IsVisible="{Binding HasRoasterFilters}" Spacing="8">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Bold"
+                            Foreground="{DynamicResource OnSurfaceBrush}"
+                            Text="{x:Static lang:Resources.ShopPage_FilterRoasters}" />
+                        <ItemsControl ItemsSource="{Binding RoasterFilters}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="search:CatalogFilterItemViewModel">
+                                    <ToggleButton
+                                        Classes="Secondary"
+                                        Content="{Binding Name}"
+                                        FontSize="12"
+                                        IsChecked="{Binding IsSelected}"
+                                        Margin="0,0,6,6"
+                                        Padding="10,5" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Brew Methods -->
+                    <StackPanel IsVisible="{Binding HasBrewMethodFilters}" Spacing="8">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Bold"
+                            Foreground="{DynamicResource OnSurfaceBrush}"
+                            Text="{x:Static lang:Resources.ShopPage_FilterBrewMethods}" />
+                        <ItemsControl ItemsSource="{Binding BrewMethodFilters}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="search:CatalogFilterItemViewModel">
+                                    <ToggleButton
+                                        Classes="Secondary"
+                                        Content="{Binding Name}"
+                                        FontSize="12"
+                                        IsChecked="{Binding IsSelected}"
+                                        Margin="0,0,6,6"
+                                        Padding="10,5" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Equipment -->
+                    <StackPanel IsVisible="{Binding HasEquipmentFilters}" Spacing="8">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Bold"
+                            Foreground="{DynamicResource OnSurfaceBrush}"
+                            Text="{x:Static lang:Resources.ShopPage_FilterEquipment}" />
+                        <ItemsControl ItemsSource="{Binding EquipmentFilters}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="search:CatalogFilterItemViewModel">
+                                    <ToggleButton
+                                        Classes="Secondary"
+                                        Content="{Binding Name}"
+                                        FontSize="12"
+                                        IsChecked="{Binding IsSelected}"
+                                        Margin="0,0,6,6"
+                                        Padding="10,5" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Apply / Clear buttons -->
+                    <StackPanel
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            Classes="Secondary"
+                            Command="{Binding ClearFiltersCommand}"
+                            Content="{x:Static lang:Resources.ShopPage_FilterClear}"
+                            Padding="16,8" />
+                        <Button
+                            Command="{Binding ApplyFiltersCommand}"
+                            Content="{x:Static lang:Resources.ShopPage_FilterApply}"
+                            Padding="16,8" />
+                    </StackPanel>
+                </StackPanel>
             </Border>
 
             <Panel
