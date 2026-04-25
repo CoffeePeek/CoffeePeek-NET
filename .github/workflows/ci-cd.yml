@@ -60,7 +60,7 @@ jobs:
           )
 
           for project in "${projects[@]}"; do
-            dotnet test "$project" --configuration Release --no-build --no-restore -p:AllowMissingPrunePackageData=true
+            dotnet test "$project" --configuration Release --no-restore -p:AllowMissingPrunePackageData=true
           done
 
   build_and_push_images:
