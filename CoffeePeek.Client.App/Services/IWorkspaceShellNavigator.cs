@@ -9,4 +9,8 @@ public interface IWorkspaceShellNavigator
     void OpenShopDetail(Guid shopId);
 
     void CloseShopDetail();
+
+    void OpenSuggestShop();
+
+    void CloseSuggestShop();
 }

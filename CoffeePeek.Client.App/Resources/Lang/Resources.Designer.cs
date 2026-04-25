@@ -704,5 +704,215 @@ namespace CoffeePeek.Client.App.Resources.Lang {
                 return ResourceManager.GetString("ShopPage_FilterClear", resourceCulture);
             }
         }
+
+        public static string ShopPage_SuggestShop {
+            get {
+                return ResourceManager.GetString("ShopPage_SuggestShop", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_Title {
+            get {
+                return ResourceManager.GetString("SuggestShop_Title", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_RequiredTitle {
+            get {
+                return ResourceManager.GetString("SuggestShop_RequiredTitle", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_FieldName {
+            get {
+                return ResourceManager.GetString("SuggestShop_FieldName", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_FieldAddress {
+            get {
+                return ResourceManager.GetString("SuggestShop_FieldAddress", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_SectionAbout {
+            get {
+                return ResourceManager.GetString("SuggestShop_SectionAbout", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_FieldDescription {
+            get {
+                return ResourceManager.GetString("SuggestShop_FieldDescription", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_SectionContacts {
+            get {
+                return ResourceManager.GetString("SuggestShop_SectionContacts", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_FieldPhone {
+            get {
+                return ResourceManager.GetString("SuggestShop_FieldPhone", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_FieldEmail {
+            get {
+                return ResourceManager.GetString("SuggestShop_FieldEmail", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_FieldWebsite {
+            get {
+                return ResourceManager.GetString("SuggestShop_FieldWebsite", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_FieldInstagram {
+            get {
+                return ResourceManager.GetString("SuggestShop_FieldInstagram", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_SectionSchedule {
+            get {
+                return ResourceManager.GetString("SuggestShop_SectionSchedule", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_FieldOpenTime {
+            get {
+                return ResourceManager.GetString("SuggestShop_FieldOpenTime", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_FieldCloseTime {
+            get {
+                return ResourceManager.GetString("SuggestShop_FieldCloseTime", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_FieldClosed {
+            get {
+                return ResourceManager.GetString("SuggestShop_FieldClosed", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_SectionCoffeeProfile {
+            get {
+                return ResourceManager.GetString("SuggestShop_SectionCoffeeProfile", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_SectionCoffeeBeans {
+            get {
+                return ResourceManager.GetString("SuggestShop_SectionCoffeeBeans", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_SectionRoasters {
+            get {
+                return ResourceManager.GetString("SuggestShop_SectionRoasters", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_SectionBrewMethods {
+            get {
+                return ResourceManager.GetString("SuggestShop_SectionBrewMethods", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_SectionEquipment {
+            get {
+                return ResourceManager.GetString("SuggestShop_SectionEquipment", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_SectionPhotos {
+            get {
+                return ResourceManager.GetString("SuggestShop_SectionPhotos", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_AddPhoto {
+            get {
+                return ResourceManager.GetString("SuggestShop_AddPhoto", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_RemovePhoto {
+            get {
+                return ResourceManager.GetString("SuggestShop_RemovePhoto", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_Submit {
+            get {
+                return ResourceManager.GetString("SuggestShop_Submit", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_ValidationRequired {
+            get {
+                return ResourceManager.GetString("SuggestShop_ValidationRequired", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_SubmitError {
+            get {
+                return ResourceManager.GetString("SuggestShop_SubmitError", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_SubmitSuccess {
+            get {
+                return ResourceManager.GetString("SuggestShop_SubmitSuccess", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_DayMonday {
+            get {
+                return ResourceManager.GetString("SuggestShop_DayMonday", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_DayTuesday {
+            get {
+                return ResourceManager.GetString("SuggestShop_DayTuesday", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_DayWednesday {
+            get {
+                return ResourceManager.GetString("SuggestShop_DayWednesday", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_DayThursday {
+            get {
+                return ResourceManager.GetString("SuggestShop_DayThursday", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_DayFriday {
+            get {
+                return ResourceManager.GetString("SuggestShop_DayFriday", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_DaySaturday {
+            get {
+                return ResourceManager.GetString("SuggestShop_DaySaturday", resourceCulture);
+            }
+        }
+
+        public static string SuggestShop_DaySunday {
+            get {
+                return ResourceManager.GetString("SuggestShop_DaySunday", resourceCulture);
+            }
+        }
     }
 }

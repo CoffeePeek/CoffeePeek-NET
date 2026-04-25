@@ -1,5 +1,4 @@
 using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Models;
-using CoffeePeek.Client.App.Infrastructure.HTTP.Requests;
 
 namespace CoffeePeek.Client.App.Infrastructure.HTTP.Extensions;
 
@@ -31,7 +30,7 @@ public static class HttpCommandExtensions
             return command;
         }
 
-        public HttpCommand WithBody(BaseRequest? body)
+        public HttpCommand WithBody(object? body)
         {
             command.Body = body;
             return command;
