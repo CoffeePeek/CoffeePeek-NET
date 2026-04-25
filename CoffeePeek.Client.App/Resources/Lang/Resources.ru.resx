@@ -185,6 +185,12 @@
     <data name="Profile_Edit_UsernameRequired" xml:space="preserve">
         <value>Имя пользователя не может быть пустым</value>
     </data>
+    <data name="Profile_AvatarUpload" xml:space="preserve">
+        <value>Загрузить аватар</value>
+    </data>
+    <data name="Profile_AvatarUploadError" xml:space="preserve">
+        <value>Не удалось загрузить аватар</value>
+    </data>
     <data name="ShopPage_FilterBeans" xml:space="preserve">
         <value>Зёрна</value>
     </data>

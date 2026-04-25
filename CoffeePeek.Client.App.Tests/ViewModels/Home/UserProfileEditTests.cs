@@ -25,6 +25,7 @@ public class UserProfileEditTests
     private readonly Mock<INavigationService> _navMock = new();
     private readonly Mock<IWebAuthenticationClient> _authClientMock = new();
     private readonly Mock<ILocalUserSettings> _settingsMock = new();
+    private readonly Mock<IImagePickerService> _imagePickerMock = new();
 
     private static readonly Guid OwnUserId = Guid.NewGuid();
 
@@ -45,7 +46,8 @@ public class UserProfileEditTests
             _navMock.Object,
             _authClientMock.Object,
             _settingsMock.Object,
-            _identityMock.Object);
+            _identityMock.Object,
+            _imagePickerMock.Object);
     }
 
     private void SetupProfileSuccess(string userName = "testuser", string? about = "some bio")
@@ -194,5 +196,51 @@ public class UserProfileEditTests
     {
         var sut = CreateSut(OwnUserId);
         sut.IsOwnProfile.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task UploadAvatar_CallsProfileClientAndReloads()
+    {
+        SetupProfileSuccess("user", "bio");
+        _imagePickerMock
+            .Setup(x => x.PickImageAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PickedImageFile("avatar.jpg", "image/jpeg", [1, 2, 3]));
+        _profileClientMock
+            .Setup(c => c.UploadAvatarAsync("avatar.jpg", "image/jpeg", It.IsAny<byte[]>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok());
+
+        var sut = CreateSut(OwnUserId);
+        await sut.LoadAsync(OwnUserId);
+
+        await sut.UploadAvatarCommand.ExecuteAsync(null);
+
+        _profileClientMock.Verify(
+            c => c.UploadAvatarAsync("avatar.jpg", "image/jpeg", It.Is<byte[]>(b => b.Length == 3), It.IsAny<CancellationToken>()),
+            Times.Once);
+        _profileClientMock.Verify(
+            c => c.GetPublicProfileAsync(OwnUserId, It.IsAny<CancellationToken>()),
+            Times.AtLeast(2));
+        sut.IsUploadingAvatar.Should().BeFalse();
+        sut.HasAvatarUploadError.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task UploadAvatar_ShowsError_WhenUploadFails()
+    {
+        SetupProfileSuccess("user", "bio");
+        _imagePickerMock
+            .Setup(x => x.PickImageAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PickedImageFile("avatar.jpg", "image/jpeg", [1, 2, 3]));
+        _profileClientMock
+            .Setup(c => c.UploadAvatarAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Fail("Upload failed"));
+
+        var sut = CreateSut(OwnUserId);
+        await sut.LoadAsync(OwnUserId);
+
+        await sut.UploadAvatarCommand.ExecuteAsync(null);
+
+        sut.HasAvatarUploadError.Should().BeTrue();
+        sut.AvatarUploadErrorMessage.Should().Be("Upload failed");
     }
 }
