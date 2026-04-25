@@ -1,8 +1,8 @@
-using System;
 using Autofac;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using CoffeePeek.Client.App.Core.Execution;
 using CoffeePeek.Client.App.ViewModels;
 using CoffeePeek.Client.App.Views;
 
@@ -16,10 +16,13 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
         _container = Bootstrapper.BuildContainer();
+        _container.Resolve<IApplicationExecutorRunner>().RunAfterInitAsync().GetAwaiter().GetResult();
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
+        _container.Resolve<IApplicationExecutorRunner>().RunBeforeMainShellAsync().GetAwaiter().GetResult();
+
         var mainViewModel = _container.Resolve<MainViewModel>();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -39,5 +42,7 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+
+        _container.Resolve<IApplicationExecutorRunner>().RunAfterStartupAsync().GetAwaiter().GetResult();
     }
 }

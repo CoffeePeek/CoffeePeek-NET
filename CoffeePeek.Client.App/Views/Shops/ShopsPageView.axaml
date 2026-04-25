@@ -14,9 +14,6 @@
         <Grid RowDefinitions="Auto,Auto,Auto,*">
             <!--  Search + Filters toggle  -->
             <TextBox
-                BorderBrush="{DynamicResource BorderBrush}"
-                BorderThickness="{StaticResource DefaultThickness}"
-                CornerRadius="{StaticResource SuperLargeRadius}"
                 Grid.Row="0"
                 MinHeight="52"
                 PlaceholderText="{x:Static lang:Resources.ShopPage_SearchPlaceholder}"
@@ -31,19 +28,18 @@
                 </TextBox.InnerLeftContent>
                 <TextBox.InnerRightContent>
                     <Button
-                        Classes="Primary"
                         Command="{Binding ToggleAdditionalFiltersCommand}"
-                        CornerRadius="{StaticResource LargeRadius}"
+                        CornerRadius="{StaticResource DefaultCornerRadius}"
                         Margin="0,4,4,4"
                         Padding="16,10">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <PathIcon
                                 Data="{StaticResource FiltersIcon}"
-                                Foreground="{DynamicResource SurfaceBrightBrush}"
+                                Foreground="{DynamicResource OnPrimaryBrush}"
                                 VerticalAlignment="Center" />
                             <TextBlock
                                 FontSize="14"
-                                Foreground="{DynamicResource SurfaceBrightBrush}"
+                                Foreground="{DynamicResource OnPrimaryBrush}"
                                 Text="{x:Static lang:Resources.ShopPage_Filter}"
                                 VerticalAlignment="Center" />
                         </StackPanel>
@@ -53,10 +49,9 @@
 
             <!--  Extra filters (bean, roaster, brew, …)  -->
             <Border
-                Background="{DynamicResource SurfaceContainerBrush}"
-                BorderBrush="{DynamicResource BorderBrush}"
-                BorderThickness="1"
-                CornerRadius="{StaticResource LargeRadius}"
+                Background="{DynamicResource SurfaceContainerLowBrush}"
+                BorderThickness="0"
+                CornerRadius="{StaticResource DefaultCornerRadius}"
                 Grid.Row="1"
                 IsVisible="{Binding IsAdditionalFiltersPanelOpen}"
                 Margin="0,12,0,0"
@@ -109,11 +104,10 @@
                     VerticalOffset="4">
                     <Border
                         MaxWidth="360"
-                        Background="{DynamicResource SurfaceBrightBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1"
-                        BoxShadow="0 4 16 0 #22000000"
-                        CornerRadius="{StaticResource LargeRadius}"
+                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                        BorderThickness="0"
+                        BoxShadow="{DynamicResource ShadowAmbientFloat}"
+                        CornerRadius="{StaticResource DefaultCornerRadius}"
                         MaxHeight="280"
                         MinWidth="220"
                         Padding="0,8">
@@ -173,19 +167,13 @@
                                 <Grid RowDefinitions="Auto,Auto">
                                     <Panel Grid.Row="0">
                                         <Border
+                                            Background="{DynamicResource CardToneGradientBrush}"
                                             ClipToBounds="True"
-                                            CornerRadius="12,12,0,0"
-                                            Height="160">
-                                            <Border.Background>
-                                                <LinearGradientBrush EndPoint="100%,100%" StartPoint="0%,0%">
-                                                    <GradientStop Color="#EDE0D3" Offset="0" />
-                                                    <GradientStop Color="#D6C4B0" Offset="1" />
-                                                </LinearGradientBrush>
-                                            </Border.Background>
-                                        </Border>
+                                            CornerRadius="8,8,0,0"
+                                            Height="160" />
                                         <Border
-                                            Background="{DynamicResource SurfaceBrightBrush}"
-                                            CornerRadius="12"
+                                            Background="{DynamicResource SurfaceContainerHighBrush}"
+                                            CornerRadius="{StaticResource DefaultCornerRadius}"
                                             HorizontalAlignment="Right"
                                             Margin="10"
                                             Opacity="0.95"
@@ -204,8 +192,8 @@
                                             </StackPanel>
                                         </Border>
                                         <Border
-                                            Background="{DynamicResource PrimaryBrush}"
-                                            CornerRadius="4"
+                                            Background="{DynamicResource PrimaryGradientBrush}"
+                                            CornerRadius="{StaticResource SmallCornerRadius}"
                                             HorizontalAlignment="Left"
                                             IsVisible="{Binding IsTrending}"
                                             Margin="10"
@@ -216,7 +204,7 @@
                                                 <TextBlock
                                                     FontSize="10"
                                                     FontWeight="Bold"
-                                                    Foreground="{DynamicResource SurfaceBrightBrush}"
+                                                    Foreground="{DynamicResource OnPrimaryBrush}"
                                                     Text="{x:Static lang:Resources.ShopPage_Trending}" />
                                             </StackPanel>
                                         </Border>
@@ -250,9 +238,9 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <Border
-                                                        BorderBrush="{DynamicResource BorderBrush}"
-                                                        BorderThickness="1"
-                                                        CornerRadius="4"
+                                                        Background="{DynamicResource SurfaceContainerBrush}"
+                                                        BorderThickness="0"
+                                                        CornerRadius="{StaticResource DefaultCornerRadius}"
                                                         Margin="0,0,6,6"
                                                         Padding="8,4">
                                                         <TextBlock

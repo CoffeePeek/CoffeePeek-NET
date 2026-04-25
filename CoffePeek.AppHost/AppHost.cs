@@ -18,7 +18,7 @@ builder
         port: 5173, 
         targetPort: 5173, 
         isProxied: false,
-        name: AppResources.FrontEnd
+        name: AppResources.FrontEnd 
     )
     .WithExternalHttpEndpoints();
 

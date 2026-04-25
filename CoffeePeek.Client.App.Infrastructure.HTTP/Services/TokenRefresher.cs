@@ -1,12 +1,13 @@
 using System.Net;
 using System.Text.Json;
+using CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Serialization;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Responses.Auth;
 using FluentResults;
 
 namespace CoffeePeek.Client.App.Infrastructure.HTTP.Services;
 
-public sealed class TokenRefresher(HttpClient http) : ITokenRefresher
+public sealed class TokenRefresher(HttpClient http, AuthClientOptions options) : ITokenRefresher
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -16,7 +17,8 @@ public sealed class TokenRefresher(HttpClient http) : ITokenRefresher
 
     public async Task<Result<RefreshTokenResponse>> RefreshAsync(CancellationToken cancellationToken = default)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Put, "api/Tokens");
+        var path = options.TokensPath.Trim().TrimStart('/');
+        using var request = new HttpRequestMessage(HttpMethod.Put, path);
         using var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         var body = await response.Content.ReadAsStringAsync(cancellationToken);
 

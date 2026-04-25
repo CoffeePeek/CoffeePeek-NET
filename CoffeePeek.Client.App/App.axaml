@@ -1,4 +1,5 @@
 <Application
+    RequestedThemeVariant="Default"
     x:Class="CoffeePeek.Client.App.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:local="using:CoffeePeek.Client.App"
@@ -20,7 +21,6 @@
             </ResourceDictionary.ThemeDictionaries>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="Assets/Fonts/Fonts.axaml" />
-                <ResourceInclude Source="Resources/Themes/SharedColors.axaml" />
                 <ResourceInclude Source="Resources/Constants.axaml" />
 
                 <ResourceInclude Source="Resources/Icons/AppIcons.axaml" />
@@ -33,7 +33,12 @@
     </Application.DataTemplates>
 
     <Application.Styles>
-        <FluentTheme />
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Light" Accent="#CA8A04" />
+                <ColorPaletteResources x:Key="Dark" Accent="#FFBA46" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
         <StyleInclude Source="Resources/Styles/TextStyles.axaml" />
         <StyleInclude Source="Resources/Styles/TextBoxStyles.axaml" />
         <StyleInclude Source="Resources/Styles/ButtonStyles.axaml" />

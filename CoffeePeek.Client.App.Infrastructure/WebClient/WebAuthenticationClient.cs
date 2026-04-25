@@ -1,3 +1,4 @@
+using CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Extensions;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Abstract;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Models;
@@ -9,14 +10,16 @@ using FluentResults;
 
 namespace CoffeePeek.Client.App.Infrastructure.WebClient;
 
-public sealed class WebAuthenticationClient(IHttpCommandExecutor commandExecutor, ITokenRefresher tokenRefresher)
-    : WebClientBase(commandExecutor), IWebAuthenticationClient
+public sealed class WebAuthenticationClient(
+    IHttpCommandExecutor commandExecutor,
+    ITokenRefresher tokenRefresher,
+    AuthClientOptions authOptions) : WebClientBase(commandExecutor), IWebAuthenticationClient
 {
     public Task<Result<TokenResponse>> GetToken(GetTokenRequest request, CancellationToken cancellationToken = default)
     {
         var command = new HttpCommand()
             .WithMethod(HttpMethod.Post)
-            .WithEndpoint("api/Tokens")
+            .WithEndpoint(NormalizePath(authOptions.TokensPath))
             .WithBody(request);
 
         return Execute<TokenResponse>(command, cancellationToken);
@@ -27,6 +30,13 @@ public sealed class WebAuthenticationClient(IHttpCommandExecutor commandExecutor
 
     public Task<Result> Logout(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var command = new HttpCommand()
+            .WithMethod(HttpMethod.Delete)
+            .WithEndpoint(NormalizePath(authOptions.TokensPath))
+            .Authorize();
+
+        return Execute(command, cancellationToken);
     }
+
+    private static string NormalizePath(string path) => path.Trim().TrimStart('/');
 }

@@ -10,6 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
-        <ContentControl Content="{Binding ShopPage}" />
+        <ContentControl Content="{Binding ShopPage}" IsVisible="{Binding !IsProfileOpen}" />
+        <ContentControl Content="{Binding UserProfile}" IsVisible="{Binding IsProfileOpen}" />
     </Grid>
 </UserControl>

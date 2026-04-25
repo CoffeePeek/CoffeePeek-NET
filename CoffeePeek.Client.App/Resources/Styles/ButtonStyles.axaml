@@ -6,52 +6,52 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="8">
-                <Button Classes="Primary" Content="Primary" />
+                <Button Content="Primary" />
                 <Button Classes="Secondary" Content="Secondary" />
                 <Button Classes="Transparent" Content="Transparent" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
-    <Style Selector="Button.Primary">
-        <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
-        <Setter Property="Foreground" Value="White" />
-        <Setter Property="Padding" Value="20 10" />
+    <!-- Primary: Saffron gradient, on_primary label -->
+    <Style Selector="Button">
+        <Setter Property="Background" Value="{DynamicResource PrimaryGradientBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
+        <Setter Property="Padding" Value="20,10" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="CornerRadius" Value="{StaticResource LargeRadius}" />
+        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
         <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
     </Style>
 
-    <Style Selector="Button">
-        <Setter Property="FontFamily" Value="{StaticResource Sora}" />
-        <Setter Property="BorderThickness" Value="{StaticResource DefaultThickness}" />
-        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
-        <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />
-    </Style>
     <Style Selector="Button:pointerover /template/ ContentPresenter">
-        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
-        <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryGradientHoverBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OnPrimaryBrush}" />
     </Style>
 
+    <!-- Secondary: ghost + outline whisper -->
     <Style Selector="Button.Secondary">
-        <Setter Property="Background" Value="{DynamicResource AppSurfaceBrush}" />
-        <Setter Property="BorderThickness" Value="{StaticResource DefaultThickness}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource AppBorderColor}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlineGhostBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
     </Style>
 
     <Style Selector="Button.Secondary:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource AppSurfaceAltBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource AppBorderSubtleBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerLowBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlineGhostBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
     </Style>
-
 
     <Style Selector="Button.Transparent">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
     </Style>
+
     <Style Selector="Button.Transparent:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryHoverBrush}" />
     </Style>
 </Styles>

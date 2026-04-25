@@ -24,6 +24,9 @@
     <data name="LoginPage_Title" xml:space="preserve">
         <value>Sign in</value>
     </data>
+    <data name="LoginPage_Subtitle" xml:space="preserve">
+        <value>Sign in to your account</value>
+    </data>
     <data name="ApplicationName" xml:space="preserve">
         <value>CoffeePeek</value>
     </data>
@@ -108,17 +111,65 @@
     <data name="Common_Back" xml:space="preserve">
         <value>Back</value>
     </data>
-    <data name="RegisterEmailPage_Title" xml:space="preserve">
-        <value>Sign up</value>
-    </data>
-    <data name="RegisterEmailPage_Description" xml:space="preserve">
-        <value>Enter your email. We will check if you already have an account.</value>
-    </data>
-    <data name="RegisterEmailPage_Continue" xml:space="preserve">
-        <value>Continue</value>
-    </data>
     <data name="RegisterPage_Title" xml:space="preserve">
         <value>Create account</value>
+    </data>
+    <data name="Register_CheckEmailTitle" xml:space="preserve">
+        <value>Check email</value>
+    </data>
+    <data name="Register_CheckEmailSubtitle" xml:space="preserve">
+        <value>Enter your email to continue</value>
+    </data>
+    <data name="Register_CompleteSubtitle" xml:space="preserve">
+        <value>Complete your registration</value>
+    </data>
+    <data name="Auth_NoAccount" xml:space="preserve">
+        <value>No account?</value>
+    </data>
+    <data name="Auth_CreateAccount" xml:space="preserve">
+        <value>Create account</value>
+    </data>
+    <data name="Auth_HasAccount" xml:space="preserve">
+        <value>Already have an account?</value>
+    </data>
+    <data name="Auth_SignIn" xml:space="preserve">
+        <value>Sign in</value>
+    </data>
+    <data name="Auth_ChangeEmail" xml:space="preserve">
+        <value>Change email</value>
+    </data>
+    <data name="Auth_LabelEmail" xml:space="preserve">
+        <value>Email</value>
+    </data>
+    <data name="Auth_LabelPassword" xml:space="preserve">
+        <value>Password</value>
+    </data>
+    <data name="Auth_LabelConfirmPassword" xml:space="preserve">
+        <value>Confirm password</value>
+    </data>
+    <data name="Auth_LabelUserName" xml:space="preserve">
+        <value>Username</value>
+    </data>
+    <data name="Auth_PrivacyRequired" xml:space="preserve">
+        <value>Please accept the privacy policy to continue.</value>
+    </data>
+    <data name="Auth_PrivacyConsent" xml:space="preserve">
+        <value>I agree to the Privacy Policy and consent to the processing of personal data.</value>
+    </data>
+    <data name="Auth_PasswordMinLength" xml:space="preserve">
+        <value>Password must be at least 6 characters.</value>
+    </data>
+    <data name="Auth_ThemeToggle" xml:space="preserve">
+        <value>Toggle theme</value>
+    </data>
+    <data name="Auth_BrandCoffee" xml:space="preserve">
+        <value>Coffee</value>
+    </data>
+    <data name="Auth_BrandPeek" xml:space="preserve">
+        <value>Peek</value>
+    </data>
+    <data name="Register_Continue" xml:space="preserve">
+        <value>Continue</value>
     </data>
     <data name="RegisterPage_UserNamePlaceholder" xml:space="preserve">
         <value>Username</value>
@@ -170,5 +221,56 @@
     </data>
     <data name="ShopPage_Trending" xml:space="preserve">
         <value>TRENDING</value>
+    </data>
+    <data name="Profile_ThemeToggle" xml:space="preserve">
+        <value>Сменить тему</value>
+    </data>
+    <data name="Profile_Logout" xml:space="preserve">
+        <value>Выйти</value>
+    </data>
+    <data name="Profile_Loading" xml:space="preserve">
+        <value>Загрузка…</value>
+    </data>
+    <data name="Profile_LoadError" xml:space="preserve">
+        <value>Не удалось загрузить профиль</value>
+    </data>
+    <data name="Profile_MemberSince" xml:space="preserve">
+        <value>На сайте с {0}</value>
+    </data>
+    <data name="Profile_StatCheckIns" xml:space="preserve">
+        <value>ПОСЕЩЕНИЯ</value>
+    </data>
+    <data name="Profile_StatReviews" xml:space="preserve">
+        <value>ОТЗЫВЫ</value>
+    </data>
+    <data name="Profile_StatRating" xml:space="preserve">
+        <value>РЕЙТИНГ</value>
+    </data>
+    <data name="Profile_LastReviews" xml:space="preserve">
+        <value>Последние отзывы</value>
+    </data>
+    <data name="Profile_ReviewsTotal" xml:space="preserve">
+        <value>Всего отзывов: {0}</value>
+    </data>
+    <data name="Profile_NoReviewsYet" xml:space="preserve">
+        <value>Пока нет отзывов</value>
+    </data>
+    <data name="Profile_NoReviews" xml:space="preserve">
+        <value>Пользователь пока не оставил ни одного отзыва</value>
+    </data>
+    <data name="Profile_GoToShop" xml:space="preserve">
+        <value>Перейти к кофейне</value>
+    </data>
+    <data name="Profile_PreviousPage" xml:space="preserve">
+        <value>Предыдущая</value>
+    </data>
+    <data name="Profile_NextPage" xml:space="preserve">
+        <value>Следующая</value>
+    </data>
+    <data name="Profile_PageOf" xml:space="preserve">
+        <value>Страница {0} из {1}</value>
+    </data>
+    <data name="Profile_ReviewDefaultTitle" xml:space="preserve">
+        <value>Отзыв о кофейне</value>
     </data>
 </root>

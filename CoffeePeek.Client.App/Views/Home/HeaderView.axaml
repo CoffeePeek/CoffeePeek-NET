@@ -17,8 +17,8 @@
             <Setter Property="Padding" Value="4, 2" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="{StaticResource DefaultThickness}" />
-            <Setter Property="CornerRadius" Value="{DynamicResource LargeRadius}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
 
             <Setter Property="Template">
                 <ControlTemplate>
@@ -44,13 +44,14 @@
         </Style>
 
         <Style Selector="TabItem:pointerover">
-            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceContainerLowBrush}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Cursor" Value="Hand" />
         </Style>
 
         <Style Selector="TabItem:selected">
-            <Setter Property="Background" Value="{DynamicResource PrimaryGoldTransparent}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceContainerHighBrush}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
         </Style>
 
@@ -77,8 +78,13 @@
             HorizontalScrollBarVisibility="Hidden"
             VerticalScrollBarVisibility="Disabled"
             VerticalAlignment="Center">
-            <TabControl>
+            <TabControl SelectedIndex="{Binding MainTabSelectedIndex, Mode=TwoWay}">
                 <TabItem>
+                    <Interaction.Behaviors>
+                        <EventTriggerBehavior EventName="PointerPressed">
+                            <InvokeCommandAction Command="{Binding CloseProfileShellCommand}" />
+                        </EventTriggerBehavior>
+                    </Interaction.Behaviors>
                     <TabItem.Header>
                         <StackPanel
                             Margin="4,0"
@@ -93,6 +99,11 @@
                     </TabItem.Header>
                 </TabItem>
                 <TabItem>
+                    <Interaction.Behaviors>
+                        <EventTriggerBehavior EventName="PointerPressed">
+                            <InvokeCommandAction Command="{Binding CloseProfileShellCommand}" />
+                        </EventTriggerBehavior>
+                    </Interaction.Behaviors>
                     <TabItem.Header>
                         <StackPanel
                             Margin="4,0"

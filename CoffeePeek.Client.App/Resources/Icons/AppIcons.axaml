@@ -1,15 +1,22 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
-        <Border Padding="20">
+        <Border Padding="20" Background="LightGray">
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <PathIcon Data="{StaticResource SearchIcon}" />
                 <PathIcon Data="{StaticResource MapIcon}" />
                 <PathIcon Data="{StaticResource FiltersIcon}" />
+                <PathIcon Data="{StaticResource CoffeeBrandIcon}" />
+                <PathIcon Data="{StaticResource ThemeSunIcon}" />
+                <PathIcon Data="{StaticResource ThemeMoonIcon}" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
     <StreamGeometry x:Key="SearchIcon">M16.6 18L10.3 11.7C9.8 12.1 9.225 12.4167 8.575 12.65C7.925 12.8833 7.23333 13 6.5 13C4.68333 13 3.14583 12.3708 1.8875 11.1125C0.629167 9.85417 0 8.31667 0 6.5C0 4.68333 0.629167 3.14583 1.8875 1.8875C3.14583 0.629167 4.68333 0 6.5 0C8.31667 0 9.85417 0.629167 11.1125 1.8875C12.3708 3.14583 13 4.68333 13 6.5C13 7.23333 12.8833 7.925 12.65 8.575C12.4167 9.225 12.1 9.8 11.7 10.3L18 16.6L16.6 18V18M6.5 11C7.75 11 8.8125 10.5625 9.6875 9.6875C10.5625 8.8125 11 7.75 11 6.5C11 5.25 10.5625 4.1875 9.6875 3.3125C8.8125 2.4375 7.75 2 6.5 2C5.25 2 4.1875 2.4375 3.3125 3.3125C2.4375 4.1875 2 5.25 2 6.5C2 7.75 2.4375 8.8125 3.3125 9.6875C4.1875 10.5625 5.25 11 6.5 11V11</StreamGeometry>
     <StreamGeometry x:Key="MapIcon">M10 15L5 13.25L1.125 14.75C0.847222 14.8611 0.590278 14.8299 0.354167 14.6562C0.118056 14.4826 0 14.25 0 13.9583V2.29167C0 2.11111 0.0520833 1.95139 0.15625 1.8125C0.260417 1.67361 0.402778 1.56944 0.583333 1.5L5 0L10 1.75L13.875 0.25C14.1528 0.138889 14.4097 0.170139 14.6458 0.34375C14.8819 0.517361 15 0.75 15 1.04167V12.7083C15 12.8889 14.9479 13.0486 14.8438 13.1875C14.7396 13.3264 14.5972 13.4306 14.4167 13.5L10 15ZM9.16667 12.9583V3.20833L5.83333 2.04167V11.7917L9.16667 12.9583ZM10.8333 12.9583L13.3333 12.125V2.25L10.8333 3.20833V12.9583ZM1.66667 12.75L4.16667 11.7917V2.04167L1.66667 2.875V12.75ZM10.8333 3.20833V12.9583V3.20833ZM4.16667 2.04167V11.7917V2.04167Z</StreamGeometry>
     <StreamGeometry x:Key="FiltersIcon">M6 13.5V9H7.5V10.5H13.5V12H7.5V13.5H6ZM0 12V10.5H4.5V12H0ZM3 9V7.5H0V6H3V4.5H4.5V9H3ZM6 7.5V6H13.5V7.5H6ZM9 4.5V0H10.5V1.5H13.5V3H10.5V4.5H9ZM0 3V1.5H7.5V3H0Z</StreamGeometry>
+
+    <StreamGeometry x:Key="CoffeeBrandIcon">M4 10 L4 18 L6 20 L16 20 L18 18 L18 10 Z M7 6 L7 10 M10 4 L10 10 M13 6 L13 10</StreamGeometry>
+    <StreamGeometry x:Key="ThemeSunIcon">M12 17 A5 5 0 1 1 12 7 A5 5 0 0 1 12 17 M12 1 L12 3 M12 21 L12 23 M4.2 4.2 L5.6 5.6 M18.4 18.4 L19.8 19.8 M1 12 L3 12 M21 12 L23 12 M4.2 19.8 L5.6 18.4 M18.4 5.6 L19.8 4.2</StreamGeometry>
+    <StreamGeometry x:Key="ThemeMoonIcon">M21 12.8 A8.5 8.5 0 1 1 11.2 3.5 A6.5 6.5 0 0 0 21 12.8 Z</StreamGeometry>
 
 </ResourceDictionary>

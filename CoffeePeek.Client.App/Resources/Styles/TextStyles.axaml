@@ -6,34 +6,38 @@
                 <TextBlock Classes="Body" Text="Body" />
                 <TextBlock Classes="Label" Text="Label" />
             </StackPanel>
-
         </Border>
     </Design.PreviewWith>
 
-        <Style Selector="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource Sora}" />
-            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-        </Style>
+    <Style Selector="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+        <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
+    </Style>
 
-        <Style Selector="TextBlock.Headline">
-            <Setter Property="FontSize" Value="24" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
-        </Style>
+    <Style Selector="TextBlock.Headline">
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
+        <Setter Property="LetterSpacing" Value="-0.24" />
+    </Style>
 
-        <Style Selector="TextBlock.Body">
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="LineHeight" Value="21" />
-            <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
-        </Style>
+    <Style Selector="TextBlock.Body">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="LineHeight" Value="24" />
+        <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
+    </Style>
 
-        <Style Selector="TextBlock.Label">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontWeight" Value="Medium" />
-        </Style>
+    <Style Selector="TextBlock.Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource OnSurfaceVariantBrush}" />
+    </Style>
 
-        <Style Selector="ListBox">
-            <Setter Property="FontFamily" Value="{StaticResource Sora}" />
-        </Style>
+    <Style Selector="TextBlock.Secondary">
+        <Setter Property="Foreground" Value="{DynamicResource OnSurfaceVariantBrush}" />
+    </Style>
 
+    <Style Selector="ListBox">
+        <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+    </Style>
 </Styles>

@@ -14,8 +14,7 @@
     </Design.DataContext>
     <Border
         Background="{DynamicResource AppSurfaceColor}"
-        BorderBrush="{DynamicResource AppBorderBrush}"
-        BorderThickness="{StaticResource DefaultThickness}"
+        BorderThickness="0"
         CornerRadius="{StaticResource DefaultCornerRadius}"
         MaxHeight="150"
         MaxWidth="300"
@@ -28,21 +27,12 @@
 
         <Border.Styles>
             <Style Selector="Border:pointerover">
-                <Setter Property="Background" Value="{DynamicResource AppSurfaceBrush}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHoverBrush}" />
-                <Style.Animations>
-                    <Animation Duration="0:0:0.15" FillMode="Forward">
-                        <KeyFrame KeyTime="0:0:0.15">
-                            <Setter Property="ScaleTransform.ScaleX" Value="1.05" />
-                            <Setter Property="ScaleTransform.ScaleY" Value="1.05" />
-                        </KeyFrame>
-                    </Animation>
-                </Style.Animations>
+                <Setter Property="Background" Value="{DynamicResource SurfaceContainerBrush}" />
             </Style>
         </Border.Styles>
         <StackPanel>
             <Rectangle
-                Fill="{DynamicResource PrimaryBrush}"
+                Fill="{DynamicResource PrimaryGradientBrush}"
                 Height="48"
                 HorizontalAlignment="Left"
                 Margin="0,0,0,16"

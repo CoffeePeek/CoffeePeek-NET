@@ -2,14 +2,12 @@
 
     <Style Selector="Border.filter-chip">
         <Setter Property="MinHeight" Value="48" />
-        <Setter Property="CornerRadius" Value="18" />
+        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
         <Setter Property="Padding" Value="16,8" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderThickness" Value="0" />
     </Style>
 
-    <!-- Filter chips: keep ListBox chrome transparent so Border owns visuals -->
     <Style Selector="ListBox.filter-chips">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -31,8 +29,7 @@
     </Style>
 
     <Style Selector="ListBox.filter-chips ListBoxItem:pointerover Border.filter-chip">
-        <Setter Property="Background" Value="{DynamicResource SurfaceContainerBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerLowBrush}" />
     </Style>
 
     <Style Selector="ListBox.filter-chips ListBoxItem:pointerover Border.filter-chip TextBlock">
@@ -40,36 +37,32 @@
     </Style>
 
     <Style Selector="ListBox.filter-chips ListBoxItem:selected Border.filter-chip">
-        <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerHighBrush}" />
     </Style>
 
     <Style Selector="ListBox.filter-chips ListBoxItem:selected Border.filter-chip TextBlock">
-        <Setter Property="Foreground" Value="{DynamicResource SurfaceBrightBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
     </Style>
 
     <Style Selector="ListBox.filter-chips ListBoxItem:selected:pointerover Border.filter-chip">
-        <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHoverBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerHighBrush}" />
     </Style>
 
     <Style Selector="ListBox.filter-chips ListBoxItem:selected:pointerover Border.filter-chip TextBlock">
-        <Setter Property="Foreground" Value="{DynamicResource SurfaceBrightBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
     </Style>
 
-    <!-- Shop card chrome -->
     <Style Selector="Border.shop-card">
         <Setter Property="Width" Value="300" />
         <Setter Property="Margin" Value="0,0,16,20" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="Background" Value="{DynamicResource SurfaceBrightBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BoxShadow" Value="0 2 8 0 #15000000" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerLowBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BoxShadow" Value="{DynamicResource ShadowAmbientFloat}" />
         <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
     </Style>
 
     <Style Selector="Border.shop-card:pointerover">
-        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceContainerBrush}" />
     </Style>
 </Styles>

@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CoffeePeek.Contract\CoffeePeek.Contract.csproj" />
       <ProjectReference Include="..\CoffeePeek.Client.App.Core\CoffeePeek.Client.App.Core.csproj" />
     </ItemGroup>
 

@@ -4,7 +4,9 @@ using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Abstract;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Services;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Services.Headers;
+using CoffeePeek.Client.App.Core.Identity;
 using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
+using CoffeePeek.Client.App.Infrastructure.Identity;
 using CoffeePeek.Client.App.Infrastructure.WebClient;
 
 namespace CoffeePeek.Client.App.Infrastructure.Configuration;
@@ -13,8 +15,6 @@ public sealed class HttpModule : Module
 {
     protected override void Load(ContainerBuilder builder)
     {
-        builder.RegisterType<ApiOptions>().AsSelf().SingleInstance();
-
         builder.Register(c =>
         {
             var options = c.Resolve<ApiOptions>();
@@ -25,7 +25,9 @@ public sealed class HttpModule : Module
             };
         }).SingleInstance();
 
-        builder.RegisterType<TokenRefresher>().As<ITokenRefresher>().SingleInstance();
+        builder.Register(c => new TokenRefresher(c.Resolve<HttpClient>(), c.Resolve<AuthClientOptions>()))
+            .As<ITokenRefresher>()
+            .SingleInstance();
 
         RegisterHeaderSetters(builder);
 
@@ -34,6 +36,10 @@ public sealed class HttpModule : Module
         builder.RegisterType<HttpCommandExecutor>().As<IHttpCommandExecutor>().SingleInstance();
 
         builder.RegisterType<WebAuthenticationClient>().As<IWebAuthenticationClient>().SingleInstance();
+        builder.RegisterType<WebUsersClient>().As<IWebUsersClient>().SingleInstance();
+        builder.RegisterType<WebUserProfileClient>().As<IWebUserProfileClient>().SingleInstance();
+        builder.RegisterType<WebUserReviewsClient>().As<IWebUserReviewsClient>().SingleInstance();
+        builder.RegisterType<JwtUserIdentityAccessor>().As<IUserIdentityAccessor>().SingleInstance();
     }
 
     private static void RegisterHeaderSetters(ContainerBuilder builder)
