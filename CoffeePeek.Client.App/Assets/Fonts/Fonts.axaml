@@ -1,0 +1,5 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <FontFamily x:Key="Sora">avares://CoffeePeek.Client.App/Assets/Fonts#Sora</FontFamily>
+    <!-- Public Sans when installed / on the system; bundled Sora as fallback. -->
+    <FontFamily x:Key="UiFont">Public Sans, avares://CoffeePeek.Client.App/Assets/Fonts#Sora</FontFamily>
+</ResourceDictionary>

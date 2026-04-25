@@ -1,0 +1,3 @@
+﻿namespace CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
+
+public record GetAllModerationReviewsQuery;

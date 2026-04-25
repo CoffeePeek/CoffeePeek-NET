@@ -1,0 +1,388 @@
+<UserControl
+    d:DesignHeight="900"
+    d:DesignWidth="960"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Shops.ShopDetailView"
+    x:DataType="shops:ShopDetailViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Top bar with back button -->
+        <Border
+            Grid.Row="0"
+            Background="{DynamicResource SurfaceContainerLowBrush}"
+            Padding="16,10">
+            <Button
+                Classes="Transparent"
+                Command="{Binding GoBackCommand}"
+                HorizontalAlignment="Left"
+                Padding="8,6">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock FontSize="16" Text="←" VerticalAlignment="Center" />
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="{DynamicResource OnSurfaceBrush}"
+                        Text="{x:Static lang:Resources.Common_Back}"
+                        VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <!-- Shimmer skeleton -->
+            <ScrollViewer
+                HorizontalScrollBarVisibility="Disabled"
+                IsVisible="{Binding IsLoading}">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    MaxWidth="800"
+                    Spacing="0">
+                    <!-- Hero shimmer -->
+                    <Border Classes="shimmer" Height="260" CornerRadius="0" />
+                    <StackPanel Margin="24,24,24,0" Spacing="16">
+                        <Border Classes="shimmer-line" Height="28" Width="300" HorizontalAlignment="Left" />
+                        <Border Classes="shimmer-line" Height="14" Width="180" HorizontalAlignment="Left" />
+                        <Border Classes="shimmer-line" Height="14" Width="400" HorizontalAlignment="Left" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border Classes="shimmer-line" Height="24" Width="70" CornerRadius="8" />
+                            <Border Classes="shimmer-line" Height="24" Width="90" CornerRadius="8" />
+                            <Border Classes="shimmer-line" Height="24" Width="60" CornerRadius="8" />
+                        </StackPanel>
+                        <!-- Schedule shimmer -->
+                        <Border Classes="shimmer-line" Height="20" Width="140" HorizontalAlignment="Left" Margin="0,12,0,0" />
+                        <Border Classes="shimmer-line" Height="14" Width="200" HorizontalAlignment="Left" />
+                        <Border Classes="shimmer-line" Height="14" Width="200" HorizontalAlignment="Left" />
+                        <Border Classes="shimmer-line" Height="14" Width="200" HorizontalAlignment="Left" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Error -->
+            <Border
+                Background="{DynamicResource AuthErrorBackgroundBrush}"
+                BorderThickness="0"
+                CornerRadius="{StaticResource DefaultCornerRadius}"
+                HorizontalAlignment="Center"
+                IsVisible="{Binding HasError}"
+                Margin="24"
+                Padding="16,12"
+                VerticalAlignment="Top">
+                <TextBlock
+                    FontSize="14"
+                    Foreground="{DynamicResource AuthErrorForegroundBrush}"
+                    Text="{Binding ErrorMessage}"
+                    TextWrapping="Wrap" />
+            </Border>
+
+            <!-- Content -->
+            <ScrollViewer
+                HorizontalScrollBarVisibility="Disabled"
+                IsVisible="{Binding !IsLoading}">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    MaxWidth="800"
+                    Spacing="0">
+
+                    <!-- Hero image placeholder -->
+                    <Border
+                        Background="{DynamicResource CardToneGradientBrush}"
+                        ClipToBounds="True"
+                        Height="260">
+                        <Panel>
+                            <!-- Status badges -->
+                            <StackPanel
+                                HorizontalAlignment="Left"
+                                Margin="16"
+                                Orientation="Horizontal"
+                                Spacing="8"
+                                VerticalAlignment="Bottom">
+                                <Border
+                                    Background="{DynamicResource SurfaceContainerHighBrush}"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                    IsVisible="{Binding IsOpen}"
+                                    Opacity="0.95"
+                                    Padding="10,5">
+                                    <TextBlock
+                                        FontSize="12"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource PrimaryBrush}"
+                                        Text="{x:Static lang:Resources.ShopDetail_Open}" />
+                                </Border>
+                                <Border
+                                    Background="{DynamicResource PrimaryGradientBrush}"
+                                    CornerRadius="{StaticResource SmallCornerRadius}"
+                                    IsVisible="{Binding IsNew}"
+                                    Padding="10,5">
+                                    <TextBlock
+                                        FontSize="12"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource OnPrimaryBrush}"
+                                        Text="{x:Static lang:Resources.ShopPage_Trending}" />
+                                </Border>
+                            </StackPanel>
+
+                            <!-- Rating badge -->
+                            <Border
+                                Background="{DynamicResource SurfaceContainerHighBrush}"
+                                CornerRadius="{StaticResource DefaultCornerRadius}"
+                                HorizontalAlignment="Right"
+                                Margin="16"
+                                Opacity="0.95"
+                                Padding="12,6"
+                                VerticalAlignment="Bottom">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock
+                                        FontSize="16"
+                                        Foreground="{DynamicResource PrimaryBrush}"
+                                        Text="★" />
+                                    <TextBlock
+                                        FontSize="18"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource OnSurfaceBrush}"
+                                        Text="{Binding RatingLabel}" />
+                                    <TextBlock
+                                        FontSize="13"
+                                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                        Text="{Binding ReviewCount, StringFormat='({0})'}"
+                                        VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </Panel>
+                    </Border>
+
+                    <!-- Main info -->
+                    <StackPanel Margin="24,24,24,0" Spacing="16">
+                        <!-- Name + price -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock
+                                Classes="Headline"
+                                FontSize="28"
+                                FontWeight="Bold"
+                                Text="{Binding Name}"
+                                TextWrapping="Wrap" />
+                            <Border
+                                Grid.Column="1"
+                                Background="{DynamicResource SurfaceContainerBrush}"
+                                CornerRadius="{StaticResource DefaultCornerRadius}"
+                                Padding="10,5"
+                                VerticalAlignment="Center">
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource PrimaryBrush}"
+                                    Text="{Binding PriceLabel}" />
+                            </Border>
+                        </Grid>
+
+                        <!-- Address -->
+                        <StackPanel
+                            IsVisible="{Binding HasAddress}"
+                            Orientation="Horizontal"
+                            Spacing="8">
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                Text="📍"
+                                VerticalAlignment="Center" />
+                            <TextBlock
+                                FontSize="14"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                Text="{Binding Address}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <!-- Description -->
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            IsVisible="{Binding HasDescription}"
+                            LineHeight="22"
+                            Text="{Binding Description}"
+                            TextWrapping="Wrap" />
+
+                        <!-- Tags -->
+                        <ItemsControl ItemsSource="{Binding Tags}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        Background="{DynamicResource SurfaceContainerBrush}"
+                                        BorderThickness="0"
+                                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                                        Margin="0,0,8,8"
+                                        Padding="10,5">
+                                        <TextBlock
+                                            FontSize="12"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource TextPrimaryBrush}"
+                                            Text="{Binding}" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <!-- Schedule section -->
+                    <Border
+                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                        BorderThickness="0"
+                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                        IsVisible="{Binding HasSchedule}"
+                        Margin="24,24,24,0"
+                        Padding="20">
+                        <StackPanel Spacing="12">
+                            <TextBlock
+                                FontSize="16"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                Text="{x:Static lang:Resources.ShopDetail_Schedule}" />
+                            <ItemsControl ItemsSource="{Binding Schedule}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="shops:ScheduleLineViewModel">
+                                        <Grid ColumnDefinitions="80,*" Margin="0,0,0,4">
+                                            <TextBlock
+                                                FontSize="13"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                                Text="{Binding DayName}" />
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                FontSize="13"
+                                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                Text="{Binding Hours}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Contact section -->
+                    <Border
+                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                        BorderThickness="0"
+                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                        IsVisible="{Binding HasContact}"
+                        Margin="24,16,24,0"
+                        Padding="20">
+                        <StackPanel Spacing="12">
+                            <TextBlock
+                                FontSize="16"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                Text="{x:Static lang:Resources.ShopDetail_Contact}" />
+                            <StackPanel
+                                IsVisible="{Binding Phone, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <TextBlock FontSize="14" Text="📞" />
+                                <TextBlock
+                                    FontSize="13"
+                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                    Text="{Binding Phone}" />
+                            </StackPanel>
+                            <StackPanel
+                                IsVisible="{Binding Email, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <TextBlock FontSize="14" Text="✉" />
+                                <TextBlock
+                                    FontSize="13"
+                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                    Text="{Binding Email}" />
+                            </StackPanel>
+                            <StackPanel
+                                IsVisible="{Binding Website, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <TextBlock FontSize="14" Text="🌐" />
+                                <TextBlock
+                                    FontSize="13"
+                                    Foreground="{DynamicResource PrimaryBrush}"
+                                    Text="{Binding Website}" />
+                            </StackPanel>
+                            <StackPanel
+                                IsVisible="{Binding Instagram, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <TextBlock FontSize="14" Text="📷" />
+                                <TextBlock
+                                    FontSize="13"
+                                    Foreground="{DynamicResource PrimaryBrush}"
+                                    Text="{Binding Instagram}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Reviews section -->
+                    <StackPanel
+                        IsVisible="{Binding HasReviews}"
+                        Margin="24,24,24,32"
+                        Spacing="12">
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="Bold"
+                            Foreground="{DynamicResource OnSurfaceBrush}"
+                            Text="{x:Static lang:Resources.ShopDetail_Reviews}" />
+                        <ItemsControl ItemsSource="{Binding Reviews}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="shops:ShopReviewViewModel">
+                                    <Border
+                                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                                        BorderThickness="0"
+                                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                                        Margin="0,0,0,12"
+                                        Padding="20">
+                                        <StackPanel Spacing="6">
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <TextBlock
+                                                        FontSize="14"
+                                                        FontWeight="Bold"
+                                                        Foreground="{DynamicResource OnSurfaceBrush}"
+                                                        Text="{Binding Username}" />
+                                                    <TextBlock
+                                                        FontSize="13"
+                                                        Foreground="{DynamicResource PrimaryBrush}"
+                                                        Text="{Binding StarsText}"
+                                                        VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    FontSize="11"
+                                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                    Text="{Binding DateLabel}"
+                                                    VerticalAlignment="Center" />
+                                            </Grid>
+                                            <TextBlock
+                                                FontSize="14"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                                Text="{Binding Header}"
+                                                TextWrapping="Wrap" />
+                                            <TextBlock
+                                                FontSize="13"
+                                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                IsVisible="{Binding HasComment}"
+                                                Text="{Binding Comment}"
+                                                TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

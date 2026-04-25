@@ -1,0 +1,311 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ApplicationName" xml:space="preserve">
+        <value>CoffeePeek</value>
+    </data>
+    <data name="WelcomePage_Slogan" xml:space="preserve">
+        <value>CoffeePeek — ваш проводник в мире кофе</value>
+    </data>
+    <data name="WelcomePage_MainTitle" xml:space="preserve">
+        <value>Добро пожаловать в</value>
+    </data>
+    <data name="WelcomePage_MainDescription" xml:space="preserve">
+        <value>Удобный инструмент для любителей кофе. Откройте для себя лучшие кофейни, найдите работу в кофейной индустрии, изучайте инструменты приготовления и делитесь впечатлениями с единомышленниками.</value>
+    </data>
+    <data name="RegisterPage_RegisterButton" xml:space="preserve">
+        <value>Зарегистрироваться</value>
+    </data>
+    <data name="WelcomePage_Card1Title" xml:space="preserve">
+        <value>Карта кофеен</value>
+    </data>
+    <data name="WelcomePage_Card2Title" xml:space="preserve">
+        <value>Поиск работы</value>
+    </data>
+    <data name="WelcomePage_Card3Title" xml:space="preserve">
+        <value>Инструменты</value>
+    </data>
+    <data name="WelcomePage_Card4Title" xml:space="preserve">
+        <value>Чекины и отзывы</value>
+    </data>
+    <data name="WelcomePage_Card5Title" xml:space="preserve">
+        <value>Рейтинги</value>
+    </data>
+    <data name="WelcomePage_Card6Title" xml:space="preserve">
+        <value>Сообщество</value>
+    </data>
+    <data name="WelcomePage_Card6Description" xml:space="preserve">
+        <value>Общайтесь с другими любителями кофе и делитесь опытом</value>
+    </data>
+    <data name="WelcomePage_Card5Description" xml:space="preserve">
+        <value>Система оценок и рекомендаций на основе ваших предпочтений</value>
+    </data>
+    <data name="WelcomePage_Card4Description" xml:space="preserve">
+        <value>Оценивайте кофейни, оставляйте отзывы и делитесь впечатлениями</value>
+    </data>
+    <data name="WelcomePage_Card3Description" xml:space="preserve">
+        <value>Подробные описания всех инструментов для приготовления кофе</value>
+    </data>
+    <data name="WelcomePage_Card2Description" xml:space="preserve">
+        <value>Вакансии в кофейной индустрии для бариста, обжарщиков и других специалистов</value>
+    </data>
+    <data name="WelcomePage_Card1Description" xml:space="preserve">
+        <value>Найдите лучшие кофейни поблизости с подробной информацией и отзывами</value>
+    </data>
+    <data name="WelcomePage_Footer" xml:space="preserve">
+        <value>Присоединяйтесь к сообществу кофеманов, делитесь опытом, открывайте новые места и развивайтесь в кофейной индустрии вместе с CoffeePeek.</value>
+    </data>
+    <data name="Header_Shops" xml:space="preserve">
+        <value>Кофейни</value>
+    </data>
+    <data name="Header_Map" xml:space="preserve">
+        <value>Карта</value>
+    </data>
+    <data name="ShopPage_SearchPlaceholder" xml:space="preserve">
+        <value>Поиск идеальной кофейни...</value>
+    </data>
+    <data name="ShopPage_Filter" xml:space="preserve">
+        <value>Фильтры</value>
+    </data>
+    <data name="ShopPage_Filter_City" xml:space="preserve">
+        <value>Минск</value>
+    </data>
+    <data name="ShopPage_CityPopupTitle" xml:space="preserve">
+        <value>Город</value>
+    </data>
+    <data name="ShopPage_AdditionalFiltersHint" xml:space="preserve">
+        <value>Здесь будут зерно, обжарщик, способ заваривания и другие фильтры.</value>
+    </data>
+    <data name="ShopPage_Trending" xml:space="preserve">
+        <value>В тренде</value>
+    </data>
+    <data name="ShopPage_Filter_OpenTime" xml:space="preserve">
+        <value>Открыты</value>
+    </data>
+    <data name="ShopPage_Filter_New" xml:space="preserve">
+        <value>Новые</value>
+    </data>
+    <data name="ShopPage_Filter_Favorite" xml:space="preserve">
+        <value>Любимые</value>
+    </data>
+    <data name="ShopPage_Filter_Visited" xml:space="preserve">
+        <value>Посещённые</value>
+    </data>
+    <data name="Auth_ChangeEmail" xml:space="preserve">
+        <value>Изменить почту</value>
+    </data>
+    <data name="Auth_CreateAccount" xml:space="preserve">
+        <value>Создать аккаунт</value>
+    </data>
+    <data name="Auth_EmailCheckFailed" xml:space="preserve">
+        <value>Не удалось проверить почту. Проверьте ваше соединение и повторите попытку.</value>
+    </data>
+    <data name="Auth_FillAllFields" xml:space="preserve">
+        <value>Пожлауйста, заполните все обязательные поля.</value>
+    </data>
+    <data name="Auth_HasAccount" xml:space="preserve">
+        <value>Уже есть аккаунт?</value>
+    </data>
+    <data name="Auth_LabelConfirmPassword" xml:space="preserve">
+        <value>Подтвердить почту</value>
+    </data>
+    <data name="Auth_LabelEmail" xml:space="preserve">
+        <value>Почта</value>
+    </data>
+    <data name="Auth_LabelPassword" xml:space="preserve">
+        <value>Пароль</value>
+    </data>
+    <data name="Auth_SignIn" xml:space="preserve">
+        <value>Войти</value>
+    </data>
+    <data name="Auth_ThemeToggle" xml:space="preserve">
+        <value>Сменить тему</value>
+    </data>
+    <data name="Common_Back" xml:space="preserve">
+        <value>Назад</value>
+    </data>
+    <data name="ShopPage_LoadError" xml:space="preserve">
+        <value>Не удалось загрузить кофейни</value>
+    </data>
+    <data name="ShopPage_LoadMore" xml:space="preserve">
+        <value>Загрузить ещё</value>
+    </data>
+    <data name="ShopDetail_LoadError" xml:space="preserve">
+        <value>Не удалось загрузить информацию о кофейне</value>
+    </data>
+    <data name="ShopDetail_Schedule" xml:space="preserve">
+        <value>Расписание</value>
+    </data>
+    <data name="ShopDetail_Contact" xml:space="preserve">
+        <value>Контакты</value>
+    </data>
+    <data name="ShopDetail_Reviews" xml:space="preserve">
+        <value>Отзывы</value>
+    </data>
+    <data name="ShopDetail_Open" xml:space="preserve">
+        <value>ОТКРЫТО</value>
+    </data>
+    <data name="Profile_Edit" xml:space="preserve">
+        <value>Изменить</value>
+    </data>
+    <data name="Profile_EditTitle" xml:space="preserve">
+        <value>Редактировать профиль</value>
+    </data>
+    <data name="Profile_Edit_Username" xml:space="preserve">
+        <value>Имя пользователя</value>
+    </data>
+    <data name="Profile_Edit_UsernamePlaceholder" xml:space="preserve">
+        <value>Введите имя пользователя</value>
+    </data>
+    <data name="Profile_Edit_About" xml:space="preserve">
+        <value>О себе</value>
+    </data>
+    <data name="Profile_Edit_AboutPlaceholder" xml:space="preserve">
+        <value>Расскажите о себе...</value>
+    </data>
+    <data name="Profile_Edit_Save" xml:space="preserve">
+        <value>Сохранить</value>
+    </data>
+    <data name="Profile_Edit_Cancel" xml:space="preserve">
+        <value>Отмена</value>
+    </data>
+    <data name="Profile_Edit_SaveError" xml:space="preserve">
+        <value>Не удалось сохранить изменения</value>
+    </data>
+    <data name="Profile_Edit_UsernameRequired" xml:space="preserve">
+        <value>Имя пользователя не может быть пустым</value>
+    </data>
+    <data name="ShopPage_FilterBeans" xml:space="preserve">
+        <value>Зёрна</value>
+    </data>
+    <data name="ShopPage_FilterRoasters" xml:space="preserve">
+        <value>Обжарщики</value>
+    </data>
+    <data name="ShopPage_FilterBrewMethods" xml:space="preserve">
+        <value>Способы заваривания</value>
+    </data>
+    <data name="ShopPage_FilterEquipment" xml:space="preserve">
+        <value>Оборудование</value>
+    </data>
+    <data name="ShopPage_FilterApply" xml:space="preserve">
+        <value>Применить</value>
+    </data>
+    <data name="ShopPage_FilterClear" xml:space="preserve">
+        <value>Сбросить</value>
+    </data>
+    <data name="ShopPage_SuggestShop" xml:space="preserve">
+        <value>Предложить кофейню</value>
+    </data>
+    <data name="SuggestShop_Title" xml:space="preserve">
+        <value>Предложить кофейню</value>
+    </data>
+    <data name="SuggestShop_RequiredTitle" xml:space="preserve">
+        <value>Обязательная информация</value>
+    </data>
+    <data name="SuggestShop_FieldName" xml:space="preserve">
+        <value>Название</value>
+    </data>
+    <data name="SuggestShop_FieldAddress" xml:space="preserve">
+        <value>Адрес</value>
+    </data>
+    <data name="SuggestShop_SectionAbout" xml:space="preserve">
+        <value>Описание и средний чек</value>
+    </data>
+    <data name="SuggestShop_FieldDescription" xml:space="preserve">
+        <value>Описание</value>
+    </data>
+    <data name="SuggestShop_SectionContacts" xml:space="preserve">
+        <value>Контакты</value>
+    </data>
+    <data name="SuggestShop_FieldPhone" xml:space="preserve">
+        <value>Телефон</value>
+    </data>
+    <data name="SuggestShop_FieldEmail" xml:space="preserve">
+        <value>Email</value>
+    </data>
+    <data name="SuggestShop_FieldWebsite" xml:space="preserve">
+        <value>Сайт</value>
+    </data>
+    <data name="SuggestShop_FieldInstagram" xml:space="preserve">
+        <value>Instagram</value>
+    </data>
+    <data name="SuggestShop_SectionSchedule" xml:space="preserve">
+        <value>Время работы</value>
+    </data>
+    <data name="SuggestShop_FieldOpenTime" xml:space="preserve">
+        <value>Открытие</value>
+    </data>
+    <data name="SuggestShop_FieldCloseTime" xml:space="preserve">
+        <value>Закрытие</value>
+    </data>
+    <data name="SuggestShop_FieldClosed" xml:space="preserve">
+        <value>Выходной</value>
+    </data>
+    <data name="SuggestShop_SectionCoffeeProfile" xml:space="preserve">
+        <value>Кофейный профиль</value>
+    </data>
+    <data name="SuggestShop_SectionCoffeeBeans" xml:space="preserve">
+        <value>Зерно</value>
+    </data>
+    <data name="SuggestShop_SectionRoasters" xml:space="preserve">
+        <value>Обжарщики</value>
+    </data>
+    <data name="SuggestShop_SectionBrewMethods" xml:space="preserve">
+        <value>Способы заваривания</value>
+    </data>
+    <data name="SuggestShop_SectionEquipment" xml:space="preserve">
+        <value>Оборудование</value>
+    </data>
+    <data name="SuggestShop_SectionPhotos" xml:space="preserve">
+        <value>Фотографии</value>
+    </data>
+    <data name="SuggestShop_AddPhoto" xml:space="preserve">
+        <value>Добавить фото</value>
+    </data>
+    <data name="SuggestShop_RemovePhoto" xml:space="preserve">
+        <value>Удалить</value>
+    </data>
+    <data name="SuggestShop_Submit" xml:space="preserve">
+        <value>Отправить на модерацию</value>
+    </data>
+    <data name="SuggestShop_ValidationRequired" xml:space="preserve">
+        <value>Заполните название, адрес и город.</value>
+    </data>
+    <data name="SuggestShop_SubmitError" xml:space="preserve">
+        <value>Не удалось отправить предложение кофейни.</value>
+    </data>
+    <data name="SuggestShop_SubmitSuccess" xml:space="preserve">
+        <value>Спасибо! Предложение отправлено на модерацию.</value>
+    </data>
+    <data name="SuggestShop_DayMonday" xml:space="preserve">
+        <value>Понедельник</value>
+    </data>
+    <data name="SuggestShop_DayTuesday" xml:space="preserve">
+        <value>Вторник</value>
+    </data>
+    <data name="SuggestShop_DayWednesday" xml:space="preserve">
+        <value>Среда</value>
+    </data>
+    <data name="SuggestShop_DayThursday" xml:space="preserve">
+        <value>Четверг</value>
+    </data>
+    <data name="SuggestShop_DayFriday" xml:space="preserve">
+        <value>Пятница</value>
+    </data>
+    <data name="SuggestShop_DaySaturday" xml:space="preserve">
+        <value>Суббота</value>
+    </data>
+    <data name="SuggestShop_DaySunday" xml:space="preserve">
+        <value>Воскресенье</value>
+    </data>
+</root>

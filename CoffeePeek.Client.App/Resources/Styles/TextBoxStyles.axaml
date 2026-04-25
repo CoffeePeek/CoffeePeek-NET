@@ -1,0 +1,35 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20" Background="{DynamicResource SurfaceBrush}">
+            <StackPanel Spacing="8">
+                <TextBox PlaceholderText="hello@example.com" />
+                <TextBox Text="SomeText" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Minimal: no box; bottom rule only; focus → primary + glow feel via thicker line -->
+    <Style Selector="TextBox">
+        <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource TextSelectionBrush}" />
+        <Setter Property="SelectionForegroundBrush" Value="{DynamicResource TextSelectionForegroundBrush}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource PrimaryBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource OutlineVariantGhostBrush}" />
+        <Setter Property="BorderThickness" Value="{StaticResource DefaultThickness}" />
+        <Setter Property="CornerRadius" Value="{StaticResource SuperLargeRadius}" />
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
+    </Style>
+
+    <Style Selector="TextBox:pointerover">
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+        <Setter Property="BorderThickness" Value="{StaticResource DefaultThickness}" />
+    </Style>
+    
+    <Style Selector="TextBox:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+        <Setter Property="BorderThickness" Value="{StaticResource DefaultThickness}" />
+    </Style>
+</Styles>

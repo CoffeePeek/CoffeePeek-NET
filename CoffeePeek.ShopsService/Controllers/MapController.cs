@@ -1,0 +1,54 @@
+using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Shared.Kernel.Response;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
+using Microsoft.AspNetCore.Mvc;
+using Wolverine;
+
+namespace CoffeePeek.ShopsService.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Tags("Map Services")]
+[Produces("application/json")]
+[ProducesErrorResponseType(typeof(ErrorResponse))]
+public class MapController(IMessageBus bus) : ControllerBase
+{
+    /// <summary>
+    /// Get coffee shops within geographical boundaries
+    /// </summary>
+    /// <remarks>
+    /// Use this endpoint to fetch coffee shops for map-based views. 
+    /// It requires a bounding box defined by minimum and maximum coordinates.
+    /// 
+    /// **Constraints:**
+    /// - Latitude: -90 to 90
+    /// - Longitude: -180 to 180
+    /// - Min values must be lower than Max values.
+    /// </remarks>
+    /// <param name="minLat">Minimum latitude (Southern boundary)</param>
+    /// <param name="minLon">Minimum longitude (Western boundary)</param>
+    /// <param name="maxLat">Maximum latitude (Northern boundary)</param>
+    /// <param name="maxLon">Maximum longitude (Eastern boundary)</param>
+    /// <response code="200">Returns a list of shops found within the specified area</response>
+    /// <response code="400">Invalid coordinates or bounding box geometry</response>
+    [HttpGet]
+    [ProducesResponseType(typeof(Response<GetShopsInBoundsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetShopsInBounds(
+        [FromQuery] [Range(-90, 90)] decimal minLat,
+        [FromQuery] [Range(-180, 180)] decimal minLon,
+        [FromQuery] [Range(-90, 90)] decimal maxLat,
+        [FromQuery] [Range(-180, 180)] decimal maxLon)
+    {
+        if (minLat > maxLat || minLon > maxLon)
+        {
+            return BadRequest(Response<GetShopsInBoundsResponse>.Error("Invalid bounds: min values must be less than or equal to max values"));
+        }
+
+        var query = new GetShopsInBoundsQuery(minLat, minLon, maxLat, maxLon);
+        
+        var response = await bus.InvokeAsync<Response<GetShopsInBoundsResponse>>(query);
+        return Ok(response);
+    }
+}

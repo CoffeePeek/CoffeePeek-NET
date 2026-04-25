@@ -1,0 +1,157 @@
+<UserControl
+    d:DesignWidth="1280"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Home.HeaderView"
+    x:DataType="home:HeaderViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:home="clr-namespace:CoffeePeek.Client.App.ViewModels.Home"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Styles>
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Regular" />
+            <Setter Property="Margin" Value="12, 0" />
+            <Setter Property="Padding" Value="4, 2" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
+
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Name="PART_LayoutRoot"
+                        Padding="{TemplateBinding Padding}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <ContentPresenter
+                                Content="{TemplateBinding Header}"
+                                ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                Foreground="{TemplateBinding Foreground}"
+                                HorizontalAlignment="Center"
+                                Name="PART_ContentPresenter"
+                                VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="TabItem:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceContainerLowBrush}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="TabItem:selected">
+            <Setter Property="Background" Value="{DynamicResource SurfaceContainerHighBrush}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
+        </Style>
+
+        <Style Selector="TabItem /template/ Border#PART_SelectedPipe">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+        <StackPanel
+            Grid.Column="0"
+            Margin="8,0"
+            Orientation="Horizontal"
+            VerticalAlignment="Center">
+            <TextBlock
+                Classes="Headline"
+                FontWeight="Bold"
+                Foreground="{DynamicResource PrimaryBrush}">
+                <Run Foreground="{DynamicResource OnSurfaceBrush}" Text="Coffee" /><Run Foreground="{DynamicResource PrimaryBrush}" Text="Peek" />
+            </TextBlock>
+        </StackPanel>
+
+        <ScrollViewer
+            Grid.Column="1"
+            HorizontalScrollBarVisibility="Hidden"
+            VerticalScrollBarVisibility="Disabled"
+            VerticalAlignment="Center">
+            <TabControl SelectedIndex="{Binding MainTabSelectedIndex, Mode=TwoWay}">
+                <TabItem>
+                    <Interaction.Behaviors>
+                        <EventTriggerBehavior EventName="PointerPressed">
+                            <InvokeCommandAction Command="{Binding CloseProfileShellCommand}" />
+                        </EventTriggerBehavior>
+                    </Interaction.Behaviors>
+                    <TabItem.Header>
+                        <StackPanel
+                            Margin="4,0"
+                            Orientation="Horizontal"
+                            Spacing="4">
+                            <PathIcon
+                                Data="{StaticResource SearchIcon}"
+                                Height="16"
+                                Width="16" />
+                            <TextBlock Text="{x:Static lang:Resources.Header_Shops}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </TabItem.Header>
+                </TabItem>
+                <TabItem>
+                    <Interaction.Behaviors>
+                        <EventTriggerBehavior EventName="PointerPressed">
+                            <InvokeCommandAction Command="{Binding CloseProfileShellCommand}" />
+                        </EventTriggerBehavior>
+                    </Interaction.Behaviors>
+                    <TabItem.Header>
+                        <StackPanel
+                            Margin="4,0"
+                            Orientation="Horizontal"
+                            Spacing="4">
+                            <PathIcon
+                                Data="{StaticResource MapIcon}"
+                                Height="16"
+                                Width="16" />
+                            <TextBlock Text="{x:Static lang:Resources.Header_Map}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </TabItem.Header>
+                </TabItem>
+            </TabControl>
+        </ScrollViewer>
+
+        <StackPanel
+            Grid.Column="2"
+            Margin="8,0"
+            Orientation="Horizontal"
+            VerticalAlignment="Center">
+            <Separator
+                Background="{DynamicResource BorderBrush}"
+                Height="20"
+                VerticalAlignment="Center"
+                Width="1" />
+            <Border Background="Transparent">
+                <Interaction.Behaviors>
+                    <EventTriggerBehavior EventName="PointerPressed">
+                        <InvokeCommandAction Command="{Binding NavigateToProfileCommand}" />
+                    </EventTriggerBehavior>
+                </Interaction.Behaviors>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontSize="12" Text="Username" />
+                        <TextBlock
+                            FontSize="10"
+                            FontWeight="Regular"
+                            Foreground="{DynamicResource PrimaryBrush}"
+                            Text="Mainteiner" />
+                    </StackPanel>
+                    <Ellipse
+                        Fill="{DynamicResource PrimaryBrush}"
+                        Height="40"
+                        Margin="12,0,0,0"
+                        Width="40" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>

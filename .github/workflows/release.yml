@@ -1,34 +1,420 @@
-name: Release from Changelog
+﻿name: Release
 
 on:
   push:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  REGISTRY: docker.io
+  CONFIGURATION: Release
+  ALLOW_MISSING_PRUNE: -p:AllowMissingPrunePackageData=true
+
 jobs:
-  release:
+  metadata:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      version_code: ${{ steps.version.outputs.version_code }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Extract Changelog Section
-        id: changelog_reader
-        uses: say8425/changelog-reader-action@v3
+      - name: Compute release version
+        id: version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          IFS='.' read -r major minor patch <<< "$version"
+          version_code=$((major * 10000 + minor * 100 + patch))
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "version_code=$version_code" >> "$GITHUB_OUTPUT"
+
+      - name: Extract Release Notes
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          tag = os.environ["RELEASE_TAG"]
+          changelog = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          pattern = rf"^## \[{re.escape(tag)}\].*?$([\s\S]*?)(?=^## \[|\Z)"
+          match = re.search(pattern, changelog, flags=re.MULTILINE)
+
+          if not match:
+              raise SystemExit(f"Could not find release notes for {tag} in CHANGELOG.md")
+
+          notes = match.group(1).strip()
+          if not notes:
+              raise SystemExit(f"Release notes for {tag} are empty")
+
+          Path("RELEASE_NOTES.md").write_text(notes + "\n", encoding="utf-8")
+          PY
+
+      - name: Upload release notes
+        uses: actions/upload-artifact@v4
         with:
-          version: ${{ github.ref_name }}
-          path: ./CHANGELOG.md
+          name: release-notes
+          path: RELEASE_NOTES.md
+
+  docker-images:
+    runs-on: ubuntu-latest
+    needs: metadata
+    env:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        if: env.DOCKER_HUB_USERNAME != '' && env.DOCKER_HUB_PASSWORD != ''
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.DOCKER_HUB_USERNAME }}
+          password: ${{ env.DOCKER_HUB_PASSWORD }}
+
+      - name: Build and push release images
+        if: env.DOCKER_HUB_USERNAME != '' && env.DOCKER_HUB_PASSWORD != ''
+        run: |
+          services=(
+            "coffeepeek.accountservice:CoffeePeek.AccountService/AccountService.Dockerfile"
+            "coffeepeek.shopsservice:CoffeePeek.ShopsService/ShopsService.Dockerfile"
+            "coffeepeek.moderationservice:CoffeePeek.ModerationService/ModerationService.Dockerfile"
+            "coffeepeek.mediaservice:CoffeePeek.MediaService/MediaService.Dockerfile"
+            "gateway:CoffeePeek.Gateway/Gateway.Dockerfile"
+          )
+
+          mkdir -p release-assets
+          {
+            echo "### Docker images"
+            echo
+          } > release-assets/docker-images.md
+
+          for item in "${services[@]}"; do
+            image="${item%%:*}"
+            dockerfile="${item#*:}"
+            ref="${REGISTRY}/${DOCKER_HUB_USERNAME}/${image}"
+
+            docker buildx build \
+              --file "$dockerfile" \
+              --tag "${ref}:${GITHUB_REF_NAME}" \
+              --tag "${ref}:latest" \
+              --push \
+              .
+
+            echo "- \`${ref}:${GITHUB_REF_NAME}\`" >> release-assets/docker-images.md
+          done
+
+      - name: Record skipped Docker publishing
+        if: env.DOCKER_HUB_USERNAME == '' || env.DOCKER_HUB_PASSWORD == ''
+        run: |
+          mkdir -p release-assets
+          {
+            echo "### Docker images"
+            echo
+            echo "Docker publishing was skipped because Docker Hub credentials are not configured."
+          } > release-assets/docker-images.md
+
+      - name: Upload Docker image references
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-references
+          path: release-assets/docker-images.md
+
+  desktop-artifacts:
+    runs-on: ${{ matrix.os }}
+    needs: metadata
+    env:
+      WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
+      WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+      APPLE_CODESIGN_CERTIFICATE_BASE64: ${{ secrets.APPLE_CODESIGN_CERTIFICATE_BASE64 }}
+      APPLE_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CODESIGN_CERTIFICATE_PASSWORD }}
+      APPLE_CODESIGN_IDENTITY: ${{ secrets.APPLE_CODESIGN_IDENTITY }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+            archive: tar.gz
+          - os: windows-latest
+            rid: win-x64
+            archive: zip
+          - os: macos-latest
+            rid: osx-x64
+            archive: tar.gz
+          - os: macos-latest
+            rid: osx-arm64
+            archive: tar.gz
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore desktop project
+        run: dotnet restore "CoffeePeek.Client.App.Desktop/CoffeePeek.Client.App.Desktop.csproj" --runtime "${{ matrix.rid }}" ${{ env.ALLOW_MISSING_PRUNE }}
+
+      - name: Publish desktop app
+        run: |
+          dotnet publish "CoffeePeek.Client.App.Desktop/CoffeePeek.Client.App.Desktop.csproj" \
+            --configuration "${{ env.CONFIGURATION }}" \
+            --runtime "${{ matrix.rid }}" \
+            --self-contained true \
+            --no-restore \
+            --output "artifacts/publish/desktop-${{ matrix.rid }}" \
+            -p:PublishSingleFile=true \
+            -p:AssemblyVersion="${{ needs.metadata.outputs.version }}" \
+            -p:FileVersion="${{ needs.metadata.outputs.version }}" \
+            -p:InformationalVersion="${{ github.ref_name }}" \
+            ${{ env.ALLOW_MISSING_PRUNE }}
+        shell: bash
+
+      - name: Sign Windows binaries
+        if: matrix.rid == 'win-x64'
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE_BASE64) -or [string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE_PASSWORD)) {
+            Write-Host "Windows signing secrets are not configured. Skipping signing."
+            exit 0
+          }
+
+          $certificatePath = "windows-signing-certificate.pfx"
+          [IO.File]::WriteAllBytes($certificatePath, [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE_BASE64))
+
+          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" -Recurse -Filter signtool.exe |
+            Where-Object { $_.FullName -match "\\x64\\" } |
+            Select-Object -First 1
+
+          if (-not $signtool) {
+            throw "signtool.exe was not found on the runner."
+          }
+
+          Get-ChildItem "artifacts/publish/desktop-${{ matrix.rid }}" -Recurse -Filter *.exe | ForEach-Object {
+            & $signtool.FullName sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $certificatePath /p $env:WINDOWS_CERTIFICATE_PASSWORD $_.FullName
+          }
+
+      - name: Sign macOS binaries
+        if: startsWith(matrix.rid, 'osx-')
+        shell: bash
+        run: |
+          if [ -z "$APPLE_CODESIGN_CERTIFICATE_BASE64" ] ||
+             [ -z "$APPLE_CODESIGN_CERTIFICATE_PASSWORD" ] ||
+             [ -z "$APPLE_CODESIGN_IDENTITY" ]; then
+            echo "macOS signing secrets are not configured. Skipping signing."
+            exit 0
+          fi
+
+          keychain_path="$RUNNER_TEMP/coffeepeek-signing.keychain-db"
+          certificate_path="$RUNNER_TEMP/apple-signing-certificate.p12"
+
+          echo "$APPLE_CODESIGN_CERTIFICATE_BASE64" | base64 --decode > "$certificate_path"
+          security create-keychain -p "$APPLE_CODESIGN_CERTIFICATE_PASSWORD" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$APPLE_CODESIGN_CERTIFICATE_PASSWORD" "$keychain_path"
+          security import "$certificate_path" -P "$APPLE_CODESIGN_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$keychain_path"
+          security list-keychain -d user -s "$keychain_path"
+
+          find "artifacts/publish/desktop-${{ matrix.rid }}" -type f -perm -111 -maxdepth 2 -print0 |
+            while IFS= read -r -d '' file; do
+              codesign --force --timestamp --options runtime --sign "$APPLE_CODESIGN_IDENTITY" "$file"
+            done
+
+      - name: Package desktop app
+        run: |
+          mkdir -p artifacts/release
+          archive="artifacts/release/coffeepeek-desktop-${{ needs.metadata.outputs.version }}-${{ matrix.rid }}.${{ matrix.archive }}"
+
+          if [ "${{ matrix.archive }}" = "zip" ]; then
+            pwsh -NoLogo -NoProfile -Command "Compress-Archive -Path 'artifacts/publish/desktop-${{ matrix.rid }}/*' -DestinationPath '$archive' -Force"
+          else
+            tar -czf "$archive" -C "artifacts/publish/desktop-${{ matrix.rid }}" .
+          fi
+        shell: bash
+
+      - name: Upload desktop artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ matrix.rid }}
+          path: artifacts/release/*
+
+  android-apk:
+    runs-on: ubuntu-latest
+    needs: metadata
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Java SDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Restore Android workload
+        run: dotnet workload restore "CoffeePeek.Client.App.Android/CoffeePeek.Client.App.Android.csproj"
+
+      - name: Restore Android project
+        run: dotnet restore "CoffeePeek.Client.App.Android/CoffeePeek.Client.App.Android.csproj" ${{ env.ALLOW_MISSING_PRUNE }}
+
+      - name: Publish Android APK
+        run: |
+          common_publish_args=(
+            "CoffeePeek.Client.App.Android/CoffeePeek.Client.App.Android.csproj"
+            "--configuration" "${CONFIGURATION}"
+            "--framework" "net10.0-android"
+            "--no-restore"
+            "-p:ApplicationDisplayVersion=${{ needs.metadata.outputs.version }}"
+            "-p:ApplicationVersion=${{ needs.metadata.outputs.version_code }}"
+            "${ALLOW_MISSING_PRUNE}"
+          )
+
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ] &&
+             [ -n "$ANDROID_KEYSTORE_PASSWORD" ] &&
+             [ -n "$ANDROID_KEY_ALIAS" ] &&
+             [ -n "$ANDROID_KEY_PASSWORD" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > coffeepeek-release.keystore
+            common_publish_args+=(
+              "-p:AndroidKeyStore=true"
+              "-p:AndroidSigningKeyStore=$PWD/coffeepeek-release.keystore"
+              "-p:AndroidSigningStorePass=$ANDROID_KEYSTORE_PASSWORD"
+              "-p:AndroidSigningKeyAlias=$ANDROID_KEY_ALIAS"
+              "-p:AndroidSigningKeyPass=$ANDROID_KEY_PASSWORD"
+            )
+          else
+            echo "Android signing secrets are not configured. Publishing unsigned APK."
+          fi
+
+          dotnet publish "${common_publish_args[@]}" -p:AndroidPackageFormat=apk
+          dotnet publish "${common_publish_args[@]}" -p:AndroidPackageFormat=aab
+
+          mkdir -p artifacts/release
+          find CoffeePeek.Client.App.Android/bin/${CONFIGURATION}/net10.0-android -name '*.apk' -print -exec cp {} "artifacts/release/coffeepeek-android-${{ needs.metadata.outputs.version }}.apk" \;
+          find CoffeePeek.Client.App.Android/bin/${CONFIGURATION}/net10.0-android -name '*.aab' -print -exec cp {} "artifacts/release/coffeepeek-android-${{ needs.metadata.outputs.version }}.aab" \;
+
+      - name: Upload Android AAB to Google Play internal track
+        if: env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != ''
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.CoffeePeek.Client.App.Android
+          releaseFiles: artifacts/release/coffeepeek-android-${{ needs.metadata.outputs.version }}.aab
+          track: internal
+          status: draft
+
+      - name: Upload Android packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-packages
+          path: |
+            artifacts/release/*.apk
+            artifacts/release/*.aab
+
+  browser-artifact:
+    runs-on: ubuntu-latest
+    needs: metadata
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore browser workload
+        run: dotnet workload restore "CoffeePeek.Client.App.Browser/CoffeePeek.Client.App.Browser.csproj"
+
+      - name: Restore browser project
+        run: dotnet restore "CoffeePeek.Client.App.Browser/CoffeePeek.Client.App.Browser.csproj" ${{ env.ALLOW_MISSING_PRUNE }}
+
+      - name: Publish browser app
+        run: |
+          dotnet publish "CoffeePeek.Client.App.Browser/CoffeePeek.Client.App.Browser.csproj" \
+            --configuration "${{ env.CONFIGURATION }}" \
+            --no-restore \
+            --output "artifacts/publish/browser" \
+            -p:InformationalVersion="${{ github.ref_name }}" \
+            ${{ env.ALLOW_MISSING_PRUNE }}
+
+          mkdir -p artifacts/release
+          tar -czf "artifacts/release/coffeepeek-browser-${{ needs.metadata.outputs.version }}.tar.gz" -C "artifacts/publish/browser" .
+
+      - name: Upload browser artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser
+          path: artifacts/release/*.tar.gz
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs:
+      - metadata
+      - docker-images
+      - desktop-artifacts
+      - android-apk
+      - browser-artifact
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-downloads
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release-assets
+          find release-downloads -type f ! -name 'RELEASE_NOTES.md' ! -name 'docker-images.md' -exec cp {} release-assets/ \;
+
+          if [ -f release-downloads/release-notes/RELEASE_NOTES.md ]; then
+            cp release-downloads/release-notes/RELEASE_NOTES.md RELEASE_NOTES.md
+          else
+            echo "Release notes are missing." > RELEASE_NOTES.md
+          fi
+
+          if [ -f release-downloads/docker-image-references/docker-images.md ]; then
+            {
+              echo
+              cat release-downloads/docker-image-references/docker-images.md
+            } >> RELEASE_NOTES.md
+          fi
+
+          if find release-assets -type f | grep -q .; then
+            (cd release-assets && sha256sum * > SHA256SUMS)
+          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          body_path: RELEASE_NOTES.md
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
-          body: ${{ steps.changelog_reader.outputs.log }}
-          draft: false
-          prerelease: false
+          files: release-assets/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

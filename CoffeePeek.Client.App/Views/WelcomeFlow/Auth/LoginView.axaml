@@ -1,0 +1,202 @@
+<UserControl
+    d:DesignHeight="700"
+    d:DesignWidth="520"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.WelcomeFlow.Auth.LoginView"
+    x:DataType="auth:LoginViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:auth="clr-namespace:CoffeePeek.Client.App.ViewModels.WelcomeFlow.Auth"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Background="{DynamicResource AuthPageBackgroundBrush}">
+        <Ellipse
+            Width="520"
+            Height="520"
+            Margin="-120,-180,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            IsHitTestVisible="False"
+            Opacity="0.12">
+            <Ellipse.Fill>
+                <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <Button
+            Padding="12"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Margin="0,20,20,0"
+            ZIndex="20"
+            Background="{DynamicResource AuthCardBackgroundBrush}"
+            BorderThickness="0"
+            CornerRadius="{StaticResource DefaultCornerRadius}"
+            Command="{Binding ToggleThemeCommand}"
+            ToolTip.Tip="{x:Static lang:Resources.Auth_ThemeToggle}">
+            <Panel Width="22" Height="22">
+                <PathIcon
+                    Data="{StaticResource ThemeMoonIcon}"
+                    Foreground="{DynamicResource OnSurfaceBrush}"
+                    IsVisible="{Binding ThemeShowsSunIcon}"
+                    Width="22"
+                    Height="22" />
+                <PathIcon
+                    Data="{StaticResource ThemeSunIcon}"
+                    Foreground="{DynamicResource OnSurfaceBrush}"
+                    IsVisible="{Binding !ThemeShowsSunIcon}"
+                    Width="22"
+                    Height="22" />
+            </Panel>
+        </Button>
+
+        <ScrollViewer
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto"
+            ZIndex="5">
+            <Grid MinHeight="640" Margin="20,72,20,32">
+                <Border
+                    Padding="36,32"
+                    MaxWidth="520"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="{DynamicResource AuthCardBackgroundBrush}"
+                    BorderThickness="0"
+                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                    BoxShadow="{DynamicResource ShadowAmbientFloat}">
+                    <StackPanel Spacing="20">
+                        <Button
+                            Classes="Secondary"
+                            Command="{Binding GoBackCommand}"
+                            Content="{x:Static lang:Resources.Common_Back}"
+                            HorizontalAlignment="Left"
+                            Padding="12,8" />
+
+                        <StackPanel HorizontalAlignment="Center" Spacing="16">
+                            <Border
+                                Width="72"
+                                Height="72"
+                                HorizontalAlignment="Center"
+                                Background="{DynamicResource SurfaceContainerBrush}"
+                                BorderThickness="0"
+                                CornerRadius="{StaticResource DefaultCornerRadius}">
+                                <PathIcon
+                                    Data="{StaticResource CoffeeBrandIcon}"
+                                    Foreground="{DynamicResource PrimaryBrush}"
+                                    Height="36"
+                                    Width="36"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+                                <TextBlock
+                                    FontSize="22"
+                                    FontWeight="Bold"
+                                    Foreground="{DynamicResource OnSurfaceBrush}"
+                                    Text="{x:Static lang:Resources.Auth_BrandCoffee}" />
+                                <TextBlock
+                                    FontSize="22"
+                                    FontWeight="Bold"
+                                    Foreground="{DynamicResource PrimaryBrush}"
+                                    Text="{x:Static lang:Resources.Auth_BrandPeek}" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Spacing="8">
+                            <TextBlock
+                                FontSize="28"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                HorizontalAlignment="Center"
+                                Text="{x:Static lang:Resources.LoginPage_Title}"
+                                TextAlignment="Center" />
+                            <TextBlock
+                                FontSize="16"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                Text="{x:Static lang:Resources.LoginPage_Subtitle}"
+                                TextAlignment="Center"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Border
+                            Padding="14"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            IsVisible="{Binding HasError}"
+                            Background="{DynamicResource AuthErrorBackgroundBrush}"
+                            BorderThickness="0">
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="{DynamicResource AuthErrorForegroundBrush}"
+                                Text="{Binding ErrorMessage}"
+                                TextWrapping="Wrap" />
+                        </Border>
+
+                        <StackPanel Spacing="6">
+                            <TextBlock
+                                FontSize="13"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                Text="{x:Static lang:Resources.Auth_LabelEmail}" />
+                            <TextBox
+                                PlaceholderText="{x:Static lang:Resources.LoginPage_EmailPlaceholder}"
+                                Text="{Binding Email}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="6">
+                            <TextBlock
+                                FontSize="13"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                Text="{x:Static lang:Resources.Auth_LabelPassword}" />
+                            <TextBox
+                                PasswordChar="*"
+                                PlaceholderText="{x:Static lang:Resources.LoginPage_PasswordPlaceholder}"
+                                Text="{Binding Password}" />
+                        </StackPanel>
+
+                        <Button
+                            MinHeight="48"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Command="{Binding LoginCommand}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            FontSize="16"
+                            FontWeight="SemiBold">
+                            <Panel>
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    IsVisible="{Binding !LoginCommand.IsRunning}"
+                                    Text="{x:Static lang:Resources.LoginPage_LoginButton}"
+                                    VerticalAlignment="Center" />
+                                <ProgressBar
+                                    Height="3"
+                                    IsIndeterminate="True"
+                                    IsVisible="{Binding LoginCommand.IsRunning}"
+                                    VerticalAlignment="Center" />
+                            </Panel>
+                        </Button>
+
+                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                Text="{x:Static lang:Resources.Auth_NoAccount}" />
+                            <Button
+                                Padding="0"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding GoToRegisterCommand}"
+                                Foreground="{DynamicResource AuthLinkBrush}"
+                                FontSize="13"
+                                FontWeight="SemiBold">
+                                <TextBlock Text="{x:Static lang:Resources.Auth_CreateAccount}" />
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

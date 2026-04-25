@@ -1,0 +1,18 @@
+<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Home.WorkspaceView"
+    x:DataType="home:WorkspaceViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:home="clr-namespace:CoffeePeek.Client.App.ViewModels.Home"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <ContentControl Content="{Binding ShopPage}" IsVisible="{Binding IsShopsListVisible}" />
+        <ContentControl Content="{Binding ShopDetail}" IsVisible="{Binding IsShopDetailOpen}" />
+        <ContentControl Content="{Binding UserProfile}" IsVisible="{Binding IsProfileOpen}" />
+        <ContentControl Content="{Binding SuggestShop}" IsVisible="{Binding IsSuggestShopOpen}" />
+    </Grid>
+</UserControl>

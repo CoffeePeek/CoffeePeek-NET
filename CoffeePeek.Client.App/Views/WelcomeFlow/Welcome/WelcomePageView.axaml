@@ -1,0 +1,207 @@
+<UserControl
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.WelcomeFlow.Welcome.WelcomePageView"
+    x:DataType="welcome:WelcomePageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:welcome="clr-namespace:CoffeePeek.Client.App.ViewModels.WelcomeFlow.Welcome"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Background="{DynamicResource AuthPageBackgroundBrush}">
+        <Ellipse
+            Width="560"
+            Height="560"
+            Margin="-160,-200,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            IsHitTestVisible="False"
+            Opacity="0.1">
+            <Ellipse.Fill>
+                <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+            </Ellipse.Fill>
+        </Ellipse>
+        <Ellipse
+            Width="420"
+            Height="420"
+            Margin="0,280,-120,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            IsHitTestVisible="False"
+            Opacity="0.06">
+            <Ellipse.Fill>
+                <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <Button
+            Padding="12"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Margin="0,24,24,0"
+            ZIndex="30"
+            Background="{DynamicResource AuthCardBackgroundBrush}"
+            BorderThickness="0"
+            CornerRadius="{StaticResource DefaultCornerRadius}"
+            Command="{Binding ToggleThemeCommand}"
+            ToolTip.Tip="{x:Static lang:Resources.Auth_ThemeToggle}">
+            <Panel Width="22" Height="22">
+                <PathIcon
+                    Data="{StaticResource ThemeMoonIcon}"
+                    Foreground="{DynamicResource OnSurfaceBrush}"
+                    IsVisible="{Binding ThemeShowsSunIcon}"
+                    Width="22"
+                    Height="22" />
+                <PathIcon
+                    Data="{StaticResource ThemeSunIcon}"
+                    Foreground="{DynamicResource OnSurfaceBrush}"
+                    IsVisible="{Binding !ThemeShowsSunIcon}"
+                    Width="22"
+                    Height="22" />
+            </Panel>
+        </Button>
+
+        <ScrollViewer
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto"
+            ZIndex="5">
+            <StackPanel Margin="28,88,28,48" Spacing="40">
+                <Border
+                    Padding="14,10"
+                    HorizontalAlignment="Center"
+                    Background="{DynamicResource AuthCardBackgroundBrush}"
+                    BorderThickness="0"
+                    CornerRadius="{StaticResource DefaultCornerRadius}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Ellipse
+                            Width="8"
+                            Height="8"
+                            VerticalAlignment="Center"
+                            Fill="{DynamicResource PrimaryBrush}" />
+                        <TextBlock
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource PrimaryBrush}"
+                            Text="{x:Static lang:Resources.WelcomePage_Slogan}" />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel HorizontalAlignment="Center" Spacing="20" MaxWidth="720">
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="10">
+                        <TextBlock
+                            FontSize="56"
+                            FontWeight="Bold"
+                            Foreground="{DynamicResource OnSurfaceBrush}"
+                            Text="{x:Static lang:Resources.WelcomePage_MainTitle}" />
+                        <TextBlock
+                            FontSize="56"
+                            FontWeight="Bold"
+                            Foreground="{DynamicResource PrimaryBrush}"
+                            Text="{x:Static lang:Resources.ApplicationName}" />
+                    </StackPanel>
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        HorizontalAlignment="Center"
+                        LineHeight="28"
+                        Text="{x:Static lang:Resources.WelcomePage_MainDescription}"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,0"
+                        Orientation="Horizontal"
+                        Spacing="12">
+                        <Button
+                            MinWidth="200"
+                            MinHeight="52"
+                            Padding="24,14"
+                            Command="{Binding GoToLoginCommand}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Content="{x:Static lang:Resources.LoginPage_LoginButton}" />
+                        <Button
+                            MinWidth="200"
+                            MinHeight="52"
+                            Padding="24,14"
+                            Classes="Secondary"
+                            Command="{Binding GoToRegisterCommand}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Content="{x:Static lang:Resources.Auth_CreateAccount}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <Border
+                    Padding="28"
+                    MaxWidth="1024"
+                    HorizontalAlignment="Center"
+                    Background="{DynamicResource AuthCardBackgroundBrush}"
+                    BorderThickness="0"
+                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                    BoxShadow="{DynamicResource ShadowAmbientFloat}">
+                    <ItemsControl ItemsSource="{Binding Features}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid
+                                    ColumnSpacing="16"
+                                    Columns="3"
+                                    RowSpacing="16"
+                                    Rows="2" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Padding="16"
+                                    MinHeight="140"
+                                    Background="{DynamicResource SurfaceContainerLowBrush}"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}">
+                                    <StackPanel Spacing="10">
+                                        <Grid Width="44" Height="44" HorizontalAlignment="Left">
+                                            <Border
+                                                Background="{DynamicResource PrimaryGoldTransparent}"
+                                                CornerRadius="{StaticResource SmallCornerRadius}" />
+                                            <PathIcon
+                                                Data="{StaticResource CoffeeBrandIcon}"
+                                                Foreground="{DynamicResource PrimaryBrush}"
+                                                Height="22"
+                                                Width="22"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center" />
+                                        </Grid>
+                                        <TextBlock
+                                            FontSize="16"
+                                            FontWeight="Bold"
+                                            Foreground="{DynamicResource OnSurfaceBrush}"
+                                            Text="{Binding Title}"
+                                            TextWrapping="Wrap" />
+                                        <TextBlock
+                                            FontSize="13"
+                                            Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                            LineHeight="20"
+                                            Text="{Binding Description}"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+
+                <TextBlock
+                    Margin="0,8,0,0"
+                    MaxWidth="720"
+                    HorizontalAlignment="Center"
+                    FontSize="14"
+                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                    LineHeight="22"
+                    Text="{x:Static lang:Resources.WelcomePage_Footer}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

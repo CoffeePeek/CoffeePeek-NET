@@ -1,0 +1,420 @@
+<UserControl
+    d:DesignHeight="900"
+    d:DesignWidth="960"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Shops.ShopsPageView"
+    x:DataType="shops:ShopsPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:cities="clr-namespace:CoffeePeek.Contract.Dtos.Internal;assembly=CoffeePeek.Contract"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:search="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops.Search"
+    xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid HorizontalAlignment="Center" MaxWidth="1120">
+        <Grid RowDefinitions="Auto,Auto,Auto,*">
+            <!--  Search + Filters toggle  -->
+            <Grid
+                Grid.Row="0"
+                ColumnDefinitions="*,Auto"
+                ColumnSpacing="8">
+                <TextBox
+                    Grid.Column="0"
+                    MinHeight="52"
+                    PlaceholderText="{x:Static lang:Resources.ShopPage_SearchPlaceholder}"
+                    Text="{Binding SearchQuery}"
+                    VerticalContentAlignment="Center">
+                    <TextBox.InnerLeftContent>
+                        <PathIcon
+                            Data="{StaticResource SearchIcon}"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            Margin="12,0,0,0"
+                            VerticalAlignment="Center" />
+                    </TextBox.InnerLeftContent>
+                    <TextBox.InnerRightContent>
+                        <Button
+                            Command="{Binding ToggleAdditionalFiltersCommand}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            Margin="0,4,4,4"
+                            Padding="16,10">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon
+                                    Data="{StaticResource FiltersIcon}"
+                                    Foreground="{DynamicResource OnPrimaryBrush}"
+                                    VerticalAlignment="Center" />
+                                <TextBlock
+                                    FontSize="14"
+                                    Foreground="{DynamicResource OnPrimaryBrush}"
+                                    Text="{x:Static lang:Resources.ShopPage_Filter}"
+                                    VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </TextBox.InnerRightContent>
+                </TextBox>
+
+                <Button
+                    Grid.Column="1"
+                    Classes="Secondary"
+                    Command="{Binding OpenSuggestShopCommand}"
+                    Content="{x:Static lang:Resources.ShopPage_SuggestShop}"
+                    Padding="16,10"
+                    VerticalAlignment="Center" />
+            </Grid>
+
+            <!--  Advanced catalog filters panel  -->
+            <Border
+                Background="{DynamicResource SurfaceContainerLowBrush}"
+                BorderThickness="0"
+                CornerRadius="{StaticResource DefaultCornerRadius}"
+                Grid.Row="1"
+                IsVisible="{Binding IsAdditionalFiltersPanelOpen}"
+                Margin="0,12,0,0"
+                Padding="20">
+                <StackPanel Spacing="16">
+                    <ItemsControl ItemsSource="{Binding FilterGroups}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="search:CatalogFilterGroupViewModel">
+                                <StackPanel IsVisible="{Binding HasItems}" Margin="0,0,0,16" Spacing="8">
+                                    <TextBlock
+                                        FontSize="13"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource OnSurfaceBrush}"
+                                        Text="{Binding Title}" />
+                                    <ItemsControl ItemsSource="{Binding Items}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="search:CatalogFilterItemViewModel">
+                                                <ToggleButton
+                                                    Classes="Secondary"
+                                                    Content="{Binding Name}"
+                                                    FontSize="12"
+                                                    IsChecked="{Binding IsSelected}"
+                                                    Margin="0,0,6,6"
+                                                    Padding="10,5" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Apply / Clear buttons -->
+                    <StackPanel
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            Classes="Secondary"
+                            Command="{Binding ClearFiltersCommand}"
+                            Content="{x:Static lang:Resources.ShopPage_FilterClear}"
+                            Padding="16,8" />
+                        <Button
+                            Command="{Binding ApplyFiltersCommand}"
+                            Content="{x:Static lang:Resources.ShopPage_FilterApply}"
+                            Padding="16,8" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Panel
+                Grid.Row="2"
+                HorizontalAlignment="Center"
+                Margin="0,16,0,0">
+                <ScrollViewer
+                    HorizontalContentAlignment="Center"
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Disabled"
+                    x:Name="ChipStripHost">
+                    <ListBox
+                        Background="Transparent"
+                        Classes="filter-chips"
+                        ItemsSource="{Binding FilterChips}"
+                        SelectedItem="{Binding SelectedFilterChip}"
+                        SelectionMode="Single">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="shops:FilterChipViewModel">
+                                <Border Classes="filter-chip" VerticalAlignment="Center">
+                                    <TextBlock
+                                        FontSize="14"
+                                        Foreground="{DynamicResource TextPrimaryBrush}"
+                                        Text="{Binding DisplayName}"
+                                        VerticalAlignment="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+
+                <Popup
+                    IsLightDismissEnabled="True"
+                    IsOpen="{Binding IsCityPopupOpen, Mode=TwoWay}"
+                    Placement="BottomEdgeAlignedLeft"
+                    PlacementTarget="{Binding #ChipStripHost}"
+                    VerticalOffset="4">
+                    <Border
+                        MaxWidth="360"
+                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                        BorderThickness="0"
+                        BoxShadow="{DynamicResource ShadowAmbientFloat}"
+                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                        MaxHeight="280"
+                        MinWidth="220"
+                        Padding="0,8">
+                        <Grid RowDefinitions="Auto,*">
+                            <TextBlock
+                                Classes="Label"
+                                Grid.Row="0"
+                                Margin="16,0,16,8"
+                                Text="{x:Static lang:Resources.ShopPage_CityPopupTitle}" />
+                            <ScrollViewer Grid.Row="1" MaxHeight="220">
+                                <ItemsControl ItemsSource="{Binding Cities}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="cities:CityDto">
+                                            <Button
+                                                MinHeight="48"
+                                                Classes="Transparent"
+                                                Command="{Binding $parent[ItemsControl].DataContext.SelectCityCommand}"
+                                                CommandParameter="{Binding}"
+                                                CornerRadius="0"
+                                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Left"
+                                                Padding="16,12">
+                                                <Button.Styles>
+                                                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                                        <Setter Property="Background" Value="{DynamicResource SurfaceContainerBrush}" />
+                                                    </Style>
+                                                </Button.Styles>
+                                                <TextBlock Text="{Binding Name}" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </Popup>
+            </Panel>
+
+            <!--  Content area: shimmer / error / shop cards  -->
+            <Grid Grid.Row="3" Margin="0,20,0,0">
+                <!--  Shimmer skeleton cards  -->
+                <WrapPanel
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding IsLoading}"
+                    Orientation="Horizontal">
+                    <Border Classes="shop-card">
+                        <Grid RowDefinitions="Auto,Auto">
+                            <Border Classes="shimmer" CornerRadius="8,8,0,0" Grid.Row="0" Height="160" />
+                            <StackPanel Grid.Row="1" Margin="14,12,14,14" Spacing="8">
+                                <Border Classes="shimmer-line" Height="18" Width="180" HorizontalAlignment="Left" />
+                                <Border Classes="shimmer-line" Height="13" Width="100" HorizontalAlignment="Left" />
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Border Classes="shimmer-line" Height="22" Width="60" CornerRadius="8" />
+                                    <Border Classes="shimmer-line" Height="22" Width="70" CornerRadius="8" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Border Classes="shop-card">
+                        <Grid RowDefinitions="Auto,Auto">
+                            <Border Classes="shimmer" CornerRadius="8,8,0,0" Grid.Row="0" Height="160" />
+                            <StackPanel Grid.Row="1" Margin="14,12,14,14" Spacing="8">
+                                <Border Classes="shimmer-line" Height="18" Width="140" HorizontalAlignment="Left" />
+                                <Border Classes="shimmer-line" Height="13" Width="80" HorizontalAlignment="Left" />
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Border Classes="shimmer-line" Height="22" Width="50" CornerRadius="8" />
+                                    <Border Classes="shimmer-line" Height="22" Width="80" CornerRadius="8" />
+                                    <Border Classes="shimmer-line" Height="22" Width="55" CornerRadius="8" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Border Classes="shop-card">
+                        <Grid RowDefinitions="Auto,Auto">
+                            <Border Classes="shimmer" CornerRadius="8,8,0,0" Grid.Row="0" Height="160" />
+                            <StackPanel Grid.Row="1" Margin="14,12,14,14" Spacing="8">
+                                <Border Classes="shimmer-line" Height="18" Width="160" HorizontalAlignment="Left" />
+                                <Border Classes="shimmer-line" Height="13" Width="110" HorizontalAlignment="Left" />
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Border Classes="shimmer-line" Height="22" Width="65" CornerRadius="8" />
+                                    <Border Classes="shimmer-line" Height="22" Width="45" CornerRadius="8" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </WrapPanel>
+
+                <!--  Error message  -->
+                <Border
+                    Background="{DynamicResource AuthErrorBackgroundBrush}"
+                    BorderThickness="0"
+                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding HasError}"
+                    Margin="0,12,0,0"
+                    Padding="16,12"
+                    VerticalAlignment="Top">
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="{DynamicResource AuthErrorForegroundBrush}"
+                        Text="{Binding ErrorMessage}"
+                        TextWrapping="Wrap" />
+                </Border>
+
+                <!--  Shop cards  -->
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Disabled"
+                    IsVisible="{Binding !IsLoading}">
+                    <StackPanel>
+                        <ItemsControl
+                            HorizontalAlignment="Center"
+                            ItemsSource="{Binding Shops}"
+                            MaxWidth="1120">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="shops:ShopCardViewModel">
+                                    <Button
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Command="{Binding $parent[ItemsControl].DataContext.OpenShopCommand}"
+                                        CommandParameter="{Binding Id}"
+                                        Cursor="Hand"
+                                        Padding="0">
+                                        <Border Classes="shop-card">
+                                            <Grid RowDefinitions="Auto,Auto">
+                                                <Panel Grid.Row="0">
+                                                    <Border
+                                                        Background="{DynamicResource CardToneGradientBrush}"
+                                                        ClipToBounds="True"
+                                                        CornerRadius="8,8,0,0"
+                                                        Height="160" />
+                                                    <Border
+                                                        Background="{DynamicResource SurfaceContainerHighBrush}"
+                                                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                                                        HorizontalAlignment="Right"
+                                                        Margin="10"
+                                                        Opacity="0.95"
+                                                        Padding="8,4"
+                                                        VerticalAlignment="Top">
+                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                            <TextBlock
+                                                                FontSize="12"
+                                                                Foreground="{DynamicResource PrimaryBrush}"
+                                                                Text="★" />
+                                                            <TextBlock
+                                                                FontSize="13"
+                                                                FontWeight="SemiBold"
+                                                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                                                Text="{Binding Rating}" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <Border
+                                                        Background="{DynamicResource PrimaryGradientBrush}"
+                                                        CornerRadius="{StaticResource SmallCornerRadius}"
+                                                        HorizontalAlignment="Left"
+                                                        IsVisible="{Binding IsTrending}"
+                                                        Margin="10"
+                                                        Padding="8,4"
+                                                        VerticalAlignment="Bottom">
+                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                            <TextBlock FontSize="10" Text="🔥" />
+                                                            <TextBlock
+                                                                FontSize="10"
+                                                                FontWeight="Bold"
+                                                                Foreground="{DynamicResource OnPrimaryBrush}"
+                                                                Text="{x:Static lang:Resources.ShopPage_Trending}" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                </Panel>
+
+                                                <StackPanel
+                                                    Grid.Row="1"
+                                                    Margin="14,12,14,14"
+                                                    Spacing="8">
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <TextBlock
+                                                            Grid.Column="0"
+                                                            FontSize="18"
+                                                            FontWeight="Bold"
+                                                            Foreground="{DynamicResource OnSurfaceBrush}"
+                                                            Text="{Binding Name}"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                        <Border
+                                                            Grid.Column="1"
+                                                            Background="{DynamicResource SurfaceContainerBrush}"
+                                                            CornerRadius="{StaticResource SmallCornerRadius}"
+                                                            Padding="6,2"
+                                                            VerticalAlignment="Center"
+                                                            IsVisible="{Binding IsOpen}">
+                                                            <TextBlock
+                                                                FontSize="11"
+                                                                FontWeight="SemiBold"
+                                                                Foreground="{DynamicResource PrimaryBrush}"
+                                                                Text="OPEN" />
+                                                        </Border>
+                                                    </Grid>
+                                                    <TextBlock
+                                                        FontSize="13"
+                                                        Foreground="{DynamicResource TextPrimaryBrush}"
+                                                        Text="{Binding ReviewCount, StringFormat='{}{0} reviews'}" />
+                                                    <ItemsControl ItemsSource="{Binding Tags}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel Orientation="Horizontal" />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Border
+                                                                    Background="{DynamicResource SurfaceContainerBrush}"
+                                                                    BorderThickness="0"
+                                                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                                                    Margin="0,0,6,6"
+                                                                    Padding="8,4">
+                                                                    <TextBlock
+                                                                        FontSize="11"
+                                                                        FontWeight="SemiBold"
+                                                                        Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                        Text="{Binding}" />
+                                                                </Border>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!--  Load more button  -->
+                        <Button
+                            HorizontalAlignment="Center"
+                            Command="{Binding LoadNextPageCommand}"
+                            Content="{x:Static lang:Resources.ShopPage_LoadMore}"
+                            IsVisible="{Binding HasMorePages}"
+                            Margin="0,16,0,24"
+                            Padding="24,10" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,40 @@
+using CoffeePeek.Account.Domain.Entities.RoleAggregate;
+using CoffeePeek.Account.Domain.Entities.UserAggregate;
+using CoffeePeek.Account.Domain.Services;
+using CoffeePeek.Shared.Auth.Constants;
+
+namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
+
+using User = Domain.Entities.UserAggregate.User;
+
+public class ExternalAuthService(
+    IQueryUserRepository userRepository,
+    IRoleRepository roleRepository) : IExternalAuthService
+{
+    public async Task<User> GetOrCreate(string email, string provider, string providerId,
+        CancellationToken ct)
+    {
+        var user = await userRepository.GetByProvider(provider, providerId, ct)
+                   ?? await userRepository.GetByEmail(email, ct);
+
+        if (user != null)
+        {
+            user.Credentials.LinkExternalProvider(provider, providerId);
+            return user;
+        }
+
+        var newUser = User.CreateExternal(email, provider, providerId);
+
+        var role = await roleRepository.GetRoleAsync(RoleConsts.User);
+
+        if (role == null)
+        {
+            throw new ApplicationException($"Role {RoleConsts.User} not found");
+        }
+        
+        newUser.AssignRole(role);
+
+        userRepository.Add(newUser, ct);
+        return newUser;
+    }
+}

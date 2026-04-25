@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="LoginPage_LoginButton" xml:space="preserve">
+        <value>Login</value>
+    </data>
+    <data name="LoginPage_Title" xml:space="preserve">
+        <value>Sign in</value>
+    </data>
+    <data name="LoginPage_Subtitle" xml:space="preserve">
+        <value>Sign in to your account</value>
+    </data>
+    <data name="ApplicationName" xml:space="preserve">
+        <value>CoffeePeek</value>
+    </data>
+    <data name="WelcomePage_Slogan" xml:space="preserve">
+        <value>CoffeePeek — Your guide to the world of coffee</value>
+    </data>
+    <data name="WelcomePage_MainTitle" xml:space="preserve">
+        <value>Welcome to</value>
+    </data>
+    <data name="WelcomePage_MainDescription" xml:space="preserve">
+        <value>The ultimate companion for coffee enthusiasts. Discover the finest coffee shops, find your dream job in the coffee industry, explore brewing tools, and share your experiences with a like-minded community.</value>
+    </data>
+    <data name="RegisterPage_RegisterButton" xml:space="preserve">
+        <value>Register</value>
+    </data>
+    <data name="WelcomePage_Card1Title" xml:space="preserve">
+        <value>Coffee Map</value>
+    </data>
+    <data name="WelcomePage_Card2Title" xml:space="preserve">
+        <value>Job Board.</value>
+    </data>
+    <data name="WelcomePage_Card3Title" xml:space="preserve">
+        <value>Brewing Tools</value>
+    </data>
+    <data name="WelcomePage_Card4Title" xml:space="preserve">
+        <value>Check-ins &amp; Reviews</value>
+    </data>
+    <data name="WelcomePage_Card5Title" xml:space="preserve">
+        <value>Ranking</value>
+    </data>
+    <data name="WelcomePage_Card6Title" xml:space="preserve">
+        <value>Community</value>
+    </data>
+    <data name="WelcomePage_Card1Description" xml:space="preserve">
+        <value>Find the best coffee shops nearby with detailed info and reviews.</value>
+    </data>
+    <data name="WelcomePage_Card2Description" xml:space="preserve">
+        <value>Careers in the coffee industry for baristas, roasters, and other pros</value>
+    </data>
+    <data name="WelcomePage_Card3Description" xml:space="preserve">
+        <value>In-depth guides for all types of coffee brewing equipment.</value>
+    </data>
+    <data name="WelcomePage_Card4Description" xml:space="preserve">
+        <value>Rate coffee shops, leave feedback, and share your experiences.</value>
+    </data>
+    <data name="WelcomePage_Card5Description" xml:space="preserve">
+        <value>A recommendation system based on your personal preferences.</value>
+    </data>
+    <data name="WelcomePage_Card6Description" xml:space="preserve">
+        <value>Connect with fellow coffee lovers and share your expertise.</value>
+    </data>
+    <data name="WelcomePage_Footer" xml:space="preserve">
+        <value>Join our community of coffee enthusiasts! Share your expertise, discover new spots, and grow your career in the coffee industry with CoffeePeek.</value>
+    </data>
+    <data name="Auth_FillAllFields" xml:space="preserve">
+        <value>Please fill in all required fields.</value>
+    </data>
+    <data name="Auth_LoginFailed" xml:space="preserve">
+        <value>Could not sign in. Check your email and password.</value>
+    </data>
+    <data name="Auth_InvalidEmail" xml:space="preserve">
+        <value>Enter a valid email address.</value>
+    </data>
+    <data name="Auth_EmailCheckFailed" xml:space="preserve">
+        <value>Could not verify the email. Check your connection and try again.</value>
+    </data>
+    <data name="Auth_PasswordMismatch" xml:space="preserve">
+        <value>Passwords do not match.</value>
+    </data>
+    <data name="Auth_RegisterFailed" xml:space="preserve">
+        <value>Registration failed. The email or username may already be in use.</value>
+    </data>
+    <data name="Auth_LoginAfterRegisterFailed" xml:space="preserve">
+        <value>Account created, but automatic sign-in failed. Please sign in manually.</value>
+    </data>
+    <data name="LoginPage_EmailPlaceholder" xml:space="preserve">
+        <value>Email</value>
+    </data>
+    <data name="LoginPage_PasswordPlaceholder" xml:space="preserve">
+        <value>Password</value>
+    </data>
+    <data name="Common_Back" xml:space="preserve">
+        <value>Back</value>
+    </data>
+    <data name="RegisterPage_Title" xml:space="preserve">
+        <value>Create account</value>
+    </data>
+    <data name="Register_CheckEmailTitle" xml:space="preserve">
+        <value>Check email</value>
+    </data>
+    <data name="Register_CheckEmailSubtitle" xml:space="preserve">
+        <value>Enter your email to continue</value>
+    </data>
+    <data name="Register_CompleteSubtitle" xml:space="preserve">
+        <value>Complete your registration</value>
+    </data>
+    <data name="Auth_NoAccount" xml:space="preserve">
+        <value>No account?</value>
+    </data>
+    <data name="Auth_CreateAccount" xml:space="preserve">
+        <value>Create account</value>
+    </data>
+    <data name="Auth_HasAccount" xml:space="preserve">
+        <value>Already have an account?</value>
+    </data>
+    <data name="Auth_SignIn" xml:space="preserve">
+        <value>Sign in</value>
+    </data>
+    <data name="Auth_ChangeEmail" xml:space="preserve">
+        <value>Change email</value>
+    </data>
+    <data name="Auth_LabelEmail" xml:space="preserve">
+        <value>Email</value>
+    </data>
+    <data name="Auth_LabelPassword" xml:space="preserve">
+        <value>Password</value>
+    </data>
+    <data name="Auth_LabelConfirmPassword" xml:space="preserve">
+        <value>Confirm password</value>
+    </data>
+    <data name="Auth_LabelUserName" xml:space="preserve">
+        <value>Username</value>
+    </data>
+    <data name="Auth_PrivacyRequired" xml:space="preserve">
+        <value>Please accept the privacy policy to continue.</value>
+    </data>
+    <data name="Auth_PrivacyConsent" xml:space="preserve">
+        <value>I agree to the Privacy Policy and consent to the processing of personal data.</value>
+    </data>
+    <data name="Auth_PasswordMinLength" xml:space="preserve">
+        <value>Password must be at least 6 characters.</value>
+    </data>
+    <data name="Auth_ThemeToggle" xml:space="preserve">
+        <value>Toggle theme</value>
+    </data>
+    <data name="Auth_BrandCoffee" xml:space="preserve">
+        <value>Coffee</value>
+    </data>
+    <data name="Auth_BrandPeek" xml:space="preserve">
+        <value>Peek</value>
+    </data>
+    <data name="Register_Continue" xml:space="preserve">
+        <value>Continue</value>
+    </data>
+    <data name="RegisterPage_UserNamePlaceholder" xml:space="preserve">
+        <value>Username</value>
+    </data>
+    <data name="RegisterPage_ConfirmPasswordPlaceholder" xml:space="preserve">
+        <value>Confirm password</value>
+    </data>
+    <data name="Home_Title" xml:space="preserve">
+        <value>Home</value>
+    </data>
+    <data name="Home_Subtitle" xml:space="preserve">
+        <value>You are signed in. Main content will appear here.</value>
+    </data>
+    <data name="Home_SignOut" xml:space="preserve">
+        <value>Sign out</value>
+    </data>
+    <data name="Header_Shops" xml:space="preserve">
+        <value>Shops</value>
+    </data>
+    <data name="Header_Map" xml:space="preserve">
+        <value>Map</value>
+    </data>
+    <data name="ShopPage_SearchPlaceholder" xml:space="preserve">
+        <value>Search for your perfect brew...</value>
+    </data>
+    <data name="ShopPage_Filter" xml:space="preserve">
+        <value>Filters</value>
+    </data>
+    <data name="ShopPage_Filter_City" xml:space="preserve">
+        <value>Minsk</value>
+    </data>
+    <data name="ShopPage_Filter_OpenTime" xml:space="preserve">
+        <value>Open</value>
+    </data>
+    <data name="ShopPage_Filter_New" xml:space="preserve">
+        <value>New</value>
+    </data>
+    <data name="ShopPage_Filter_Favorite" xml:space="preserve">
+        <value>Favorite</value>
+    </data>
+    <data name="ShopPage_Filter_Visited" xml:space="preserve">
+        <value>Visited</value>
+    </data>
+    <data name="ShopPage_CityPopupTitle" xml:space="preserve">
+        <value>City</value>
+    </data>
+    <data name="ShopPage_AdditionalFiltersHint" xml:space="preserve">
+        <value>Bean, roaster, brew method, and more filters will appear here.</value>
+    </data>
+    <data name="ShopPage_Trending" xml:space="preserve">
+        <value>TRENDING</value>
+    </data>
+    <data name="Profile_ThemeToggle" xml:space="preserve">
+        <value>Сменить тему</value>
+    </data>
+    <data name="Profile_Logout" xml:space="preserve">
+        <value>Выйти</value>
+    </data>
+    <data name="Profile_Loading" xml:space="preserve">
+        <value>Загрузка…</value>
+    </data>
+    <data name="Profile_LoadError" xml:space="preserve">
+        <value>Не удалось загрузить профиль</value>
+    </data>
+    <data name="Profile_MemberSince" xml:space="preserve">
+        <value>На сайте с {0}</value>
+    </data>
+    <data name="Profile_StatCheckIns" xml:space="preserve">
+        <value>ПОСЕЩЕНИЯ</value>
+    </data>
+    <data name="Profile_StatReviews" xml:space="preserve">
+        <value>ОТЗЫВЫ</value>
+    </data>
+    <data name="Profile_StatRating" xml:space="preserve">
+        <value>РЕЙТИНГ</value>
+    </data>
+    <data name="Profile_LastReviews" xml:space="preserve">
+        <value>Последние отзывы</value>
+    </data>
+    <data name="Profile_ReviewsTotal" xml:space="preserve">
+        <value>Всего отзывов: {0}</value>
+    </data>
+    <data name="Profile_NoReviewsYet" xml:space="preserve">
+        <value>Пока нет отзывов</value>
+    </data>
+    <data name="Profile_NoReviews" xml:space="preserve">
+        <value>Пользователь пока не оставил ни одного отзыва</value>
+    </data>
+    <data name="Profile_GoToShop" xml:space="preserve">
+        <value>Перейти к кофейне</value>
+    </data>
+    <data name="Profile_PreviousPage" xml:space="preserve">
+        <value>Предыдущая</value>
+    </data>
+    <data name="Profile_NextPage" xml:space="preserve">
+        <value>Следующая</value>
+    </data>
+    <data name="Profile_PageOf" xml:space="preserve">
+        <value>Страница {0} из {1}</value>
+    </data>
+    <data name="Profile_ReviewDefaultTitle" xml:space="preserve">
+        <value>Отзыв о кофейне</value>
+    </data>
+    <data name="ShopPage_LoadError" xml:space="preserve">
+        <value>Не удалось загрузить кофейни</value>
+    </data>
+    <data name="ShopPage_LoadMore" xml:space="preserve">
+        <value>Загрузить ещё</value>
+    </data>
+    <data name="ShopDetail_LoadError" xml:space="preserve">
+        <value>Could not load coffee shop details</value>
+    </data>
+    <data name="ShopDetail_Schedule" xml:space="preserve">
+        <value>Schedule</value>
+    </data>
+    <data name="ShopDetail_Contact" xml:space="preserve">
+        <value>Contact</value>
+    </data>
+    <data name="ShopDetail_Reviews" xml:space="preserve">
+        <value>Reviews</value>
+    </data>
+    <data name="ShopDetail_Open" xml:space="preserve">
+        <value>OPEN</value>
+    </data>
+    <data name="Profile_Edit" xml:space="preserve">
+        <value>Edit</value>
+    </data>
+    <data name="Profile_EditTitle" xml:space="preserve">
+        <value>Edit Profile</value>
+    </data>
+    <data name="Profile_Edit_Username" xml:space="preserve">
+        <value>Username</value>
+    </data>
+    <data name="Profile_Edit_UsernamePlaceholder" xml:space="preserve">
+        <value>Enter username</value>
+    </data>
+    <data name="Profile_Edit_About" xml:space="preserve">
+        <value>About</value>
+    </data>
+    <data name="Profile_Edit_AboutPlaceholder" xml:space="preserve">
+        <value>Tell about yourself...</value>
+    </data>
+    <data name="Profile_Edit_Save" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="Profile_Edit_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Profile_Edit_SaveError" xml:space="preserve">
+        <value>Failed to save profile changes</value>
+    </data>
+    <data name="Profile_Edit_UsernameRequired" xml:space="preserve">
+        <value>Username cannot be empty</value>
+    </data>
+    <data name="ShopPage_FilterBeans" xml:space="preserve">
+        <value>Coffee Beans</value>
+    </data>
+    <data name="ShopPage_FilterRoasters" xml:space="preserve">
+        <value>Roasters</value>
+    </data>
+    <data name="ShopPage_FilterBrewMethods" xml:space="preserve">
+        <value>Brew Methods</value>
+    </data>
+    <data name="ShopPage_FilterEquipment" xml:space="preserve">
+        <value>Equipment</value>
+    </data>
+    <data name="ShopPage_FilterApply" xml:space="preserve">
+        <value>Apply</value>
+    </data>
+    <data name="ShopPage_FilterClear" xml:space="preserve">
+        <value>Clear</value>
+    </data>
+    <data name="ShopPage_SuggestShop" xml:space="preserve">
+        <value>Suggest coffee shop</value>
+    </data>
+    <data name="SuggestShop_Title" xml:space="preserve">
+        <value>Suggest a coffee shop</value>
+    </data>
+    <data name="SuggestShop_RequiredTitle" xml:space="preserve">
+        <value>Required information</value>
+    </data>
+    <data name="SuggestShop_FieldName" xml:space="preserve">
+        <value>Name</value>
+    </data>
+    <data name="SuggestShop_FieldAddress" xml:space="preserve">
+        <value>Address</value>
+    </data>
+    <data name="SuggestShop_SectionAbout" xml:space="preserve">
+        <value>Description and price</value>
+    </data>
+    <data name="SuggestShop_FieldDescription" xml:space="preserve">
+        <value>Description</value>
+    </data>
+    <data name="SuggestShop_SectionContacts" xml:space="preserve">
+        <value>Contacts</value>
+    </data>
+    <data name="SuggestShop_FieldPhone" xml:space="preserve">
+        <value>Phone</value>
+    </data>
+    <data name="SuggestShop_FieldEmail" xml:space="preserve">
+        <value>Email</value>
+    </data>
+    <data name="SuggestShop_FieldWebsite" xml:space="preserve">
+        <value>Website</value>
+    </data>
+    <data name="SuggestShop_FieldInstagram" xml:space="preserve">
+        <value>Instagram</value>
+    </data>
+    <data name="SuggestShop_SectionSchedule" xml:space="preserve">
+        <value>Working hours</value>
+    </data>
+    <data name="SuggestShop_FieldOpenTime" xml:space="preserve">
+        <value>Opens</value>
+    </data>
+    <data name="SuggestShop_FieldCloseTime" xml:space="preserve">
+        <value>Closes</value>
+    </data>
+    <data name="SuggestShop_FieldClosed" xml:space="preserve">
+        <value>Closed</value>
+    </data>
+    <data name="SuggestShop_SectionCoffeeProfile" xml:space="preserve">
+        <value>Coffee profile</value>
+    </data>
+    <data name="SuggestShop_SectionCoffeeBeans" xml:space="preserve">
+        <value>Beans</value>
+    </data>
+    <data name="SuggestShop_SectionRoasters" xml:space="preserve">
+        <value>Roasters</value>
+    </data>
+    <data name="SuggestShop_SectionBrewMethods" xml:space="preserve">
+        <value>Brew methods</value>
+    </data>
+    <data name="SuggestShop_SectionEquipment" xml:space="preserve">
+        <value>Equipment</value>
+    </data>
+    <data name="SuggestShop_SectionPhotos" xml:space="preserve">
+        <value>Photos</value>
+    </data>
+    <data name="SuggestShop_AddPhoto" xml:space="preserve">
+        <value>Add photo</value>
+    </data>
+    <data name="SuggestShop_RemovePhoto" xml:space="preserve">
+        <value>Remove</value>
+    </data>
+    <data name="SuggestShop_Submit" xml:space="preserve">
+        <value>Send for moderation</value>
+    </data>
+    <data name="SuggestShop_ValidationRequired" xml:space="preserve">
+        <value>Fill in name, address and city.</value>
+    </data>
+    <data name="SuggestShop_SubmitError" xml:space="preserve">
+        <value>Failed to submit coffee shop suggestion.</value>
+    </data>
+    <data name="SuggestShop_SubmitSuccess" xml:space="preserve">
+        <value>Thanks! Your coffee shop suggestion was sent for moderation.</value>
+    </data>
+    <data name="SuggestShop_DayMonday" xml:space="preserve">
+        <value>Monday</value>
+    </data>
+    <data name="SuggestShop_DayTuesday" xml:space="preserve">
+        <value>Tuesday</value>
+    </data>
+    <data name="SuggestShop_DayWednesday" xml:space="preserve">
+        <value>Wednesday</value>
+    </data>
+    <data name="SuggestShop_DayThursday" xml:space="preserve">
+        <value>Thursday</value>
+    </data>
+    <data name="SuggestShop_DayFriday" xml:space="preserve">
+        <value>Friday</value>
+    </data>
+    <data name="SuggestShop_DaySaturday" xml:space="preserve">
+        <value>Saturday</value>
+    </data>
+    <data name="SuggestShop_DaySunday" xml:space="preserve">
+        <value>Sunday</value>
+    </data>
+</root>

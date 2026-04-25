@@ -1,0 +1,82 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Editorial Midnight & Saffron — dark theme tokens only (no ad-hoc hex in views). -->
+
+    <BoxShadows x:Key="ShadowAmbientFloat">0 20 40 0 #66000000</BoxShadows>
+
+    <Color x:Key="PrimaryColor">#FFBA46</Color>
+    <Color x:Key="PrimaryContainerColor">#CA8A04</Color>
+    <Color x:Key="PrimaryHoverColor">#FFD278</Color>
+    <Color x:Key="OnPrimaryColor">#442C00</Color>
+
+    <Color x:Key="SurfaceColor">#161311</Color>
+    <Color x:Key="SurfaceContainerLowestColor">#100E0C</Color>
+    <Color x:Key="SurfaceContainerLowColor">#1F1C19</Color>
+    <Color x:Key="SurfaceContainerColor">#2D2927</Color>
+    <Color x:Key="SurfaceContainerHighColor">#383432</Color>
+
+    <Color x:Key="OnSurfaceColor">#E9E1DD</Color>
+    <Color x:Key="OnSurfaceVariantColor">#D5C4AE</Color>
+
+    <Color x:Key="OutlineColor">#9E8E7B</Color>
+    <Color x:Key="OutlineVariantColor">#514535</Color>
+
+    <Color x:Key="ErrorColor">#F87171</Color>
+    <Color x:Key="OnErrorSurfaceColor">#FCA5A5</Color>
+
+    <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%" x:Key="PrimaryGradientBrush">
+        <GradientStop Offset="0" Color="{StaticResource PrimaryColor}" />
+        <GradientStop Offset="1" Color="{StaticResource PrimaryContainerColor}" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%" x:Key="PrimaryGradientHoverBrush">
+        <GradientStop Offset="0" Color="{StaticResource PrimaryHoverColor}" />
+        <GradientStop Offset="1" Color="{StaticResource PrimaryContainerColor}" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%" x:Key="CardToneGradientBrush">
+        <GradientStop Offset="0" Color="{StaticResource SurfaceContainerLowColor}" />
+        <GradientStop Offset="1" Color="{StaticResource SurfaceContainerColor}" />
+    </LinearGradientBrush>
+
+    <SolidColorBrush Color="{StaticResource PrimaryColor}" x:Key="PrimaryBrush" />
+    <SolidColorBrush Color="{StaticResource PrimaryHoverColor}" x:Key="PrimaryHoverBrush" />
+    <SolidColorBrush Color="{StaticResource OnPrimaryColor}" x:Key="OnPrimaryBrush" />
+
+    <SolidColorBrush Color="{StaticResource SurfaceColor}" x:Key="SurfaceBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainerLowestColor}" x:Key="SurfaceLowestBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainerLowColor}" x:Key="SurfaceContainerLowBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainerColor}" x:Key="SurfaceContainerBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainerHighColor}" x:Key="SurfaceContainerHighBrush" />
+
+    <SolidColorBrush Color="{StaticResource SurfaceContainerColor}" x:Key="SurfaceBrightBrush" />
+    <SolidColorBrush Color="{StaticResource OnSurfaceColor}" x:Key="OnSurfaceBrush" />
+    <SolidColorBrush Color="{StaticResource OnSurfaceVariantColor}" x:Key="OnSurfaceVariantBrush" />
+
+    <SolidColorBrush Color="{StaticResource OutlineVariantColor}" Opacity="0.15" x:Key="OutlineVariantGhostBrush" />
+    <SolidColorBrush Color="{StaticResource OutlineColor}" Opacity="0.2" x:Key="OutlineGhostBrush" />
+
+    <SolidColorBrush Color="{StaticResource OnSurfaceVariantColor}" x:Key="TextPrimaryBrush" />
+    <SolidColorBrush Color="{StaticResource OutlineVariantColor}" Opacity="0.08" x:Key="BorderBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainerLowColor}" x:Key="SecondaryLightBrush" />
+    <SolidColorBrush Color="{StaticResource OnSurfaceVariantColor}" x:Key="SecondaryBrush" />
+
+    <SolidColorBrush Color="#66FFBA46" x:Key="PrimaryGoldTransparent" />
+    <SolidColorBrush Color="#55FFBA46" x:Key="TextSelectionBrush" />
+    <SolidColorBrush Color="{StaticResource OnSurfaceColor}" x:Key="TextSelectionForegroundBrush" />
+
+    <SolidColorBrush Color="{StaticResource SurfaceContainerLowColor}" x:Key="AppSurfaceBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainerColor}" x:Key="AppSurfaceAltBrush" />
+    <SolidColorBrush Color="{StaticResource OutlineColor}" Opacity="0.2" x:Key="AppBorderColor" />
+    <SolidColorBrush Color="{StaticResource OutlineVariantColor}" Opacity="0.15" x:Key="AppBorderSubtleBrush" />
+    <SolidColorBrush Color="{StaticResource OutlineVariantColor}" Opacity="0.12" x:Key="AppBorderBrush" />
+
+    <SolidColorBrush Color="{StaticResource SurfaceContainerLowestColor}" x:Key="AuthPageBackgroundBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainerLowColor}" x:Key="AuthCardBackgroundBrush" />
+    <SolidColorBrush Color="Transparent" x:Key="AuthCardBorderBrush" />
+    <SolidColorBrush Color="#33F87171" x:Key="AuthErrorBackgroundBrush" />
+    <SolidColorBrush Color="#44F87171" x:Key="AuthErrorBorderBrush" />
+    <SolidColorBrush Color="{StaticResource OnErrorSurfaceColor}" x:Key="AuthErrorForegroundBrush" />
+    <SolidColorBrush Color="{StaticResource PrimaryColor}" x:Key="AuthLinkBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainerLowestColor}" x:Key="AppBackgroundBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainerLowColor}" x:Key="AppSurfaceColor" />
+</ResourceDictionary>
