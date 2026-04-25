@@ -15,6 +15,8 @@ public partial class WorkspaceViewModel : ViewModelBase
 
     public SuggestShopViewModel SuggestShop { get; }
 
+    public ModerationPanelViewModel ModerationPanel { get; }
+
     [ObservableProperty]
     public partial bool IsProfileOpen { get; private set; }
 
@@ -24,19 +26,25 @@ public partial class WorkspaceViewModel : ViewModelBase
     [ObservableProperty]
     public partial bool IsSuggestShopOpen { get; private set; }
 
-    public bool IsShopsListVisible => !IsProfileOpen && !IsShopDetailOpen && !IsSuggestShopOpen;
+    [ObservableProperty]
+    public partial bool IsModerationPanelOpen { get; private set; }
+
+    public bool IsShopsListVisible =>
+        !IsProfileOpen && !IsShopDetailOpen && !IsSuggestShopOpen && !IsModerationPanelOpen;
 
     public WorkspaceViewModel(
         ShopsPageViewModel shopsPageViewModel,
         UserProfileViewModel userProfileViewModel,
         ShopDetailViewModel shopDetailViewModel,
         SuggestShopViewModel suggestShopViewModel,
+        ModerationPanelViewModel moderationPanelViewModel,
         WorkspaceShellNavigator shellNavigator)
     {
         ShopPage = shopsPageViewModel;
         UserProfile = userProfileViewModel;
         ShopDetail = shopDetailViewModel;
         SuggestShop = suggestShopViewModel;
+        ModerationPanel = moderationPanelViewModel;
         _ = ShopPage.InitializeAsync();
 
         shellNavigator.AttachProfile(
@@ -44,7 +52,9 @@ public partial class WorkspaceViewModel : ViewModelBase
             {
                 IsShopDetailOpen = false;
                 IsSuggestShopOpen = false;
+                IsModerationPanelOpen = false;
                 IsProfileOpen = true;
+                OnPropertyChanged(nameof(IsShopsListVisible));
                 _ = UserProfile.LoadAsync(id);
             },
             () =>
@@ -58,6 +68,7 @@ public partial class WorkspaceViewModel : ViewModelBase
             {
                 IsProfileOpen = false;
                 IsSuggestShopOpen = false;
+                IsModerationPanelOpen = false;
                 IsShopDetailOpen = true;
                 OnPropertyChanged(nameof(IsShopsListVisible));
                 _ = ShopDetail.LoadAsync(shopId);
@@ -73,6 +84,7 @@ public partial class WorkspaceViewModel : ViewModelBase
             {
                 IsProfileOpen = false;
                 IsShopDetailOpen = false;
+                IsModerationPanelOpen = false;
                 IsSuggestShopOpen = true;
                 OnPropertyChanged(nameof(IsShopsListVisible));
                 _ = SuggestShop.InitializeAsync();
@@ -82,6 +94,22 @@ public partial class WorkspaceViewModel : ViewModelBase
                 IsSuggestShopOpen = false;
                 OnPropertyChanged(nameof(IsShopsListVisible));
             });
+
+        shellNavigator.AttachModerationPanel(
+            () =>
+            {
+                IsProfileOpen = false;
+                IsShopDetailOpen = false;
+                IsSuggestShopOpen = false;
+                IsModerationPanelOpen = true;
+                OnPropertyChanged(nameof(IsShopsListVisible));
+                _ = ModerationPanel.LoadAsync();
+            },
+            () =>
+            {
+                IsModerationPanelOpen = false;
+                OnPropertyChanged(nameof(IsShopsListVisible));
+            });
     }
 
     partial void OnIsProfileOpenChanged(bool value) => OnPropertyChanged(nameof(IsShopsListVisible));
@@ -89,4 +117,6 @@ public partial class WorkspaceViewModel : ViewModelBase
     partial void OnIsShopDetailOpenChanged(bool value) => OnPropertyChanged(nameof(IsShopsListVisible));
 
     partial void OnIsSuggestShopOpenChanged(bool value) => OnPropertyChanged(nameof(IsShopsListVisible));
+
+    partial void OnIsModerationPanelOpenChanged(bool value) => OnPropertyChanged(nameof(IsShopsListVisible));
 }

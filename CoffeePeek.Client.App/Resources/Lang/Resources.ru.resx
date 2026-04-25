@@ -71,6 +71,54 @@
     <data name="Header_Map" xml:space="preserve">
         <value>Карта</value>
     </data>
+    <data name="Header_Moderation" xml:space="preserve">
+        <value>Модерация</value>
+    </data>
+    <data name="Moderation_Title" xml:space="preserve">
+        <value>Модерация</value>
+    </data>
+    <data name="Moderation_Subtitle" xml:space="preserve">
+        <value>Очередь предложенных кофеен и отзывов. Действия требуют роли Moderator в токене.</value>
+    </data>
+    <data name="Moderation_Refresh" xml:space="preserve">
+        <value>Обновить</value>
+    </data>
+    <data name="Moderation_Close" xml:space="preserve">
+        <value>Назад</value>
+    </data>
+    <data name="Moderation_SectionShops" xml:space="preserve">
+        <value>Очередь кофеен</value>
+    </data>
+    <data name="Moderation_SectionReviews" xml:space="preserve">
+        <value>Очередь отзывов</value>
+    </data>
+    <data name="Moderation_Approve" xml:space="preserve">
+        <value>Одобрить</value>
+    </data>
+    <data name="Moderation_Reject" xml:space="preserve">
+        <value>Отклонить</value>
+    </data>
+    <data name="Moderation_RejectReasonPlaceholder" xml:space="preserve">
+        <value>Причина отклонения (для отзывов)</value>
+    </data>
+    <data name="Moderation_LoadError" xml:space="preserve">
+        <value>Не удалось загрузить очередь модерации</value>
+    </data>
+    <data name="Moderation_ActionFailed" xml:space="preserve">
+        <value>Не удалось обновить элемент</value>
+    </data>
+    <data name="Moderation_DefaultRejectReason" xml:space="preserve">
+        <value>Отклонено</value>
+    </data>
+    <data name="Moderation_EmptyShops" xml:space="preserve">
+        <value>Нет заявок на кофейни.</value>
+    </data>
+    <data name="Moderation_EmptyReviews" xml:space="preserve">
+        <value>Нет заявок на отзывы.</value>
+    </data>
+    <data name="Moderation_Loading" xml:space="preserve">
+        <value>Загрузка…</value>
+    </data>
     <data name="ShopPage_SearchPlaceholder" xml:space="preserve">
         <value>Поиск идеальной кофейни...</value>
     </data>

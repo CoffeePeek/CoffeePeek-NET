@@ -1,0 +1,185 @@
+<UserControl
+    d:DesignHeight="900"
+    d:DesignWidth="960"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Home.ModerationPanelView"
+    x:DataType="home:ModerationPanelViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ac="using:Avalonia.Data.Converters"
+    xmlns:home="clr-namespace:CoffeePeek.Client.App.ViewModels.Home"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" IsVisible="{Binding !IsLoading}">
+            <Border Background="{DynamicResource SurfaceBrush}" Padding="24">
+                <StackPanel MaxWidth="960" HorizontalAlignment="Center" Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button
+                            Classes="Secondary"
+                            Command="{Binding CloseCommand}"
+                            Content="{x:Static lang:Resources.Moderation_Close}" />
+                        <TextBlock
+                            Classes="Headline"
+                            FontSize="24"
+                            Text="{x:Static lang:Resources.Moderation_Title}"
+                            VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        Text="{x:Static lang:Resources.Moderation_Subtitle}"
+                        TextWrapping="Wrap" />
+                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Spacing="8">
+                        <Button
+                            Classes="Primary"
+                            Command="{Binding RefreshCommand}"
+                            Content="{x:Static lang:Resources.Moderation_Refresh}"
+                            Padding="14,8" />
+                    </StackPanel>
+                    <Border
+                        Background="{DynamicResource AuthErrorBackgroundBrush}"
+                        IsVisible="{Binding ErrorMessage, Converter={x:Static ac:StringConverters.IsNotNullOrEmpty}}"
+                        Padding="12,8">
+                        <TextBlock
+                            Foreground="{DynamicResource AuthErrorForegroundBrush}"
+                            Text="{Binding ErrorMessage}"
+                            TextWrapping="Wrap" />
+                    </Border>
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="{x:Static lang:Resources.Moderation_SectionShops}" />
+                    <ItemsControl ItemsSource="{Binding Shops}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="home:ModerationShopRowViewModel">
+                                <Border
+                                    Background="{DynamicResource SurfaceContainerLowBrush}"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                    Margin="0,0,0,10"
+                                    Padding="16">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Spacing="4">
+                                                <TextBlock
+                                                    FontSize="16"
+                                                    FontWeight="SemiBold"
+                                                    Text="{Binding Name}" />
+                                                <TextBlock
+                                                    FontSize="13"
+                                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                    IsVisible="{Binding Address, Converter={x:Static ac:StringConverters.IsNotNullOrEmpty}}"
+                                                    Text="{Binding Address}" />
+                                            </StackPanel>
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                Text="{Binding Status}" />
+                                        </Grid>
+                                        <StackPanel
+                                            IsVisible="{Binding CanModerate}"
+                                            Orientation="Horizontal"
+                                            Spacing="8">
+                                            <Button
+                                                Classes="Primary"
+                                                Command="{Binding $parent[home:ModerationPanelViewModel].ApproveShopCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Content="{x:Static lang:Resources.Moderation_Approve}"
+                                                Padding="12,6" />
+                                            <Button
+                                                Classes="Secondary"
+                                                Command="{Binding $parent[home:ModerationPanelViewModel].RejectShopCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Content="{x:Static lang:Resources.Moderation_Reject}"
+                                                Padding="12,6" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        IsVisible="{Binding HasEmptyShops}"
+                        Text="{x:Static lang:Resources.Moderation_EmptyShops}" />
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="{x:Static lang:Resources.Moderation_SectionReviews}" />
+                    <ItemsControl ItemsSource="{Binding Reviews}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="home:ModerationReviewRowViewModel">
+                                <Border
+                                    Background="{DynamicResource SurfaceContainerLowBrush}"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                    Margin="0,0,0,10"
+                                    Padding="16">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Spacing="4">
+                                                <TextBlock
+                                                    FontSize="15"
+                                                    FontWeight="SemiBold"
+                                                    Text="{Binding Header}" />
+                                                <TextBlock
+                                                    FontSize="13"
+                                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                    Text="{Binding UserName}" />
+                                            </StackPanel>
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                Text="{Binding Status}" />
+                                        </Grid>
+                                        <TextBox
+                                            IsVisible="{Binding CanModerate}"
+                                            MinHeight="40"
+                                            PlaceholderText="{x:Static lang:Resources.Moderation_RejectReasonPlaceholder}"
+                                            Text="{Binding RejectReason}" />
+                                        <StackPanel
+                                            IsVisible="{Binding CanModerate}"
+                                            Orientation="Horizontal"
+                                            Spacing="8">
+                                            <Button
+                                                Classes="Primary"
+                                                Command="{Binding $parent[home:ModerationPanelViewModel].ApproveReviewCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Content="{x:Static lang:Resources.Moderation_Approve}"
+                                                Padding="12,6" />
+                                            <Button
+                                                Classes="Secondary"
+                                                Command="{Binding $parent[home:ModerationPanelViewModel].RejectReviewCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Content="{x:Static lang:Resources.Moderation_Reject}"
+                                                Padding="12,6" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        IsVisible="{Binding HasEmptyReviews}"
+                        Text="{x:Static lang:Resources.Moderation_EmptyReviews}" />
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+        <Border
+            Background="{DynamicResource SurfaceBrush}"
+            IsHitTestVisible="False"
+            IsVisible="{Binding IsLoading}"
+            Opacity="0.85">
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="15"
+                Text="{x:Static lang:Resources.Moderation_Loading}" />
+        </Border>
+    </Grid>
+</UserControl>
