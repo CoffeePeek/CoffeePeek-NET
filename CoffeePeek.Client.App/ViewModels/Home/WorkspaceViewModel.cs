@@ -13,29 +13,37 @@ public partial class WorkspaceViewModel : ViewModelBase
 
     public ShopDetailViewModel ShopDetail { get; }
 
+    public SuggestShopViewModel SuggestShop { get; }
+
     [ObservableProperty]
     public partial bool IsProfileOpen { get; private set; }
 
     [ObservableProperty]
     public partial bool IsShopDetailOpen { get; private set; }
 
-    public bool IsShopsListVisible => !IsProfileOpen && !IsShopDetailOpen;
+    [ObservableProperty]
+    public partial bool IsSuggestShopOpen { get; private set; }
+
+    public bool IsShopsListVisible => !IsProfileOpen && !IsShopDetailOpen && !IsSuggestShopOpen;
 
     public WorkspaceViewModel(
         ShopsPageViewModel shopsPageViewModel,
         UserProfileViewModel userProfileViewModel,
         ShopDetailViewModel shopDetailViewModel,
+        SuggestShopViewModel suggestShopViewModel,
         WorkspaceShellNavigator shellNavigator)
     {
         ShopPage = shopsPageViewModel;
         UserProfile = userProfileViewModel;
         ShopDetail = shopDetailViewModel;
+        SuggestShop = suggestShopViewModel;
         _ = ShopPage.InitializeAsync();
 
         shellNavigator.AttachProfile(
             id =>
             {
                 IsShopDetailOpen = false;
+                IsSuggestShopOpen = false;
                 IsProfileOpen = true;
                 _ = UserProfile.LoadAsync(id);
             },
@@ -49,6 +57,7 @@ public partial class WorkspaceViewModel : ViewModelBase
             shopId =>
             {
                 IsProfileOpen = false;
+                IsSuggestShopOpen = false;
                 IsShopDetailOpen = true;
                 OnPropertyChanged(nameof(IsShopsListVisible));
                 _ = ShopDetail.LoadAsync(shopId);
@@ -58,9 +67,26 @@ public partial class WorkspaceViewModel : ViewModelBase
                 IsShopDetailOpen = false;
                 OnPropertyChanged(nameof(IsShopsListVisible));
             });
+
+        shellNavigator.AttachSuggestShop(
+            () =>
+            {
+                IsProfileOpen = false;
+                IsShopDetailOpen = false;
+                IsSuggestShopOpen = true;
+                OnPropertyChanged(nameof(IsShopsListVisible));
+                _ = SuggestShop.InitializeAsync();
+            },
+            () =>
+            {
+                IsSuggestShopOpen = false;
+                OnPropertyChanged(nameof(IsShopsListVisible));
+            });
     }
 
     partial void OnIsProfileOpenChanged(bool value) => OnPropertyChanged(nameof(IsShopsListVisible));
 
     partial void OnIsShopDetailOpenChanged(bool value) => OnPropertyChanged(nameof(IsShopsListVisible));
+
+    partial void OnIsSuggestShopOpenChanged(bool value) => OnPropertyChanged(nameof(IsShopsListVisible));
 }

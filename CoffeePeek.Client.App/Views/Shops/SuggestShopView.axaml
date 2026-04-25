@@ -1,0 +1,235 @@
+<UserControl
+    x:Class="CoffeePeek.Client.App.Views.Shops.SuggestShopView"
+    x:DataType="shops:SuggestShopViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:ac="using:Avalonia.Data.Converters"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
+    xmlns:shopsSearch="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops.Search"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <Border
+                Background="{DynamicResource SurfaceBrush}"
+                Padding="24">
+                <StackPanel HorizontalAlignment="Center" MaxWidth="960" Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button
+                            Classes="Secondary"
+                            Command="{Binding CloseCommand}"
+                            Content="{x:Static lang:Resources.Common_Back}" />
+                        <TextBlock
+                            Classes="Headline"
+                            FontSize="28"
+                            Text="{x:Static lang:Resources.SuggestShop_Title}"
+                            VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <Border
+                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                        Padding="16">
+                        <StackPanel Spacing="10">
+                            <TextBlock
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Text="{x:Static lang:Resources.SuggestShop_RequiredTitle}" />
+                            <TextBox
+                                PlaceholderText="{x:Static lang:Resources.SuggestShop_FieldName}"
+                                Text="{Binding Name}" />
+                            <TextBox
+                                PlaceholderText="{x:Static lang:Resources.SuggestShop_FieldAddress}"
+                                Text="{Binding Address}" />
+                            <ComboBox
+                                ItemsSource="{Binding Cities}"
+                                SelectedItem="{Binding SelectedCity}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Border>
+
+                    <Expander
+                        Header="{x:Static lang:Resources.SuggestShop_SectionAbout}"
+                        IsExpanded="{Binding IsAboutSectionOpen}">
+                        <Border
+                            Background="{DynamicResource SurfaceContainerLowBrush}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            Padding="16">
+                            <StackPanel Spacing="10">
+                                <TextBox
+                                    AcceptsReturn="True"
+                                    MinHeight="80"
+                                    PlaceholderText="{x:Static lang:Resources.SuggestShop_FieldDescription}"
+                                    Text="{Binding Description}"
+                                    TextWrapping="Wrap" />
+                                <ComboBox
+                                    ItemsSource="{Binding PriceRanges}"
+                                    SelectedItem="{Binding SelectedPriceRange}" />
+                            </StackPanel>
+                        </Border>
+                    </Expander>
+
+                    <Expander
+                        Header="{x:Static lang:Resources.SuggestShop_SectionContacts}"
+                        IsExpanded="{Binding IsContactsSectionOpen}">
+                        <Border
+                            Background="{DynamicResource SurfaceContainerLowBrush}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            Padding="16">
+                            <StackPanel Spacing="8">
+                                <TextBox PlaceholderText="{x:Static lang:Resources.SuggestShop_FieldPhone}" Text="{Binding ContactPhone}" />
+                                <TextBox PlaceholderText="{x:Static lang:Resources.SuggestShop_FieldEmail}" Text="{Binding ContactEmail}" />
+                                <TextBox PlaceholderText="{x:Static lang:Resources.SuggestShop_FieldWebsite}" Text="{Binding ContactSite}" />
+                                <TextBox PlaceholderText="{x:Static lang:Resources.SuggestShop_FieldInstagram}" Text="{Binding ContactInstagram}" />
+                            </StackPanel>
+                        </Border>
+                    </Expander>
+
+                    <Expander
+                        Header="{x:Static lang:Resources.SuggestShop_SectionSchedule}"
+                        IsExpanded="{Binding IsScheduleSectionOpen}">
+                        <Border
+                            Background="{DynamicResource SurfaceContainerLowBrush}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            Padding="16">
+                            <ItemsControl ItemsSource="{Binding Schedules}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="shops:DayScheduleInputViewModel">
+                                        <Grid ColumnDefinitions="Auto,Auto,*,*" Margin="0,4,0,4">
+                                            <CheckBox IsChecked="{Binding IsEnabled}" VerticalAlignment="Center" />
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                Margin="8,0,8,0"
+                                                Text="{Binding DayLabel}"
+                                                VerticalAlignment="Center" />
+                                            <TextBox
+                                                Grid.Column="2"
+                                                IsEnabled="{Binding IsEnabled}"
+                                                IsVisible="{Binding !IsClosed}"
+                                                Margin="0,0,8,0"
+                                                Watermark="{x:Static lang:Resources.SuggestShop_FieldOpenTime}"
+                                                Text="{Binding OpenTime}" />
+                                            <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8">
+                                                <TextBox
+                                                    IsEnabled="{Binding IsEnabled}"
+                                                    IsVisible="{Binding !IsClosed}"
+                                                    Width="110"
+                                                    Watermark="{x:Static lang:Resources.SuggestShop_FieldCloseTime}"
+                                                    Text="{Binding CloseTime}" />
+                                                <CheckBox
+                                                    Content="{x:Static lang:Resources.SuggestShop_FieldClosed}"
+                                                    IsChecked="{Binding IsClosed}"
+                                                    IsEnabled="{Binding IsEnabled}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </Expander>
+
+                    <Expander
+                        Header="{x:Static lang:Resources.SuggestShop_SectionCoffeeProfile}"
+                        IsExpanded="{Binding IsCoffeeProfileSectionOpen}">
+                        <Border
+                            Background="{DynamicResource SurfaceContainerLowBrush}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            Padding="16">
+                            <ItemsControl ItemsSource="{Binding FilterGroups}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="shopsSearch:CatalogFilterGroupViewModel">
+                                        <StackPanel IsVisible="{Binding HasItems}" Margin="0,0,0,10" Spacing="6">
+                                            <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                                            <ItemsControl ItemsSource="{Binding Items}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel Orientation="Horizontal" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="shopsSearch:CatalogFilterItemViewModel">
+                                                        <ToggleButton
+                                                            Classes="Secondary"
+                                                            Content="{Binding Name}"
+                                                            IsChecked="{Binding IsSelected}"
+                                                            Margin="0,0,6,6" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </Expander>
+
+                    <Expander
+                        Header="{x:Static lang:Resources.SuggestShop_SectionPhotos}"
+                        IsExpanded="{Binding IsPhotosSectionOpen}">
+                        <Border
+                            Background="{DynamicResource SurfaceContainerLowBrush}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            Padding="16">
+                            <StackPanel Spacing="10">
+                                <Button
+                                    Classes="Secondary"
+                                    Command="{Binding PickPhotoCommand}"
+                                    Content="{x:Static lang:Resources.SuggestShop_AddPhoto}" />
+                                <ItemsControl ItemsSource="{Binding Photos}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="shops:PickedImageFileViewModel">
+                                            <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,2">
+                                                <TextBlock
+                                                    Text="{Binding Name}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    VerticalAlignment="Center" />
+                                                <Button
+                                                    Grid.Column="1"
+                                                    Classes="Transparent"
+                                                    Command="{Binding $parent[ItemsControl].DataContext.RemovePhotoCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Content="{x:Static lang:Resources.SuggestShop_RemovePhoto}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </Expander>
+
+                    <Border
+                        Background="{DynamicResource AuthErrorBackgroundBrush}"
+                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                        IsVisible="{Binding ErrorMessage, Converter={x:Static ac:StringConverters.IsNotNullOrEmpty}}"
+                        Padding="12">
+                        <TextBlock
+                            Foreground="{DynamicResource AuthErrorForegroundBrush}"
+                            Text="{Binding ErrorMessage}"
+                            TextWrapping="Wrap" />
+                    </Border>
+
+                    <Border
+                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                        IsVisible="{Binding SuccessMessage, Converter={x:Static ac:StringConverters.IsNotNullOrEmpty}}"
+                        Padding="12">
+                        <TextBlock
+                            Foreground="{DynamicResource PrimaryBrush}"
+                            Text="{Binding SuccessMessage}"
+                            TextWrapping="Wrap" />
+                    </Border>
+
+                    <Button
+                        Command="{Binding SubmitCommand}"
+                        Content="{x:Static lang:Resources.SuggestShop_Submit}"
+                        IsEnabled="{Binding CanSubmit}"
+                        Padding="16,10" />
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

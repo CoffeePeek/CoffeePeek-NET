@@ -203,4 +203,109 @@
     <data name="ShopPage_FilterClear" xml:space="preserve">
         <value>Сбросить</value>
     </data>
+    <data name="ShopPage_SuggestShop" xml:space="preserve">
+        <value>Предложить кофейню</value>
+    </data>
+    <data name="SuggestShop_Title" xml:space="preserve">
+        <value>Предложить кофейню</value>
+    </data>
+    <data name="SuggestShop_RequiredTitle" xml:space="preserve">
+        <value>Обязательная информация</value>
+    </data>
+    <data name="SuggestShop_FieldName" xml:space="preserve">
+        <value>Название</value>
+    </data>
+    <data name="SuggestShop_FieldAddress" xml:space="preserve">
+        <value>Адрес</value>
+    </data>
+    <data name="SuggestShop_SectionAbout" xml:space="preserve">
+        <value>Описание и средний чек</value>
+    </data>
+    <data name="SuggestShop_FieldDescription" xml:space="preserve">
+        <value>Описание</value>
+    </data>
+    <data name="SuggestShop_SectionContacts" xml:space="preserve">
+        <value>Контакты</value>
+    </data>
+    <data name="SuggestShop_FieldPhone" xml:space="preserve">
+        <value>Телефон</value>
+    </data>
+    <data name="SuggestShop_FieldEmail" xml:space="preserve">
+        <value>Email</value>
+    </data>
+    <data name="SuggestShop_FieldWebsite" xml:space="preserve">
+        <value>Сайт</value>
+    </data>
+    <data name="SuggestShop_FieldInstagram" xml:space="preserve">
+        <value>Instagram</value>
+    </data>
+    <data name="SuggestShop_SectionSchedule" xml:space="preserve">
+        <value>Время работы</value>
+    </data>
+    <data name="SuggestShop_FieldOpenTime" xml:space="preserve">
+        <value>Открытие</value>
+    </data>
+    <data name="SuggestShop_FieldCloseTime" xml:space="preserve">
+        <value>Закрытие</value>
+    </data>
+    <data name="SuggestShop_FieldClosed" xml:space="preserve">
+        <value>Выходной</value>
+    </data>
+    <data name="SuggestShop_SectionCoffeeProfile" xml:space="preserve">
+        <value>Кофейный профиль</value>
+    </data>
+    <data name="SuggestShop_SectionCoffeeBeans" xml:space="preserve">
+        <value>Зерно</value>
+    </data>
+    <data name="SuggestShop_SectionRoasters" xml:space="preserve">
+        <value>Обжарщики</value>
+    </data>
+    <data name="SuggestShop_SectionBrewMethods" xml:space="preserve">
+        <value>Способы заваривания</value>
+    </data>
+    <data name="SuggestShop_SectionEquipment" xml:space="preserve">
+        <value>Оборудование</value>
+    </data>
+    <data name="SuggestShop_SectionPhotos" xml:space="preserve">
+        <value>Фотографии</value>
+    </data>
+    <data name="SuggestShop_AddPhoto" xml:space="preserve">
+        <value>Добавить фото</value>
+    </data>
+    <data name="SuggestShop_RemovePhoto" xml:space="preserve">
+        <value>Удалить</value>
+    </data>
+    <data name="SuggestShop_Submit" xml:space="preserve">
+        <value>Отправить на модерацию</value>
+    </data>
+    <data name="SuggestShop_ValidationRequired" xml:space="preserve">
+        <value>Заполните название, адрес и город.</value>
+    </data>
+    <data name="SuggestShop_SubmitError" xml:space="preserve">
+        <value>Не удалось отправить предложение кофейни.</value>
+    </data>
+    <data name="SuggestShop_SubmitSuccess" xml:space="preserve">
+        <value>Спасибо! Предложение отправлено на модерацию.</value>
+    </data>
+    <data name="SuggestShop_DayMonday" xml:space="preserve">
+        <value>Понедельник</value>
+    </data>
+    <data name="SuggestShop_DayTuesday" xml:space="preserve">
+        <value>Вторник</value>
+    </data>
+    <data name="SuggestShop_DayWednesday" xml:space="preserve">
+        <value>Среда</value>
+    </data>
+    <data name="SuggestShop_DayThursday" xml:space="preserve">
+        <value>Четверг</value>
+    </data>
+    <data name="SuggestShop_DayFriday" xml:space="preserve">
+        <value>Пятница</value>
+    </data>
+    <data name="SuggestShop_DaySaturday" xml:space="preserve">
+        <value>Суббота</value>
+    </data>
+    <data name="SuggestShop_DaySunday" xml:space="preserve">
+        <value>Воскресенье</value>
+    </data>
 </root>

@@ -10,6 +10,8 @@ public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
     private Action? _closeProfile;
     private Action<Guid>? _openShopDetail;
     private Action? _closeShopDetail;
+    private Action? _openSuggestShop;
+    private Action? _closeSuggestShop;
 
     public void AttachProfile(Action<Guid> open, Action close)
     {
@@ -23,6 +25,12 @@ public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
         _closeShopDetail = close;
     }
 
+    public void AttachSuggestShop(Action open, Action close)
+    {
+        _openSuggestShop = open;
+        _closeSuggestShop = close;
+    }
+
     public void OpenUserProfile(Guid userId) => _openProfile?.Invoke(userId);
 
     public void CloseUserProfile() => _closeProfile?.Invoke();
@@ -30,4 +38,8 @@ public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
     public void OpenShopDetail(Guid shopId) => _openShopDetail?.Invoke(shopId);
 
     public void CloseShopDetail() => _closeShopDetail?.Invoke();
+
+    public void OpenSuggestShop() => _openSuggestShop?.Invoke();
+
+    public void CloseSuggestShop() => _closeSuggestShop?.Invoke();
 }

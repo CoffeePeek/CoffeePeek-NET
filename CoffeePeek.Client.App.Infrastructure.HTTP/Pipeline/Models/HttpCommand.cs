@@ -1,6 +1,4 @@
 using System.Net.Http;
-using CoffeePeek.Client.App.Infrastructure.HTTP.Requests;
-
 namespace CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Models;
 
 /// <summary>Single-use command: do not share instances across concurrent sends.</summary>
@@ -10,7 +8,7 @@ public class HttpCommand
 
     public HttpMethod Method { get; set; } = HttpMethod.Get;
 
-    public BaseRequest? Body { get; set; }
+    public object? Body { get; set; }
     
     public bool IsAuthorize { get; set; }
 

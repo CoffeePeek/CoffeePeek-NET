@@ -15,39 +15,52 @@
     <Grid HorizontalAlignment="Center" MaxWidth="1120">
         <Grid RowDefinitions="Auto,Auto,Auto,*">
             <!--  Search + Filters toggle  -->
-            <TextBox
+            <Grid
                 Grid.Row="0"
-                MinHeight="52"
-                PlaceholderText="{x:Static lang:Resources.ShopPage_SearchPlaceholder}"
-                Text="{Binding SearchQuery}"
-                VerticalContentAlignment="Center">
-                <TextBox.InnerLeftContent>
-                    <PathIcon
-                        Data="{StaticResource SearchIcon}"
-                        Foreground="{DynamicResource TextPrimaryBrush}"
-                        Margin="12,0,0,0"
-                        VerticalAlignment="Center" />
-                </TextBox.InnerLeftContent>
-                <TextBox.InnerRightContent>
-                    <Button
-                        Command="{Binding ToggleAdditionalFiltersCommand}"
-                        CornerRadius="{StaticResource DefaultCornerRadius}"
-                        Margin="0,4,4,4"
-                        Padding="16,10">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <PathIcon
-                                Data="{StaticResource FiltersIcon}"
-                                Foreground="{DynamicResource OnPrimaryBrush}"
-                                VerticalAlignment="Center" />
-                            <TextBlock
-                                FontSize="14"
-                                Foreground="{DynamicResource OnPrimaryBrush}"
-                                Text="{x:Static lang:Resources.ShopPage_Filter}"
-                                VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Button>
-                </TextBox.InnerRightContent>
-            </TextBox>
+                ColumnDefinitions="*,Auto"
+                ColumnSpacing="8">
+                <TextBox
+                    Grid.Column="0"
+                    MinHeight="52"
+                    PlaceholderText="{x:Static lang:Resources.ShopPage_SearchPlaceholder}"
+                    Text="{Binding SearchQuery}"
+                    VerticalContentAlignment="Center">
+                    <TextBox.InnerLeftContent>
+                        <PathIcon
+                            Data="{StaticResource SearchIcon}"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            Margin="12,0,0,0"
+                            VerticalAlignment="Center" />
+                    </TextBox.InnerLeftContent>
+                    <TextBox.InnerRightContent>
+                        <Button
+                            Command="{Binding ToggleAdditionalFiltersCommand}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            Margin="0,4,4,4"
+                            Padding="16,10">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon
+                                    Data="{StaticResource FiltersIcon}"
+                                    Foreground="{DynamicResource OnPrimaryBrush}"
+                                    VerticalAlignment="Center" />
+                                <TextBlock
+                                    FontSize="14"
+                                    Foreground="{DynamicResource OnPrimaryBrush}"
+                                    Text="{x:Static lang:Resources.ShopPage_Filter}"
+                                    VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </TextBox.InnerRightContent>
+                </TextBox>
+
+                <Button
+                    Grid.Column="1"
+                    Classes="Secondary"
+                    Command="{Binding OpenSuggestShopCommand}"
+                    Content="{x:Static lang:Resources.ShopPage_SuggestShop}"
+                    Padding="16,10"
+                    VerticalAlignment="Center" />
+            </Grid>
 
             <!--  Advanced catalog filters panel  -->
             <Border
