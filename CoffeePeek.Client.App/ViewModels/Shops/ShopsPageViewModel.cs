@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
@@ -6,6 +7,7 @@ using CoffeePeek.Client.App.Services;
 using CoffeePeek.Client.App.ViewModels.Abstract;
 using CoffeePeek.Client.App.ViewModels.Shops.Search;
 using CoffeePeek.Contract.Dtos.Internal;
+using CoffeePeek.Contract.Dtos.Shop;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Lang = CoffeePeek.Client.App.Resources.Lang.Resources;
@@ -15,7 +17,12 @@ namespace CoffeePeek.Client.App.ViewModels.Shops;
 public partial class ShopsPageViewModel : ViewModelBase
 {
     private readonly IWebCoffeeShopsClient _shopsClient;
+    private readonly IWebCatalogsClient _catalogsClient;
     private readonly IWorkspaceShellNavigator _shellNavigator;
+    private readonly CatalogFilterGroupViewModel _beanFilters = new(Lang.ShopPage_FilterBeans);
+    private readonly CatalogFilterGroupViewModel _roasterFilters = new(Lang.ShopPage_FilterRoasters);
+    private readonly CatalogFilterGroupViewModel _brewMethodFilters = new(Lang.ShopPage_FilterBrewMethods);
+    private readonly CatalogFilterGroupViewModel _equipmentFilters = new(Lang.ShopPage_FilterEquipment);
     private bool _isInitializing = true;
 
     private int _currentPage = 1;
@@ -25,10 +32,20 @@ public partial class ShopsPageViewModel : ViewModelBase
     private CancellationTokenSource? _searchCts;
     private bool _initialLoadDone;
 
-    public ShopsPageViewModel(IWebCoffeeShopsClient shopsClient, IWorkspaceShellNavigator shellNavigator)
+    public ShopsPageViewModel(
+        IWebCoffeeShopsClient shopsClient,
+        IWebCatalogsClient catalogsClient,
+        IWorkspaceShellNavigator shellNavigator)
     {
         _shopsClient = shopsClient;
+        _catalogsClient = catalogsClient;
         _shellNavigator = shellNavigator;
+
+        foreach (var group in new[] { _beanFilters, _roasterFilters, _brewMethodFilters, _equipmentFilters })
+        {
+            group.PropertyChanged += OnFilterGroupPropertyChanged;
+            FilterGroups.Add(group);
+        }
 
         try
         {
@@ -70,22 +87,29 @@ public partial class ShopsPageViewModel : ViewModelBase
     [ObservableProperty]
     public partial bool IsCityPopupOpen { get; set; }
 
+    [ObservableProperty]
+    public partial bool IsLoadingFilters { get; set; }
+
     public ObservableCollection<CityDto> Cities { get; } = [];
 
     [ObservableProperty]
     public partial CityDto? SelectedCity { get; set; }
 
+    public ObservableCollection<CatalogFilterGroupViewModel> FilterGroups { get; } = [];
+
+    public int ActiveFilterCount => FilterGroups.Sum(g => g.ActiveFilterCount);
+
     partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
 
     partial void OnSearchQueryChanged(string value) => DebounceSearch();
 
-    partial void OnSelectedCityChanged(CityDto? value)
+    async partial void OnSelectedCityChanged(CityDto? value)
     {
         if (_isInitializing || value is null)
             return;
 
         _currentPage = 1;
-        LoadShopsCommand.ExecuteAsync(null);
+        await LoadShopsAsync();
     }
 
     public async Task InitializeAsync()
@@ -94,7 +118,10 @@ public partial class ShopsPageViewModel : ViewModelBase
             return;
 
         _initialLoadDone = true;
-        await Task.WhenAll(LoadCitiesCommand.ExecuteAsync(null), LoadShopsCommand.ExecuteAsync(null));
+        await Task.WhenAll(
+            LoadCitiesCommand.ExecuteAsync(null),
+            LoadShopsCommand.ExecuteAsync(null),
+            LoadCatalogFiltersCommand.ExecuteAsync(null));
     }
 
     [RelayCommand]
@@ -108,6 +135,10 @@ public partial class ShopsPageViewModel : ViewModelBase
             var result = await _shopsClient.SearchAsync(
                 string.IsNullOrWhiteSpace(SearchQuery) ? null : SearchQuery.Trim(),
                 SelectedCity?.Id,
+                _roasterFilters.SelectedIds,
+                _beanFilters.SelectedIds,
+                _brewMethodFilters.SelectedIds,
+                _equipmentFilters.SelectedIds,
                 _currentPage,
                 PageSize);
 
@@ -147,6 +178,10 @@ public partial class ShopsPageViewModel : ViewModelBase
             var result = await _shopsClient.SearchAsync(
                 string.IsNullOrWhiteSpace(SearchQuery) ? null : SearchQuery.Trim(),
                 SelectedCity?.Id,
+                _roasterFilters.SelectedIds,
+                _beanFilters.SelectedIds,
+                _brewMethodFilters.SelectedIds,
+                _equipmentFilters.SelectedIds,
                 _currentPage,
                 PageSize);
 
@@ -172,9 +207,9 @@ public partial class ShopsPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task LoadCitiesAsync()
+    private async Task LoadCitiesAsync(CancellationToken ct = default)
     {
-        var result = await _shopsClient.GetCitiesAsync();
+        var result = await _catalogsClient.GetCitiesAsync(ct);
         if (result.IsFailed)
             return;
 
@@ -189,6 +224,57 @@ public partial class ShopsPageViewModel : ViewModelBase
             if (cityChip is not null)
                 cityChip.DisplayName = Cities[0].Name;
         }
+    }
+
+    [RelayCommand]
+    private async Task LoadCatalogFiltersAsync(CancellationToken ct = default)
+    {
+        IsLoadingFilters = true;
+
+        try
+        {
+            var beansTask = _catalogsClient.GetBeansAsync(ct);
+            var roastersTask = _catalogsClient.GetRoastersAsync(ct);
+            var equipmentTask = _catalogsClient.GetEquipmentAsync(ct);
+            var brewMethodsTask = _catalogsClient.GetBrewMethodsAsync(ct);
+
+            await Task.WhenAll(beansTask, roastersTask, equipmentTask, brewMethodsTask);
+
+            if (beansTask.Result.IsSuccess)
+                ReplaceFilterItems(_beanFilters, beansTask.Result.Value.Beans, static b => new CatalogFilterItemViewModel { Id = b.Id, Name = b.Name });
+
+            if (roastersTask.Result.IsSuccess)
+                ReplaceFilterItems(_roasterFilters, roastersTask.Result.Value.Roasters, static r => new CatalogFilterItemViewModel { Id = r.Id, Name = r.Name });
+
+            if (equipmentTask.Result.IsSuccess)
+                ReplaceFilterItems(_equipmentFilters, equipmentTask.Result.Value.Equipment, static e => new CatalogFilterItemViewModel { Id = e.Id, Name = e.Name });
+
+            if (brewMethodsTask.Result.IsSuccess)
+                ReplaceFilterItems(_brewMethodFilters, brewMethodsTask.Result.Value.BrewMethods, static m => new CatalogFilterItemViewModel { Id = m.Id, Name = m.Name });
+        }
+        finally
+        {
+            IsLoadingFilters = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task ApplyFiltersAsync()
+    {
+        _currentPage = 1;
+        OnPropertyChanged(nameof(ActiveFilterCount));
+        await LoadShopsAsync();
+    }
+
+    [RelayCommand]
+    private async Task ClearFiltersAsync()
+    {
+        foreach (var group in FilterGroups)
+            group.ClearSelection();
+
+        _currentPage = 1;
+        OnPropertyChanged(nameof(ActiveFilterCount));
+        await LoadShopsAsync();
     }
 
     [RelayCommand]
@@ -227,13 +313,39 @@ public partial class ShopsPageViewModel : ViewModelBase
     {
         _searchCts?.Cancel();
         _searchCts = new CancellationTokenSource();
-        var token = _searchCts.Token;
+        _ = DebounceSearchAsync(_searchCts.Token);
+    }
 
-        _ = Task.Delay(350, token).ContinueWith(_ =>
+    private async Task DebounceSearchAsync(CancellationToken token)
+    {
+        try
         {
+            await Task.Delay(350, token);
             _currentPage = 1;
-            LoadShopsCommand.ExecuteAsync(null);
-        }, token, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
+            await LoadShopsAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            // A newer search query superseded this one.
+        }
+    }
+
+    internal static Guid[]? GetSelectedIds(IEnumerable<CatalogFilterItemViewModel> filters) =>
+        CatalogFilterGroupViewModel.GetSelectedIds(filters);
+
+    private static void ReplaceFilterItems<T>(
+        CatalogFilterGroupViewModel group,
+        IEnumerable<T> items,
+        Func<T, CatalogFilterItemViewModel> map)
+    {
+        group.ReplaceItems(items.Select(map));
+    }
+
+    private void OnFilterGroupPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(CatalogFilterGroupViewModel.ActiveFilterCount) ||
+            e.PropertyName == nameof(CatalogFilterGroupViewModel.SelectedIds))
+            OnPropertyChanged(nameof(ActiveFilterCount));
     }
 
     private static IEnumerable<FilterChipViewModel> BuildFilterChips() =>

@@ -596,5 +596,41 @@ namespace CoffeePeek.Client.App.Resources.Lang {
                 return ResourceManager.GetString("ShopDetail_Open", resourceCulture);
             }
         }
+        
+        public static string ShopPage_FilterBeans {
+            get {
+                return ResourceManager.GetString("ShopPage_FilterBeans", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_FilterRoasters {
+            get {
+                return ResourceManager.GetString("ShopPage_FilterRoasters", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_FilterBrewMethods {
+            get {
+                return ResourceManager.GetString("ShopPage_FilterBrewMethods", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_FilterEquipment {
+            get {
+                return ResourceManager.GetString("ShopPage_FilterEquipment", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_FilterApply {
+            get {
+                return ResourceManager.GetString("ShopPage_FilterApply", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_FilterClear {
+            get {
+                return ResourceManager.GetString("ShopPage_FilterClear", resourceCulture);
+            }
+        }
     }
 }

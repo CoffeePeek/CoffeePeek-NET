@@ -155,4 +155,22 @@
     <data name="ShopDetail_Open" xml:space="preserve">
         <value>ОТКРЫТО</value>
     </data>
+    <data name="ShopPage_FilterBeans" xml:space="preserve">
+        <value>Зёрна</value>
+    </data>
+    <data name="ShopPage_FilterRoasters" xml:space="preserve">
+        <value>Обжарщики</value>
+    </data>
+    <data name="ShopPage_FilterBrewMethods" xml:space="preserve">
+        <value>Способы заваривания</value>
+    </data>
+    <data name="ShopPage_FilterEquipment" xml:space="preserve">
+        <value>Оборудование</value>
+    </data>
+    <data name="ShopPage_FilterApply" xml:space="preserve">
+        <value>Применить</value>
+    </data>
+    <data name="ShopPage_FilterClear" xml:space="preserve">
+        <value>Сбросить</value>
+    </data>
 </root>
