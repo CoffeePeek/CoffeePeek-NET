@@ -38,4 +38,12 @@ public sealed class WebCoffeeShopsClient(IHttpCommandExecutor httpCommandExecuto
 
         return Execute<GetCitiesResultDto>(command, ct);
     }
+
+    public Task<Result<ShopDetailResultDto>> GetByIdAsync(Guid shopId, CancellationToken ct = default)
+    {
+        var command = new HttpCommand()
+            .WithEndpoint($"api/CoffeeShops/{shopId:D}");
+
+        return Execute<ShopDetailResultDto>(command, ct);
+    }
 }

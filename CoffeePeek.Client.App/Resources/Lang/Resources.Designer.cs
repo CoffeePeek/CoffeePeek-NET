@@ -566,5 +566,35 @@ namespace CoffeePeek.Client.App.Resources.Lang {
                 return ResourceManager.GetString("ShopPage_LoadMore", resourceCulture);
             }
         }
+        
+        public static string ShopDetail_LoadError {
+            get {
+                return ResourceManager.GetString("ShopDetail_LoadError", resourceCulture);
+            }
+        }
+        
+        public static string ShopDetail_Schedule {
+            get {
+                return ResourceManager.GetString("ShopDetail_Schedule", resourceCulture);
+            }
+        }
+        
+        public static string ShopDetail_Contact {
+            get {
+                return ResourceManager.GetString("ShopDetail_Contact", resourceCulture);
+            }
+        }
+        
+        public static string ShopDetail_Reviews {
+            get {
+                return ResourceManager.GetString("ShopDetail_Reviews", resourceCulture);
+            }
+        }
+        
+        public static string ShopDetail_Open {
+            get {
+                return ResourceManager.GetString("ShopDetail_Open", resourceCulture);
+            }
+        }
     }
 }

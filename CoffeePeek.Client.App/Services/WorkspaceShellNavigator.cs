@@ -6,17 +6,28 @@ namespace CoffeePeek.Client.App.Services;
 /// </summary>
 public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
 {
-    private Action<Guid>? _open;
+    private Action<Guid>? _openProfile;
+    private Action? _closeProfile;
+    private Action<Guid>? _openShopDetail;
+    private Action? _closeShopDetail;
 
-    private Action? _close;
-
-    public void Attach(Action<Guid> open, Action close)
+    public void AttachProfile(Action<Guid> open, Action close)
     {
-        _open = open;
-        _close = close;
+        _openProfile = open;
+        _closeProfile = close;
     }
 
-    public void OpenUserProfile(Guid userId) => _open?.Invoke(userId);
+    public void AttachShopDetail(Action<Guid> open, Action close)
+    {
+        _openShopDetail = open;
+        _closeShopDetail = close;
+    }
 
-    public void CloseUserProfile() => _close?.Invoke();
+    public void OpenUserProfile(Guid userId) => _openProfile?.Invoke(userId);
+
+    public void CloseUserProfile() => _closeProfile?.Invoke();
+
+    public void OpenShopDetail(Guid shopId) => _openShopDetail?.Invoke(shopId);
+
+    public void CloseShopDetail() => _closeShopDetail?.Invoke();
 }

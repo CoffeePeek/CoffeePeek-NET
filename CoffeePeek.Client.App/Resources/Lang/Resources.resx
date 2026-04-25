@@ -279,4 +279,19 @@
     <data name="ShopPage_LoadMore" xml:space="preserve">
         <value>Загрузить ещё</value>
     </data>
+    <data name="ShopDetail_LoadError" xml:space="preserve">
+        <value>Could not load coffee shop details</value>
+    </data>
+    <data name="ShopDetail_Schedule" xml:space="preserve">
+        <value>Schedule</value>
+    </data>
+    <data name="ShopDetail_Contact" xml:space="preserve">
+        <value>Contact</value>
+    </data>
+    <data name="ShopDetail_Reviews" xml:space="preserve">
+        <value>Reviews</value>
+    </data>
+    <data name="ShopDetail_Open" xml:space="preserve">
+        <value>OPEN</value>
+    </data>
 </root>

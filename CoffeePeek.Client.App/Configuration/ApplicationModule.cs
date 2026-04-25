@@ -58,5 +58,6 @@ public class ApplicationModule : Module
     private static void RegisterShopPage(ContainerBuilder builder)
     {
         builder.RegisterType<ShopsPageViewModel>().AsSelf().SingleInstance();
+        builder.RegisterType<ShopDetailViewModel>().AsSelf().SingleInstance();
     }
 }

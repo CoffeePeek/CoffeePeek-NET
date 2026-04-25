@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
+using CoffeePeek.Client.App.Services;
 using CoffeePeek.Client.App.ViewModels.Abstract;
 using CoffeePeek.Client.App.ViewModels.Shops.Search;
 using CoffeePeek.Contract.Dtos.Internal;
@@ -14,6 +15,7 @@ namespace CoffeePeek.Client.App.ViewModels.Shops;
 public partial class ShopsPageViewModel : ViewModelBase
 {
     private readonly IWebCoffeeShopsClient _shopsClient;
+    private readonly IWorkspaceShellNavigator _shellNavigator;
     private bool _isInitializing = true;
 
     private int _currentPage = 1;
@@ -23,9 +25,10 @@ public partial class ShopsPageViewModel : ViewModelBase
     private CancellationTokenSource? _searchCts;
     private bool _initialLoadDone;
 
-    public ShopsPageViewModel(IWebCoffeeShopsClient shopsClient)
+    public ShopsPageViewModel(IWebCoffeeShopsClient shopsClient, IWorkspaceShellNavigator shellNavigator)
     {
         _shopsClient = shopsClient;
+        _shellNavigator = shellNavigator;
 
         try
         {
@@ -187,6 +190,9 @@ public partial class ShopsPageViewModel : ViewModelBase
                 cityChip.DisplayName = Cities[0].Name;
         }
     }
+
+    [RelayCommand]
+    private void OpenShop(Guid shopId) => _shellNavigator.OpenShopDetail(shopId);
 
     [RelayCommand]
     private void ToggleAdditionalFilters() => IsAdditionalFiltersPanelOpen = !IsAdditionalFiltersPanelOpen;

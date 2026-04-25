@@ -13,4 +13,6 @@ public interface IWebCoffeeShopsClient
         CancellationToken ct = default);
 
     Task<Result<GetCitiesResultDto>> GetCitiesAsync(CancellationToken ct = default);
+
+    Task<Result<ShopDetailResultDto>> GetByIdAsync(Guid shopId, CancellationToken ct = default);
 }
