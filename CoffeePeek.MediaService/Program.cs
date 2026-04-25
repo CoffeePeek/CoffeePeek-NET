@@ -12,20 +12,11 @@ using CoffeePeek.Shared.Persistence;
 using CoffeePeek.Shared.Persistence.Data;
 using CoffeePeek.Shared.Persistence.Extensions;
 using CoffeePeek.Shared.Web;
-using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
-using CoffeePeek.Shared.Web.Logging;
-using CoffePeek.ServiceDefaults;
 using Minio;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
-
-builder.AddSerilogLogging();
-builder.AddServiceDefaults();
-builder.WebHost.ConfigureEnvironment();
-builder.WebHost.UseSentry();
 
 services.AddControllers();
 services.AddProblemDetails();
@@ -74,18 +65,12 @@ builder.AddWolverine([handlersAssembly]);
 
 var app = builder.Build();
 
-app.UseSerilogRequestLogging();
-app.UseExceptionHandler();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.MapDefaultEndpoints();
+app.UseExceptionHandler();
 app.MapControllers();
 
 app.Run();
