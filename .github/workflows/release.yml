@@ -16,13 +16,33 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Extract Release Notes
-        id: extract_notes
-        uses: ffurrer2/extract-release-notes@v2
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          tag = os.environ["RELEASE_TAG"]
+          changelog = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          pattern = rf"^## \[{re.escape(tag)}\].*?$([\s\S]*?)(?=^## \[|\Z)"
+          match = re.search(pattern, changelog, flags=re.MULTILINE)
+
+          if not match:
+              raise SystemExit(f"Could not find release notes for {tag} in CHANGELOG.md")
+
+          notes = match.group(1).strip()
+          if not notes:
+              raise SystemExit(f"Release notes for {tag} are empty")
+
+          Path("RELEASE_NOTES.md").write_text(notes + "\n", encoding="utf-8")
+          PY
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          body: ${{ steps.extract_notes.outputs.release_notes }}
+          body_path: RELEASE_NOTES.md
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
         env:
