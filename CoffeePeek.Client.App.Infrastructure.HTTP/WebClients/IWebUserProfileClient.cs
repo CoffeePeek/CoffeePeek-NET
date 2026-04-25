@@ -12,4 +12,10 @@ public interface IWebUserProfileClient
     Task<Result> UpdateUsernameAsync(string username, CancellationToken ct = default);
 
     Task<Result> UpdatePhoneNumberAsync(string phoneNumber, CancellationToken ct = default);
+
+    Task<Result> UploadAvatarAsync(
+        string fileName,
+        string contentType,
+        byte[] fileContent,
+        CancellationToken ct = default);
 }

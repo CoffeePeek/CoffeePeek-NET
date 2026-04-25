@@ -28,7 +28,8 @@ public partial class UserProfileViewModel(
     INavigationService navigationService,
     IWebAuthenticationClient authenticationClient,
     ILocalUserSettings localUserSettings,
-    IUserIdentityAccessor identityAccessor) : ViewModelBase
+    IUserIdentityAccessor identityAccessor,
+    IImagePickerService imagePickerService) : ViewModelBase
 {
     private CancellationTokenSource? _loadCts;
     private Guid? _userId;
@@ -58,9 +59,17 @@ public partial class UserProfileViewModel(
     public partial bool IsSaving { get; set; }
 
     [ObservableProperty]
+    public partial bool IsUploadingAvatar { get; set; }
+
+    [ObservableProperty]
     public partial string? EditErrorMessage { get; set; }
 
     public bool HasEditError => !string.IsNullOrEmpty(EditErrorMessage);
+
+    [ObservableProperty]
+    public partial string? AvatarUploadErrorMessage { get; set; }
+
+    public bool HasAvatarUploadError => !string.IsNullOrEmpty(AvatarUploadErrorMessage);
 
     [ObservableProperty]
     public partial string EditUserName { get; set; } = string.Empty;
@@ -126,6 +135,8 @@ public partial class UserProfileViewModel(
 
     partial void OnEditErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasEditError));
 
+    partial void OnAvatarUploadErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasAvatarUploadError));
+
     public async Task LoadAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         _userId = userId;
@@ -144,7 +155,9 @@ public partial class UserProfileViewModel(
             ShowProfileBody = false;
             IsEditing = false;
             IsSaving = false;
+            IsUploadingAvatar = false;
             EditErrorMessage = null;
+            AvatarUploadErrorMessage = null;
             IsOwnProfile = currentUserId.HasValue && currentUserId.Value == userId;
             Reviews.Clear();
             HasReviews = false;
@@ -439,6 +452,45 @@ public partial class UserProfileViewModel(
         finally
         {
             IsSaving = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task UploadAvatarAsync()
+    {
+        if (!IsOwnProfile || _userId is null || IsUploadingAvatar)
+            return;
+
+        AvatarUploadErrorMessage = null;
+        IsUploadingAvatar = true;
+
+        try
+        {
+            var picked = await imagePickerService.PickImageAsync();
+            if (picked is null)
+                return;
+
+            var uploadResult = await profileClient.UploadAvatarAsync(
+                picked.FileName,
+                picked.ContentType,
+                picked.Content);
+
+            if (uploadResult.IsFailed)
+            {
+                AvatarUploadErrorMessage = uploadResult.Errors.FirstOrDefault()?.Message
+                    ?? Lang.Profile_AvatarUploadError;
+                return;
+            }
+
+            await LoadAsync(_userId.Value);
+        }
+        catch
+        {
+            AvatarUploadErrorMessage = Lang.Profile_AvatarUploadError;
+        }
+        finally
+        {
+            IsUploadingAvatar = false;
         }
     }
 

@@ -657,6 +657,18 @@ namespace CoffeePeek.Client.App.Resources.Lang {
             }
         }
 
+        public static string Profile_AvatarUpload {
+            get {
+                return ResourceManager.GetString("Profile_AvatarUpload", resourceCulture);
+            }
+        }
+
+        public static string Profile_AvatarUploadError {
+            get {
+                return ResourceManager.GetString("Profile_AvatarUploadError", resourceCulture);
+            }
+        }
+
         public static string ShopPage_FilterBeans {
             get {
                 return ResourceManager.GetString("ShopPage_FilterBeans", resourceCulture);
