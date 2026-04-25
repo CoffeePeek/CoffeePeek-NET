@@ -6,12 +6,14 @@ using CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
 using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 using CoffeePeek.Client.App.Services;
 using CoffeePeek.Client.App.Core.Cache;
+using CoffeePeek.Client.App.Core.Identity;
 using CoffeePeek.Client.App.Core.Settings;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Client.App.ViewModels.Abstract;
 using CoffeePeek.Client.App.ViewModels.WelcomeFlow.Welcome;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Lang = CoffeePeek.Client.App.Resources.Lang.Resources;
 
 namespace CoffeePeek.Client.App.ViewModels.Home;
 
@@ -25,7 +27,8 @@ public partial class UserProfileViewModel(
     IClientSession clientSession,
     INavigationService navigationService,
     IWebAuthenticationClient authenticationClient,
-    ILocalUserSettings localUserSettings) : ViewModelBase
+    ILocalUserSettings localUserSettings,
+    IUserIdentityAccessor identityAccessor) : ViewModelBase
 {
     private CancellationTokenSource? _loadCts;
     private Guid? _userId;
@@ -44,6 +47,26 @@ public partial class UserProfileViewModel(
 
     [ObservableProperty]
     public partial string? About { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsOwnProfile { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsEditing { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsSaving { get; set; }
+
+    [ObservableProperty]
+    public partial string? EditErrorMessage { get; set; }
+
+    public bool HasEditError => !string.IsNullOrEmpty(EditErrorMessage);
+
+    [ObservableProperty]
+    public partial string EditUserName { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string EditAbout { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial int MemberSinceYear { get; set; }
@@ -101,6 +124,8 @@ public partial class UserProfileViewModel(
     [ObservableProperty]
     public partial bool ShowReviewPagination { get; set; }
 
+    partial void OnEditErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasEditError));
+
     public async Task LoadAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         _userId = userId;
@@ -110,11 +135,17 @@ public partial class UserProfileViewModel(
         _loadCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         var ct = _loadCts.Token;
 
+        var currentUserId = identityAccessor.GetCurrentUserIdOrNull();
+
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
             IsLoadingProfile = true;
             ErrorMessage = null;
             ShowProfileBody = false;
+            IsEditing = false;
+            IsSaving = false;
+            EditErrorMessage = null;
+            IsOwnProfile = currentUserId.HasValue && currentUserId.Value == userId;
             Reviews.Clear();
             HasReviews = false;
             ShowReviewsEmpty = false;
@@ -340,6 +371,75 @@ public partial class UserProfileViewModel(
         _loadCts.Dispose();
         _loadCts = new CancellationTokenSource();
         await LoadReviewsPageAsync(_userId.Value, nextPage, _loadCts.Token);
+    }
+
+    [RelayCommand]
+    private void StartEditing()
+    {
+        EditUserName = UserName;
+        EditAbout = About ?? string.Empty;
+        EditErrorMessage = null;
+        IsEditing = true;
+    }
+
+    [RelayCommand]
+    private void CancelEditing()
+    {
+        IsEditing = false;
+        EditErrorMessage = null;
+    }
+
+    [RelayCommand]
+    private async Task SaveProfileAsync()
+    {
+        if (IsSaving) return;
+
+        IsSaving = true;
+        EditErrorMessage = null;
+
+        try
+        {
+            var usernameChanged = !string.Equals(EditUserName.Trim(), UserName, StringComparison.Ordinal);
+            var aboutChanged = !string.Equals(EditAbout.Trim(), About ?? string.Empty, StringComparison.Ordinal);
+
+            if (usernameChanged)
+            {
+                var trimmed = EditUserName.Trim();
+                if (string.IsNullOrWhiteSpace(trimmed))
+                {
+                    EditErrorMessage = Lang.Profile_Edit_UsernameRequired;
+                    return;
+                }
+
+                var result = await profileClient.UpdateUsernameAsync(trimmed);
+                if (result.IsFailed)
+                {
+                    EditErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.Profile_Edit_SaveError;
+                    return;
+                }
+
+                UserName = trimmed;
+                InitialLetter = char.ToUpperInvariant(trimmed[0]).ToString();
+            }
+
+            if (aboutChanged)
+            {
+                var result = await profileClient.UpdateAboutAsync(EditAbout.Trim());
+                if (result.IsFailed)
+                {
+                    EditErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.Profile_Edit_SaveError;
+                    return;
+                }
+
+                About = EditAbout.Trim();
+            }
+
+            IsEditing = false;
+        }
+        finally
+        {
+            IsSaving = false;
+        }
     }
 
     [RelayCommand]

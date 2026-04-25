@@ -597,36 +597,96 @@ namespace CoffeePeek.Client.App.Resources.Lang {
             }
         }
         
+        public static string Profile_Edit {
+            get {
+                return ResourceManager.GetString("Profile_Edit", resourceCulture);
+            }
+        }
+        
+        public static string Profile_EditTitle {
+            get {
+                return ResourceManager.GetString("Profile_EditTitle", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_Username {
+            get {
+                return ResourceManager.GetString("Profile_Edit_Username", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_UsernamePlaceholder {
+            get {
+                return ResourceManager.GetString("Profile_Edit_UsernamePlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_About {
+            get {
+                return ResourceManager.GetString("Profile_Edit_About", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_AboutPlaceholder {
+            get {
+                return ResourceManager.GetString("Profile_Edit_AboutPlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_Save {
+            get {
+                return ResourceManager.GetString("Profile_Edit_Save", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_Cancel {
+            get {
+                return ResourceManager.GetString("Profile_Edit_Cancel", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_SaveError {
+            get {
+                return ResourceManager.GetString("Profile_Edit_SaveError", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_UsernameRequired {
+            get {
+                return ResourceManager.GetString("Profile_Edit_UsernameRequired", resourceCulture);
+            }
+        }
+
         public static string ShopPage_FilterBeans {
             get {
                 return ResourceManager.GetString("ShopPage_FilterBeans", resourceCulture);
             }
         }
-        
+
         public static string ShopPage_FilterRoasters {
             get {
                 return ResourceManager.GetString("ShopPage_FilterRoasters", resourceCulture);
             }
         }
-        
+
         public static string ShopPage_FilterBrewMethods {
             get {
                 return ResourceManager.GetString("ShopPage_FilterBrewMethods", resourceCulture);
             }
         }
-        
+
         public static string ShopPage_FilterEquipment {
             get {
                 return ResourceManager.GetString("ShopPage_FilterEquipment", resourceCulture);
             }
         }
-        
+
         public static string ShopPage_FilterApply {
             get {
                 return ResourceManager.GetString("ShopPage_FilterApply", resourceCulture);
             }
         }
-        
+
         public static string ShopPage_FilterClear {
             get {
                 return ResourceManager.GetString("ShopPage_FilterClear", resourceCulture);

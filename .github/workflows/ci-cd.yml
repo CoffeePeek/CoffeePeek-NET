@@ -150,7 +150,7 @@ jobs:
           dotnet-version: '10.0.x'
           
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore "CoffeePeek.slnx" -p:AllowMissingPrunePackageData=true
   
       - name: Install dotnet-ef tool
         run: dotnet tool install --global dotnet-ef
@@ -160,7 +160,16 @@ jobs:
           PostgresCpOptions__ConnectionString: ${{ secrets.DB_CONNECTION_ACCOUNT }}
           
         run: |
-          dotnet build CoffeePeek.slnx
+          projects=(
+            "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj"
+            "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj"
+            "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj"
+            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj"
+          )
+
+          for project in "${projects[@]}"; do
+            dotnet build "$project" --configuration Release --no-restore -p:AllowMissingPrunePackageData=true
+          done
           
           echo "--- Applying AccountService migrations ---"
           export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_ACCOUNT }}"
