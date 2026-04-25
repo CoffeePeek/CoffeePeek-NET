@@ -5,9 +5,9 @@ namespace CoffeePeek.Client.App.ViewModels.Shops.Search;
 
 public partial class CatalogFilterItemViewModel : ViewModelBase
 {
-    public Guid Id { get; init; }
+    public required Guid Id { get; init; }
 
-    public string Name { get; init; } = string.Empty;
+    public required string Name { get; init; }
 
     [ObservableProperty]
     public partial bool IsSelected { get; set; }

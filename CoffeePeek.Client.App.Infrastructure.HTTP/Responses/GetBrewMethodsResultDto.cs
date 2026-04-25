@@ -4,5 +4,5 @@ namespace CoffeePeek.Client.App.Infrastructure.HTTP.Responses;
 
 public sealed class GetBrewMethodsResultDto
 {
-    public BrewMethodDto[] BrewMethods { get; set; } = [];
+    public BrewMethodDto[] BrewMethods { get; init; } = [];
 }

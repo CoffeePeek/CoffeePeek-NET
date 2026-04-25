@@ -69,4 +69,18 @@ public class WebCoffeeShopsClientTests
         command.Query["roasters[0]"].Should().Be(roasterId.ToString("D"));
         command.Query["beans[0]"].Should().Be(beanId.ToString("D"));
     }
+
+    [Fact]
+    public void AppendGuidArray_CallTwiceWithSameKey_OverwritesSameIndexedKeys()
+    {
+        var command = new HttpCommand();
+        var firstId = Guid.NewGuid();
+        var secondId = Guid.NewGuid();
+
+        WebCoffeeShopsClient.AppendGuidArray(command, "roasters", [firstId]);
+        WebCoffeeShopsClient.AppendGuidArray(command, "roasters", [secondId]);
+
+        command.Query.Should().ContainSingle();
+        command.Query["roasters[0]"].Should().Be(secondId.ToString("D"));
+    }
 }

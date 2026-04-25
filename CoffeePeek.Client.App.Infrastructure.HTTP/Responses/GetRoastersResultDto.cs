@@ -4,5 +4,5 @@ namespace CoffeePeek.Client.App.Infrastructure.HTTP.Responses;
 
 public sealed class GetRoastersResultDto
 {
-    public RoasterDto[] Roasters { get; set; } = [];
+    public RoasterDto[] Roasters { get; init; } = [];
 }

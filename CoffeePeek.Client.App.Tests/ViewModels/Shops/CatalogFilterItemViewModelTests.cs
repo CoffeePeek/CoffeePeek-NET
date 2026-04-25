@@ -35,16 +35,18 @@ public class CatalogFilterItemViewModelTests
     }
 
     [Fact]
-    public void Properties_RetainValues()
+    public void IsSelected_RaisesPropertyChanged()
     {
-        var id = Guid.NewGuid();
         var sut = new CatalogFilterItemViewModel
         {
-            Id = id,
-            Name = "Ethiopian Yirgacheffe"
+            Id = Guid.NewGuid(),
+            Name = "Arabica"
         };
+        var raised = false;
+        sut.PropertyChanged += (_, e) => raised |= e.PropertyName == nameof(CatalogFilterItemViewModel.IsSelected);
 
-        sut.Id.Should().Be(id);
-        sut.Name.Should().Be("Ethiopian Yirgacheffe");
+        sut.IsSelected = true;
+
+        raised.Should().BeTrue();
     }
 }

@@ -4,5 +4,5 @@ namespace CoffeePeek.Client.App.Infrastructure.HTTP.Responses;
 
 public sealed class GetBeansResultDto
 {
-    public CoffeeBeansDto[] Beans { get; set; } = [];
+    public CoffeeBeansDto[] Beans { get; init; } = [];
 }

@@ -4,6 +4,7 @@ using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 using CoffeePeek.Client.App.Services;
 using CoffeePeek.Client.App.ViewModels.Shops;
 using CoffeePeek.Client.App.ViewModels.Shops.Search;
+using CoffeePeek.Contract.Dtos.Internal;
 using CoffeePeek.Contract.Dtos.Shop;
 using FluentAssertions;
 using FluentResults;
@@ -14,12 +15,13 @@ namespace CoffeePeek.Client.App.Tests.ViewModels.Shops;
 
 public class ShopsPageViewModelFilterTests
 {
-    private readonly Mock<IWebCoffeeShopsClient> _clientMock = new();
+    private readonly Mock<IWebCoffeeShopsClient> _shopsClientMock = new();
+    private readonly Mock<IWebCatalogsClient> _catalogsClientMock = new();
     private readonly Mock<IWorkspaceShellNavigator> _navigatorMock = new();
 
     private ShopsPageViewModel CreateSut()
     {
-        _clientMock
+        _shopsClientMock
             .Setup(c => c.SearchAsync(
                 It.IsAny<string?>(), It.IsAny<Guid?>(),
                 It.IsAny<Guid[]?>(), It.IsAny<Guid[]?>(),
@@ -35,11 +37,11 @@ public class ShopsPageViewModelFilterTests
                 TotalItems = 0
             }));
 
-        _clientMock
+        _catalogsClientMock
             .Setup(c => c.GetCitiesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Ok(new GetCitiesResultDto { Cities = [] }));
 
-        _clientMock
+        _catalogsClientMock
             .Setup(c => c.GetBeansAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Ok(new GetBeansResultDto
             {
@@ -50,38 +52,39 @@ public class ShopsPageViewModelFilterTests
                 ]
             }));
 
-        _clientMock
+        _catalogsClientMock
             .Setup(c => c.GetRoastersAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Ok(new GetRoastersResultDto
             {
                 Roasters = [new RoasterDto { Id = Guid.NewGuid(), Name = "Local Roast" }]
             }));
 
-        _clientMock
+        _catalogsClientMock
             .Setup(c => c.GetEquipmentAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Ok(new GetEquipmentResultDto { Equipments = [] }));
+            .ReturnsAsync(Result.Ok(new GetEquipmentResultDto { Equipment = [] }));
 
-        _clientMock
+        _catalogsClientMock
             .Setup(c => c.GetBrewMethodsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Ok(new GetBrewMethodsResultDto
             {
                 BrewMethods = [new BrewMethodDto { Id = Guid.NewGuid(), Name = "Pour Over" }]
             }));
 
-        return new ShopsPageViewModel(_clientMock.Object, _navigatorMock.Object);
+        return new ShopsPageViewModel(_shopsClientMock.Object, _catalogsClientMock.Object, _navigatorMock.Object);
     }
 
     [Fact]
-    public async Task InitializeAsync_LoadsCatalogFilters()
+    public async Task InitializeAsync_LoadsCatalogFilterGroups()
     {
         var sut = CreateSut();
 
         await sut.InitializeAsync();
 
-        sut.BeanFilters.Should().HaveCount(2);
-        sut.RoasterFilters.Should().HaveCount(1);
-        sut.BrewMethodFilters.Should().HaveCount(1);
-        sut.EquipmentFilters.Should().BeEmpty();
+        sut.FilterGroups.Should().HaveCount(4);
+        sut.FilterGroups[0].Items.Should().HaveCount(2);
+        sut.FilterGroups[1].Items.Should().HaveCount(1);
+        sut.FilterGroups[2].Items.Should().HaveCount(1);
+        sut.FilterGroups[3].Items.Should().BeEmpty();
     }
 
     [Fact]
@@ -90,12 +93,12 @@ public class ShopsPageViewModelFilterTests
         var sut = CreateSut();
         await sut.InitializeAsync();
 
-        sut.BeanFilters[0].IsSelected = true;
-        sut.ApplyFiltersCommand.Execute(null);
+        sut.FilterGroups[0].Items[0].IsSelected = true;
+        await sut.ApplyFiltersCommand.ExecuteAsync(null);
 
         sut.ActiveFilterCount.Should().Be(1);
 
-        _clientMock.Verify(c => c.SearchAsync(
+        _shopsClientMock.Verify(c => c.SearchAsync(
             It.IsAny<string?>(), It.IsAny<Guid?>(),
             null,
             It.Is<Guid[]?>(ids => ids != null && ids.Length == 1),
@@ -110,14 +113,13 @@ public class ShopsPageViewModelFilterTests
         var sut = CreateSut();
         await sut.InitializeAsync();
 
-        sut.BeanFilters[0].IsSelected = true;
-        sut.BeanFilters[1].IsSelected = true;
-        sut.RoasterFilters[0].IsSelected = true;
+        sut.FilterGroups[0].Items[0].IsSelected = true;
+        sut.FilterGroups[0].Items[1].IsSelected = true;
+        sut.FilterGroups[1].Items[0].IsSelected = true;
 
-        sut.ClearFiltersCommand.Execute(null);
+        await sut.ClearFiltersCommand.ExecuteAsync(null);
 
-        sut.BeanFilters.Should().AllSatisfy(f => f.IsSelected.Should().BeFalse());
-        sut.RoasterFilters.Should().AllSatisfy(f => f.IsSelected.Should().BeFalse());
+        sut.FilterGroups.SelectMany(g => g.Items).Should().AllSatisfy(f => f.IsSelected.Should().BeFalse());
         sut.ActiveFilterCount.Should().Be(0);
     }
 
@@ -138,38 +140,34 @@ public class ShopsPageViewModelFilterTests
     {
         var id1 = Guid.NewGuid();
         var id2 = Guid.NewGuid();
+        var id3 = Guid.NewGuid();
         var filters = new ObservableCollection<CatalogFilterItemViewModel>
         {
             new() { Id = id1, Name = "A", IsSelected = true },
             new() { Id = id2, Name = "B" },
-            new() { Id = Guid.NewGuid(), Name = "C", IsSelected = true }
+            new() { Id = id3, Name = "C", IsSelected = true }
         };
 
         var result = ShopsPageViewModel.GetSelectedIds(filters);
 
         result.Should().NotBeNull();
-        result.Should().HaveCount(2);
-        result.Should().Contain(id1);
+        result.Should().BeEquivalentTo([id1, id3]);
     }
 
     [Fact]
     public async Task LoadCatalogFilters_HandlesPartialFailure()
     {
-        _clientMock
-            .Setup(c => c.GetBeansAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Fail<GetBeansResultDto>("Network error"));
-
         var sut = CreateSut();
 
-        // Re-setup beans to fail
-        _clientMock
+        // Override successful setup applied inside CreateSut.
+        _catalogsClientMock
             .Setup(c => c.GetBeansAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Fail<GetBeansResultDto>("Network error"));
 
         await sut.InitializeAsync();
 
-        sut.BeanFilters.Should().BeEmpty();
-        sut.RoasterFilters.Should().HaveCount(1);
-        sut.BrewMethodFilters.Should().HaveCount(1);
+        sut.FilterGroups[0].Items.Should().BeEmpty();
+        sut.FilterGroups[1].Items.Should().HaveCount(1);
+        sut.FilterGroups[2].Items.Should().HaveCount(1);
     }
 }
