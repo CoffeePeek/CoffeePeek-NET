@@ -155,4 +155,34 @@
     <data name="ShopDetail_Open" xml:space="preserve">
         <value>ОТКРЫТО</value>
     </data>
+    <data name="Profile_Edit" xml:space="preserve">
+        <value>Изменить</value>
+    </data>
+    <data name="Profile_EditTitle" xml:space="preserve">
+        <value>Редактировать профиль</value>
+    </data>
+    <data name="Profile_Edit_Username" xml:space="preserve">
+        <value>Имя пользователя</value>
+    </data>
+    <data name="Profile_Edit_UsernamePlaceholder" xml:space="preserve">
+        <value>Введите имя пользователя</value>
+    </data>
+    <data name="Profile_Edit_About" xml:space="preserve">
+        <value>О себе</value>
+    </data>
+    <data name="Profile_Edit_AboutPlaceholder" xml:space="preserve">
+        <value>Расскажите о себе...</value>
+    </data>
+    <data name="Profile_Edit_Save" xml:space="preserve">
+        <value>Сохранить</value>
+    </data>
+    <data name="Profile_Edit_Cancel" xml:space="preserve">
+        <value>Отмена</value>
+    </data>
+    <data name="Profile_Edit_SaveError" xml:space="preserve">
+        <value>Не удалось сохранить изменения</value>
+    </data>
+    <data name="Profile_Edit_UsernameRequired" xml:space="preserve">
+        <value>Имя пользователя не может быть пустым</value>
+    </data>
 </root>

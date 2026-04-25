@@ -143,11 +143,22 @@
                             </Border>
 
                             <StackPanel Spacing="8" VerticalAlignment="Center">
-                                <TextBlock
-                                    Classes="Headline"
-                                    FontSize="32"
-                                    FontWeight="Bold"
-                                    Text="{Binding UserName}" />
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock
+                                        Classes="Headline"
+                                        FontSize="32"
+                                        FontWeight="Bold"
+                                        Text="{Binding UserName}"
+                                        VerticalAlignment="Center" />
+                                    <Button
+                                        Classes="Secondary"
+                                        Command="{Binding StartEditingCommand}"
+                                        Content="{x:Static lang:Resources.Profile_Edit}"
+                                        FontSize="12"
+                                        IsVisible="{Binding IsOwnProfile}"
+                                        Padding="12,4"
+                                        VerticalAlignment="Center" />
+                                </StackPanel>
                                 <TextBlock
                                     FontSize="13"
                                     Foreground="{DynamicResource OnSurfaceVariantBrush}"
@@ -160,6 +171,78 @@
                                     MaxWidth="480"
                                     Text="{Binding About}"
                                     TextWrapping="Wrap" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Edit profile form -->
+                    <Border
+                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                        BorderThickness="0"
+                        IsVisible="{Binding IsEditing}"
+                        Margin="48,0"
+                        MaxWidth="960"
+                        Padding="32,24">
+                        <StackPanel Spacing="16">
+                            <TextBlock
+                                Classes="Headline"
+                                FontSize="20"
+                                FontWeight="Bold"
+                                Text="{x:Static lang:Resources.Profile_EditTitle}" />
+
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    FontSize="13"
+                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                    Text="{x:Static lang:Resources.Profile_Edit_Username}" />
+                                <TextBox
+                                    MaxLength="32"
+                                    Text="{Binding EditUserName}"
+                                    Watermark="{x:Static lang:Resources.Profile_Edit_UsernamePlaceholder}" />
+                            </StackPanel>
+
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    FontSize="13"
+                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                    Text="{x:Static lang:Resources.Profile_Edit_About}" />
+                                <TextBox
+                                    AcceptsReturn="True"
+                                    MaxLength="500"
+                                    MinHeight="80"
+                                    Text="{Binding EditAbout}"
+                                    TextWrapping="Wrap"
+                                    Watermark="{x:Static lang:Resources.Profile_Edit_AboutPlaceholder}" />
+                            </StackPanel>
+
+                            <Border
+                                Background="{DynamicResource AuthErrorBackgroundBrush}"
+                                BorderThickness="0"
+                                CornerRadius="{StaticResource DefaultCornerRadius}"
+                                IsVisible="{Binding HasEditError}"
+                                Padding="12,8">
+                                <TextBlock
+                                    FontSize="13"
+                                    Foreground="{DynamicResource AuthErrorForegroundBrush}"
+                                    Text="{Binding EditErrorMessage}"
+                                    TextWrapping="Wrap" />
+                            </Border>
+
+                            <StackPanel
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <Button
+                                    Classes="Secondary"
+                                    Command="{Binding CancelEditingCommand}"
+                                    Content="{x:Static lang:Resources.Profile_Edit_Cancel}"
+                                    IsEnabled="{Binding !IsSaving}"
+                                    Padding="16,8" />
+                                <Button
+                                    Command="{Binding SaveProfileCommand}"
+                                    Content="{x:Static lang:Resources.Profile_Edit_Save}"
+                                    IsEnabled="{Binding !IsSaving}"
+                                    Padding="16,8" />
                             </StackPanel>
                         </StackPanel>
                     </Border>

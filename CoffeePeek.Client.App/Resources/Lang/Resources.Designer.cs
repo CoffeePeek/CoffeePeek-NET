@@ -596,5 +596,65 @@ namespace CoffeePeek.Client.App.Resources.Lang {
                 return ResourceManager.GetString("ShopDetail_Open", resourceCulture);
             }
         }
+        
+        public static string Profile_Edit {
+            get {
+                return ResourceManager.GetString("Profile_Edit", resourceCulture);
+            }
+        }
+        
+        public static string Profile_EditTitle {
+            get {
+                return ResourceManager.GetString("Profile_EditTitle", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_Username {
+            get {
+                return ResourceManager.GetString("Profile_Edit_Username", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_UsernamePlaceholder {
+            get {
+                return ResourceManager.GetString("Profile_Edit_UsernamePlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_About {
+            get {
+                return ResourceManager.GetString("Profile_Edit_About", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_AboutPlaceholder {
+            get {
+                return ResourceManager.GetString("Profile_Edit_AboutPlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_Save {
+            get {
+                return ResourceManager.GetString("Profile_Edit_Save", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_Cancel {
+            get {
+                return ResourceManager.GetString("Profile_Edit_Cancel", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_SaveError {
+            get {
+                return ResourceManager.GetString("Profile_Edit_SaveError", resourceCulture);
+            }
+        }
+        
+        public static string Profile_Edit_UsernameRequired {
+            get {
+                return ResourceManager.GetString("Profile_Edit_UsernameRequired", resourceCulture);
+            }
+        }
     }
 }

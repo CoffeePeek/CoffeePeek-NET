@@ -11,6 +11,9 @@
     <Project Path="CoffeePeek.Client.App.Infrastructure/CoffeePeek.Client.App.Infrastructure.csproj" />
     <Project Path="CoffeePeek.Client.App/CoffeePeek.Client.App.csproj" />
   </Folder>
+  <Folder Name="/Client/Tests/">
+    <Project Path="CoffeePeek.Client.App.Tests/CoffeePeek.Client.App.Tests.csproj" />
+  </Folder>
   <Folder Name="/Client/Platforms/">
     <Project Path="CoffeePeek.Client.App.Android/CoffeePeek.Client.App.Android.csproj">
       <Deploy />

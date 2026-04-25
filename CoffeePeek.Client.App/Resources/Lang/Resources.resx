@@ -294,4 +294,34 @@
     <data name="ShopDetail_Open" xml:space="preserve">
         <value>OPEN</value>
     </data>
+    <data name="Profile_Edit" xml:space="preserve">
+        <value>Edit</value>
+    </data>
+    <data name="Profile_EditTitle" xml:space="preserve">
+        <value>Edit Profile</value>
+    </data>
+    <data name="Profile_Edit_Username" xml:space="preserve">
+        <value>Username</value>
+    </data>
+    <data name="Profile_Edit_UsernamePlaceholder" xml:space="preserve">
+        <value>Enter username</value>
+    </data>
+    <data name="Profile_Edit_About" xml:space="preserve">
+        <value>About</value>
+    </data>
+    <data name="Profile_Edit_AboutPlaceholder" xml:space="preserve">
+        <value>Tell about yourself...</value>
+    </data>
+    <data name="Profile_Edit_Save" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="Profile_Edit_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Profile_Edit_SaveError" xml:space="preserve">
+        <value>Failed to save profile changes</value>
+    </data>
+    <data name="Profile_Edit_UsernameRequired" xml:space="preserve">
+        <value>Username cannot be empty</value>
+    </data>
 </root>
