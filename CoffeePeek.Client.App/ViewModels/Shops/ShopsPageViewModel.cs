@@ -281,6 +281,9 @@ public partial class ShopsPageViewModel : ViewModelBase
     private void OpenShop(Guid shopId) => _shellNavigator.OpenShopDetail(shopId);
 
     [RelayCommand]
+    private void OpenSuggestShop() => _shellNavigator.OpenSuggestShop();
+
+    [RelayCommand]
     private void ToggleAdditionalFilters() => IsAdditionalFiltersPanelOpen = !IsAdditionalFiltersPanelOpen;
 
     [RelayCommand]

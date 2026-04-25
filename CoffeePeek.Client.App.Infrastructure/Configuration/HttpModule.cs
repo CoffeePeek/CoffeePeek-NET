@@ -41,6 +41,7 @@ public sealed class HttpModule : Module
         builder.RegisterType<WebUserReviewsClient>().As<IWebUserReviewsClient>().SingleInstance();
         builder.RegisterType<WebCoffeeShopsClient>().As<IWebCoffeeShopsClient>().SingleInstance();
         builder.RegisterType<WebCatalogsClient>().As<IWebCatalogsClient>().SingleInstance();
+        builder.RegisterType<WebModerationShopsClient>().As<IWebModerationShopsClient>().SingleInstance();
         builder.RegisterType<JwtUserIdentityAccessor>().As<IUserIdentityAccessor>().SingleInstance();
     }
 
