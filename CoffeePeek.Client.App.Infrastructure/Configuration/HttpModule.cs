@@ -43,7 +43,9 @@ public sealed class HttpModule : Module
         builder.RegisterType<WebCoffeeShopReviewsClient>().As<IWebCoffeeShopReviewsClient>().SingleInstance();
         builder.RegisterType<WebCatalogsClient>().As<IWebCatalogsClient>().SingleInstance();
         builder.RegisterType<WebModerationShopsClient>().As<IWebModerationShopsClient>().SingleInstance();
+        builder.RegisterType<WebModerationPanelClient>().As<IWebModerationPanelClient>().SingleInstance();
         builder.RegisterType<JwtUserIdentityAccessor>().As<IUserIdentityAccessor>().SingleInstance();
+        builder.RegisterType<JwtUserRoleAccessor>().As<IUserRoleAccessor>().SingleInstance();
     }
 
     private static void RegisterHeaderSetters(ContainerBuilder builder)

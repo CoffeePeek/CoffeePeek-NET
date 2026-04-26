@@ -13,4 +13,8 @@ public interface IWorkspaceShellNavigator
     void OpenSuggestShop();
 
     void CloseSuggestShop();
+
+    void OpenModerationPanel();
+
+    void CloseModerationPanel();
 }

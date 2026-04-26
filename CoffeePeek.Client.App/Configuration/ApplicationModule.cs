@@ -60,5 +60,6 @@ public class ApplicationModule : Module
         builder.RegisterType<ShopsPageViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<ShopDetailViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<SuggestShopViewModel>().AsSelf().SingleInstance();
+        builder.RegisterType<ModerationPanelViewModel>().AsSelf().SingleInstance();
     }
 }

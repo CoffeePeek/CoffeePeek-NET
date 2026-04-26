@@ -14,5 +14,6 @@
         <ContentControl Content="{Binding ShopDetail}" IsVisible="{Binding IsShopDetailOpen}" />
         <ContentControl Content="{Binding UserProfile}" IsVisible="{Binding IsProfileOpen}" />
         <ContentControl Content="{Binding SuggestShop}" IsVisible="{Binding IsSuggestShopOpen}" />
+        <ContentControl Content="{Binding ModerationPanel}" IsVisible="{Binding IsModerationPanelOpen}" />
     </Grid>
 </UserControl>

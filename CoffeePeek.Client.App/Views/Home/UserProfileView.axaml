@@ -143,6 +143,26 @@
                             </Border>
 
                             <StackPanel Spacing="8" VerticalAlignment="Center">
+                                <Button
+                                    Classes="Secondary"
+                                    Command="{Binding UploadAvatarCommand}"
+                                    Content="{x:Static lang:Resources.Profile_AvatarUpload}"
+                                    FontSize="12"
+                                    HorizontalAlignment="Left"
+                                    IsEnabled="{Binding !IsUploadingAvatar}"
+                                    IsVisible="{Binding IsOwnProfile}"
+                                    Padding="12,4" />
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                    IsVisible="{Binding IsUploadingAvatar}"
+                                    Text="{x:Static lang:Resources.Profile_AvatarUploading}" />
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="{DynamicResource AuthErrorForegroundBrush}"
+                                    IsVisible="{Binding HasAvatarUploadError}"
+                                    Text="{Binding AvatarUploadErrorMessage}"
+                                    TextWrapping="Wrap" />
                                 <StackPanel Orientation="Horizontal" Spacing="12">
                                     <TextBlock
                                         Classes="Headline"

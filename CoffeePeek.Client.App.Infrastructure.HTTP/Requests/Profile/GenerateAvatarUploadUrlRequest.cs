@@ -1,6 +1,6 @@
-namespace CoffeePeek.Client.App.Infrastructure.HTTP.Requests.Moderation;
+namespace CoffeePeek.Client.App.Infrastructure.HTTP.Requests.Profile;
 
-public sealed class ShopPhotoUploadRequest
+public sealed class GenerateAvatarUploadUrlRequest : BaseRequest
 {
     public required long SizeBytes { get; init; }
 

@@ -28,9 +28,11 @@ public partial class UserProfileViewModel(
     INavigationService navigationService,
     IWebAuthenticationClient authenticationClient,
     ILocalUserSettings localUserSettings,
-    IUserIdentityAccessor identityAccessor) : ViewModelBase
+    IUserIdentityAccessor identityAccessor,
+    IImagePickerService imagePickerService) : ViewModelBase
 {
     private CancellationTokenSource? _loadCts;
+    private CancellationTokenSource? _avatarUploadCts;
     private Guid? _userId;
 
     [ObservableProperty]
@@ -58,9 +60,17 @@ public partial class UserProfileViewModel(
     public partial bool IsSaving { get; set; }
 
     [ObservableProperty]
+    public partial bool IsUploadingAvatar { get; set; }
+
+    [ObservableProperty]
     public partial string? EditErrorMessage { get; set; }
 
     public bool HasEditError => !string.IsNullOrEmpty(EditErrorMessage);
+
+    [ObservableProperty]
+    public partial string? AvatarUploadErrorMessage { get; set; }
+
+    public bool HasAvatarUploadError => !string.IsNullOrEmpty(AvatarUploadErrorMessage);
 
     [ObservableProperty]
     public partial string EditUserName { get; set; } = string.Empty;
@@ -126,6 +136,8 @@ public partial class UserProfileViewModel(
 
     partial void OnEditErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasEditError));
 
+    partial void OnAvatarUploadErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasAvatarUploadError));
+
     public async Task LoadAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         _userId = userId;
@@ -133,6 +145,9 @@ public partial class UserProfileViewModel(
         _loadCts?.Cancel();
         _loadCts?.Dispose();
         _loadCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        _avatarUploadCts?.Cancel();
+        _avatarUploadCts?.Dispose();
+        _avatarUploadCts = null;
         var ct = _loadCts.Token;
 
         var currentUserId = identityAccessor.GetCurrentUserIdOrNull();
@@ -144,7 +159,9 @@ public partial class UserProfileViewModel(
             ShowProfileBody = false;
             IsEditing = false;
             IsSaving = false;
+            IsUploadingAvatar = false;
             EditErrorMessage = null;
+            AvatarUploadErrorMessage = null;
             IsOwnProfile = currentUserId.HasValue && currentUserId.Value == userId;
             Reviews.Clear();
             HasReviews = false;
@@ -442,6 +459,57 @@ public partial class UserProfileViewModel(
         }
     }
 
+    [RelayCommand(AllowConcurrentExecutions = false)]
+    private async Task UploadAvatarAsync()
+    {
+        if (!IsOwnProfile || _userId is null)
+            return;
+
+        _avatarUploadCts?.Cancel();
+        _avatarUploadCts?.Dispose();
+        _avatarUploadCts = CancellationTokenSource.CreateLinkedTokenSource(_loadCts?.Token ?? CancellationToken.None);
+        var ct = _avatarUploadCts.Token;
+
+        AvatarUploadErrorMessage = null;
+        IsUploadingAvatar = true;
+
+        try
+        {
+            var picked = await imagePickerService.PickImageAsync(ct);
+            if (picked is null)
+                return;
+
+            var uploadResult = await profileClient.UploadAvatarAsync(
+                picked.FileName,
+                picked.ContentType,
+                picked.Content,
+                ct);
+
+            if (uploadResult.IsFailed)
+            {
+                AvatarUploadErrorMessage = uploadResult.Errors.FirstOrDefault()?.Message
+                    ?? Lang.Profile_AvatarUploadError;
+                return;
+            }
+
+            // Reload must not use the avatar upload token: LoadAsync cancels _loadCts, which
+            // would cascade-cancel a linked _avatarUploadCts and skip the profile refresh.
+            await LoadAsync(_userId.Value);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            AvatarUploadErrorMessage = Lang.Profile_AvatarUploadError;
+        }
+        finally
+        {
+            IsUploadingAvatar = false;
+        }
+    }
+
     [RelayCommand]
     private void OpenShop(Guid coffeeShopId)
     {
@@ -457,6 +525,9 @@ public partial class UserProfileViewModel(
     [RelayCommand]
     private async Task SignOutAsync()
     {
+        _avatarUploadCts?.Cancel();
+        _avatarUploadCts?.Dispose();
+        _avatarUploadCts = null;
         workspaceShellNavigator.CloseUserProfile();
         _ = await authenticationClient.Logout();
         clientSession.Clear();

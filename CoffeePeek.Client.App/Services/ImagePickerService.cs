@@ -2,12 +2,13 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
-using Avalonia.VisualTree;
 
 namespace CoffeePeek.Client.App.Services;
 
 public sealed class ImagePickerService : IImagePickerService
 {
+    private const ulong MaxImageBytes = 10 * 1024 * 1024;
+
     private static readonly FilePickerFileType ImagePickerType = new("Images")
     {
         Patterns = ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.gif"]
@@ -29,11 +30,18 @@ public sealed class ImagePickerService : IImagePickerService
         if (file is null)
             return null;
 
+        ct.ThrowIfCancellationRequested();
+        var properties = await file.GetBasicPropertiesAsync();
+        if (properties.Size is { } knownSize && knownSize > MaxImageBytes)
+            return null;
+
         await using var stream = await file.OpenReadAsync();
         await using var ms = new MemoryStream();
         await stream.CopyToAsync(ms, ct);
+        if ((ulong)ms.Length > MaxImageBytes)
+            return null;
 
-        var fileName = file.Name ?? "photo";
+        var fileName = file.Name ?? "avatar";
         var contentType = GetContentTypeFromExtension(fileName);
         return new PickedImageFile(fileName, contentType, ms.ToArray());
     }
