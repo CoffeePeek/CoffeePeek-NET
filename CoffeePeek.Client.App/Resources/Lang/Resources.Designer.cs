@@ -393,6 +393,114 @@ namespace CoffeePeek.Client.App.Resources.Lang {
             }
         }
         
+        public static string Header_Moderation {
+            get {
+                return ResourceManager.GetString("Header_Moderation", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Title {
+            get {
+                return ResourceManager.GetString("Moderation_Title", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Subtitle {
+            get {
+                return ResourceManager.GetString("Moderation_Subtitle", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Refresh {
+            get {
+                return ResourceManager.GetString("Moderation_Refresh", resourceCulture);
+            }
+        }
+        
+        public static string ModerationStatus_Pending {
+            get {
+                return ResourceManager.GetString("ModerationStatus_Pending", resourceCulture);
+            }
+        }
+        
+        public static string ModerationStatus_Approved {
+            get {
+                return ResourceManager.GetString("ModerationStatus_Approved", resourceCulture);
+            }
+        }
+        
+        public static string ModerationStatus_Rejected {
+            get {
+                return ResourceManager.GetString("ModerationStatus_Rejected", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_SectionShops {
+            get {
+                return ResourceManager.GetString("Moderation_SectionShops", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_SectionReviews {
+            get {
+                return ResourceManager.GetString("Moderation_SectionReviews", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Approve {
+            get {
+                return ResourceManager.GetString("Moderation_Approve", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Reject {
+            get {
+                return ResourceManager.GetString("Moderation_Reject", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_RejectReasonPlaceholder {
+            get {
+                return ResourceManager.GetString("Moderation_RejectReasonPlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_LoadError {
+            get {
+                return ResourceManager.GetString("Moderation_LoadError", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_ActionFailed {
+            get {
+                return ResourceManager.GetString("Moderation_ActionFailed", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_DefaultRejectReason {
+            get {
+                return ResourceManager.GetString("Moderation_DefaultRejectReason", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_EmptyShops {
+            get {
+                return ResourceManager.GetString("Moderation_EmptyShops", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_EmptyReviews {
+            get {
+                return ResourceManager.GetString("Moderation_EmptyReviews", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Loading {
+            get {
+                return ResourceManager.GetString("Moderation_Loading", resourceCulture);
+            }
+        }
+        
         public static string ShopPage_SearchPlaceholder {
             get {
                 return ResourceManager.GetString("ShopPage_SearchPlaceholder", resourceCulture);

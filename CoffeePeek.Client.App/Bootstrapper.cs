@@ -7,6 +7,7 @@ using CoffeePeek.Client.App.Infrastructure.Cache;
 using CoffeePeek.Client.App.Infrastructure.Configuration;
 using CoffeePeek.Client.App.Infrastructure.Extensions;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Client.App;
 
@@ -15,6 +16,9 @@ public static class Bootstrapper
     public static IContainer BuildContainer()
     {
         var builder = new ContainerBuilder();
+        var loggerFactory = LoggerFactory.Create(b => b.SetMinimumLevel(LogLevel.Information));
+        builder.RegisterInstance(loggerFactory).As<ILoggerFactory>().SingleInstance();
+        builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).SingleInstance();
         var configuration = builder.RegisterClientAppConfiguration();
         builder.RegisterOptionsFromSection<ApiOptions>(configuration);
         builder.RegisterOptionsFromSection<AuthClientOptions>(configuration);

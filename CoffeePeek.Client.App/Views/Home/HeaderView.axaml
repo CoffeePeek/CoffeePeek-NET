@@ -125,6 +125,13 @@
             Margin="8,0"
             Orientation="Horizontal"
             VerticalAlignment="Center">
+            <Button
+                Margin="0,0,12,0"
+                Classes="Secondary"
+                Command="{Binding OpenModerationPanelCommand}"
+                Content="{x:Static lang:Resources.Header_Moderation}"
+                IsVisible="{Binding IsModerator}"
+                Padding="12,8" />
             <Separator
                 Background="{DynamicResource BorderBrush}"
                 Height="20"

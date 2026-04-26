@@ -1,8 +1,8 @@
 namespace CoffeePeek.Client.App.Services;
 
 /// <summary>
-/// Routes profile open/close without injecting <c>WorkspaceViewModel</c> into <c>UserProfileViewModel</c>
-/// (breaks an Autofac circular dependency).
+/// Routes shell overlays (user profile, shop detail, suggest-shop, moderation panel) without injecting
+/// <c>WorkspaceViewModel</c> into feature view models (avoids Autofac circular dependencies).
 /// </summary>
 public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
 {
@@ -12,6 +12,8 @@ public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
     private Action? _closeShopDetail;
     private Action? _openSuggestShop;
     private Action? _closeSuggestShop;
+    private Action? _openModerationPanel;
+    private Action? _closeModerationPanel;
 
     public void AttachProfile(Action<Guid> open, Action close)
     {
@@ -31,6 +33,12 @@ public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
         _closeSuggestShop = close;
     }
 
+    public void AttachModerationPanel(Action open, Action close)
+    {
+        _openModerationPanel = open;
+        _closeModerationPanel = close;
+    }
+
     public void OpenUserProfile(Guid userId) => _openProfile?.Invoke(userId);
 
     public void CloseUserProfile() => _closeProfile?.Invoke();
@@ -42,4 +50,8 @@ public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
     public void OpenSuggestShop() => _openSuggestShop?.Invoke();
 
     public void CloseSuggestShop() => _closeSuggestShop?.Invoke();
+
+    public void OpenModerationPanel() => _openModerationPanel?.Invoke();
+
+    public void CloseModerationPanel() => _closeModerationPanel?.Invoke();
 }
