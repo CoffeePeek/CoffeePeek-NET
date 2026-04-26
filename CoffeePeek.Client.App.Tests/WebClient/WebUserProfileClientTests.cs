@@ -195,6 +195,20 @@ public class WebUserProfileClientTests
     }
 
     [Fact]
+    public async Task UploadAvatarAsync_ReturnsFailure_WhenContentTypeInvalid()
+    {
+        var sut = CreateSut();
+        var result = await sut.UploadAvatarAsync("a.jpg", "not a real media type", [1, 2, 3]);
+
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message.Contains("Invalid content type", StringComparison.Ordinal));
+        _executorMock.Verify(
+            e => e.Execute<GenerateUploadUrlResponseDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+        _httpMessageHandler.LastRequest.Should().BeNull();
+    }
+
+    [Fact]
     public async Task UploadAvatarAsync_ReturnsFailure_WhenFileNameIsEmpty()
     {
         var sut = CreateSut();
