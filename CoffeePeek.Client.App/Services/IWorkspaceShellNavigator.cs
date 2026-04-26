@@ -8,6 +8,10 @@ public interface IWorkspaceShellNavigator
 
     void AttachSuggestShop(Action open, Action close);
 
+    void AttachSettings(Action open, Action close);
+
+    void AttachModerationPanel(Action open, Action close);
+
     void OpenUserProfile(Guid userId);
 
     void CloseUserProfile();
@@ -24,5 +28,7 @@ public interface IWorkspaceShellNavigator
 
     void CloseSettings();
 
-    void AttachSettings(Action open, Action close);
+    void OpenModerationPanel();
+
+    void CloseModerationPanel();
 }

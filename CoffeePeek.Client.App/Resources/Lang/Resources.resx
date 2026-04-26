@@ -390,6 +390,60 @@
     <data name="Placeholder_NearMe_Message" xml:space="preserve">
         <value>This section is not implemented yet. A map and nearby shops will appear here later.</value>
     </data>
+    <data name="Header_Moderation" xml:space="preserve">
+        <value>Moderation</value>
+    </data>
+    <data name="Moderation_Title" xml:space="preserve">
+        <value>Moderation</value>
+    </data>
+    <data name="Moderation_Subtitle" xml:space="preserve">
+        <value>Review pending coffee shop suggestions and user reviews. Actions require the Moderator role in your account token.</value>
+    </data>
+    <data name="Moderation_Refresh" xml:space="preserve">
+        <value>Refresh</value>
+    </data>
+    <data name="ModerationStatus_Pending" xml:space="preserve">
+        <value>Pending</value>
+    </data>
+    <data name="ModerationStatus_Approved" xml:space="preserve">
+        <value>Approved</value>
+    </data>
+    <data name="ModerationStatus_Rejected" xml:space="preserve">
+        <value>Rejected</value>
+    </data>
+    <data name="Moderation_SectionShops" xml:space="preserve">
+        <value>Shops queue</value>
+    </data>
+    <data name="Moderation_SectionReviews" xml:space="preserve">
+        <value>Reviews queue</value>
+    </data>
+    <data name="Moderation_Approve" xml:space="preserve">
+        <value>Approve</value>
+    </data>
+    <data name="Moderation_Reject" xml:space="preserve">
+        <value>Reject</value>
+    </data>
+    <data name="Moderation_RejectReasonPlaceholder" xml:space="preserve">
+        <value>Reason for rejection (used when rejecting a review)</value>
+    </data>
+    <data name="Moderation_LoadError" xml:space="preserve">
+        <value>Could not load moderation queue</value>
+    </data>
+    <data name="Moderation_ActionFailed" xml:space="preserve">
+        <value>Could not update moderation item</value>
+    </data>
+    <data name="Moderation_DefaultRejectReason" xml:space="preserve">
+        <value>Rejected</value>
+    </data>
+    <data name="Moderation_EmptyShops" xml:space="preserve">
+        <value>No shop submissions in the queue.</value>
+    </data>
+    <data name="Moderation_EmptyReviews" xml:space="preserve">
+        <value>No review submissions in the queue.</value>
+    </data>
+    <data name="Moderation_Loading" xml:space="preserve">
+        <value>Loading…</value>
+    </data>
     <data name="ShopPage_SearchPlaceholder" xml:space="preserve">
         <value>Search shops, flavors, or streets...</value>
     </data>
@@ -523,10 +577,13 @@
         <value>Username cannot be empty</value>
     </data>
     <data name="Profile_AvatarUpload" xml:space="preserve">
-        <value>Загрузить аватар</value>
+        <value>Upload avatar</value>
+    </data>
+    <data name="Profile_AvatarUploading" xml:space="preserve">
+        <value>Uploading…</value>
     </data>
     <data name="Profile_AvatarUploadError" xml:space="preserve">
-        <value>Не удалось загрузить аватар</value>
+        <value>Failed to upload avatar</value>
     </data>
     <data name="ShopPage_FilterBeans" xml:space="preserve">
         <value>Coffee Beans</value>

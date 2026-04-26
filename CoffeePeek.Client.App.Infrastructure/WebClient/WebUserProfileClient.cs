@@ -7,7 +7,9 @@ using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 using CoffeePeek.Contract.Dtos;
 using FluentResults;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 
 namespace CoffeePeek.Client.App.Infrastructure.WebClient;
 
@@ -18,6 +20,31 @@ public sealed class WebUserProfileClient(
     : WebClientBase(httpCommandExecutor), IWebUserProfileClient
 {
     private const int FinalizeAvatarMaxAttempts = 3;
+
+    private const long MaxAvatarBytes = 10L * 1024 * 1024;
+
+    private static bool IsTransientFinalizeFailure(Result result)
+    {
+        if (result is null || !result.IsFailed)
+            return false;
+
+        var text = string.Join(" ", result.Errors.Select(e => e.Message));
+        if (text.Contains("canceled", StringComparison.OrdinalIgnoreCase))
+            return false;
+        if (Regex.IsMatch(text, @"\b(408|429)\b", RegexOptions.None, TimeSpan.FromMilliseconds(200)))
+            return true;
+        if (Regex.IsMatch(text, @"\b5\d\d\b", RegexOptions.None, TimeSpan.FromMilliseconds(200)))
+            return true;
+        if (text.Contains("timeout", StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (text.Contains("temporarily", StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (text.Contains("connection", StringComparison.OrdinalIgnoreCase) &&
+            (text.Contains("refused", StringComparison.OrdinalIgnoreCase) ||
+             text.Contains("reset", StringComparison.OrdinalIgnoreCase)))
+            return true;
+        return false;
+    }
 
     public Task<Result<UserProfileDto>> GetPublicProfileAsync(
         Guid userId,
@@ -71,19 +98,22 @@ public sealed class WebUserProfileClient(
         if (string.IsNullOrWhiteSpace(fileName) || fileContent is null || fileContent.Length == 0)
             return Result.Fail("Avatar file is invalid.");
 
-        if (fileContent.LongLength > int.MaxValue)
-            return Result.Fail("Avatar file is too large.");
+        if (fileContent.LongLength > MaxAvatarBytes)
+            return Result.Fail("Avatar is too large (maximum 10 MB).");
 
         var safeContentType = string.IsNullOrWhiteSpace(contentType)
             ? "application/octet-stream"
             : contentType;
+
+        if (!MediaTypeHeaderValue.TryParse(safeContentType, out var mediaType))
+            return Result.Fail($"Invalid content type: {safeContentType}");
 
         var prepareCommand = new HttpCommand()
             .WithMethod(HttpMethod.Post)
             .WithEndpoint("api/Photos/avatar")
             .WithBody(new GenerateAvatarUploadUrlRequest
             {
-                SizeBytes = fileContent.Length,
+                SizeBytes = fileContent.LongLength,
                 FileName = fileName,
                 ContentType = safeContentType
             })
@@ -91,15 +121,12 @@ public sealed class WebUserProfileClient(
 
         var prepareResult = await Execute<GenerateUploadUrlResponseDto>(prepareCommand, ct);
         if (prepareResult.IsFailed)
-            return Result.Fail(prepareResult.Errors);
+            return prepareResult.ToResult();
 
         using var putRequest = new HttpRequestMessage(HttpMethod.Put, prepareResult.Value.UploadUrl)
         {
             Content = new ByteArrayContent(fileContent)
         };
-
-        if (!MediaTypeHeaderValue.TryParse(safeContentType, out var mediaType))
-            return Result.Fail($"Invalid content type: {safeContentType}");
         putRequest.Content.Headers.ContentType = mediaType;
 
         using var putResponse = await httpClient.SendAsync(putRequest, ct);
@@ -112,10 +139,10 @@ public sealed class WebUserProfileClient(
             .WithBody(new UpdateAvatarRequest
             {
                 UploadedPhoto = new UploadedPhotoDto(
-                    fileName,
-                    safeContentType,
-                    prepareResult.Value.StorageKey,
-                    fileContent.LongLength)
+                    FileName: fileName,
+                    ContentType: safeContentType,
+                    StorageKey: prepareResult.Value.StorageKey,
+                    Size: fileContent.LongLength)
             })
             .Authorize();
 
@@ -129,6 +156,8 @@ public sealed class WebUserProfileClient(
 
             lastError = finalizeResult;
             if (attempt == FinalizeAvatarMaxAttempts)
+                break;
+            if (!IsTransientFinalizeFailure(finalizeResult))
                 break;
 
             var baseDelayMs = 200 * (1 << (attempt - 1));

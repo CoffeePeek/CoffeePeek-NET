@@ -93,7 +93,13 @@
                     Height="22"
                     Width="22" />
             </Button>
-
+            <Button
+                Margin="0,0,8,0"
+                Classes="Secondary"
+                Command="{Binding OpenModerationPanelCommand}"
+                Content="{x:Static lang:Resources.Header_Moderation}"
+                IsVisible="{Binding IsModerator}"
+                Padding="12,8" />
             <Separator
                 Background="{DynamicResource BorderBrush}"
                 Height="28"

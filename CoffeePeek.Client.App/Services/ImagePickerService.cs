@@ -32,12 +32,14 @@ public sealed class ImagePickerService : IImagePickerService
 
         ct.ThrowIfCancellationRequested();
         var properties = await file.GetBasicPropertiesAsync();
-        if (properties.Size > MaxImageBytes)
+        if (properties.Size is { } knownSize && knownSize > MaxImageBytes)
             return null;
 
         await using var stream = await file.OpenReadAsync();
         await using var ms = new MemoryStream();
         await stream.CopyToAsync(ms, ct);
+        if ((ulong)ms.Length > MaxImageBytes)
+            return null;
 
         var fileName = file.Name ?? "avatar";
         var contentType = GetContentTypeFromExtension(fileName);

@@ -18,6 +18,8 @@ public partial class WorkspaceViewModel : ViewModelBase
 
     public SettingsViewModel Settings { get; }
 
+    public ModerationPanelViewModel ModerationPanel { get; }
+
     public PlaceholderPageViewModel FavoritesPlaceholder { get; } = new();
 
     public PlaceholderPageViewModel NearMePlaceholder { get; } = new();
@@ -34,9 +36,12 @@ public partial class WorkspaceViewModel : ViewModelBase
     [ObservableProperty]
     public partial bool IsSettingsOpen { get; private set; }
 
-    /// <summary>True when catalog or placeholder strip should show (not profile/detail/suggest/settings).</summary>
+    [ObservableProperty]
+    public partial bool IsModerationPanelOpen { get; private set; }
+
+    /// <summary>True when catalog or placeholder strip should show (not profile/detail/suggest/settings/moderation).</summary>
     public bool IsMainBrowseVisible =>
-        !IsProfileOpen && !IsShopDetailOpen && !IsSuggestShopOpen && !IsSettingsOpen;
+        !IsProfileOpen && !IsShopDetailOpen && !IsSuggestShopOpen && !IsSettingsOpen && !IsModerationPanelOpen;
 
     public bool IsCatalogVisible => IsMainBrowseVisible && MainTabs.Section == MainWorkspaceSection.Catalog;
 
@@ -54,6 +59,7 @@ public partial class WorkspaceViewModel : ViewModelBase
         ShopDetailViewModel shopDetailViewModel,
         SuggestShopViewModel suggestShopViewModel,
         SettingsViewModel settingsViewModel,
+        ModerationPanelViewModel moderationPanelViewModel,
         MainWorkspaceSectionCoordinator mainTabs,
         IWorkspaceShellNavigator shellNavigator)
     {
@@ -62,6 +68,7 @@ public partial class WorkspaceViewModel : ViewModelBase
         ShopDetail = shopDetailViewModel;
         SuggestShop = suggestShopViewModel;
         Settings = settingsViewModel;
+        ModerationPanel = moderationPanelViewModel;
         MainTabs = mainTabs;
 
         FavoritesPlaceholder.Title = Lang.Placeholder_Favorites_Title;
@@ -77,6 +84,8 @@ public partial class WorkspaceViewModel : ViewModelBase
                 return;
 
             shellNavigator.CloseUserProfile();
+            shellNavigator.CloseModerationPanel();
+            shellNavigator.CloseSettings();
             RefreshBrowseVisibility();
         };
 
@@ -86,7 +95,9 @@ public partial class WorkspaceViewModel : ViewModelBase
                 IsShopDetailOpen = false;
                 IsSuggestShopOpen = false;
                 IsSettingsOpen = false;
+                IsModerationPanelOpen = false;
                 IsProfileOpen = true;
+                RefreshBrowseVisibility();
                 _ = UserProfile.LoadAsync(id);
             },
             () =>
@@ -101,6 +112,7 @@ public partial class WorkspaceViewModel : ViewModelBase
                 IsProfileOpen = false;
                 IsSuggestShopOpen = false;
                 IsSettingsOpen = false;
+                IsModerationPanelOpen = false;
                 IsShopDetailOpen = true;
                 RefreshBrowseVisibility();
                 _ = ShopDetail.LoadAsync(shopId);
@@ -117,6 +129,7 @@ public partial class WorkspaceViewModel : ViewModelBase
                 IsProfileOpen = false;
                 IsShopDetailOpen = false;
                 IsSettingsOpen = false;
+                IsModerationPanelOpen = false;
                 IsSuggestShopOpen = true;
                 RefreshBrowseVisibility();
                 _ = SuggestShop.InitializeAsync();
@@ -133,6 +146,7 @@ public partial class WorkspaceViewModel : ViewModelBase
                 IsProfileOpen = false;
                 IsShopDetailOpen = false;
                 IsSuggestShopOpen = false;
+                IsModerationPanelOpen = false;
                 IsSettingsOpen = true;
                 RefreshBrowseVisibility();
                 _ = Settings.LoadAsync();
@@ -140,6 +154,23 @@ public partial class WorkspaceViewModel : ViewModelBase
             () =>
             {
                 IsSettingsOpen = false;
+                RefreshBrowseVisibility();
+            });
+
+        shellNavigator.AttachModerationPanel(
+            () =>
+            {
+                IsProfileOpen = false;
+                IsShopDetailOpen = false;
+                IsSuggestShopOpen = false;
+                IsSettingsOpen = false;
+                IsModerationPanelOpen = true;
+                RefreshBrowseVisibility();
+                _ = ModerationPanel.LoadAsync();
+            },
+            () =>
+            {
+                IsModerationPanelOpen = false;
                 RefreshBrowseVisibility();
             });
     }
@@ -159,4 +190,6 @@ public partial class WorkspaceViewModel : ViewModelBase
     partial void OnIsSuggestShopOpenChanged(bool value) => RefreshBrowseVisibility();
 
     partial void OnIsSettingsOpenChanged(bool value) => RefreshBrowseVisibility();
+
+    partial void OnIsModerationPanelOpenChanged(bool value) => RefreshBrowseVisibility();
 }

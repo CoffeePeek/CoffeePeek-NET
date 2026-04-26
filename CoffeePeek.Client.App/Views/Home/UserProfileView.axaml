@@ -179,6 +179,11 @@
                                     Padding="12,4" />
                                 <TextBlock
                                     FontSize="12"
+                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                    IsVisible="{Binding IsUploadingAvatar}"
+                                    Text="{x:Static lang:Resources.Profile_AvatarUploading}" />
+                                <TextBlock
+                                    FontSize="12"
                                     Foreground="{DynamicResource AuthErrorForegroundBrush}"
                                     IsVisible="{Binding HasAvatarUploadError}"
                                     Text="{Binding AvatarUploadErrorMessage}"
