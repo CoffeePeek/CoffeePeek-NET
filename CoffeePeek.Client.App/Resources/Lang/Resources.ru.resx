@@ -83,8 +83,14 @@
     <data name="Moderation_Refresh" xml:space="preserve">
         <value>Обновить</value>
     </data>
-    <data name="Moderation_Close" xml:space="preserve">
-        <value>Назад</value>
+    <data name="ModerationStatus_Pending" xml:space="preserve">
+        <value>На рассмотрении</value>
+    </data>
+    <data name="ModerationStatus_Approved" xml:space="preserve">
+        <value>Одобрено</value>
+    </data>
+    <data name="ModerationStatus_Rejected" xml:space="preserve">
+        <value>Отклонено</value>
     </data>
     <data name="Moderation_SectionShops" xml:space="preserve">
         <value>Очередь кофеен</value>

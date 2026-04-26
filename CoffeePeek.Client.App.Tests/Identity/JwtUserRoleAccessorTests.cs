@@ -1,3 +1,4 @@
+using System.Text;
 using CoffeePeek.Client.App.Core.Security;
 using CoffeePeek.Client.App.Infrastructure.Cache;
 using CoffeePeek.Client.App.Infrastructure.Identity;

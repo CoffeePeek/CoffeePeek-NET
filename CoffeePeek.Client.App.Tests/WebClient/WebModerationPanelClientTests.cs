@@ -1,7 +1,9 @@
 using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Abstract;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Models;
+using CoffeePeek.Client.App.Infrastructure.HTTP.Requests.Moderation;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Responses;
 using CoffeePeek.Client.App.Infrastructure.WebClient;
+using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
 using FluentAssertions;
@@ -92,5 +94,41 @@ public class WebModerationPanelClientTests
         captured.Should().NotBeNull();
         captured!.Endpoint.Should().Be("api/ModerationReviews");
         captured.Method.Should().Be(HttpMethod.Put);
+        var body = (ChangeModerationReviewStatusRequest)captured.Body!;
+        body.ModerationReviewId.Should().Be(id);
+        body.ModerationStatus.Should().Be(ModerationStatus.Rejected);
+        body.RejectReason.Should().Be("bad");
+    }
+
+    [Fact]
+    public async Task GetAllReviewsAsync_DeserializesReviewDtos()
+    {
+        var review = new ModerationReviewDto
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.NewGuid(),
+            UserName = "u",
+            Header = "h",
+            Comment = "c",
+            ShopId = Guid.NewGuid(),
+            Rating = new RatingDto { Place = 5, Service = 5, Coffee = 5 },
+            CreatedAt = DateTime.UtcNow,
+            ModerationStatus = ModerationStatus.Pending
+        };
+        _executorMock
+            .Setup(e => e.Execute<GetAllModerationReviewsResultDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ApiResponse<GetAllModerationReviewsResultDto>
+            {
+                IsSuccess = true,
+                StatusCode = 200,
+                Data = new GetAllModerationReviewsResultDto { Reviews = [review] }
+            });
+
+        var sut = CreateSut();
+        var r = await sut.GetAllReviewsAsync();
+
+        r.IsSuccess.Should().BeTrue();
+        r.Value.Should().ContainSingle();
+        r.Value[0].Header.Should().Be("h");
     }
 }

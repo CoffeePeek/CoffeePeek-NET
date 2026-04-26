@@ -38,7 +38,7 @@ public sealed class WebModerationPanelClient(IHttpCommandExecutor httpCommandExe
         if (result.IsFailed)
             return Result.Fail(result.Errors);
 
-        return Result.Ok(result.Value.ReviewDtos);
+        return Result.Ok(result.Value.Reviews);
     }
 
     public Task<Result> UpdateShopStatusAsync(

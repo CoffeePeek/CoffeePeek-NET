@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 
 namespace CoffeePeek.Client.App.Infrastructure.HTTP.Responses;
 
 public sealed class GetAllModerationReviewsResultDto
 {
-    public ModerationReviewDto[] ReviewDtos { get; set; } = [];
+    [JsonPropertyName("reviewDtos")]
+    public ModerationReviewDto[] Reviews { get; init; } = [];
 }

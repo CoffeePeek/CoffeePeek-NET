@@ -12,12 +12,18 @@ public sealed class ClientSession : IClientSession
 
     public void SetAccessToken(string? token)
     {
+        if (string.Equals(_accessToken, token, StringComparison.Ordinal))
+            return;
+
         _accessToken = token;
         AccessTokenChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public void Clear()
     {
+        if (_accessToken is null)
+            return;
+
         _accessToken = null;
         AccessTokenChanged?.Invoke(this, EventArgs.Empty);
     }

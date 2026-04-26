@@ -1,8 +1,8 @@
 namespace CoffeePeek.Client.App.Services;
 
 /// <summary>
-/// Routes profile open/close without injecting <c>WorkspaceViewModel</c> into <c>UserProfileViewModel</c>
-/// (breaks an Autofac circular dependency).
+/// Routes shell overlays (user profile, shop detail, suggest-shop, moderation panel) without injecting
+/// <c>WorkspaceViewModel</c> into feature view models (avoids Autofac circular dependencies).
 /// </summary>
 public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
 {

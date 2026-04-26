@@ -29,6 +29,9 @@ public partial class HeaderViewModel : ViewModelBase
         SyncRoleUi();
     }
 
+    private void SyncRoleUi() =>
+        IsModerator = _userRoleAccessor.IsInRole(WellKnownAppRoles.Moderator);
+
     [ObservableProperty]
     public partial int MainTabSelectedIndex { get; set; }
 
@@ -69,7 +72,4 @@ public partial class HeaderViewModel : ViewModelBase
         _workspaceShellNavigator.CloseUserProfile();
         _workspaceShellNavigator.OpenModerationPanel();
     }
-
-    public void SyncRoleUi() =>
-        IsModerator = _userRoleAccessor.IsInRole(WellKnownAppRoles.Moderator);
 }

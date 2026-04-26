@@ -204,8 +204,14 @@
     <data name="Moderation_Refresh" xml:space="preserve">
         <value>Refresh</value>
     </data>
-    <data name="Moderation_Close" xml:space="preserve">
-        <value>Back</value>
+    <data name="ModerationStatus_Pending" xml:space="preserve">
+        <value>Pending</value>
+    </data>
+    <data name="ModerationStatus_Approved" xml:space="preserve">
+        <value>Approved</value>
+    </data>
+    <data name="ModerationStatus_Rejected" xml:space="preserve">
+        <value>Rejected</value>
     </data>
     <data name="Moderation_SectionShops" xml:space="preserve">
         <value>Shops queue</value>

@@ -22,7 +22,11 @@ internal static class JwtRoleParser
             using var doc = JsonDocument.Parse(payload);
             return CollectRolesFrom(doc.RootElement);
         }
-        catch
+        catch (FormatException)
+        {
+            return Array.Empty<string>();
+        }
+        catch (JsonException)
         {
             return Array.Empty<string>();
         }
@@ -44,15 +48,19 @@ internal static class JwtRoleParser
         switch (el.ValueKind)
         {
             case JsonValueKind.String:
-                if (!string.IsNullOrWhiteSpace(el.GetString()))
-                    list.Add(el.GetString()!);
+                var s = el.GetString();
+                if (!string.IsNullOrWhiteSpace(s))
+                    list.Add(s!);
                 return;
             case JsonValueKind.Array:
                 foreach (var item in el.EnumerateArray())
                 {
-                    if (item.ValueKind == JsonValueKind.String &&
-                        !string.IsNullOrWhiteSpace(item.GetString()))
-                        list.Add(item.GetString()!);
+                    if (item.ValueKind == JsonValueKind.String)
+                    {
+                        var role = item.GetString();
+                        if (!string.IsNullOrWhiteSpace(role))
+                            list.Add(role!);
+                    }
                 }
                 return;
         }

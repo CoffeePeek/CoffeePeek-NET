@@ -47,6 +47,58 @@ public class ModerationPanelViewModelTests
         sut.Shops.Should().ContainSingle();
         sut.Reviews.Should().BeEmpty();
         sut.HasEmptyReviews.Should().BeTrue();
+        sut.HasEmptyShops.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task LoadAsync_WhenShopsFail_SetsError_And_ClearsLoading()
+    {
+        _clientMock
+            .Setup(c => c.GetAllShopsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Fail<ModerationShopDto[]>("x"));
+        _clientMock
+            .Setup(c => c.GetAllReviewsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok(Array.Empty<ModerationReviewDto>()));
+
+        var sut = CreateSut();
+        await sut.LoadAsync();
+
+        sut.ErrorMessage.Should().NotBeNullOrEmpty();
+        sut.IsLoading.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task LoadAsync_WhenReviewsFail_SetsError()
+    {
+        _clientMock
+            .Setup(c => c.GetAllShopsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok(Array.Empty<ModerationShopDto>()));
+        _clientMock
+            .Setup(c => c.GetAllReviewsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Fail<ModerationReviewDto[]>("x"));
+
+        var sut = CreateSut();
+        await sut.LoadAsync();
+
+        sut.ErrorMessage.Should().NotBeNullOrEmpty();
+        sut.IsLoading.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task LoadAsync_InvokesShopsAndReviews()
+    {
+        _clientMock
+            .Setup(c => c.GetAllShopsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok(Array.Empty<ModerationShopDto>()));
+        _clientMock
+            .Setup(c => c.GetAllReviewsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok(Array.Empty<ModerationReviewDto>()));
+
+        var sut = CreateSut();
+        await sut.LoadAsync();
+
+        _clientMock.Verify(c => c.GetAllShopsAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _clientMock.Verify(c => c.GetAllReviewsAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

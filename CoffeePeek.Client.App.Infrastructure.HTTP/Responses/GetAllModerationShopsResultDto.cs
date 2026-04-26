@@ -4,5 +4,5 @@ namespace CoffeePeek.Client.App.Infrastructure.HTTP.Responses;
 
 public sealed class GetAllModerationShopsResultDto
 {
-    public ModerationShopDto[] ModerationShop { get; set; } = [];
+    public ModerationShopDto[] ModerationShop { get; init; } = Array.Empty<ModerationShopDto>();
 }

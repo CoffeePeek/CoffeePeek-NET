@@ -417,9 +417,21 @@ namespace CoffeePeek.Client.App.Resources.Lang {
             }
         }
         
-        public static string Moderation_Close {
+        public static string ModerationStatus_Pending {
             get {
-                return ResourceManager.GetString("Moderation_Close", resourceCulture);
+                return ResourceManager.GetString("ModerationStatus_Pending", resourceCulture);
+            }
+        }
+        
+        public static string ModerationStatus_Approved {
+            get {
+                return ResourceManager.GetString("ModerationStatus_Approved", resourceCulture);
+            }
+        }
+        
+        public static string ModerationStatus_Rejected {
+            get {
+                return ResourceManager.GetString("ModerationStatus_Rejected", resourceCulture);
             }
         }
         

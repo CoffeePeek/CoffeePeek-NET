@@ -19,7 +19,7 @@
                         <Button
                             Classes="Secondary"
                             Command="{Binding CloseCommand}"
-                            Content="{x:Static lang:Resources.Moderation_Close}" />
+                            Content="{x:Static lang:Resources.Common_Back}" />
                         <TextBlock
                             Classes="Headline"
                             FontSize="24"
@@ -76,7 +76,7 @@
                                                 Grid.Column="1"
                                                 FontSize="12"
                                                 Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                                                Text="{Binding Status}" />
+                                                Text="{Binding StatusLabel}" />
                                         </Grid>
                                         <StackPanel
                                             IsVisible="{Binding CanModerate}"
@@ -84,13 +84,13 @@
                                             Spacing="8">
                                             <Button
                                                 Classes="Primary"
-                                                Command="{Binding $parent[home:ModerationPanelViewModel].ApproveShopCommand}"
+                                                Command="{Binding ApproveCommand}"
                                                 CommandParameter="{Binding .}"
                                                 Content="{x:Static lang:Resources.Moderation_Approve}"
                                                 Padding="12,6" />
                                             <Button
                                                 Classes="Secondary"
-                                                Command="{Binding $parent[home:ModerationPanelViewModel].RejectShopCommand}"
+                                                Command="{Binding RejectCommand}"
                                                 CommandParameter="{Binding .}"
                                                 Content="{x:Static lang:Resources.Moderation_Reject}"
                                                 Padding="12,6" />
@@ -133,7 +133,7 @@
                                                 Grid.Column="1"
                                                 FontSize="12"
                                                 Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                                                Text="{Binding Status}" />
+                                                Text="{Binding StatusLabel}" />
                                         </Grid>
                                         <TextBox
                                             IsVisible="{Binding CanModerate}"
@@ -146,13 +146,13 @@
                                             Spacing="8">
                                             <Button
                                                 Classes="Primary"
-                                                Command="{Binding $parent[home:ModerationPanelViewModel].ApproveReviewCommand}"
+                                                Command="{Binding ApproveCommand}"
                                                 CommandParameter="{Binding .}"
                                                 Content="{x:Static lang:Resources.Moderation_Approve}"
                                                 Padding="12,6" />
                                             <Button
                                                 Classes="Secondary"
-                                                Command="{Binding $parent[home:ModerationPanelViewModel].RejectReviewCommand}"
+                                                Command="{Binding RejectCommand}"
                                                 CommandParameter="{Binding .}"
                                                 Content="{x:Static lang:Resources.Moderation_Reject}"
                                                 Padding="12,6" />

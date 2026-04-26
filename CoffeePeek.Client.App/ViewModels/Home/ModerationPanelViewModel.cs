@@ -40,8 +40,11 @@ public partial class ModerationPanelViewModel(
 
         try
         {
-            var shopsResult = await moderationPanelClient.GetAllShopsAsync(ct);
-            var reviewsResult = await moderationPanelClient.GetAllReviewsAsync(ct);
+            var shopsTask = moderationPanelClient.GetAllShopsAsync(ct);
+            var reviewsTask = moderationPanelClient.GetAllReviewsAsync(ct);
+            await Task.WhenAll(shopsTask, reviewsTask);
+            var shopsResult = await shopsTask;
+            var reviewsResult = await reviewsTask;
 
             if (shopsResult.IsFailed)
             {
@@ -57,11 +60,11 @@ public partial class ModerationPanelViewModel(
 
             Shops.Clear();
             foreach (var s in shopsResult.Value)
-                Shops.Add(new ModerationShopRowViewModel(s));
+                Shops.Add(new ModerationShopRowViewModel(s, ApproveShopCommand, RejectShopCommand));
 
             Reviews.Clear();
             foreach (var r in reviewsResult.Value)
-                Reviews.Add(new ModerationReviewRowViewModel(r));
+                Reviews.Add(new ModerationReviewRowViewModel(r, ApproveReviewCommand, RejectReviewCommand));
 
             HasEmptyShops = Shops.Count == 0;
             HasEmptyReviews = Reviews.Count == 0;
@@ -73,41 +76,47 @@ public partial class ModerationPanelViewModel(
     }
 
     [RelayCommand]
-    private async Task RefreshAsync() => await LoadAsync();
+    private async Task RefreshAsync(CancellationToken cancellationToken) => await LoadAsync(cancellationToken);
 
     [RelayCommand]
     private void Close() => shellNavigator.CloseModerationPanel();
 
     [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task ApproveShopAsync(ModerationShopRowViewModel? row)
+    private async Task ApproveShopAsync(ModerationShopRowViewModel? row, CancellationToken cancellationToken)
     {
         if (row is null || !row.CanModerate)
             return;
 
         ErrorMessage = null;
-        var result = await moderationPanelClient.UpdateShopStatusAsync(row.Model.Id, ModerationStatus.Approved);
+        var result = await moderationPanelClient.UpdateShopStatusAsync(
+            row.Model.Id,
+            ModerationStatus.Approved,
+            cancellationToken);
         if (result.IsFailed)
             ErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.Moderation_ActionFailed;
         else
-            await LoadAsync();
+            await LoadAsync(cancellationToken);
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task RejectShopAsync(ModerationShopRowViewModel? row)
+    private async Task RejectShopAsync(ModerationShopRowViewModel? row, CancellationToken cancellationToken)
     {
         if (row is null || !row.CanModerate)
             return;
 
         ErrorMessage = null;
-        var result = await moderationPanelClient.UpdateShopStatusAsync(row.Model.Id, ModerationStatus.Rejected);
+        var result = await moderationPanelClient.UpdateShopStatusAsync(
+            row.Model.Id,
+            ModerationStatus.Rejected,
+            cancellationToken);
         if (result.IsFailed)
             ErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.Moderation_ActionFailed;
         else
-            await LoadAsync();
+            await LoadAsync(cancellationToken);
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task ApproveReviewAsync(ModerationReviewRowViewModel? row)
+    private async Task ApproveReviewAsync(ModerationReviewRowViewModel? row, CancellationToken cancellationToken)
     {
         if (row is null || !row.CanModerate)
             return;
@@ -116,15 +125,16 @@ public partial class ModerationPanelViewModel(
         var result = await moderationPanelClient.ChangeReviewStatusAsync(
             row.Model.Id,
             ModerationStatus.Approved,
-            null);
+            null,
+            cancellationToken);
         if (result.IsFailed)
             ErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.Moderation_ActionFailed;
         else
-            await LoadAsync();
+            await LoadAsync(cancellationToken);
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task RejectReviewAsync(ModerationReviewRowViewModel? row)
+    private async Task RejectReviewAsync(ModerationReviewRowViewModel? row, CancellationToken cancellationToken)
     {
         if (row is null || !row.CanModerate)
             return;
@@ -134,39 +144,11 @@ public partial class ModerationPanelViewModel(
         var result = await moderationPanelClient.ChangeReviewStatusAsync(
             row.Model.Id,
             ModerationStatus.Rejected,
-            reason);
+            reason,
+            cancellationToken);
         if (result.IsFailed)
             ErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.Moderation_ActionFailed;
         else
-            await LoadAsync();
+            await LoadAsync(cancellationToken);
     }
-}
-
-public sealed class ModerationShopRowViewModel(ModerationShopDto dto) : ViewModelBase
-{
-    public ModerationShopDto Model => dto;
-
-    public string Name => dto.Name;
-
-    public string? Address => dto.Address;
-
-    public string Status => dto.ModerationStatus.ToString();
-
-    public bool CanModerate => dto.ModerationStatus == ModerationStatus.Pending;
-}
-
-public sealed partial class ModerationReviewRowViewModel(ModerationReviewDto dto) : ViewModelBase
-{
-    public ModerationReviewDto Model => dto;
-
-    public string Header => dto.Header;
-
-    public string UserName => dto.UserName;
-
-    public string Status => dto.ModerationStatus.ToString();
-
-    public bool CanModerate => dto.ModerationStatus == ModerationStatus.Pending;
-
-    [ObservableProperty]
-    public partial string RejectReason { get; set; } = string.Empty;
 }
