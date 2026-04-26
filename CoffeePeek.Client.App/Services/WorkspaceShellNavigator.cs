@@ -12,6 +12,8 @@ public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
     private Action? _closeShopDetail;
     private Action? _openSuggestShop;
     private Action? _closeSuggestShop;
+    private Action? _openSettings;
+    private Action? _closeSettings;
 
     public void AttachProfile(Action<Guid> open, Action close)
     {
@@ -42,4 +44,14 @@ public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
     public void OpenSuggestShop() => _openSuggestShop?.Invoke();
 
     public void CloseSuggestShop() => _closeSuggestShop?.Invoke();
+
+    public void AttachSettings(Action open, Action close)
+    {
+        _openSettings = open;
+        _closeSettings = close;
+    }
+
+    public void OpenSettings() => _openSettings?.Invoke();
+
+    public void CloseSettings() => _closeSettings?.Invoke();
 }

@@ -55,7 +55,7 @@ public class RedisService(IConnectionMultiplexer redis) : ICacheService
 
             return result;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return await factory();
         }

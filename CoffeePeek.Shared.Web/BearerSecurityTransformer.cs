@@ -20,8 +20,8 @@ public class BearerSecurityTransformer(IApiDescriptionGroupCollectionProvider ap
             Description = "Enter token"
         };
 
-        document.Servers.Clear();
-        document.Servers.Add(new OpenApiServer { Url = "/", Description = "Gateway" });
+        document.Servers?.Clear();
+        document.Servers?.Add(new OpenApiServer { Url = "/", Description = "Gateway" });
 
         var schemeReference = new OpenApiSecuritySchemeReference("Bearer", document);
 

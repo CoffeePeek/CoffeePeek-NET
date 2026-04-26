@@ -3,25 +3,39 @@ using CoffeePeek.Client.App.Services;
 using CoffeePeek.Client.App.ViewModels.Abstract;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Lang = CoffeePeek.Client.App.Resources.Lang.Resources;
 
 namespace CoffeePeek.Client.App.ViewModels.Home;
 
 public partial class HeaderViewModel(
     IUserIdentityAccessor userIdentityAccessor,
-    IWorkspaceShellNavigator workspaceShellNavigator) : ViewModelBase
+    IWorkspaceShellNavigator workspaceShellNavigator,
+    MainWorkspaceSectionCoordinator mainTabs,
+    IAccountSignOutService accountSignOutService) : ViewModelBase
 {
-    [ObservableProperty]
-    public partial int MainTabSelectedIndex { get; set; }
+    public MainWorkspaceSectionCoordinator MainTabs { get; } = mainTabs;
 
-    partial void OnMainTabSelectedIndexChanged(int value)
-    {
-        if (value >= 0)
-            workspaceShellNavigator.CloseUserProfile();
-    }
+    public string[] MainTabTitles { get; } =
+    [
+        Lang.Header_Catalog,
+        Lang.Header_Favorites,
+        Lang.Header_NearMe
+    ];
 
     [RelayCommand]
-    private void CloseProfileShell()
+    private void SelectHeaderTab(object? parameter)
     {
+        var tabIndex = parameter switch
+        {
+            int i => i,
+            string s when int.TryParse(s, out var n) => n,
+            _ => 0
+        };
+
+        if (MainTabs.SelectedIndex == tabIndex)
+            return;
+
+        MainTabs.SelectedIndex = tabIndex;
         workspaceShellNavigator.CloseUserProfile();
     }
 
@@ -33,4 +47,10 @@ public partial class HeaderViewModel(
 
         workspaceShellNavigator.OpenUserProfile(userId);
     }
+
+    [RelayCommand]
+    private void OpenSettings() => workspaceShellNavigator.OpenSettings();
+
+    [RelayCommand]
+    private async Task SignOutAsync() => await accountSignOutService.SignOutAsync();
 }

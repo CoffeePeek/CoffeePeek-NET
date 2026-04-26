@@ -46,7 +46,12 @@ public static class GoogleLoginHandler
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            User = new GoogleLoginUser { Email = user.Credentials.Email, AvatarUrl = payload.Picture }
+            User = new GoogleLoginUser
+            {
+                Email = user.Credentials.Email,
+                AvatarUrl = payload.Picture,
+                Username = user.Username
+            }
         });
     }
 }

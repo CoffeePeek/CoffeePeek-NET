@@ -10,13 +10,13 @@
     </Design.PreviewWith>
 
     <Style Selector="TextBlock">
-        <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+        <Setter Property="FontFamily" Value="{StaticResource RFDewiExpanded}" />
         <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
     </Style>
 
     <Style Selector="TextBlock.Headline">
         <Setter Property="FontSize" Value="24" />
-        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontWeight" Value="Black" />
         <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
         <Setter Property="LetterSpacing" Value="-0.24" />
     </Style>
@@ -29,7 +29,7 @@
 
     <Style Selector="TextBlock.Label">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Foreground" Value="{DynamicResource OnSurfaceVariantBrush}" />
     </Style>
 
@@ -38,6 +38,6 @@
     </Style>
 
     <Style Selector="ListBox">
-        <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+        <Setter Property="FontFamily" Value="{StaticResource RFDewiExpanded}" />
     </Style>
 </Styles>

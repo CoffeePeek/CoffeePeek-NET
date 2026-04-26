@@ -1,0 +1,43 @@
+<UserControl
+    d:DesignHeight="320"
+    d:DesignWidth="280"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Shops.Catalog.ShopCardSkeletonItemView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Classes="shop-card">
+        <Grid RowDefinitions="Auto,Auto">
+            <Border
+                Classes="shimmer"
+                CornerRadius="16,16,0,0"
+                Grid.Row="0"
+                Height="176" />
+            <StackPanel Grid.Row="1" Margin="14,12,14,14" Spacing="8">
+                <Border
+                    Classes="shimmer-line"
+                    Height="18"
+                    HorizontalAlignment="Left"
+                    Width="160" />
+                <Border
+                    Classes="shimmer-line"
+                    Height="13"
+                    HorizontalAlignment="Left"
+                    Width="110" />
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Border
+                        Classes="shimmer-line"
+                        CornerRadius="8"
+                        Height="22"
+                        Width="65" />
+                    <Border
+                        Classes="shimmer-line"
+                        CornerRadius="8"
+                        Height="22"
+                        Width="45" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

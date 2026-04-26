@@ -35,7 +35,7 @@
     <Application.Styles>
         <FluentTheme>
             <FluentTheme.Palettes>
-                <ColorPaletteResources x:Key="Light" Accent="#CA8A04" />
+                <ColorPaletteResources x:Key="Light" Accent="#805600" />
                 <ColorPaletteResources x:Key="Dark" Accent="#FFBA46" />
             </FluentTheme.Palettes>
         </FluentTheme>
@@ -44,6 +44,7 @@
         <StyleInclude Source="Resources/Styles/ButtonStyles.axaml" />
         <StyleInclude Source="Resources/Styles/GeneralStyles.axaml" />
         <StyleInclude Source="Resources/Styles/ShopsPageStyles.axaml" />
+        <StyleInclude Source="Resources/Styles/ShopDetailStyles.axaml" />
         <StyleInclude Source="Resources/Styles/ShimmerStyles.axaml" />
     </Application.Styles>
 </Application>

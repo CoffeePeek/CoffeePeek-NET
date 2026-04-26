@@ -2,6 +2,12 @@ namespace CoffeePeek.Client.App.Services;
 
 public interface IWorkspaceShellNavigator
 {
+    void AttachProfile(Action<Guid> open, Action close);
+
+    void AttachShopDetail(Action<Guid> open, Action close);
+
+    void AttachSuggestShop(Action open, Action close);
+
     void OpenUserProfile(Guid userId);
 
     void CloseUserProfile();
@@ -13,4 +19,10 @@ public interface IWorkspaceShellNavigator
     void OpenSuggestShop();
 
     void CloseSuggestShop();
+
+    void OpenSettings();
+
+    void CloseSettings();
+
+    void AttachSettings(Action open, Action close);
 }

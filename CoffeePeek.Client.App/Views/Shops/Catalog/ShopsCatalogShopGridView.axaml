@@ -1,0 +1,40 @@
+<UserControl
+    d:DesignHeight="400"
+    d:DesignWidth="960"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Shops.Catalog.ShopsCatalogShopGridView"
+    x:DataType="shops:ShopsPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:catalog="clr-namespace:CoffeePeek.Client.App.Views.Shops.Catalog"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Spacing="0">
+        <ItemsControl
+            HorizontalAlignment="Center"
+            IsVisible="{Binding ShowShopGrid}"
+            ItemsSource="{Binding Shops}"
+            MaxWidth="1280">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="shops:ShopCardViewModel">
+                    <catalog:ShopCardView />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Button
+            Command="{Binding LoadNextPageCommand}"
+            Content="{x:Static lang:Resources.ShopPage_LoadMore}"
+            HorizontalAlignment="Center"
+            IsVisible="{Binding ShowLoadMoreButton}"
+            Margin="0,8,0,32"
+            Padding="24,10" />
+    </StackPanel>
+</UserControl>

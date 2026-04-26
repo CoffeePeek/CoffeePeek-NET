@@ -2,16 +2,16 @@ namespace CoffeePeek.Shared.Kernel.Response;
 
 public class Response
 {
-    public bool IsSuccess { get; set; }
+    public bool IsSuccess { get; init; }
     
     public string Message { get; init; }
     
-    public object Data { get; set; }
+    public object? Data { get; init; }
     
 
     public Response() { }
 
-    public Response(bool success, string message, object data)
+    public Response(bool success, string message, object? data)
     {
         IsSuccess = success;
         Message = message;
@@ -21,7 +21,7 @@ public class Response
     /// <summary>
     /// Creates a successful response with data.
     /// </summary>
-    public static Response Success(object data = null, string message = null)
+    public static Response Success(object? data = null, string? message = null)
     {
         return new Response
         {
@@ -64,7 +64,7 @@ public class Response
         {
             IsSuccess = false,
             Message = ex.Message,
-            Data = default,
+            Data = null,
         };
     }
 }

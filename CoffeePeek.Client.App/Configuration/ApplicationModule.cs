@@ -26,6 +26,7 @@ public class ApplicationModule : Module
 
         builder.RegisterType<ApplicationExecutorRunner>().As<IApplicationExecutorRunner>().SingleInstance();
         builder.RegisterType<RestoreSessionExecutor>().As<IBeforeMainShellExecutor>().SingleInstance();
+        builder.RegisterType<ApplyPersistedThemeExecutor>().As<IBeforeMainShellExecutor>().SingleInstance();
         builder.RegisterType<InitialRouteExecutor>().As<IBeforeMainShellExecutor>().SingleInstance();
 
         builder.RegisterType<WorkspaceShellNavigator>()
@@ -33,11 +34,15 @@ public class ApplicationModule : Module
             .As<IWorkspaceShellNavigator>()
             .SingleInstance();
 
+        builder.RegisterType<MainWorkspaceSectionCoordinator>().AsSelf().SingleInstance();
+        builder.RegisterType<AccountSignOutService>().As<IAccountSignOutService>().SingleInstance();
+
         builder.RegisterType<MainViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<HeaderViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<UserProfileViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<WorkspaceViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<HomeViewModel>().AsSelf().SingleInstance();
+        builder.RegisterType<SettingsViewModel>().AsSelf().SingleInstance();
         
         RegisterWelcomeFlow(builder);
         RegisterShopPage(builder);

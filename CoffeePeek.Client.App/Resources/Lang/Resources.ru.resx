@@ -24,7 +24,7 @@
         <value>Удобный инструмент для любителей кофе. Откройте для себя лучшие кофейни, найдите работу в кофейной индустрии, изучайте инструменты приготовления и делитесь впечатлениями с единомышленниками.</value>
     </data>
     <data name="RegisterPage_RegisterButton" xml:space="preserve">
-        <value>Зарегистрироваться</value>
+        <value>Создать аккаунт</value>
     </data>
     <data name="WelcomePage_Card1Title" xml:space="preserve">
         <value>Карта кофеен</value>
@@ -71,8 +71,62 @@
     <data name="Header_Map" xml:space="preserve">
         <value>Карта</value>
     </data>
+    <data name="Header_Catalog" xml:space="preserve">
+        <value>Каталог</value>
+    </data>
+    <data name="Header_Favorites" xml:space="preserve">
+        <value>Избранное</value>
+    </data>
+    <data name="Header_NearMe" xml:space="preserve">
+        <value>Рядом</value>
+    </data>
+    <data name="Header_WelcomeBack" xml:space="preserve">
+        <value>С возвращением</value>
+    </data>
+    <data name="Header_UserTagline" xml:space="preserve">
+        <value>Любитель кофе</value>
+    </data>
+    <data name="Header_Menu_Profile" xml:space="preserve">
+        <value>Профиль</value>
+    </data>
+    <data name="Header_Menu_Settings" xml:space="preserve">
+        <value>Настройки</value>
+    </data>
+    <data name="Header_Menu_Logout" xml:space="preserve">
+        <value>Выйти</value>
+    </data>
+    <data name="Settings_PageTitle" xml:space="preserve">
+        <value>Настройки</value>
+    </data>
+    <data name="Settings_ThemeSection" xml:space="preserve">
+        <value>Оформление</value>
+    </data>
+    <data name="Settings_ThemeSystem" xml:space="preserve">
+        <value>Как в системе</value>
+    </data>
+    <data name="Settings_ThemeLight" xml:space="preserve">
+        <value>Светлая</value>
+    </data>
+    <data name="Settings_ThemeDark" xml:space="preserve">
+        <value>Тёмная</value>
+    </data>
+    <data name="Settings_Close" xml:space="preserve">
+        <value>Назад</value>
+    </data>
+    <data name="Placeholder_Favorites_Title" xml:space="preserve">
+        <value>Избранное</value>
+    </data>
+    <data name="Placeholder_Favorites_Message" xml:space="preserve">
+        <value>Этот раздел пока не реализован. Здесь появятся ваши любимые кофейни.</value>
+    </data>
+    <data name="Placeholder_NearMe_Title" xml:space="preserve">
+        <value>Рядом</value>
+    </data>
+    <data name="Placeholder_NearMe_Message" xml:space="preserve">
+        <value>Этот раздел пока не реализован. Позже здесь будет карта и ближайшие кофейни.</value>
+    </data>
     <data name="ShopPage_SearchPlaceholder" xml:space="preserve">
-        <value>Поиск идеальной кофейни...</value>
+        <value>Кофейни, вкусы или улицы...</value>
     </data>
     <data name="ShopPage_Filter" xml:space="preserve">
         <value>Фильтры</value>
@@ -90,7 +144,7 @@
         <value>В тренде</value>
     </data>
     <data name="ShopPage_Filter_OpenTime" xml:space="preserve">
-        <value>Открыты</value>
+        <value>Время</value>
     </data>
     <data name="ShopPage_Filter_New" xml:space="preserve">
         <value>Новые</value>
@@ -114,7 +168,7 @@
         <value>Пожлауйста, заполните все обязательные поля.</value>
     </data>
     <data name="Auth_HasAccount" xml:space="preserve">
-        <value>Уже есть аккаунт?</value>
+        <value>Уже участник?</value>
     </data>
     <data name="Auth_LabelConfirmPassword" xml:space="preserve">
         <value>Подтвердить почту</value>
@@ -313,5 +367,224 @@
     </data>
     <data name="SuggestShop_DaySunday" xml:space="preserve">
         <value>Воскресенье</value>
+    </data>
+    <data name="WelcomePage_HeroBadge" xml:space="preserve">
+        <value>★ ПРЕМИАЛЬНЫЙ ОПЫТ</value>
+    </data>
+    <data name="WelcomePage_HeroHeadline" xml:space="preserve">
+        <value>Ваш путь к лучшим обжарщикам мира.</value>
+    </data>
+    <data name="WelcomePage_HeroDescription" xml:space="preserve">
+        <value>Откройте для себя зерно, проверенных обжарщиков и гидов от тех, кто живёт кофе. Начните исследование или загляните в галерею.</value>
+    </data>
+    <data name="WelcomePage_GetStarted" xml:space="preserve">
+        <value>Начать</value>
+    </data>
+    <data name="WelcomePage_ViewGallery" xml:space="preserve">
+        <value>Смотреть галерею</value>
+    </data>
+    <data name="WelcomePage_Nav_Explore" xml:space="preserve">
+        <value>Обзор</value>
+    </data>
+    <data name="WelcomePage_Nav_Cafes" xml:space="preserve">
+        <value>Кофейни</value>
+    </data>
+    <data name="WelcomePage_Nav_Community" xml:space="preserve">
+        <value>Сообщество</value>
+    </data>
+    <data name="WelcomePage_LogInHeader" xml:space="preserve">
+        <value>Войти</value>
+    </data>
+    <data name="WelcomePage_SignUpHeader" xml:space="preserve">
+        <value>Регистрация</value>
+    </data>
+    <data name="WelcomePage_Section_FeaturesTitle" xml:space="preserve">
+        <value>Создано для энтузиастов</value>
+    </data>
+    <data name="WelcomePage_Bento_RoastersTitle" xml:space="preserve">
+        <value>Локальные обжарщики</value>
+    </data>
+    <data name="WelcomePage_Bento_RoastersDesc" xml:space="preserve">
+        <value>Прослеживайте зерно до обжарщиков рядом и на карте — профили, акценты и сильные стороны.</value>
+    </data>
+    <data name="WelcomePage_Bento_RoastersCta" xml:space="preserve">
+        <value>КАРТА</value>
+    </data>
+    <data name="WelcomePage_Bento_BrewTitle" xml:space="preserve">
+        <value>Гайды по завариванию</value>
+    </data>
+    <data name="WelcomePage_Bento_BrewDesc" xml:space="preserve">
+        <value>Пошаговые рецепты и заметки об оборудовании — от V60 до колд-брю.</value>
+    </data>
+    <data name="WelcomePage_Bento_PerksTitle" xml:space="preserve">
+        <value>Эксклюзивные бонусы</value>
+    </data>
+    <data name="WelcomePage_Bento_PerksDesc" xml:space="preserve">
+        <value>Ранние релизы, дегустационные заметки и предложения только для участников.</value>
+    </data>
+    <data name="WelcomePage_Bento_CommunityTitle" xml:space="preserve">
+        <value>Присоединяйтесь к сообществу</value>
+    </data>
+    <data name="WelcomePage_Bento_CommunityDesc" xml:space="preserve">
+        <value>Общайтесь, сравнивайте оборудование, делитесь победами и любимыми кофейнями.</value>
+    </data>
+    <data name="WelcomePage_SearchPlaceholder" xml:space="preserve">
+        <value>Поиск зерна, обжарщиков или гидов...</value>
+    </data>
+    <data name="WelcomePage_TrendingChip1" xml:space="preserve">
+        <value>В тренде: Ethiopian Yirgacheffe</value>
+    </data>
+    <data name="WelcomePage_TrendingChip2" xml:space="preserve">
+        <value>Мастерство V60</value>
+    </data>
+    <data name="WelcomePage_TrendingChip3" xml:space="preserve">
+        <value>Советы по колд-брю</value>
+    </data>
+    <data name="WelcomePage_SocialProof" xml:space="preserve">
+        <value>2,4 тыс.+ активных бариста</value>
+    </data>
+    <data name="WelcomePage_Footer_Copyright" xml:space="preserve">
+        <value>© 2026 CoffeePeek. С любовью к кофе.</value>
+    </data>
+    <data name="WelcomePage_Footer_Privacy" xml:space="preserve">
+        <value>Конфиденциальность</value>
+    </data>
+    <data name="WelcomePage_Footer_Terms" xml:space="preserve">
+        <value>Условия использования</value>
+    </data>
+    <data name="WelcomePage_Footer_Contact" xml:space="preserve">
+        <value>Связаться с нами</value>
+    </data>
+    <data name="Auth_HeroTagSaffron" xml:space="preserve">
+        <value>Saffron Brew</value>
+    </data>
+    <data name="Auth_LoginHeroHeadline" xml:space="preserve">
+        <value>Ваше утро — идеальный помол.</value>
+    </data>
+    <data name="Auth_LoginHeroSub" xml:space="preserve">
+        <value>Погрузитесь в аромат культуры спешелти. Зёрно уже ждёт.</value>
+    </data>
+    <data name="Auth_EmailHeroTagline" xml:space="preserve">
+        <value>Создано для уюта, налито для вас.</value>
+    </data>
+    <data name="Auth_RegisterHeroTagline" xml:space="preserve">
+        <value>Поднимите ежедневный ритуал с идеальным зерном.</value>
+    </data>
+    <data name="Auth_LabelEmailCaps" xml:space="preserve">
+        <value>ЭЛ. ПОЧТА</value>
+    </data>
+    <data name="Auth_LabelPasswordCaps" xml:space="preserve">
+        <value>ПАРОЛЬ</value>
+    </data>
+    <data name="Auth_LabelFullNameCaps" xml:space="preserve">
+        <value>ИМЯ</value>
+    </data>
+    <data name="Auth_LabelConfirmCaps" xml:space="preserve">
+        <value>ПОДТВЕРДИТЕ ПАРОЛЬ</value>
+    </data>
+    <data name="Auth_ForgotPassword" xml:space="preserve">
+        <value>Забыли пароль?</value>
+    </data>
+    <data name="Auth_RememberMachine" xml:space="preserve">
+        <value>Запомнить это устройство</value>
+    </data>
+    <data name="Auth_OrContinueWith" xml:space="preserve">
+        <value>ИЛИ ПРОДОЛЖИТЬ ЧЕРЕЗ</value>
+    </data>
+    <data name="Auth_RequestAccess" xml:space="preserve">
+        <value>Запросить доступ</value>
+    </data>
+    <data name="Auth_Google" xml:space="preserve">
+        <value>Google</value>
+    </data>
+    <data name="Auth_Apple" xml:space="preserve">
+        <value>Apple</value>
+    </data>
+    <data name="Auth_FooterCrafted" xml:space="preserve">
+        <value>© 2026 CoffeePeek. Создано для уюта.</value>
+    </data>
+    <data name="Auth_CookieSettings" xml:space="preserve">
+        <value>Настройки cookie</value>
+    </data>
+    <data name="Auth_SignInCaps" xml:space="preserve">
+        <value>ВОЙТИ</value>
+    </data>
+    <data name="RegisterPage_FullNamePlaceholder" xml:space="preserve">
+        <value>Ваше имя</value>
+    </data>
+    <data name="ShopPage_HeroTitle" xml:space="preserve">
+        <value>Утренний кофе</value>
+    </data>
+    <data name="ShopPage_HeroSubtitle" xml:space="preserve">
+        <value>Найдите идеальное место для следующей порции кофеина.</value>
+    </data>
+    <data name="ShopPage_EmptyClearFilters" xml:space="preserve">
+        <value>Сбросить фильтры</value>
+    </data>
+    <data name="ShopPage_EmptyTitle" xml:space="preserve">
+        <value>Кофеен пока нет</value>
+    </data>
+    <data name="ShopPage_EmptyMessage" xml:space="preserve">
+        <value>Мы не нашли кофеен по текущему запросу или фильтрам. Попробуйте изменить настройки или выбрать другой район.</value>
+    </data>
+    <data name="ShopPage_BrowseMap" xml:space="preserve">
+        <value>Открыть карту</value>
+    </data>
+    <data name="ShopPage_FeaturePastriesTitle" xml:space="preserve">
+        <value>Выпечка</value>
+    </data>
+    <data name="ShopPage_FeaturePastriesDesc" xml:space="preserve">
+        <value>Лучшие пары «кофе и круассан».</value>
+    </data>
+    <data name="ShopPage_FeatureWorkTitle" xml:space="preserve">
+        <value>Для работы</value>
+    </data>
+    <data name="ShopPage_FeatureWorkDesc" xml:space="preserve">
+        <value>Места с высоким рейтингом и быстрым Wi‑Fi.</value>
+    </data>
+    <data name="ShopPage_FeatureArtisanTitle" xml:space="preserve">
+        <value>Авторский кофе</value>
+    </data>
+    <data name="ShopPage_FeatureArtisanDesc" xml:space="preserve">
+        <value>Спешелти-зерно и обжарщики.</value>
+    </data>
+    <data name="ShopDetail_About" xml:space="preserve">
+        <value>О кофейне</value>
+    </data>
+    <data name="ShopDetail_OpenUntil" xml:space="preserve">
+        <value>Открыто до {0}</value>
+    </data>
+    <data name="ShopDetail_ClosedToday" xml:space="preserve">
+        <value>Сегодня закрыто</value>
+    </data>
+    <data name="ShopDetail_GetDirections" xml:space="preserve">
+        <value>Как добраться</value>
+    </data>
+    <data name="ShopDetail_Share" xml:space="preserve">
+        <value>Поделиться</value>
+    </data>
+    <data name="ShopDetail_Order" xml:space="preserve">
+        <value>Заказать</value>
+    </data>
+    <data name="ShopDetail_ReviewsEmptyTitle" xml:space="preserve">
+        <value>Пока нет отзывов</value>
+    </data>
+    <data name="ShopDetail_ReviewsEmptySubtitle" xml:space="preserve">
+        <value>Расскажите первым о своём визите в эту кофейню.</value>
+    </data>
+    <data name="ShopDetail_WriteReview" xml:space="preserve">
+        <value>Написать отзыв</value>
+    </data>
+    <data name="ShopDetail_Amenities" xml:space="preserve">
+        <value>Удобства</value>
+    </data>
+    <data name="ShopDetail_OpenNow" xml:space="preserve">
+        <value>Сейчас открыто</value>
+    </data>
+    <data name="ShopDetail_Hours" xml:space="preserve">
+        <value>Часы работы</value>
+    </data>
+    <data name="ShopDetail_MapArea" xml:space="preserve">
+        <value>На карте</value>
     </data>
 </root>

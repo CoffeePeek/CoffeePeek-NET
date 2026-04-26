@@ -1,0 +1,90 @@
+<UserControl
+    d:DesignHeight="600"
+    d:DesignWidth="900"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Home.SettingsView"
+    x:DataType="home:SettingsViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:home="clr-namespace:CoffeePeek.Client.App.ViewModels.Home"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Background="{DynamicResource SurfaceBrush}" RowDefinitions="Auto,*">
+        <Border
+            Grid.Row="0"
+            Background="{DynamicResource SurfaceContainerLowBrush}"
+            Padding="16,12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button
+                    Grid.Column="0"
+                    Classes="Transparent"
+                    Command="{Binding CloseCommand}"
+                    Padding="12,8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon
+                            Data="{StaticResource ArrowRightIcon}"
+                            Height="18"
+                            Width="18"
+                            RenderTransformOrigin="50%,50%">
+                            <PathIcon.RenderTransform>
+                                <RotateTransform Angle="180" />
+                            </PathIcon.RenderTransform>
+                        </PathIcon>
+                        <TextBlock Text="{Binding CloseLabel}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <TextBlock
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Classes="Headline"
+                    FontSize="18"
+                    FontWeight="Normal"
+                    Text="{Binding PageTitle}" />
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" Padding="24,20">
+            <StackPanel MaxWidth="560" HorizontalAlignment="Left" Spacing="20">
+                <TextBlock
+                    FontSize="14"
+                    FontWeight="Normal"
+                    Foreground="{DynamicResource OnSurfaceBrush}"
+                    Text="{Binding ThemeSectionTitle}" />
+                <ListBox
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ItemsSource="{Binding ThemeRows}"
+                    SelectedItem="{Binding SelectedThemeRow}"
+                    SelectionMode="Single">
+                    <ListBox.Styles>
+                        <Style Selector="ListBoxItem">
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0,0,0,8" />
+                            <Setter Property="Background" Value="Transparent" />
+                        </Style>
+                        <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="Background" Value="Transparent" />
+                        </Style>
+                        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="Background" Value="Transparent" />
+                        </Style>
+                    </ListBox.Styles>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="home:ThemeRow">
+                            <Border
+                                Background="{DynamicResource SurfaceContainerLowBrush}"
+                                CornerRadius="{StaticResource DefaultCornerRadius}"
+                                Padding="16,14">
+                                <TextBlock
+                                    FontSize="15"
+                                    Foreground="{DynamicResource OnSurfaceBrush}"
+                                    Text="{Binding Label}" />
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

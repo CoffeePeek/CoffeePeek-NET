@@ -27,6 +27,9 @@ public sealed partial class LoginViewModel(
     [ObservableProperty]
     public partial string? ErrorMessage { get; set; }
 
+    [ObservableProperty]
+    public partial bool RememberThisMachine { get; set; }
+
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
     public bool ThemeShowsSunIcon =>
@@ -47,6 +50,11 @@ public sealed partial class LoginViewModel(
     [RelayCommand]
     private void GoToRegister() =>
         navigationService.NavigateTo<RegisterViewModel>(r => r.ResetForEmailStep());
+
+    [RelayCommand]
+    private void ForgotPassword()
+    {
+    }
 
     [RelayCommand]
     private async Task LoginAsync()

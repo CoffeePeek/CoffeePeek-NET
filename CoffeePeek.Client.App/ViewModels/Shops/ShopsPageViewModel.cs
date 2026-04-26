@@ -1,7 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
+using CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
 using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 using CoffeePeek.Client.App.Services;
 using CoffeePeek.Client.App.ViewModels.Abstract;
@@ -19,6 +22,8 @@ public partial class ShopsPageViewModel : ViewModelBase
     private readonly IWebCoffeeShopsClient _shopsClient;
     private readonly IWebCatalogsClient _catalogsClient;
     private readonly IWorkspaceShellNavigator _shellNavigator;
+    private readonly HttpClient _httpClient;
+    private readonly ApiOptions _apiOptions;
     private readonly CatalogFilterGroupViewModel _beanFilters = new(Lang.ShopPage_FilterBeans);
     private readonly CatalogFilterGroupViewModel _roasterFilters = new(Lang.ShopPage_FilterRoasters);
     private readonly CatalogFilterGroupViewModel _brewMethodFilters = new(Lang.ShopPage_FilterBrewMethods);
@@ -35,11 +40,15 @@ public partial class ShopsPageViewModel : ViewModelBase
     public ShopsPageViewModel(
         IWebCoffeeShopsClient shopsClient,
         IWebCatalogsClient catalogsClient,
-        IWorkspaceShellNavigator shellNavigator)
+        IWorkspaceShellNavigator shellNavigator,
+        HttpClient httpClient,
+        ApiOptions apiOptions)
     {
         _shopsClient = shopsClient;
         _catalogsClient = catalogsClient;
         _shellNavigator = shellNavigator;
+        _httpClient = httpClient;
+        _apiOptions = apiOptions;
 
         foreach (var group in new[] { _beanFilters, _roasterFilters, _brewMethodFilters, _equipmentFilters })
         {
@@ -47,13 +56,16 @@ public partial class ShopsPageViewModel : ViewModelBase
             FilterGroups.Add(group);
         }
 
+        Shops.CollectionChanged += OnShopsCollectionChanged;
+
         try
         {
             foreach (var chip in BuildFilterChips())
                 FilterChips.Add(chip);
 
-            SelectedFilterChip = FilterChips[0];
-            FilterChips[0].IsSelected = true;
+            var initial = FilterChips.First(c => c.FilterType == FilterType.OpenTime);
+            SelectedFilterChip = initial;
+            initial.IsSelected = true;
         }
         finally
         {
@@ -72,7 +84,13 @@ public partial class ShopsPageViewModel : ViewModelBase
 
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
+    public bool HasEmptyShops => !IsLoading && !HasError && Shops.Count == 0;
+
+    public bool ShowShopGrid => !IsLoading && !HasError && Shops.Count > 0;
+
     public bool HasMorePages => _currentPage < _totalPages;
+
+    public bool ShowLoadMoreButton => HasMorePages && ShowShopGrid;
 
     public ObservableCollection<FilterChipViewModel> FilterChips { get; } = [];
 
@@ -99,7 +117,27 @@ public partial class ShopsPageViewModel : ViewModelBase
 
     public int ActiveFilterCount => FilterGroups.Sum(g => g.ActiveFilterCount);
 
-    partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
+    partial void OnErrorMessageChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasError));
+        OnPropertyChanged(nameof(HasEmptyShops));
+        OnPropertyChanged(nameof(ShowShopGrid));
+        OnPropertyChanged(nameof(ShowLoadMoreButton));
+    }
+
+    partial void OnIsLoadingChanged(bool value)
+    {
+        OnPropertyChanged(nameof(HasEmptyShops));
+        OnPropertyChanged(nameof(ShowShopGrid));
+        OnPropertyChanged(nameof(ShowLoadMoreButton));
+    }
+
+    private void OnShopsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(HasEmptyShops));
+        OnPropertyChanged(nameof(ShowShopGrid));
+        OnPropertyChanged(nameof(ShowLoadMoreButton));
+    }
 
     partial void OnSearchQueryChanged(string value) => DebounceSearch();
 
@@ -151,11 +189,19 @@ public partial class ShopsPageViewModel : ViewModelBase
             var data = result.Value;
             _totalPages = data.TotalPages;
 
+            ReleaseShopCovers();
             Shops.Clear();
             foreach (var dto in data.CoffeeShops)
-                Shops.Add(ShopCardViewModel.FromDto(dto));
+            {
+                var card = ShopCardViewModel.FromDto(dto);
+                Shops.Add(card);
+                _ = card.LoadCoverAsync(_httpClient, _apiOptions);
+            }
 
             OnPropertyChanged(nameof(HasMorePages));
+            OnPropertyChanged(nameof(HasEmptyShops));
+            OnPropertyChanged(nameof(ShowShopGrid));
+            OnPropertyChanged(nameof(ShowLoadMoreButton));
         }
         finally
         {
@@ -196,9 +242,16 @@ public partial class ShopsPageViewModel : ViewModelBase
             _totalPages = data.TotalPages;
 
             foreach (var dto in data.CoffeeShops)
-                Shops.Add(ShopCardViewModel.FromDto(dto));
+            {
+                var card = ShopCardViewModel.FromDto(dto);
+                Shops.Add(card);
+                _ = card.LoadCoverAsync(_httpClient, _apiOptions);
+            }
 
             OnPropertyChanged(nameof(HasMorePages));
+            OnPropertyChanged(nameof(HasEmptyShops));
+            OnPropertyChanged(nameof(ShowShopGrid));
+            OnPropertyChanged(nameof(ShowLoadMoreButton));
         }
         finally
         {
@@ -269,6 +322,8 @@ public partial class ShopsPageViewModel : ViewModelBase
     [RelayCommand]
     private async Task ClearFiltersAsync()
     {
+        SearchQuery = string.Empty;
+
         foreach (var group in FilterGroups)
             group.ClearSelection();
 
@@ -285,6 +340,12 @@ public partial class ShopsPageViewModel : ViewModelBase
 
     [RelayCommand]
     private void ToggleAdditionalFilters() => IsAdditionalFiltersPanelOpen = !IsAdditionalFiltersPanelOpen;
+
+    [RelayCommand]
+    private static void BrowseMap()
+    {
+        // Full-screen map shell is not wired yet; reserved for Near Me / FAB.
+    }
 
     [RelayCommand]
     private void SelectCity(CityDto city)
@@ -359,4 +420,10 @@ public partial class ShopsPageViewModel : ViewModelBase
         new(Lang.ShopPage_Filter_Favorite, FilterType.Favorite),
         new(Lang.ShopPage_Filter_Visited, FilterType.Visited)
     ];
+
+    private void ReleaseShopCovers()
+    {
+        foreach (var s in Shops)
+            s.ReleaseCover();
+    }
 }
