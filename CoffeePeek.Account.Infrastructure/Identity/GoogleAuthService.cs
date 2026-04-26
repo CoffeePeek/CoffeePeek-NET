@@ -11,7 +11,9 @@ public class GoogleAuthService(
 {
     private readonly OAuthGoogleOptions _options = options.Value;
 
-    public async Task<GoogleJsonWebSignature.Payload?> ValidateIdTokenAsync(string idToken)
+    public async Task<GoogleJsonWebSignature.Payload?> ValidateIdTokenAsync(
+        string idToken,
+        CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(idToken))
         {
@@ -27,12 +29,15 @@ public class GoogleAuthService(
 
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var settings = new GoogleJsonWebSignature.ValidationSettings
             {
                 Audience = [_options.ClientId]
             };
 
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
+            cancellationToken.ThrowIfCancellationRequested();
 
             logger.LogInformation("Google ID token validated successfully for user: {Email}", payload.Email);
             

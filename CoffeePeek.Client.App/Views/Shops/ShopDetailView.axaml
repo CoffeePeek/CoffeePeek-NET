@@ -236,7 +236,7 @@
                     <StackPanel
                         Grid.Row="2"
                         Grid.Column="0"
-                        IsVisible="{Binding ShowReviewsSection}"
+                        IsVisible="{Binding IsDetailContentVisible}"
                         Margin="0,24,0,0"
                         Spacing="24">
                         <StackPanel IsVisible="{Binding HasDescription}" Spacing="8">
@@ -445,7 +445,7 @@
                     <StackPanel
                         Grid.Row="2"
                         Grid.Column="1"
-                        IsVisible="{Binding ShowReviewsSection}"
+                        IsVisible="{Binding IsDetailContentVisible}"
                         Margin="0,24,0,0"
                         Spacing="16">
                         <Border

@@ -1,13 +1,23 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="20" Background="LightGray">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <PathIcon Data="{StaticResource SearchIcon}" />
-                <PathIcon Data="{StaticResource MapIcon}" />
-                <PathIcon Data="{StaticResource FiltersIcon}" />
-                <PathIcon Data="{StaticResource CoffeeBrandIcon}" />
-                <PathIcon Data="{StaticResource ThemeSunIcon}" />
-                <PathIcon Data="{StaticResource ThemeMoonIcon}" />
+            <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Data="{StaticResource SearchIcon}" />
+                    <PathIcon Data="{StaticResource MapIcon}" />
+                    <PathIcon Data="{StaticResource FiltersIcon}" />
+                    <PathIcon Data="{StaticResource CoffeeBrandIcon}" />
+                    <PathIcon Data="{StaticResource ThemeSunIcon}" />
+                    <PathIcon Data="{StaticResource ThemeMoonIcon}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Data="{StaticResource PersonIcon}" />
+                    <PathIcon Data="{StaticResource BellIcon}" />
+                    <PathIcon Data="{StaticResource MapPinIcon}" />
+                    <PathIcon Data="{StaticResource StarIcon}" />
+                    <PathIcon Data="{StaticResource ClockIcon}" />
+                    <PathIcon Data="{StaticResource PhoneIcon}" />
+                </StackPanel>
             </StackPanel>
         </Border>
     </Design.PreviewWith>

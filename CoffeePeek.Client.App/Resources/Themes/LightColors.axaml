@@ -64,7 +64,7 @@
 
     <SolidColorBrush Color="{StaticResource SurfaceContainerLowColor}" x:Key="AppSurfaceBrush" />
     <SolidColorBrush Color="{StaticResource SurfaceContainerColor}" x:Key="AppSurfaceAltBrush" />
-    <SolidColorBrush Color="{StaticResource OutlineColor}" Opacity="0.25" x:Key="AppBorderColor" />
+    <SolidColorBrush Color="{StaticResource OutlineColor}" Opacity="0.25" x:Key="AppEmphasisBorderBrush" />
     <SolidColorBrush Color="{StaticResource OutlineVariantColor}" Opacity="0.2" x:Key="AppBorderSubtleBrush" />
     <SolidColorBrush Color="{StaticResource OutlineVariantColor}" Opacity="0.15" x:Key="AppBorderBrush" />
 
@@ -76,8 +76,6 @@
     <SolidColorBrush Color="{StaticResource OnErrorSurfaceColor}" x:Key="AuthErrorForegroundBrush" />
     <SolidColorBrush Color="{StaticResource PrimaryContainerColor}" x:Key="AuthLinkBrush" />
     <SolidColorBrush Color="{StaticResource SurfaceColor}" x:Key="AppBackgroundBrush" />
-    <SolidColorBrush Color="{StaticResource SurfaceContainerLowColor}" x:Key="AppSurfaceColor" />
-
     <!-- TextBox / text inputs: pill fields (normal → hover → focus amber → disabled → error red) -->
     <SolidColorBrush Color="#FFFFFF" x:Key="TextBoxSurfaceBrush" />
     <SolidColorBrush Color="#C9BFB2" x:Key="TextBoxBorderBrush" />

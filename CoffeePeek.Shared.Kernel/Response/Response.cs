@@ -4,12 +4,17 @@ public class Response
 {
     public bool IsSuccess { get; init; }
     
-    public string Message { get; init; }
+    public string Message { get; init; } = string.Empty;
     
     public object? Data { get; init; }
-    
 
-    public Response() { }
+    /// <summary>HTTP status when the error maps to a status code; null for non-HTTP failures.</summary>
+    public int? StatusCode { get; init; }
+
+    /// <summary>Parameterless constructor for object initializers and derived response types.</summary>
+    public Response()
+    {
+    }
 
     public Response(bool success, string message, object? data)
     {
@@ -27,11 +32,11 @@ public class Response
         {
             IsSuccess = true,
             Message = message ?? "Operation successful",
-            Data = null,
+            Data = data,
         };
     }
     
-    [Obsolete]
+    [Obsolete("Use Error(int statusCode, string message) for HTTP-mapped errors.")]
     public static Response Error(string message)
     {
         return new Response
@@ -52,6 +57,7 @@ public class Response
             IsSuccess = false,
             Message = message,
             Data = null,
+            StatusCode = statusCode,
         };
     }
     

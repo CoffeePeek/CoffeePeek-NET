@@ -10,7 +10,9 @@ public class Response<TData> : Response
         init => base.Data = value;
     }
 
-    public Response() { }
+    public Response() : base(false, string.Empty, null)
+    {
+    }
 
     public Response(bool success, string message, TData data)
         : base(success, message, data)
@@ -49,7 +51,8 @@ public class Response<TData> : Response
         {
             IsSuccess = false,
             Message = message,
-            Data = default
+            Data = default,
+            StatusCode = (int)statusCode
         };
     }
 

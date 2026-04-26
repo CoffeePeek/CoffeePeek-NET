@@ -105,8 +105,9 @@ public partial class ShopDetailViewModel : ViewModelBase
     [ObservableProperty]
     public partial bool HasContact { get; set; }
 
+    /// <summary>True when shop details (not only reviews) are ready to show after a successful load.</summary>
     [ObservableProperty]
-    public partial bool ShowReviewsSection { get; set; }
+    public partial bool IsDetailContentVisible { get; set; }
 
     public bool HasReviewItems => Reviews.Count > 0;
 
@@ -155,17 +156,17 @@ public partial class ShopDetailViewModel : ViewModelBase
 
     partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
 
-    public async Task LoadAsync(Guid shopId)
+    public async Task LoadAsync(Guid shopId, CancellationToken cancellationToken = default)
     {
         IsLoading = true;
         ErrorMessage = null;
-        ShowReviewsSection = false;
+        IsDetailContentVisible = false;
         CancelHeroLoad();
         await Dispatcher.UIThread.InvokeAsync(() => CoverBitmap = null);
 
         try
         {
-            var result = await _shopsClient.GetByIdAsync(shopId);
+            var result = await _shopsClient.GetByIdAsync(shopId, cancellationToken);
 
             if (result.IsFailed)
             {
@@ -175,12 +176,12 @@ public partial class ShopDetailViewModel : ViewModelBase
 
             var shop = result.Value.ShopDto;
             MapFromDto(shop);
-            ShowReviewsSection = true;
+            IsDetailContentVisible = true;
 
             var photoUrl = shop.Photos is { Length: > 0 } p && !string.IsNullOrWhiteSpace(p[0].FullUrl)
                 ? p[0].FullUrl
                 : null;
-            _ = LoadHeroAsync(photoUrl);
+            _ = LoadHeroAsync(photoUrl, cancellationToken);
         }
         finally
         {
@@ -394,15 +395,15 @@ public partial class ShopDetailViewModel : ViewModelBase
         return string.Format(CultureInfo.CurrentCulture, Lang.ShopDetail_OpenUntil, formatted);
     }
 
-    private async Task LoadHeroAsync(string? imageUrl)
+    private async Task LoadHeroAsync(string? imageUrl, CancellationToken parentCancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(imageUrl))
             return;
 
         CancelHeroLoad();
-        var cts = new CancellationTokenSource();
-        _heroLoadCts = cts;
-        var ct = cts.Token;
+        var linked = CancellationTokenSource.CreateLinkedTokenSource(parentCancellationToken);
+        _heroLoadCts = linked;
+        var ct = linked.Token;
 
         try
         {
@@ -429,9 +430,13 @@ public partial class ShopDetailViewModel : ViewModelBase
                     bitmap.Dispose();
             });
         }
-        catch
+        catch (OperationCanceledException)
         {
-            // Missing or invalid hero art should not break the page.
+            // Navigation or a newer load cancelled this request.
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"ShopDetail hero load failed: {ex}");
         }
     }
 

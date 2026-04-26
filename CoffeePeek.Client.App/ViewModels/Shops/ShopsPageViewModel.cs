@@ -35,6 +35,7 @@ public partial class ShopsPageViewModel : ViewModelBase
     private const int PageSize = 10;
 
     private CancellationTokenSource? _searchCts;
+    private bool _suppressSearchDebounce;
     private bool _initialLoadDone;
 
     public ShopsPageViewModel(
@@ -139,7 +140,12 @@ public partial class ShopsPageViewModel : ViewModelBase
         OnPropertyChanged(nameof(ShowLoadMoreButton));
     }
 
-    partial void OnSearchQueryChanged(string value) => DebounceSearch();
+    partial void OnSearchQueryChanged(string value)
+    {
+        if (_suppressSearchDebounce)
+            return;
+        DebounceSearch();
+    }
 
     async partial void OnSelectedCityChanged(CityDto? value)
     {
@@ -322,7 +328,16 @@ public partial class ShopsPageViewModel : ViewModelBase
     [RelayCommand]
     private async Task ClearFiltersAsync()
     {
-        SearchQuery = string.Empty;
+        _searchCts?.Cancel();
+        _suppressSearchDebounce = true;
+        try
+        {
+            SearchQuery = string.Empty;
+        }
+        finally
+        {
+            _suppressSearchDebounce = false;
+        }
 
         foreach (var group in FilterGroups)
             group.ClearSelection();
