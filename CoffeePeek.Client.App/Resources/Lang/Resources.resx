@@ -325,10 +325,13 @@
         <value>Username cannot be empty</value>
     </data>
     <data name="Profile_AvatarUpload" xml:space="preserve">
-        <value>Загрузить аватар</value>
+        <value>Upload avatar</value>
+    </data>
+    <data name="Profile_AvatarUploading" xml:space="preserve">
+        <value>Uploading…</value>
     </data>
     <data name="Profile_AvatarUploadError" xml:space="preserve">
-        <value>Не удалось загрузить аватар</value>
+        <value>Failed to upload avatar</value>
     </data>
     <data name="ShopPage_FilterBeans" xml:space="preserve">
         <value>Coffee Beans</value>

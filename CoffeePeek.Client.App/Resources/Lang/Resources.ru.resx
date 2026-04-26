@@ -191,6 +191,9 @@
     <data name="Profile_AvatarUploadError" xml:space="preserve">
         <value>Не удалось загрузить аватар</value>
     </data>
+    <data name="Profile_AvatarUploading" xml:space="preserve">
+        <value>Загрузка…</value>
+    </data>
     <data name="ShopPage_FilterBeans" xml:space="preserve">
         <value>Зёрна</value>
     </data>

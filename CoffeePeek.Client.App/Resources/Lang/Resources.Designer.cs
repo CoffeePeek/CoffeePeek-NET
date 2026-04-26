@@ -663,6 +663,12 @@ namespace CoffeePeek.Client.App.Resources.Lang {
             }
         }
 
+        public static string Profile_AvatarUploading {
+            get {
+                return ResourceManager.GetString("Profile_AvatarUploading", resourceCulture);
+            }
+        }
+
         public static string Profile_AvatarUploadError {
             get {
                 return ResourceManager.GetString("Profile_AvatarUploadError", resourceCulture);

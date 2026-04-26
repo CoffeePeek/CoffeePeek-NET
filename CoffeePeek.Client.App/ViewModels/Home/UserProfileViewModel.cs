@@ -146,6 +146,8 @@ public partial class UserProfileViewModel(
         _loadCts?.Dispose();
         _loadCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         _avatarUploadCts?.Cancel();
+        _avatarUploadCts?.Dispose();
+        _avatarUploadCts = null;
         var ct = _loadCts.Token;
 
         var currentUserId = identityAccessor.GetCurrentUserIdOrNull();
@@ -463,12 +465,13 @@ public partial class UserProfileViewModel(
         if (!IsOwnProfile || _userId is null)
             return;
 
-        AvatarUploadErrorMessage = null;
-        IsUploadingAvatar = true;
         _avatarUploadCts?.Cancel();
         _avatarUploadCts?.Dispose();
         _avatarUploadCts = CancellationTokenSource.CreateLinkedTokenSource(_loadCts?.Token ?? CancellationToken.None);
         var ct = _avatarUploadCts.Token;
+
+        AvatarUploadErrorMessage = null;
+        IsUploadingAvatar = true;
 
         try
         {
@@ -489,7 +492,9 @@ public partial class UserProfileViewModel(
                 return;
             }
 
-            await LoadAsync(_userId.Value, ct);
+            // Reload must not use the avatar upload token: LoadAsync cancels _loadCts, which
+            // would cascade-cancel a linked _avatarUploadCts and skip the profile refresh.
+            await LoadAsync(_userId.Value);
         }
         catch (OperationCanceledException)
         {
@@ -521,6 +526,8 @@ public partial class UserProfileViewModel(
     private async Task SignOutAsync()
     {
         _avatarUploadCts?.Cancel();
+        _avatarUploadCts?.Dispose();
+        _avatarUploadCts = null;
         workspaceShellNavigator.CloseUserProfile();
         _ = await authenticationClient.Logout();
         clientSession.Clear();

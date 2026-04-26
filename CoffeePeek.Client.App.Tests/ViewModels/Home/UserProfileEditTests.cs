@@ -201,7 +201,30 @@ public class UserProfileEditTests
     [Fact]
     public async Task UploadAvatar_CallsProfileClientAndReloads()
     {
-        SetupProfileSuccess("user", "bio");
+        var profileCalls = 0;
+        _profileClientMock
+            .Setup(c => c.GetPublicProfileAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() =>
+            {
+                profileCalls++;
+                return Result.Ok(new UserProfileDto
+                {
+                    UserName = profileCalls >= 2 ? "after-avatar" : "before-avatar",
+                    Email = "test@test.com",
+                    About = "bio",
+                    CreatedAtUtc = new DateTime(2024, 1, 1),
+                    ReviewCount = 5,
+                    CheckInCount = 3
+                });
+            });
+        _reviewsClientMock
+            .Setup(c => c.GetReviewsAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Ok(new GetReviewsByUserIdResultDto
+            {
+                ReviewDtos = [],
+                TotalPages = 1,
+                CurrentPage = 1
+            }));
         _imagePickerMock
             .Setup(x => x.PickImageAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PickedImageFile("avatar.jpg", "image/jpeg", [1, 2, 3]));
@@ -211,6 +234,7 @@ public class UserProfileEditTests
 
         var sut = CreateSut(OwnUserId);
         await sut.LoadAsync(OwnUserId);
+        sut.UserName.Should().Be("before-avatar");
 
         await sut.UploadAvatarCommand.ExecuteAsync(null);
 
@@ -220,6 +244,7 @@ public class UserProfileEditTests
         _profileClientMock.Verify(
             c => c.GetPublicProfileAsync(OwnUserId, It.IsAny<CancellationToken>()),
             Times.AtLeast(2));
+        sut.UserName.Should().Be("after-avatar");
         sut.IsUploadingAvatar.Should().BeFalse();
         sut.HasAvatarUploadError.Should().BeFalse();
     }
