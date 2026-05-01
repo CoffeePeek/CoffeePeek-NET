@@ -324,15 +324,71 @@
                     </Border>
 
                     <!-- Reviews section -->
-                    <StackPanel
-                        IsVisible="{Binding HasReviews}"
-                        Margin="24,24,24,32"
-                        Spacing="12">
+                    <StackPanel Margin="24,24,24,32" Spacing="12">
                         <TextBlock
                             FontSize="18"
                             FontWeight="Bold"
                             Foreground="{DynamicResource OnSurfaceBrush}"
                             Text="{x:Static lang:Resources.ShopDetail_Reviews}" />
+                        <Border
+                            Background="{DynamicResource SurfaceContainerLowBrush}"
+                            BorderThickness="0"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            IsVisible="{Binding CanCreateReview}"
+                            Padding="16">
+                            <StackPanel Spacing="10">
+                                <TextBlock
+                                    FontSize="15"
+                                    FontWeight="SemiBold"
+                                    Text="{x:Static lang:Resources.ShopDetail_AddReview}" />
+                                <TextBox
+                                    AcceptsReturn="True"
+                                    MinHeight="84"
+                                    PlaceholderText="{x:Static lang:Resources.ShopDetail_ReviewCommentPlaceholder}"
+                                    Text="{Binding NewReviewComment}"
+                                    TextWrapping="Wrap" />
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <TextBlock FontSize="12" Text="{x:Static lang:Resources.ShopDetail_RatingPlace}" />
+                                        <ComboBox
+                                            ItemsSource="{Binding ScoreOptions}"
+                                            SelectedItem="{Binding PlaceScore}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock FontSize="12" Text="{x:Static lang:Resources.ShopDetail_RatingService}" />
+                                        <ComboBox
+                                            ItemsSource="{Binding ScoreOptions}"
+                                            SelectedItem="{Binding ServiceScore}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Spacing="4">
+                                        <TextBlock FontSize="12" Text="{x:Static lang:Resources.ShopDetail_RatingCoffee}" />
+                                        <ComboBox
+                                            ItemsSource="{Binding ScoreOptions}"
+                                            SelectedItem="{Binding CoffeeScore}" />
+                                    </StackPanel>
+                                </Grid>
+                                <Button
+                                    Classes="Primary"
+                                    Command="{Binding SubmitReviewCommand}"
+                                    Content="{x:Static lang:Resources.ShopDetail_SubmitReview}"
+                                    HorizontalAlignment="Left"
+                                    IsEnabled="{Binding !IsSubmittingReview}"
+                                    Padding="14,8" />
+                            </StackPanel>
+                        </Border>
+                        <Border
+                            Background="{DynamicResource AuthErrorBackgroundBrush}"
+                            IsVisible="{Binding HasReviewError}"
+                            Padding="12,8">
+                            <TextBlock
+                                Foreground="{DynamicResource AuthErrorForegroundBrush}"
+                                Text="{Binding ReviewErrorMessage}" />
+                        </Border>
+                        <TextBlock
+                            FontSize="13"
+                            Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            IsVisible="{Binding !HasReviews}"
+                            Text="{x:Static lang:Resources.ShopDetail_NoReviewsYet}" />
                         <ItemsControl ItemsSource="{Binding Reviews}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="shops:ShopReviewViewModel">
@@ -356,12 +412,21 @@
                                                         Text="{Binding StarsText}"
                                                         VerticalAlignment="Center" />
                                                 </StackPanel>
-                                                <TextBlock
-                                                    Grid.Column="1"
-                                                    FontSize="11"
-                                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                                                    Text="{Binding DateLabel}"
-                                                    VerticalAlignment="Center" />
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                                    <TextBlock
+                                                        FontSize="11"
+                                                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                        Text="{Binding DateLabel}"
+                                                        VerticalAlignment="Center" />
+                                                    <Button
+                                                        Classes="Secondary"
+                                                        Command="{Binding $parent[shops:ShopDetailViewModel].DeleteReviewCommand}"
+                                                        CommandParameter="{Binding .}"
+                                                        Content="{x:Static lang:Resources.ShopDetail_DeleteReview}"
+                                                        IsEnabled="{Binding !$parent[shops:ShopDetailViewModel].IsDeletingReview}"
+                                                        IsVisible="{Binding IsOwnReview}"
+                                                        Padding="10,3" />
+                                                </StackPanel>
                                             </Grid>
                                             <TextBlock
                                                 FontSize="14"
