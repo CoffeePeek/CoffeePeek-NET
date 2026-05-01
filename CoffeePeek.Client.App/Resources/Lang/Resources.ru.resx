@@ -230,6 +230,9 @@
     <data name="ShopDetail_DeleteReview" xml:space="preserve">
         <value>Удалить</value>
     </data>
+    <data name="ShopDetail_NoReviewsYet" xml:space="preserve">
+        <value>Пока нет отзывов</value>
+    </data>
     <data name="ShopDetail_ReviewActionFailed" xml:space="preserve">
         <value>Не удалось выполнить действие с отзывом</value>
     </data>

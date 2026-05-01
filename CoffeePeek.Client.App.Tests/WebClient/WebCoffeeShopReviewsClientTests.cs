@@ -1,6 +1,8 @@
 using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Abstract;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Pipeline.Models;
+using CoffeePeek.Client.App.Infrastructure.HTTP.Requests.Reviews;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Responses;
+using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 using CoffeePeek.Client.App.Infrastructure.WebClient;
 using FluentAssertions;
 using Moq;
@@ -57,14 +59,29 @@ public class WebCoffeeShopReviewsClientTests
         var sut = CreateSut();
         var shopId = Guid.NewGuid();
 
-        var result = await sut.CreateAsync(shopId, "Great", 5, 4, 5);
+        var result = await sut.CreateAsync(shopId, new CreateCoffeeShopReviewInput(5, 4, 5, "Great"));
 
         result.IsSuccess.Should().BeTrue();
         captured.Should().NotBeNull();
         captured!.Endpoint.Should().Be("api/CheckIns");
         captured.Method.Should().Be(HttpMethod.Post);
         captured.IsAuthorize.Should().BeTrue();
-        captured.Body.Should().NotBeNull();
+        captured.Body.Should().BeOfType<CreateCoffeeShopReviewRequest>();
+        captured.Body.Should().BeEquivalentTo(
+            new CreateCoffeeShopReviewRequest
+            {
+                CoffeeShopId = shopId,
+                IsPublic = true,
+                VisitedAt = default,
+                Note = "Great",
+                Rating = new CoffeePeek.Contract.Dtos.RatingDto
+                {
+                    Place = 5,
+                    Service = 4,
+                    Coffee = 5
+                }
+            },
+            options => options.Excluding(r => r.VisitedAt));
     }
 
     [Fact]
@@ -84,5 +101,19 @@ public class WebCoffeeShopReviewsClientTests
         captured.Should().NotBeNull();
         captured!.Endpoint.Should().Be($"api/CoffeeShopReviews/{reviewId:D}");
         captured.Method.Should().Be(HttpMethod.Delete);
+        captured.IsAuthorize.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CreateAsync_WhenScoreOutOfRange_ReturnsFailureWithoutSendingRequest()
+    {
+        var sut = CreateSut();
+
+        var result = await sut.CreateAsync(Guid.NewGuid(), new CreateCoffeeShopReviewInput(0, 4, 5, "Great"));
+
+        result.IsFailed.Should().BeTrue();
+        _executorMock.Verify(
+            e => e.Execute<CreateCoffeeShopReviewResultDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 }

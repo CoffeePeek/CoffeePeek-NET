@@ -369,6 +369,9 @@
     <data name="ShopDetail_DeleteReview" xml:space="preserve">
         <value>Delete</value>
     </data>
+    <data name="ShopDetail_NoReviewsYet" xml:space="preserve">
+        <value>No reviews yet</value>
+    </data>
     <data name="ShopDetail_ReviewActionFailed" xml:space="preserve">
         <value>Could not complete review action</value>
     </data>

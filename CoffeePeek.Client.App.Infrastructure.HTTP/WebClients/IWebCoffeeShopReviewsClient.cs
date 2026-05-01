@@ -11,11 +11,14 @@ public interface IWebCoffeeShopReviewsClient
 
     Task<Result<CreateCoffeeShopReviewResultDto>> CreateAsync(
         Guid shopId,
-        string? note,
-        int placeScore,
-        int serviceScore,
-        int coffeeScore,
+        CreateCoffeeShopReviewInput input,
         CancellationToken ct = default);
 
     Task<Result> DeleteAsync(Guid reviewId, CancellationToken ct = default);
 }
+
+public sealed record CreateCoffeeShopReviewInput(
+    int PlaceScore,
+    int ServiceScore,
+    int CoffeeScore,
+    string? Note = null);

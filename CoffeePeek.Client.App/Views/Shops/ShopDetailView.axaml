@@ -388,7 +388,7 @@
                             FontSize="13"
                             Foreground="{DynamicResource OnSurfaceVariantBrush}"
                             IsVisible="{Binding !HasReviews}"
-                            Text="{x:Static lang:Resources.Profile_NoReviewsYet}" />
+                            Text="{x:Static lang:Resources.ShopDetail_NoReviewsYet}" />
                         <ItemsControl ItemsSource="{Binding Reviews}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="shops:ShopReviewViewModel">
@@ -423,6 +423,7 @@
                                                         Command="{Binding $parent[shops:ShopDetailViewModel].DeleteReviewCommand}"
                                                         CommandParameter="{Binding .}"
                                                         Content="{x:Static lang:Resources.ShopDetail_DeleteReview}"
+                                                        IsEnabled="{Binding !$parent[shops:ShopDetailViewModel].IsDeletingReview}"
                                                         IsVisible="{Binding IsOwnReview}"
                                                         Padding="10,3" />
                                                 </StackPanel>

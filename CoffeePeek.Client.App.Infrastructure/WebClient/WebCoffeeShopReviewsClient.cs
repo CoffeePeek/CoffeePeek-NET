@@ -27,26 +27,28 @@ public sealed class WebCoffeeShopReviewsClient(IHttpCommandExecutor httpCommandE
 
     public Task<Result<CreateCoffeeShopReviewResultDto>> CreateAsync(
         Guid shopId,
-        string? note,
-        int placeScore,
-        int serviceScore,
-        int coffeeScore,
+        CreateCoffeeShopReviewInput input,
         CancellationToken ct = default)
     {
+        if (!IsValidScore(input.PlaceScore) || !IsValidScore(input.ServiceScore) || !IsValidScore(input.CoffeeScore))
+            return Task.FromResult(Result.Fail<CreateCoffeeShopReviewResultDto>("Review scores must be between 1 and 5."));
+
         var command = new HttpCommand()
             .WithMethod(HttpMethod.Post)
             .WithEndpoint("api/CheckIns")
             .WithBody(new CreateCoffeeShopReviewRequest
             {
                 CoffeeShopId = shopId,
+                // Current UI supports only public, immediate post-visit reviews. If private check-ins
+                // or back-dated reviews are added later, parameterize these fields in CreateAsync.
                 IsPublic = true,
                 VisitedAt = DateTime.UtcNow,
-                Note = note,
+                Note = input.Note,
                 Rating = new RatingDto
                 {
-                    Place = placeScore,
-                    Service = serviceScore,
-                    Coffee = coffeeScore
+                    Place = input.PlaceScore,
+                    Service = input.ServiceScore,
+                    Coffee = input.CoffeeScore
                 }
             })
             .Authorize();
@@ -63,4 +65,6 @@ public sealed class WebCoffeeShopReviewsClient(IHttpCommandExecutor httpCommandE
 
         return Execute(command, ct);
     }
+
+    private static bool IsValidScore(int score) => score is >= 1 and <= 5;
 }

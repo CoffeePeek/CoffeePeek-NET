@@ -132,7 +132,7 @@ public partial class ShopDetailViewModel : ViewModelBase
     partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
     partial void OnReviewErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasReviewError));
 
-    public async Task LoadAsync(Guid shopId)
+    public async Task LoadAsync(Guid shopId, CancellationToken ct = default)
     {
         _shopId = shopId;
         IsLoading = true;
@@ -141,7 +141,7 @@ public partial class ShopDetailViewModel : ViewModelBase
 
         try
         {
-            var result = await _shopsClient.GetByIdAsync(shopId);
+            var result = await _shopsClient.GetByIdAsync(shopId, ct);
 
             if (result.IsFailed)
             {
@@ -151,7 +151,7 @@ public partial class ShopDetailViewModel : ViewModelBase
 
             var shop = result.Value.ShopDto;
             MapFromDto(shop);
-            await LoadReviewPermissionsAsync(shopId);
+            await LoadReviewPermissionsAsync(shopId, ct);
         }
         finally
         {
@@ -162,8 +162,8 @@ public partial class ShopDetailViewModel : ViewModelBase
     [RelayCommand]
     private void GoBack() => _shellNavigator.CloseShopDetail();
 
-    [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task SubmitReviewAsync()
+    [RelayCommand]
+    private async Task SubmitReviewAsync(CancellationToken ct = default)
     {
         if (_shopId is null || !CanCreateReview)
             return;
@@ -175,10 +175,8 @@ public partial class ShopDetailViewModel : ViewModelBase
         {
             var createResult = await _reviewsClient.CreateAsync(
                 _shopId.Value,
-                NewReviewComment,
-                PlaceScore,
-                ServiceScore,
-                CoffeeScore);
+                new CreateCoffeeShopReviewInput(PlaceScore, ServiceScore, CoffeeScore, NewReviewComment),
+                ct);
 
             if (createResult.IsFailed)
             {
@@ -186,8 +184,8 @@ public partial class ShopDetailViewModel : ViewModelBase
                 return;
             }
 
-            await LoadAsync(_shopId.Value);
             NewReviewComment = string.Empty;
+            await RefreshReviewsAsync(_shopId.Value, ct);
         }
         finally
         {
@@ -195,8 +193,8 @@ public partial class ShopDetailViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task DeleteReviewAsync(ShopReviewViewModel? review)
+    [RelayCommand]
+    private async Task DeleteReviewAsync(ShopReviewViewModel? review, CancellationToken ct = default)
     {
         if (_shopId is null || review is null || !review.IsOwnReview)
             return;
@@ -206,14 +204,14 @@ public partial class ShopDetailViewModel : ViewModelBase
 
         try
         {
-            var result = await _reviewsClient.DeleteAsync(review.Id);
+            var result = await _reviewsClient.DeleteAsync(review.Id, ct);
             if (result.IsFailed)
             {
                 ReviewErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.ShopDetail_ReviewActionFailed;
                 return;
             }
 
-            await LoadAsync(_shopId.Value);
+            await RefreshReviewsAsync(_shopId.Value, ct);
         }
         finally
         {
@@ -281,18 +279,41 @@ public partial class ShopDetailViewModel : ViewModelBase
                 Schedule.Add(ScheduleLineViewModel.From(s));
         }
 
-        Reviews.Clear();
-        HasReviews = dto.Reviews is { Length: > 0 };
-        if (dto.Reviews is not null)
-        {
-            foreach (var r in dto.Reviews)
-                Reviews.Add(ShopReviewViewModel.From(r, currentUserId));
-        }
+        MapReviewStateFromDto(dto, currentUserId);
     }
 
-    private async Task LoadReviewPermissionsAsync(Guid shopId)
+    private async Task RefreshReviewsAsync(Guid shopId, CancellationToken ct)
     {
-        var permissionResult = await _reviewsClient.CanCreateAsync(shopId);
+        var result = await _shopsClient.GetByIdAsync(shopId, ct);
+        if (result.IsFailed)
+        {
+            ReviewErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.ShopDetail_ReviewActionFailed;
+            return;
+        }
+
+        var currentUserId = _identityAccessor.GetCurrentUserIdOrNull();
+        MapReviewStateFromDto(result.Value.ShopDto, currentUserId);
+        await LoadReviewPermissionsAsync(shopId, ct);
+    }
+
+    private void MapReviewStateFromDto(CoffeeShopDetailsDto dto, Guid? currentUserId)
+    {
+        Rating = (double)dto.Rating;
+        RatingLabel = dto.Rating.ToString("0.0", CultureInfo.InvariantCulture);
+        ReviewCount = dto.ReviewCount;
+
+        Reviews.Clear();
+        HasReviews = dto.Reviews is { Length: > 0 };
+        if (dto.Reviews is null)
+            return;
+
+        foreach (var r in dto.Reviews)
+            Reviews.Add(ShopReviewViewModel.From(r, currentUserId));
+    }
+
+    private async Task LoadReviewPermissionsAsync(Guid shopId, CancellationToken ct)
+    {
+        var permissionResult = await _reviewsClient.CanCreateAsync(shopId, ct);
         if (permissionResult.IsFailed)
         {
             CanCreateReview = false;

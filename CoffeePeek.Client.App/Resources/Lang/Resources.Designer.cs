@@ -747,6 +747,12 @@ namespace CoffeePeek.Client.App.Resources.Lang {
             }
         }
 
+        public static string ShopDetail_NoReviewsYet {
+            get {
+                return ResourceManager.GetString("ShopDetail_NoReviewsYet", resourceCulture);
+            }
+        }
+
         public static string ShopDetail_ReviewActionFailed {
             get {
                 return ResourceManager.GetString("ShopDetail_ReviewActionFailed", resourceCulture);
