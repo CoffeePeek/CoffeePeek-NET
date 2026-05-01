@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Net.Http;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
@@ -55,7 +56,16 @@ public partial class ShopCardViewModel : ViewModelBase
 
     public ObservableCollection<string> Tags { get; } = [];
 
-    public void ReleaseCover() => CoverBitmap = null;
+    public Task ReleaseCoverAsync() =>
+        Dispatcher.UIThread.CheckAccess()
+            ? ReleaseCoverOnCurrentThreadAsync()
+            : Dispatcher.UIThread.InvokeAsync(ReleaseCoverOnCurrentThreadAsync);
+
+    private Task ReleaseCoverOnCurrentThreadAsync()
+    {
+        CoverBitmap = null;
+        return Task.CompletedTask;
+    }
 
     public async Task LoadCoverAsync(HttpClient http, ApiOptions apiOptions, CancellationToken ct = default)
     {
@@ -75,15 +85,27 @@ public partial class ShopCardViewModel : ViewModelBase
             await stream.CopyToAsync(ms, ct).ConfigureAwait(false);
             ms.Position = 0;
 
-            if (ct.IsCancellationRequested)
-                return;
+            ct.ThrowIfCancellationRequested();
 
             var bitmap = new Bitmap(ms);
-            await Dispatcher.UIThread.InvokeAsync(() => CoverBitmap = bitmap);
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+                await Dispatcher.UIThread.InvokeAsync(() => CoverBitmap = bitmap, default, ct);
+            }
+            catch
+            {
+                bitmap.Dispose();
+                throw;
+            }
         }
-        catch
+        catch (OperationCanceledException)
         {
-            // Missing or invalid shop art should not break the grid.
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to load shop cover '{CoverImageUrl}': {ex}");
         }
     }
 
@@ -91,6 +113,9 @@ public partial class ShopCardViewModel : ViewModelBase
     {
         if (Uri.TryCreate(url, UriKind.Absolute, out var absolute))
             return absolute;
+
+        if (string.IsNullOrWhiteSpace(apiOptions.BaseAddress))
+            return null;
 
         var baseAddr = apiOptions.BaseAddress.TrimEnd('/');
         var path = url.TrimStart('/');
@@ -128,7 +153,11 @@ public partial class ShopCardViewModel : ViewModelBase
             if (vm.Tags.Count >= 2 || string.IsNullOrWhiteSpace(s))
                 return;
 
-            vm.Tags.Add(s.Trim().ToUpperInvariant());
+            var tag = s.Trim().ToUpperInvariant();
+            if (vm.Tags.Contains(tag, StringComparer.OrdinalIgnoreCase))
+                return;
+
+            vm.Tags.Add(tag);
         }
 
         if (dto.Roasters is not null)

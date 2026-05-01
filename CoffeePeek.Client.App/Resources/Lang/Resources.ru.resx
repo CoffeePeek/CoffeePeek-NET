@@ -110,7 +110,7 @@
     <data name="Settings_ThemeDark" xml:space="preserve">
         <value>Тёмная</value>
     </data>
-    <data name="Settings_Close" xml:space="preserve">
+    <data name="Settings_Back" xml:space="preserve">
         <value>Назад</value>
     </data>
     <data name="Placeholder_Favorites_Title" xml:space="preserve">
@@ -501,7 +501,7 @@
         <value>2,4 тыс.+ активных бариста</value>
     </data>
     <data name="WelcomePage_Footer_Copyright" xml:space="preserve">
-        <value>© 2026 CoffeePeek. С любовью к кофе.</value>
+        <value>CoffeePeek. С любовью к кофе.</value>
     </data>
     <data name="WelcomePage_Footer_Privacy" xml:space="preserve">
         <value>Конфиденциальность</value>
@@ -519,7 +519,7 @@
         <value>Ваше утро — идеальный помол.</value>
     </data>
     <data name="Auth_LoginHeroSub" xml:space="preserve">
-        <value>Погрузитесь в аромат культуры спешелти. Зёрно уже ждёт.</value>
+        <value>Погрузитесь в аромат культуры спешелти. Зерно уже ждёт.</value>
     </data>
     <data name="Auth_EmailHeroTagline" xml:space="preserve">
         <value>Создано для уюта, налито для вас.</value>
@@ -558,7 +558,7 @@
         <value>Apple</value>
     </data>
     <data name="Auth_FooterCrafted" xml:space="preserve">
-        <value>© 2026 CoffeePeek. Создано для уюта.</value>
+        <value>CoffeePeek. Создано для уюта.</value>
     </data>
     <data name="Auth_CookieSettings" xml:space="preserve">
         <value>Настройки cookie</value>

@@ -1,4 +1,3 @@
-using Avalonia.Styling;
 using CoffeePeek.Client.App.Core.Settings;
 using CoffeePeek.Client.App.Services;
 using CoffeePeek.Client.App.ViewModels.Abstract;
@@ -28,6 +27,7 @@ public partial class SettingsViewModel(
 {
     private bool _suppressPersist;
     private bool _syncingRow;
+    private CancellationTokenSource? _persistThemeCts;
 
     public ThemeRow[] ThemeRows { get; } =
     [
@@ -45,12 +45,7 @@ public partial class SettingsViewModel(
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
         var stored = await localUserSettings.GetThemePreferenceAsync(cancellationToken).ConfigureAwait(false);
-        var pick = stored switch
-        {
-            "Dark" => ThemePreferencePick.Dark,
-            "Light" => ThemePreferencePick.Light,
-            _ => ThemePreferencePick.System
-        };
+        var pick = ThemePreferenceMapper.ToPick(stored);
 
         _suppressPersist = true;
         _syncingRow = true;
@@ -72,7 +67,10 @@ public partial class SettingsViewModel(
         if (_suppressPersist)
             return;
 
-        _ = PersistThemeAsync(value);
+        _persistThemeCts?.Cancel();
+        _persistThemeCts?.Dispose();
+        _persistThemeCts = new CancellationTokenSource();
+        _ = PersistThemeAsync(value, _persistThemeCts.Token);
     }
 
     partial void OnSelectedThemeRowChanged(ThemeRow? value)
@@ -84,25 +82,18 @@ public partial class SettingsViewModel(
             SelectedTheme = value.Pick;
     }
 
-    private async Task PersistThemeAsync(ThemePreferencePick pick)
+    private async Task PersistThemeAsync(ThemePreferencePick pick, CancellationToken cancellationToken)
     {
-        string? stored = pick switch
+        try
         {
-            ThemePreferencePick.Dark => "Dark",
-            ThemePreferencePick.Light => "Light",
-            _ => null
-        };
-
-        await localUserSettings.SetThemePreferenceAsync(stored).ConfigureAwait(false);
-
-        var variant = pick switch
+            var stored = ThemePreferenceMapper.ToStorageValue(pick);
+            await localUserSettings.SetThemePreferenceAsync(stored, cancellationToken).ConfigureAwait(false);
+            themeController.ApplyTheme(ThemePreferenceMapper.ToVariant(stored));
+        }
+        catch (OperationCanceledException)
         {
-            ThemePreferencePick.Dark => ThemeVariant.Dark,
-            ThemePreferencePick.Light => ThemeVariant.Light,
-            _ => ThemeVariant.Default
-        };
-
-        themeController.ApplyTheme(variant);
+            // A newer theme selection superseded this persistence request.
+        }
     }
 
     [RelayCommand]
@@ -112,5 +103,5 @@ public partial class SettingsViewModel(
 
     public string ThemeSectionTitle => Lang.Settings_ThemeSection;
 
-    public string CloseLabel => Lang.Settings_Close;
+    public string CloseLabel => Lang.Settings_Back;
 }

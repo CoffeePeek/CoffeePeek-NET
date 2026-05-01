@@ -14,7 +14,7 @@
             Grid.Row="0"
             Background="{DynamicResource SurfaceContainerLowBrush}"
             Padding="16,12">
-            <Grid ColumnDefinitions="Auto,*,Auto">
+            <Grid ColumnDefinitions="Auto,*">
                 <Button
                     Grid.Column="0"
                     Classes="Transparent"
@@ -22,14 +22,9 @@
                     Padding="12,8">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon
-                            Data="{StaticResource ArrowRightIcon}"
+                            Data="{StaticResource ArrowLeftIcon}"
                             Height="18"
-                            Width="18"
-                            RenderTransformOrigin="50%,50%">
-                            <PathIcon.RenderTransform>
-                                <RotateTransform Angle="180" />
-                            </PathIcon.RenderTransform>
-                        </PathIcon>
+                            Width="18" />
                         <TextBlock Text="{Binding CloseLabel}" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
@@ -52,24 +47,12 @@
                     Foreground="{DynamicResource OnSurfaceBrush}"
                     Text="{Binding ThemeSectionTitle}" />
                 <ListBox
+                    Classes="flat"
                     Background="Transparent"
                     BorderThickness="0"
                     ItemsSource="{Binding ThemeRows}"
                     SelectedItem="{Binding SelectedThemeRow}"
                     SelectionMode="Single">
-                    <ListBox.Styles>
-                        <Style Selector="ListBoxItem">
-                            <Setter Property="Padding" Value="0" />
-                            <Setter Property="Margin" Value="0,0,0,8" />
-                            <Setter Property="Background" Value="Transparent" />
-                        </Style>
-                        <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-                            <Setter Property="Background" Value="Transparent" />
-                        </Style>
-                        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                            <Setter Property="Background" Value="Transparent" />
-                        </Style>
-                    </ListBox.Styles>
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="home:ThemeRow">
                             <Border

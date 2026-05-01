@@ -67,8 +67,11 @@ public partial class HeaderViewModel : ViewModelBase
         {
             int i => i,
             string s when int.TryParse(s, out var n) => n,
-            _ => 0
+            _ => -1
         };
+
+        if (tabIndex < 0 || tabIndex >= MainTabTitles.Length)
+            return;
 
         if (MainTabs.SelectedIndex == tabIndex)
             return;

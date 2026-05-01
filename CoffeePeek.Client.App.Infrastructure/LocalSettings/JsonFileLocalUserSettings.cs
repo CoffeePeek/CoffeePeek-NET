@@ -85,10 +85,21 @@ public sealed class JsonFileLocalUserSettings(LocalUserSettingsOptions options) 
         if (!File.Exists(path))
             return new UserSettingsDocument();
 
-        await using var stream = File.OpenRead(path);
-        var doc = await JsonSerializer.DeserializeAsync<UserSettingsDocument>(stream, JsonOptions, cancellationToken)
-            .ConfigureAwait(false);
-        return doc ?? new UserSettingsDocument();
+        try
+        {
+            await using var stream = File.OpenRead(path);
+            var doc = await JsonSerializer.DeserializeAsync<UserSettingsDocument>(stream, JsonOptions, cancellationToken)
+                .ConfigureAwait(false);
+            return doc ?? new UserSettingsDocument();
+        }
+        catch (JsonException)
+        {
+            return new UserSettingsDocument();
+        }
+        catch (IOException)
+        {
+            return new UserSettingsDocument();
+        }
     }
 
     private async Task SaveDocumentUnlockedAsync(UserSettingsDocument doc, CancellationToken cancellationToken)
@@ -98,8 +109,10 @@ public sealed class JsonFileLocalUserSettings(LocalUserSettingsOptions options) 
         if (!string.IsNullOrEmpty(directory))
             Directory.CreateDirectory(directory);
 
-        await File.WriteAllTextAsync(path, JsonSerializer.Serialize(doc, JsonOptions), cancellationToken)
+        var tempPath = path + ".tmp";
+        await File.WriteAllTextAsync(tempPath, JsonSerializer.Serialize(doc, JsonOptions), cancellationToken)
             .ConfigureAwait(false);
+        File.Move(tempPath, path, overwrite: true);
     }
 
     private string GetFilePath()
@@ -113,11 +126,11 @@ public sealed class JsonFileLocalUserSettings(LocalUserSettingsOptions options) 
         if (string.IsNullOrWhiteSpace(theme))
             return null;
 
-        if (string.Equals(theme, "Light", StringComparison.OrdinalIgnoreCase))
-            return "Light";
+        if (string.Equals(theme, ThemePreferenceValues.Light, StringComparison.OrdinalIgnoreCase))
+            return ThemePreferenceValues.Light;
 
-        if (string.Equals(theme, "Dark", StringComparison.OrdinalIgnoreCase))
-            return "Dark";
+        if (string.Equals(theme, ThemePreferenceValues.Dark, StringComparison.OrdinalIgnoreCase))
+            return ThemePreferenceValues.Dark;
 
         return null;
     }

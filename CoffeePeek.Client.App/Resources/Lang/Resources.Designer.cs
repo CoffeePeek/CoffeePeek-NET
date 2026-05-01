@@ -759,9 +759,9 @@ namespace CoffeePeek.Client.App.Resources.Lang {
             }
         }
         
-        public static string Settings_Close {
+        public static string Settings_Back {
             get {
-                return ResourceManager.GetString("Settings_Close", resourceCulture);
+                return ResourceManager.GetString("Settings_Back", resourceCulture);
             }
         }
         

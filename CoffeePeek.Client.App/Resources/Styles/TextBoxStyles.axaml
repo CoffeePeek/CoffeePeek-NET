@@ -27,7 +27,6 @@
 
     <Style Selector="TextBox:pointerover">
         <Setter Property="BorderBrush" Value="{DynamicResource TextBoxHoverBorderBrush}" />
-        <Setter Property="BorderThickness" Value="{StaticResource TextBoxBorderThickness}" />
     </Style>
 
     <Style Selector="TextBox:focus">
@@ -37,15 +36,8 @@
     <Style Selector="TextBox:disabled">
         <Setter Property="Background" Value="{DynamicResource TextBoxDisabledSurfaceBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource TextBoxDisabledBorderBrush}" />
-        <Setter Property="BorderThickness" Value="{StaticResource TextBoxBorderThickness}" />
         <Setter Property="Foreground" Value="{DynamicResource TextBoxDisabledForegroundBrush}" />
         <Setter Property="PlaceholderForeground" Value="{DynamicResource TextBoxDisabledForegroundBrush}" />
-    </Style>
-
-    <Style Selector="TextBox:error">
-        <Setter Property="BorderBrush" Value="{DynamicResource TextBoxErrorBorderBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextBoxErrorForegroundBrush}" />
-        <Setter Property="PlaceholderForeground" Value="{DynamicResource TextBoxErrorForegroundBrush}" />
     </Style>
 
     <!--  Auth / register / welcome: same chrome as default, slightly taller touch target  -->

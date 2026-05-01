@@ -60,7 +60,7 @@
             FontSize="20"
             FontWeight="Normal"
             LetterSpacing="1"
-            Text="COFFEEPEEK" />
+            Text="{x:Static lang:Resources.ApplicationName}" />
 
         <ScrollViewer
             Grid.Column="1"
@@ -86,7 +86,10 @@
             VerticalAlignment="Center"
             Orientation="Horizontal"
             Spacing="4">
-            <Button Classes="header-icon-button">
+            <Button
+                Classes="header-icon-button"
+                IsEnabled="False"
+                ToolTip.Tip="Notifications coming soon">
                 <PathIcon
                     Data="{StaticResource BellIcon}"
                     Foreground="{DynamicResource OnSurfaceBrush}"

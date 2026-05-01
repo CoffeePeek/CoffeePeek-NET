@@ -1,5 +1,5 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!--  Design-system radii: default 1rem, xl 3rem for hero / bento shells.  -->
+    <!--  Design-system radii: small 8px / 0.5rem, default 16px / 1rem, large 32px / 2rem, super 48px / 3rem.  -->
     <Thickness x:Key="DefaultThickness">0.6</Thickness>
     <Thickness x:Key="TextBoxBorderThickness">1</Thickness>
 
@@ -12,4 +12,5 @@
     <CornerRadius x:Key="LargeRadius">32</CornerRadius>
     <CornerRadius x:Key="DefaultCornerRadius">16</CornerRadius>
     <CornerRadius x:Key="SmallCornerRadius">8</CornerRadius>
+    <CornerRadius x:Key="PillRadius">9999</CornerRadius>
 </ResourceDictionary>

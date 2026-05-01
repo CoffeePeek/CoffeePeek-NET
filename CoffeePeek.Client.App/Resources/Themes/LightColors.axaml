@@ -17,6 +17,9 @@
 
     <Color x:Key="OutlineColor">#837563</Color>
     <Color x:Key="OutlineVariantColor">#D5C4AF</Color>
+    <Color x:Key="DisabledSurfaceColor">#EDE6DC</Color>
+    <Color x:Key="DisabledBorderColor">#DDD5CA</Color>
+    <Color x:Key="DisabledForegroundColor">#B0A69A</Color>
 
     <Color x:Key="ErrorColor">#BA1A1A</Color>
     <Color x:Key="OnErrorSurfaceColor">#93000A</Color>
@@ -71,22 +74,22 @@
     <SolidColorBrush Color="{StaticResource SurfaceColor}" x:Key="AuthPageBackgroundBrush" />
     <SolidColorBrush Color="{StaticResource SurfaceContainerColor}" x:Key="AuthCardBackgroundBrush" />
     <SolidColorBrush Color="Transparent" x:Key="AuthCardBorderBrush" />
-    <SolidColorBrush Color="#19BA1A1A" x:Key="AuthErrorBackgroundBrush" />
-    <SolidColorBrush Color="#33BA1A1A" x:Key="AuthErrorBorderBrush" />
+    <SolidColorBrush Color="{StaticResource ErrorColor}" Opacity="0.098" x:Key="AuthErrorBackgroundBrush" />
+    <SolidColorBrush Color="{StaticResource ErrorColor}" Opacity="0.2" x:Key="AuthErrorBorderBrush" />
     <SolidColorBrush Color="{StaticResource OnErrorSurfaceColor}" x:Key="AuthErrorForegroundBrush" />
     <SolidColorBrush Color="{StaticResource PrimaryContainerColor}" x:Key="AuthLinkBrush" />
     <SolidColorBrush Color="{StaticResource SurfaceColor}" x:Key="AppBackgroundBrush" />
     <!-- TextBox / text inputs: pill fields (normal → hover → focus amber → disabled → error red) -->
-    <SolidColorBrush Color="#FFFFFF" x:Key="TextBoxSurfaceBrush" />
-    <SolidColorBrush Color="#C9BFB2" x:Key="TextBoxBorderBrush" />
-    <SolidColorBrush Color="#3D362C" x:Key="TextBoxHoverBorderBrush" />
-    <SolidColorBrush Color="#FFB74D" x:Key="TextBoxFocusBorderBrush" />
-    <SolidColorBrush Color="#8A8072" x:Key="TextBoxPlaceholderBrush" />
-    <SolidColorBrush Color="#EDE6DC" x:Key="TextBoxDisabledSurfaceBrush" />
-    <SolidColorBrush Color="#DDD5CA" x:Key="TextBoxDisabledBorderBrush" />
-    <SolidColorBrush Color="#B0A69A" x:Key="TextBoxDisabledForegroundBrush" />
-    <SolidColorBrush Color="#B00020" x:Key="TextBoxErrorBorderBrush" />
-    <SolidColorBrush Color="#B00020" x:Key="TextBoxErrorForegroundBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainerLowestColor}" x:Key="TextBoxSurfaceBrush" />
+    <SolidColorBrush Color="{StaticResource OutlineVariantColor}" x:Key="TextBoxBorderBrush" />
+    <SolidColorBrush Color="{StaticResource OnSurfaceColor}" x:Key="TextBoxHoverBorderBrush" />
+    <SolidColorBrush Color="{StaticResource PrimaryContainerColor}" x:Key="TextBoxFocusBorderBrush" />
+    <SolidColorBrush Color="{StaticResource OutlineColor}" x:Key="TextBoxPlaceholderBrush" />
+    <SolidColorBrush Color="{StaticResource DisabledSurfaceColor}" x:Key="TextBoxDisabledSurfaceBrush" />
+    <SolidColorBrush Color="{StaticResource DisabledBorderColor}" x:Key="TextBoxDisabledBorderBrush" />
+    <SolidColorBrush Color="{StaticResource DisabledForegroundColor}" x:Key="TextBoxDisabledForegroundBrush" />
+    <SolidColorBrush Color="{StaticResource ErrorColor}" x:Key="TextBoxErrorBorderBrush" />
+    <SolidColorBrush Color="{StaticResource OnErrorSurfaceColor}" x:Key="TextBoxErrorForegroundBrush" />
 
     <Color x:Key="ShopDetailSidebarDarkColor">#2A241E</Color>
     <SolidColorBrush Color="{StaticResource ShopDetailSidebarDarkColor}" x:Key="ShopDetailSidebarDarkBrush" />

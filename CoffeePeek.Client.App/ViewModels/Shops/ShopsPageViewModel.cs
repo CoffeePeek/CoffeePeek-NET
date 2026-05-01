@@ -35,6 +35,7 @@ public partial class ShopsPageViewModel : ViewModelBase
     private const int PageSize = 10;
 
     private CancellationTokenSource? _searchCts;
+    private CancellationTokenSource? _coverCts;
     private bool _suppressSearchDebounce;
     private bool _initialLoadDone;
 
@@ -169,10 +170,11 @@ public partial class ShopsPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task LoadShopsAsync()
+    private async Task LoadShopsAsync(CancellationToken ct = default)
     {
         ErrorMessage = null;
         IsLoading = true;
+        ResetCoverCancellation();
 
         try
         {
@@ -184,7 +186,8 @@ public partial class ShopsPageViewModel : ViewModelBase
                 _brewMethodFilters.SelectedIds,
                 _equipmentFilters.SelectedIds,
                 _currentPage,
-                PageSize);
+                PageSize,
+                ct);
 
             if (result.IsFailed)
             {
@@ -201,13 +204,10 @@ public partial class ShopsPageViewModel : ViewModelBase
             {
                 var card = ShopCardViewModel.FromDto(dto);
                 Shops.Add(card);
-                _ = card.LoadCoverAsync(_httpClient, _apiOptions);
+                StartCoverLoad(card);
             }
 
             OnPropertyChanged(nameof(HasMorePages));
-            OnPropertyChanged(nameof(HasEmptyShops));
-            OnPropertyChanged(nameof(ShowShopGrid));
-            OnPropertyChanged(nameof(ShowLoadMoreButton));
         }
         finally
         {
@@ -216,7 +216,7 @@ public partial class ShopsPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task LoadNextPageAsync()
+    private async Task LoadNextPageAsync(CancellationToken ct = default)
     {
         if (!HasMorePages || IsLoading)
             return;
@@ -235,7 +235,8 @@ public partial class ShopsPageViewModel : ViewModelBase
                 _brewMethodFilters.SelectedIds,
                 _equipmentFilters.SelectedIds,
                 _currentPage,
-                PageSize);
+                PageSize,
+                ct);
 
             if (result.IsFailed)
             {
@@ -251,13 +252,10 @@ public partial class ShopsPageViewModel : ViewModelBase
             {
                 var card = ShopCardViewModel.FromDto(dto);
                 Shops.Add(card);
-                _ = card.LoadCoverAsync(_httpClient, _apiOptions);
+                StartCoverLoad(card);
             }
 
             OnPropertyChanged(nameof(HasMorePages));
-            OnPropertyChanged(nameof(HasEmptyShops));
-            OnPropertyChanged(nameof(ShowShopGrid));
-            OnPropertyChanged(nameof(ShowLoadMoreButton));
         }
         finally
         {
@@ -356,10 +354,11 @@ public partial class ShopsPageViewModel : ViewModelBase
     [RelayCommand]
     private void ToggleAdditionalFilters() => IsAdditionalFiltersPanelOpen = !IsAdditionalFiltersPanelOpen;
 
-    [RelayCommand]
+    private bool CanBrowseMap => false;
+
+    [RelayCommand(CanExecute = nameof(CanBrowseMap))]
     private static void BrowseMap()
     {
-        // Full-screen map shell is not wired yet; reserved for Near Me / FAB.
     }
 
     [RelayCommand]
@@ -401,7 +400,7 @@ public partial class ShopsPageViewModel : ViewModelBase
         {
             await Task.Delay(350, token);
             _currentPage = 1;
-            await LoadShopsAsync();
+            await LoadShopsAsync(token);
         }
         catch (OperationCanceledException)
         {
@@ -439,6 +438,31 @@ public partial class ShopsPageViewModel : ViewModelBase
     private void ReleaseShopCovers()
     {
         foreach (var s in Shops)
-            s.ReleaseCover();
+            _ = s.ReleaseCoverAsync();
+    }
+
+    private void ResetCoverCancellation()
+    {
+        _coverCts?.Cancel();
+        _coverCts?.Dispose();
+        _coverCts = new CancellationTokenSource();
+    }
+
+    private void StartCoverLoad(ShopCardViewModel card)
+    {
+        var token = _coverCts?.Token ?? CancellationToken.None;
+        _ = LoadCoverObservedAsync(card, token);
+    }
+
+    private async Task LoadCoverObservedAsync(ShopCardViewModel card, CancellationToken token)
+    {
+        try
+        {
+            await card.LoadCoverAsync(_httpClient, _apiOptions, token);
+        }
+        catch (OperationCanceledException)
+        {
+            // A newer catalog load superseded this cover request.
+        }
     }
 }

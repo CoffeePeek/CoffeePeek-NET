@@ -17,6 +17,9 @@
 
     <Color x:Key="OutlineColor">#9E8E7B</Color>
     <Color x:Key="OutlineVariantColor">#514535</Color>
+    <Color x:Key="DisabledSurfaceColor">#100E0C</Color>
+    <Color x:Key="DisabledBorderColor">#3D3832</Color>
+    <Color x:Key="DisabledForegroundColor">#6B635C</Color>
 
     <Color x:Key="ErrorColor">#FFB4AB</Color>
     <Color x:Key="OnErrorSurfaceColor">#690005</Color>
@@ -84,14 +87,13 @@
     <SolidColorBrush Color="#FFB74D" x:Key="TextBoxFocusBorderBrush" />
     <SolidColorBrush Color="#9A8F82" x:Key="TextBoxPlaceholderBrush" />
     <SolidColorBrush Color="{StaticResource SurfaceContainerLowestColor}" x:Key="TextBoxDisabledSurfaceBrush" />
-    <SolidColorBrush Color="#3D3832" x:Key="TextBoxDisabledBorderBrush" />
-    <SolidColorBrush Color="#6B635C" x:Key="TextBoxDisabledForegroundBrush" />
-    <SolidColorBrush Color="#FF8A80" x:Key="TextBoxErrorBorderBrush" />
-    <SolidColorBrush Color="#FF8A80" x:Key="TextBoxErrorForegroundBrush" />
+    <SolidColorBrush Color="{StaticResource DisabledBorderColor}" x:Key="TextBoxDisabledBorderBrush" />
+    <SolidColorBrush Color="{StaticResource DisabledForegroundColor}" x:Key="TextBoxDisabledForegroundBrush" />
+    <SolidColorBrush Color="{StaticResource ErrorColor}" x:Key="TextBoxErrorBorderBrush" />
+    <SolidColorBrush Color="{StaticResource ErrorColor}" x:Key="TextBoxErrorForegroundBrush" />
 
-    <Color x:Key="ShopDetailSidebarDarkColor">#100E0C</Color>
-    <SolidColorBrush Color="{StaticResource ShopDetailSidebarDarkColor}" x:Key="ShopDetailSidebarDarkBrush" />
-    <SolidColorBrush Color="#FBEFE2" x:Key="ShopDetailSidebarOnDarkBrush" />
+    <SolidColorBrush Color="{StaticResource SurfaceContainerLowestColor}" x:Key="ShopDetailSidebarDarkBrush" />
+    <SolidColorBrush Color="{StaticResource OnSurfaceColor}" x:Key="ShopDetailSidebarOnDarkBrush" />
     <SolidColorBrush Color="{StaticResource PrimaryColor}" x:Key="ShopDetailSidebarAccentBrush" />
     <SolidColorBrush Color="#81C784" x:Key="ShopDetailOpenDotBrush" />
 </ResourceDictionary>

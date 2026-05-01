@@ -34,7 +34,6 @@
             Content="{x:Static lang:Resources.ShopPage_LoadMore}"
             HorizontalAlignment="Center"
             IsVisible="{Binding ShowLoadMoreButton}"
-            Margin="0,8,0,32"
-            Padding="24,10" />
+            Margin="0,8,0,32" />
     </StackPanel>
 </UserControl>

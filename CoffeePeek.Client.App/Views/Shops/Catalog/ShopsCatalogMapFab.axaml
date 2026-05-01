@@ -11,7 +11,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Panel IsHitTestVisible="False" ZIndex="20">
         <Button
-            Background="{DynamicResource AuthLinkBrush}"
+            Background="{DynamicResource PrimaryBrush}"
             Command="{Binding BrowseMapCommand}"
             CornerRadius="32"
             Height="56"
@@ -23,7 +23,7 @@
             Width="56">
         <PathIcon
             Data="{StaticResource MapIcon}"
-            Foreground="{DynamicResource OnSurfaceBrush}"
+            Foreground="{DynamicResource OnPrimaryBrush}"
             Height="26"
             Width="26" />
         </Button>

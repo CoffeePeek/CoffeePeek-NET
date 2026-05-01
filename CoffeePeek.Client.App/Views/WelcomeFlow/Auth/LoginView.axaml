@@ -20,7 +20,7 @@
             Background="{DynamicResource SurfaceLowestBrush}"
             BorderThickness="0"
             Command="{Binding ToggleThemeCommand}"
-            CornerRadius="9999"
+            CornerRadius="{StaticResource PillRadius}"
             Grid.Row="0"
             HorizontalAlignment="Right"
             Margin="0,16,16,0"
@@ -46,7 +46,7 @@
 
         <ScrollViewer
             Grid.Row="0"
-            HorizontalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Disabled"
             VerticalScrollBarVisibility="Auto"
             ZIndex="5">
             <Border
@@ -135,7 +135,7 @@
                                     Classes="Secondary"
                                     Command="{Binding GoBackCommand}"
                                     Content="{x:Static lang:Resources.Common_Back}"
-                                    CornerRadius="9999"
+                                    CornerRadius="{StaticResource PillRadius}"
                                     HorizontalAlignment="Left"
                                     Padding="14,8" />
 
@@ -258,11 +258,12 @@
 
                                 <Button
                                     Command="{Binding LoginCommand}"
-                                    CornerRadius="9999"
+                                    CornerRadius="{StaticResource PillRadius}"
                                     FontSize="16"
                                     FontWeight="Normal"
                                     HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Center"
+                                    IsEnabled="{Binding !LoginCommand.IsRunning}"
                                     MinHeight="52">
                                     <Panel>
                                         <StackPanel
@@ -359,6 +360,7 @@
                         FontFamily="{StaticResource RFDewiExpanded}"
                         FontSize="12"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        IsEnabled="False"
                         Padding="0" />
                     <Button
                         Classes="Transparent"
@@ -366,6 +368,7 @@
                         FontFamily="{StaticResource RFDewiExpanded}"
                         FontSize="12"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        IsEnabled="False"
                         Padding="0" />
                     <Button
                         Classes="Transparent"
@@ -373,6 +376,7 @@
                         FontFamily="{StaticResource RFDewiExpanded}"
                         FontSize="12"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        IsEnabled="False"
                         Padding="0" />
                 </StackPanel>
             </Grid>

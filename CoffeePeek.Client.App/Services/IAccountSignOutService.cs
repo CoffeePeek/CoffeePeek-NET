@@ -1,6 +1,8 @@
+using FluentResults;
+
 namespace CoffeePeek.Client.App.Services;
 
 public interface IAccountSignOutService
 {
-    Task SignOutAsync(CancellationToken cancellationToken = default);
+    Task<Result> SignOutAsync(CancellationToken cancellationToken = default);
 }

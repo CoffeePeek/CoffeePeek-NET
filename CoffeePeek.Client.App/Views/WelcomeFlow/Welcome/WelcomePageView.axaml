@@ -39,7 +39,7 @@
             Background="{DynamicResource SurfaceLowestBrush}"
             BorderThickness="0"
             Command="{Binding ToggleThemeCommand}"
-            CornerRadius="9999"
+            CornerRadius="{StaticResource PillRadius}"
             HorizontalAlignment="Right"
             Margin="0,20,20,0"
             Padding="12"
@@ -115,22 +115,22 @@
                         </StackPanel>
                         <Button
                             Classes="Transparent"
-                            Command="{Binding GoToLoginCommand}"
                             Content="{x:Static lang:Resources.WelcomePage_Nav_Cafes}"
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="15"
                             FontWeight="Normal"
                             Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            IsEnabled="False"
                             Padding="0"
                             VerticalAlignment="Center" />
                         <Button
                             Classes="Transparent"
-                            Command="{Binding GoToRegisterCommand}"
                             Content="{x:Static lang:Resources.WelcomePage_Nav_Community}"
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="15"
                             FontWeight="Normal"
                             Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            IsEnabled="False"
                             Padding="0"
                             VerticalAlignment="Center" />
                     </StackPanel>
@@ -144,7 +144,7 @@
                             Classes="Transparent"
                             Command="{Binding GoToLoginCommand}"
                             Content="{x:Static lang:Resources.WelcomePage_LogInHeader}"
-                            CornerRadius="9999"
+                            CornerRadius="{StaticResource PillRadius}"
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="14"
                             FontWeight="Normal"
@@ -154,7 +154,7 @@
                         <Button
                             Command="{Binding GoToRegisterCommand}"
                             Content="{x:Static lang:Resources.WelcomePage_SignUpHeader}"
-                            CornerRadius="9999"
+                            CornerRadius="{StaticResource PillRadius}"
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="14"
                             FontWeight="Normal"
@@ -177,7 +177,7 @@
                             <Border
                                 Background="{DynamicResource SecondaryLightBrush}"
                                 BorderThickness="0"
-                                CornerRadius="9999"
+                                CornerRadius="{StaticResource PillRadius}"
                                 HorizontalAlignment="Left"
                                 Padding="14,8">
                                 <TextBlock
@@ -209,7 +209,7 @@
                                 <Button
                                     Command="{Binding GoToRegisterCommand}"
                                     Content="{x:Static lang:Resources.WelcomePage_GetStarted}"
-                                    CornerRadius="9999"
+                                    CornerRadius="{StaticResource PillRadius}"
                                     FontFamily="{StaticResource RFDewiExpanded}"
                                     FontSize="16"
                                     FontWeight="Normal"
@@ -217,12 +217,12 @@
                                     Padding="28,14" />
                                 <Button
                                     Classes="Secondary"
-                                    Command="{Binding GoToLoginCommand}"
                                     Content="{x:Static lang:Resources.WelcomePage_ViewGallery}"
-                                    CornerRadius="9999"
+                                    CornerRadius="{StaticResource PillRadius}"
                                     FontFamily="{StaticResource RFDewiExpanded}"
                                     FontSize="16"
                                     FontWeight="Normal"
+                                    IsEnabled="False"
                                     MinHeight="52"
                                     Padding="28,14" />
                             </StackPanel>
@@ -259,9 +259,9 @@
                     Background="{DynamicResource SurfaceLowestBrush}"
                     BorderBrush="{DynamicResource AppBorderSubtleBrush}"
                     BorderThickness="1"
-                    CornerRadius="9999"
+                    CornerRadius="{StaticResource PillRadius}"
                     HorizontalAlignment="Right"
-                    Margin="0,-56,32,0"
+                    Margin="0,16,32,0"
                     Padding="14,10"
                     ZIndex="10">
                     <StackPanel Orientation="Horizontal" Spacing="12">
@@ -345,12 +345,12 @@
                                         TextWrapping="Wrap" />
                                     <Button
                                         Classes="Transparent"
-                                        Command="{Binding GoToLoginCommand}"
                                         FontFamily="{StaticResource RFDewiExpanded}"
                                         FontSize="12"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource PrimaryBrush}"
                                         HorizontalAlignment="Left"
+                                        IsEnabled="False"
                                         LetterSpacing="0.08"
                                         Padding="0">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
@@ -451,7 +451,7 @@
                                     VerticalAlignment="Center">
                                     <Border
                                         Background="{DynamicResource SurfaceLowestBrush}"
-                                        CornerRadius="9999"
+                                        CornerRadius="{StaticResource PillRadius}"
                                         HorizontalAlignment="Stretch"
                                         Margin="6"
                                         Padding="14">
@@ -464,7 +464,7 @@
                                     </Border>
                                     <Border
                                         Background="{DynamicResource SurfaceLowestBrush}"
-                                        CornerRadius="9999"
+                                        CornerRadius="{StaticResource PillRadius}"
                                         HorizontalAlignment="Stretch"
                                         Margin="6"
                                         Padding="14">
@@ -477,7 +477,7 @@
                                     </Border>
                                     <Border
                                         Background="{DynamicResource SurfaceLowestBrush}"
-                                        CornerRadius="9999"
+                                        CornerRadius="{StaticResource PillRadius}"
                                         HorizontalAlignment="Stretch"
                                         Margin="6"
                                         Padding="14">
@@ -490,7 +490,7 @@
                                     </Border>
                                     <Border
                                         Background="{DynamicResource SurfaceLowestBrush}"
-                                        CornerRadius="9999"
+                                        CornerRadius="{StaticResource PillRadius}"
                                         HorizontalAlignment="Stretch"
                                         Margin="6"
                                         Padding="14">
@@ -553,6 +553,7 @@
                         Focusable="False"
                         FontSize="16"
                         IsReadOnly="True"
+                        IsHitTestVisible="False"
                         IsTabStop="False"
                         MinHeight="52"
                         PlaceholderText="{x:Static lang:Resources.WelcomePage_SearchPlaceholder}">
@@ -572,7 +573,8 @@
                         Spacing="10">
                         <Border
                             Background="{DynamicResource PrimaryGoldTransparent}"
-                            CornerRadius="9999"
+                            CornerRadius="{StaticResource PillRadius}"
+                            IsHitTestVisible="False"
                             Padding="12,8">
                             <TextBlock
                                 FontFamily="{StaticResource RFDewiExpanded}"
@@ -583,7 +585,8 @@
                         </Border>
                         <Border
                             Background="{DynamicResource PrimaryGoldTransparent}"
-                            CornerRadius="9999"
+                            CornerRadius="{StaticResource PillRadius}"
+                            IsHitTestVisible="False"
                             Padding="12,8">
                             <TextBlock
                                 FontFamily="{StaticResource RFDewiExpanded}"
@@ -594,7 +597,8 @@
                         </Border>
                         <Border
                             Background="{DynamicResource PrimaryGoldTransparent}"
-                            CornerRadius="9999"
+                            CornerRadius="{StaticResource PillRadius}"
+                            IsHitTestVisible="False"
                             Padding="12,8">
                             <TextBlock
                                 FontFamily="{StaticResource RFDewiExpanded}"
@@ -626,6 +630,7 @@
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="13"
                             Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            IsEnabled="False"
                             Padding="0" />
                         <Button
                             Classes="Transparent"
@@ -633,6 +638,7 @@
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="13"
                             Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            IsEnabled="False"
                             Padding="0" />
                         <Button
                             Classes="Transparent"
@@ -640,6 +646,7 @@
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="13"
                             Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            IsEnabled="False"
                             Padding="0" />
                     </StackPanel>
                 </Grid>

@@ -46,7 +46,7 @@ public static class GoogleLoginHandler
             User = new GoogleLoginUser
             {
                 Email = user.Credentials.Email,
-                AvatarUrl = payload.Picture,
+                AvatarUrl = payload.Picture ?? string.Empty,
                 Username = user.Username
             }
         });

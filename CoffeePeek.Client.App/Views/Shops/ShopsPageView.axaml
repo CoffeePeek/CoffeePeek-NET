@@ -15,7 +15,7 @@
             HorizontalAlignment="Stretch"
             HorizontalScrollBarVisibility="Disabled"
             VerticalScrollBarVisibility="Auto">
-            <StackPanel HorizontalAlignment="Stretch" MaxWidth="1280" Spacing="0">
+            <StackPanel HorizontalAlignment="Center" MaxWidth="1280" Spacing="0">
                 <catalog:ShopsCatalogHeroView />
                 <catalog:ShopsCatalogSearchRowView />
                 <catalog:ShopsCatalogAdditionalFiltersView />

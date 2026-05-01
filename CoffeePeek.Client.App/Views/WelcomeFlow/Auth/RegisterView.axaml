@@ -20,7 +20,7 @@
             Background="{DynamicResource SurfaceLowestBrush}"
             BorderThickness="0"
             Command="{Binding ToggleThemeCommand}"
-            CornerRadius="9999"
+            CornerRadius="{StaticResource PillRadius}"
             Grid.Row="0"
             HorizontalAlignment="Right"
             Margin="0,16,16,0"
@@ -46,7 +46,7 @@
 
         <ScrollViewer
             Grid.Row="0"
-            HorizontalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Disabled"
             VerticalScrollBarVisibility="Auto"
             ZIndex="5">
             <Border
@@ -169,7 +169,7 @@
                                     Classes="Secondary"
                                     Command="{Binding GoBackCommand}"
                                     Content="{x:Static lang:Resources.Common_Back}"
-                                    CornerRadius="9999"
+                                    CornerRadius="{StaticResource PillRadius}"
                                     HorizontalAlignment="Left"
                                     Padding="14,8" />
 
@@ -224,7 +224,7 @@
                                             Background="{DynamicResource SurfaceContainerLowBrush}"
                                             BorderBrush="{DynamicResource AppBorderSubtleBrush}"
                                             BorderThickness="1"
-                                            CornerRadius="9999"
+                                            CornerRadius="{StaticResource PillRadius}"
                                             Grid.Column="1"
                                             Margin="12,0,0,0"
                                             Padding="10,6"
@@ -309,7 +309,7 @@
 
                                     <Button
                                         Command="{Binding CheckEmailCommand}"
-                                        CornerRadius="9999"
+                                        CornerRadius="{StaticResource PillRadius}"
                                         FontSize="16"
                                         FontWeight="Normal"
                                         HorizontalAlignment="Stretch"
@@ -365,7 +365,7 @@
                                         <Button
                                             Classes="Secondary"
                                             Content="{x:Static lang:Resources.Auth_Google}"
-                                            CornerRadius="9999"
+                                            CornerRadius="{StaticResource PillRadius}"
                                             FontWeight="Normal"
                                             Grid.Column="0"
                                             IsEnabled="False"
@@ -374,7 +374,7 @@
                                         <Button
                                             Classes="Secondary"
                                             Content="{x:Static lang:Resources.Auth_Apple}"
-                                            CornerRadius="9999"
+                                            CornerRadius="{StaticResource PillRadius}"
                                             FontWeight="Normal"
                                             Grid.Column="1"
                                             IsEnabled="False"
@@ -470,7 +470,7 @@
 
                                     <Button
                                         Command="{Binding RegisterCommand}"
-                                        CornerRadius="9999"
+                                        CornerRadius="{StaticResource PillRadius}"
                                         FontSize="16"
                                         FontWeight="Normal"
                                         HorizontalAlignment="Stretch"

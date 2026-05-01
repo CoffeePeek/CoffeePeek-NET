@@ -11,9 +11,9 @@ public class Response
     /// <summary>HTTP status when the error maps to a status code; null for non-HTTP failures.</summary>
     public int? StatusCode { get; init; }
 
-    /// <summary>Parameterless constructor for object initializers and derived response types.</summary>
-    public Response()
+    protected Response()
     {
+        Message = string.Empty;
     }
 
     public Response(bool success, string message, object? data)

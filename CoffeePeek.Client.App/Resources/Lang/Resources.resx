@@ -157,7 +157,7 @@
         <value>2.4k+ Active Brewers</value>
     </data>
     <data name="WelcomePage_Footer_Copyright" xml:space="preserve">
-        <value>© 2026 CoffeePeek. Brewed with passion.</value>
+        <value>CoffeePeek. Brewed with passion.</value>
     </data>
     <data name="WelcomePage_Footer_Privacy" xml:space="preserve">
         <value>Privacy Policy</value>
@@ -202,7 +202,7 @@
         <value>Join the Club</value>
     </data>
     <data name="Register_CheckEmailTitle" xml:space="preserve">
-        <value>Welcome back</value>
+        <value>Check your email</value>
     </data>
     <data name="Register_CheckEmailSubtitle" xml:space="preserve">
         <value>Enter your email to continue</value>
@@ -307,7 +307,7 @@
         <value>Apple</value>
     </data>
     <data name="Auth_FooterCrafted" xml:space="preserve">
-        <value>© 2026 CoffeePeek. Crafted for comfort.</value>
+        <value>CoffeePeek. Crafted for comfort.</value>
     </data>
     <data name="Auth_CookieSettings" xml:space="preserve">
         <value>Cookie Settings</value>
@@ -375,7 +375,7 @@
     <data name="Settings_ThemeDark" xml:space="preserve">
         <value>Dark</value>
     </data>
-    <data name="Settings_Close" xml:space="preserve">
+    <data name="Settings_Back" xml:space="preserve">
         <value>Back</value>
     </data>
     <data name="Placeholder_Favorites_Title" xml:space="preserve">

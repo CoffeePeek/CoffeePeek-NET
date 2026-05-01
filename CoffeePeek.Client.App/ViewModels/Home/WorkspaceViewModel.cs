@@ -6,8 +6,10 @@ using Lang = CoffeePeek.Client.App.Resources.Lang.Resources;
 
 namespace CoffeePeek.Client.App.ViewModels.Home;
 
-public partial class WorkspaceViewModel : ViewModelBase
+public partial class WorkspaceViewModel : ViewModelBase, IDisposable
 {
+    private readonly IWorkspaceShellNavigator _shellNavigator;
+
     public ShopsPageViewModel ShopPage { get; }
 
     public UserProfileViewModel UserProfile { get; }
@@ -70,6 +72,7 @@ public partial class WorkspaceViewModel : ViewModelBase
         Settings = settingsViewModel;
         ModerationPanel = moderationPanelViewModel;
         MainTabs = mainTabs;
+        _shellNavigator = shellNavigator;
 
         FavoritesPlaceholder.Title = Lang.Placeholder_Favorites_Title;
         FavoritesPlaceholder.Message = Lang.Placeholder_Favorites_Message;
@@ -78,16 +81,7 @@ public partial class WorkspaceViewModel : ViewModelBase
 
         _ = ShopPage.InitializeAsync();
 
-        MainTabs.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName != nameof(MainWorkspaceSectionCoordinator.SelectedIndex))
-                return;
-
-            shellNavigator.CloseUserProfile();
-            shellNavigator.CloseModerationPanel();
-            shellNavigator.CloseSettings();
-            RefreshBrowseVisibility();
-        };
+        MainTabs.PropertyChanged += OnMainTabsPropertyChanged;
 
         shellNavigator.AttachProfile(
             id =>
@@ -97,13 +91,11 @@ public partial class WorkspaceViewModel : ViewModelBase
                 IsSettingsOpen = false;
                 IsModerationPanelOpen = false;
                 IsProfileOpen = true;
-                RefreshBrowseVisibility();
                 _ = UserProfile.LoadAsync(id);
             },
             () =>
             {
                 IsProfileOpen = false;
-                RefreshBrowseVisibility();
             });
 
         shellNavigator.AttachShopDetail(
@@ -114,13 +106,11 @@ public partial class WorkspaceViewModel : ViewModelBase
                 IsSettingsOpen = false;
                 IsModerationPanelOpen = false;
                 IsShopDetailOpen = true;
-                RefreshBrowseVisibility();
                 _ = ShopDetail.LoadAsync(shopId);
             },
             () =>
             {
                 IsShopDetailOpen = false;
-                RefreshBrowseVisibility();
             });
 
         shellNavigator.AttachSuggestShop(
@@ -131,13 +121,11 @@ public partial class WorkspaceViewModel : ViewModelBase
                 IsSettingsOpen = false;
                 IsModerationPanelOpen = false;
                 IsSuggestShopOpen = true;
-                RefreshBrowseVisibility();
                 _ = SuggestShop.InitializeAsync();
             },
             () =>
             {
                 IsSuggestShopOpen = false;
-                RefreshBrowseVisibility();
             });
 
         shellNavigator.AttachSettings(
@@ -148,13 +136,11 @@ public partial class WorkspaceViewModel : ViewModelBase
                 IsSuggestShopOpen = false;
                 IsModerationPanelOpen = false;
                 IsSettingsOpen = true;
-                RefreshBrowseVisibility();
                 _ = Settings.LoadAsync();
             },
             () =>
             {
                 IsSettingsOpen = false;
-                RefreshBrowseVisibility();
             });
 
         shellNavigator.AttachModerationPanel(
@@ -165,14 +151,28 @@ public partial class WorkspaceViewModel : ViewModelBase
                 IsSuggestShopOpen = false;
                 IsSettingsOpen = false;
                 IsModerationPanelOpen = true;
-                RefreshBrowseVisibility();
                 _ = ModerationPanel.LoadAsync();
             },
             () =>
             {
                 IsModerationPanelOpen = false;
-                RefreshBrowseVisibility();
             });
+    }
+
+    private void OnMainTabsPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(MainWorkspaceSectionCoordinator.Section))
+            return;
+
+        _shellNavigator.CloseUserProfile();
+        _shellNavigator.CloseModerationPanel();
+        _shellNavigator.CloseSettings();
+        RefreshBrowseVisibility();
+    }
+
+    public void Dispose()
+    {
+        MainTabs.PropertyChanged -= OnMainTabsPropertyChanged;
     }
 
     private void RefreshBrowseVisibility()

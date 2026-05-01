@@ -54,6 +54,8 @@ public sealed partial class LoginViewModel(
     [RelayCommand]
     private void ForgotPassword()
     {
+        // TODO CP-158: implement password recovery flow.
+        ErrorMessage = "Password recovery is coming soon.";
     }
 
     [RelayCommand]
@@ -76,7 +78,8 @@ public sealed partial class LoginViewModel(
         }
 
         session.SetAccessToken(result.Value.AccessToken);
-        await localUserSettings.SetAccessTokenAsync(result.Value.AccessToken);
+        if (RememberThisMachine)
+            await localUserSettings.SetAccessTokenAsync(result.Value.AccessToken);
         Password = string.Empty;
         navigationService.Reset();
     }

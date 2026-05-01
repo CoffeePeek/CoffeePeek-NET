@@ -1,64 +1,95 @@
 ﻿using System.Text.Json;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
 namespace CoffeePeek.Shared.Persistence.Cache.Redis;
 
-public class RedisService(IConnectionMultiplexer redis) : ICacheService
+public class RedisService : ICacheService
 {
-    private readonly IDatabase _db = redis.GetDatabase();
+    private readonly IDatabase _db;
+    private readonly ILogger<RedisService> _logger;
+    private readonly IServer? _server;
 
-    private readonly IServer _server = redis.GetServer(redis.GetEndPoints().FirstOrDefault() ??
-                                                       throw new InvalidOperationException(
-                                                           "No Redis endpoints configured"));
+    public RedisService(IConnectionMultiplexer redis, ILogger<RedisService> logger)
+    {
+        _db = redis.GetDatabase();
+        _logger = logger;
 
-    public async Task<T?> GetAsync<T>(CacheKey cacheKey)
+        var endpoint = redis.GetEndPoints().FirstOrDefault();
+        _server = endpoint is null ? null : redis.GetServer(endpoint);
+    }
+
+    public async Task<T?> GetAsync<T>(CacheKey cacheKey, CancellationToken cancellationToken = default)
     {
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
             string? value = await _db.StringGetAsync(cacheKey.Key);
             return string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value);
         }
-        catch (RedisConnectionException)
+        catch (RedisConnectionException ex)
         {
+            _logger.LogWarning(ex, "Redis GetAsync unavailable for key {CacheKey}", cacheKey.Key);
             return default;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Redis GetAsync failed for key {CacheKey}", cacheKey.Key);
             return default;
         }
     }
 
     public async Task<T?> GetAsync<T>(
         CacheKey cacheKey, 
-        Func<Task<T>> factory, 
-        TimeSpan? expiration = null)
+        Func<CancellationToken, Task<T>> factory, 
+        TimeSpan? expiration = null,
+        CancellationToken cancellationToken = default)
     {
+        T result;
+
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
             string? cachedValue = await _db.StringGetAsync(cacheKey.Key);
 
             if (!string.IsNullOrEmpty(cachedValue))
             {
                 return JsonSerializer.Deserialize<T>(cachedValue);
             }
+        }
+        catch (RedisConnectionException ex)
+        {
+            _logger.LogWarning(ex, "Redis GetOrCreateAsync read unavailable for key {CacheKey}", cacheKey.Key);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Redis GetOrCreateAsync read failed for key {CacheKey}", cacheKey.Key);
+        }
 
-            var result = await factory();
+        result = await factory(cancellationToken);
 
-            if (result != null)
+        if (result != null)
+        {
+            try
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 await _db.StringSetAsync(
                     cacheKey.Key, 
                     JsonSerializer.Serialize(result), 
                     expiration ?? TimeSpan.FromMinutes(10));
             }
+            catch (RedisConnectionException ex)
+            {
+                _logger.LogWarning(ex, "Redis GetOrCreateAsync write unavailable for key {CacheKey}", cacheKey.Key);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Redis GetOrCreateAsync write failed for key {CacheKey}", cacheKey.Key);
+            }
+        }
 
-            return result;
-        }
-        catch (Exception)
-        {
-            return await factory();
-        }
+        return result;
     }
 
     public async Task SetAsync<T>(string key, T value, TimeSpan? expiry = null)
@@ -67,13 +98,13 @@ public class RedisService(IConnectionMultiplexer redis) : ICacheService
         {
             await _db.StringSetAsync(key, JsonSerializer.Serialize(value), new Expiration(expiry ?? TimeSpan.FromHours(1)));
         }
-        catch (RedisConnectionException)
+        catch (RedisConnectionException ex)
         {
-            // Redis недоступен, игнорируем ошибку (кэш не критичен)
+            _logger.LogWarning(ex, "Redis SetAsync unavailable for key {CacheKey}", key);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Другие ошибки Redis, игнорируем
+            _logger.LogError(ex, "Redis SetAsync failed for key {CacheKey}", key);
         }
     }
 
@@ -83,13 +114,13 @@ public class RedisService(IConnectionMultiplexer redis) : ICacheService
         {
             await _db.KeyDeleteAsync(key);
         }
-        catch (RedisConnectionException)
+        catch (RedisConnectionException ex)
         {
-            // Redis недоступен, игнорируем ошибку
+            _logger.LogWarning(ex, "Redis RemoveAsync unavailable for key {CacheKey}", key);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Другие ошибки Redis, игнорируем
+            _logger.LogError(ex, "Redis RemoveAsync failed for key {CacheKey}", key);
         }
     }
 
@@ -100,13 +131,13 @@ public class RedisService(IConnectionMultiplexer redis) : ICacheService
             var ttl = customTtl ?? cacheKey.DefaultTtl ?? TimeSpan.FromDays(1);
             await _db.StringSetAsync(cacheKey.Key, JsonSerializer.Serialize(value), new Expiration(ttl));
         }
-        catch (RedisConnectionException)
+        catch (RedisConnectionException ex)
         {
-            // Redis недоступен, игнорируем ошибку (кэш не критичен)
+            _logger.LogWarning(ex, "Redis SetAsync unavailable for key {CacheKey}", cacheKey.Key);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Другие ошибки Redis, игнорируем
+            _logger.LogError(ex, "Redis SetAsync failed for key {CacheKey}", cacheKey.Key);
         }
     }
 
@@ -116,13 +147,13 @@ public class RedisService(IConnectionMultiplexer redis) : ICacheService
         {
             await _db.KeyDeleteAsync(cacheKey.Key);
         }
-        catch (RedisConnectionException)
+        catch (RedisConnectionException ex)
         {
-            // Redis недоступен, игнорируем ошибку
+            _logger.LogWarning(ex, "Redis RemoveAsync unavailable for key {CacheKey}", cacheKey.Key);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Другие ошибки Redis, игнорируем
+            _logger.LogError(ex, "Redis RemoveAsync failed for key {CacheKey}", cacheKey.Key);
         }
     }
 
@@ -132,12 +163,14 @@ public class RedisService(IConnectionMultiplexer redis) : ICacheService
         {
             return await _db.KeyExistsAsync(cacheKey.Key);
         }
-        catch (RedisConnectionException)
+        catch (RedisConnectionException ex)
         {
+            _logger.LogWarning(ex, "Redis ExistsAsync unavailable for key {CacheKey}", cacheKey.Key);
             return false;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Redis ExistsAsync failed for key {CacheKey}", cacheKey.Key);
             return false;
         }
     }
@@ -146,19 +179,25 @@ public class RedisService(IConnectionMultiplexer redis) : ICacheService
     {
         try
         {
+            if (_server is null)
+            {
+                _logger.LogWarning("Redis RemoveByPattern skipped because no Redis endpoints are configured");
+                return;
+            }
+
             var keys = _server.Keys(pattern: pattern).ToArray();
             if (keys.Length > 0)
             {
                 await _db.KeyDeleteAsync(keys);
             }
         }
-        catch (RedisConnectionException)
+        catch (RedisConnectionException ex)
         {
-            // Redis недоступен, игнорируем ошибку
+            _logger.LogWarning(ex, "Redis RemoveByPattern unavailable for pattern {Pattern}", pattern);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Другие ошибки Redis, игнорируем
+            _logger.LogError(ex, "Redis RemoveByPattern failed for pattern {Pattern}", pattern);
         }
     }
 }

@@ -27,6 +27,7 @@
             </TextBox.InnerLeftContent>
             <TextBox.InnerRightContent>
                 <Button
+                    Background="{DynamicResource PrimaryBrush}"
                     Command="{Binding ToggleAdditionalFiltersCommand}"
                     CornerRadius="{StaticResource DefaultCornerRadius}"
                     Margin="0,6,6,6"

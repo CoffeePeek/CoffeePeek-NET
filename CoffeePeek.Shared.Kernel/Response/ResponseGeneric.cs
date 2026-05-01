@@ -10,7 +10,7 @@ public class Response<TData> : Response
         init => base.Data = value;
     }
 
-    public Response() : base(false, string.Empty, null)
+    protected Response() : base(false, string.Empty, null)
     {
     }
 

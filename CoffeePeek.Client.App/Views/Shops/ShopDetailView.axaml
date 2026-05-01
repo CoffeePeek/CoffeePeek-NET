@@ -328,7 +328,7 @@
                                 <PathIcon
                                     Width="18"
                                     Height="18"
-                                    Data="{StaticResource MapPinIcon}"
+                                    Data="{StaticResource GlobeIcon}"
                                     Foreground="{DynamicResource PrimaryBrush}" />
                                 <TextBlock
                                     FontSize="13"
@@ -344,7 +344,7 @@
                                 <PathIcon
                                     Width="18"
                                     Height="18"
-                                    Data="{StaticResource PersonIcon}"
+                                    Data="{StaticResource InstagramIcon}"
                                     Foreground="{DynamicResource PrimaryBrush}" />
                                 <TextBlock
                                     FontSize="13"
@@ -445,7 +445,6 @@
                     <StackPanel
                         Grid.Row="2"
                         Grid.Column="1"
-                        IsVisible="{Binding IsDetailContentVisible}"
                         Margin="0,24,0,0"
                         Spacing="16">
                         <Border
@@ -493,7 +492,10 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Classes="shop-detail-sidebar-card" Padding="16">
+                        <Border
+                            Classes="shop-detail-sidebar-card"
+                            IsVisible="{Binding HasMapCoordinates}"
+                            Padding="16">
                             <StackPanel Spacing="12">
                                 <TextBlock
                                     FontSize="14"
