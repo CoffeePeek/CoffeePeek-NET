@@ -4,7 +4,7 @@ using CoffeePeek.MediaService.Commands.Base;
 namespace CoffeePeek.MediaService.Commands;
 
 public record GenerateAvatarUploadCommand(
-    int SizeBytes,
+    long SizeBytes,
     string FileName,
     string ContentType,
     [property: JsonIgnore] Guid OwnerId)

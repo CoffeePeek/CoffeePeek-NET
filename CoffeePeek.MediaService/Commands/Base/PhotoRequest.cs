@@ -1,6 +1,6 @@
 ﻿namespace CoffeePeek.MediaService.Commands.Base;
 
 public record PhotoRequest(
-    int SizeBytes,
+    long SizeBytes,
     string FileName,
     string ContentType);

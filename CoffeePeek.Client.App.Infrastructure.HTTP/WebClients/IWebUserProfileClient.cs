@@ -16,6 +16,7 @@ public interface IWebUserProfileClient
     Task<Result> UploadAvatarAsync(
         string fileName,
         string contentType,
-        byte[] fileContent,
+        Stream fileContent,
+        long contentLength,
         CancellationToken ct = default);
 }

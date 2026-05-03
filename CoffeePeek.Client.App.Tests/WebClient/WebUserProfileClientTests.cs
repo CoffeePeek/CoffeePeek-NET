@@ -10,16 +10,23 @@ using System.Net;
 
 namespace CoffeePeek.Client.App.Tests.WebClient;
 
-public class WebUserProfileClientTests
+public class WebUserProfileClientTests : IDisposable
 {
     private readonly Mock<IHttpCommandExecutor> _executorMock = new();
     private readonly Mock<ILogger<WebUserProfileClient>> _loggerMock = new();
     private readonly FakeHttpMessageHandler _httpMessageHandler = new();
+    private HttpClient? _httpClient;
 
     private WebUserProfileClient CreateSut()
     {
-        var httpClient = new HttpClient(_httpMessageHandler);
-        return new WebUserProfileClient(_executorMock.Object, httpClient, _loggerMock.Object);
+        _httpClient = new HttpClient(_httpMessageHandler);
+        return new WebUserProfileClient(_executorMock.Object, _httpClient, _loggerMock.Object);
+    }
+
+    public void Dispose()
+    {
+        _httpClient?.Dispose();
+        _httpMessageHandler.Dispose();
     }
 
     [Fact]
@@ -145,7 +152,8 @@ public class WebUserProfileClientTests
         _httpMessageHandler.ResponseFactory = _ => new HttpResponseMessage(HttpStatusCode.OK);
 
         var sut = CreateSut();
-        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", [1, 2, 3]);
+        using var stream = new MemoryStream([1, 2, 3]);
+        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", stream, 3);
 
         result.IsSuccess.Should().BeTrue();
         prepareCommand.Should().NotBeNull();
@@ -187,7 +195,8 @@ public class WebUserProfileClientTests
         _httpMessageHandler.ResponseFactory = _ => new HttpResponseMessage(HttpStatusCode.BadRequest);
 
         var sut = CreateSut();
-        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", [1, 2, 3]);
+        using var stream = new MemoryStream([1, 2, 3]);
+        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", stream, 3);
 
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().ContainSingle(e => e.Message.Contains("Avatar upload failed"));
@@ -198,7 +207,8 @@ public class WebUserProfileClientTests
     public async Task UploadAvatarAsync_ReturnsFailure_WhenContentTypeInvalid()
     {
         var sut = CreateSut();
-        var result = await sut.UploadAvatarAsync("a.jpg", "not a real media type", [1, 2, 3]);
+        using var stream = new MemoryStream([1, 2, 3]);
+        var result = await sut.UploadAvatarAsync("a.jpg", "not a real media type", stream, 3);
 
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().ContainSingle(e => e.Message.Contains("Invalid content type", StringComparison.Ordinal));
@@ -212,7 +222,8 @@ public class WebUserProfileClientTests
     public async Task UploadAvatarAsync_ReturnsFailure_WhenFileNameIsEmpty()
     {
         var sut = CreateSut();
-        var result = await sut.UploadAvatarAsync(" ", "image/jpeg", [1, 2, 3]);
+        using var stream = new MemoryStream([1, 2, 3]);
+        var result = await sut.UploadAvatarAsync(" ", "image/jpeg", stream, 3);
 
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().ContainSingle(e => e.Message == "Avatar file is invalid.");
@@ -225,7 +236,8 @@ public class WebUserProfileClientTests
     public async Task UploadAvatarAsync_ReturnsFailure_WhenFileContentEmpty()
     {
         var sut = CreateSut();
-        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", []);
+        using var stream = new MemoryStream([]);
+        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", stream, 0);
 
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().ContainSingle(e => e.Message == "Avatar file is invalid.");
@@ -238,7 +250,7 @@ public class WebUserProfileClientTests
     public async Task UploadAvatarAsync_ReturnsFailure_WhenFileContentNull()
     {
         var sut = CreateSut();
-        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", null!);
+        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", null!, 3);
 
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().ContainSingle(e => e.Message == "Avatar file is invalid.");
@@ -260,7 +272,8 @@ public class WebUserProfileClientTests
             });
 
         var sut = CreateSut();
-        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", [1, 2, 3]);
+        using var stream = new MemoryStream([1, 2, 3]);
+        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", stream, 3);
 
         result.IsFailed.Should().BeTrue();
         result.Errors.Should().ContainSingle(e => e.Message == "prepare failed");
@@ -268,8 +281,154 @@ public class WebUserProfileClientTests
         _executorMock.Verify(e => e.Execute(It.Is<HttpCommand>(c => c.Endpoint == "api/Users/me/avatar"), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    [Fact]
+    public async Task UploadAvatarAsync_LogsErrorAndReturnsFailed_WhenFinalizeFailsMaxAttempts()
+    {
+        _executorMock
+            .Setup(e => e.Execute<GenerateUploadUrlResponseDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ApiResponse<GenerateUploadUrlResponseDto>
+            {
+                IsSuccess = true,
+                Data = new GenerateUploadUrlResponseDto
+                {
+                    UploadUrl = "https://storage.test/upload",
+                    StorageKey = "avatars/test.jpg"
+                }
+            });
+
+        _executorMock
+            .Setup(e => e.Execute(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ApiResponse { IsSuccess = false, StatusCode = 500, Message = "Server error" });
+
+        _httpMessageHandler.ResponseFactory = _ => new HttpResponseMessage(HttpStatusCode.OK);
+
+        var sut = CreateSut();
+        using var stream = new MemoryStream([1, 2, 3]);
+        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", stream, 3);
+
+        result.IsFailed.Should().BeTrue();
+        _executorMock.Verify(
+            e => e.Execute(It.Is<HttpCommand>(c => c.Endpoint == "api/Users/me/avatar"), It.IsAny<CancellationToken>()),
+            Times.Exactly(3));
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task UploadAvatarAsync_RetriesAndSucceeds_WhenFinalizeFailsThenSucceeds()
+    {
+        var attemptCount = 0;
+
+        _executorMock
+            .Setup(e => e.Execute<GenerateUploadUrlResponseDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ApiResponse<GenerateUploadUrlResponseDto>
+            {
+                IsSuccess = true,
+                Data = new GenerateUploadUrlResponseDto
+                {
+                    UploadUrl = "https://storage.test/upload",
+                    StorageKey = "avatars/test.jpg"
+                }
+            });
+
+        _executorMock
+            .Setup(e => e.Execute(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() =>
+            {
+                attemptCount++;
+                if (attemptCount < 3)
+                    return new ApiResponse { IsSuccess = false, StatusCode = 500, Message = "Timeout" };
+                return new ApiResponse { IsSuccess = true, StatusCode = 202 };
+            });
+
+        _httpMessageHandler.ResponseFactory = _ => new HttpResponseMessage(HttpStatusCode.OK);
+
+        var sut = CreateSut();
+        using var stream = new MemoryStream([1, 2, 3]);
+        var result = await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", stream, 3);
+
+        result.IsSuccess.Should().BeTrue();
+        _executorMock.Verify(
+            e => e.Execute(It.Is<HttpCommand>(c => c.Endpoint == "api/Users/me/avatar"), It.IsAny<CancellationToken>()),
+            Times.Exactly(3));
+    }
+
+    [Fact]
+    public async Task UploadAvatarAsync_ThrowsOperationCanceled_WhenCancelledBeforePrepare()
+    {
+        var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        var sut = CreateSut();
+        using var stream = new MemoryStream([1, 2, 3]);
+
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            async () => await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", stream, 3, cts.Token));
+
+        _executorMock.Verify(
+            e => e.Execute<GenerateUploadUrlResponseDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+        _httpMessageHandler.LastRequest.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task UploadAvatarAsync_ThrowsOperationCanceled_WhenCancelledBetweenPrepareAndPut()
+    {
+        var cts = new CancellationTokenSource();
+
+        _executorMock
+            .Setup(e => e.Execute<GenerateUploadUrlResponseDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ApiResponse<GenerateUploadUrlResponseDto>
+            {
+                IsSuccess = true,
+                Data = new GenerateUploadUrlResponseDto
+                {
+                    UploadUrl = "https://storage.test/upload",
+                    StorageKey = "avatars/test.jpg"
+                }
+            })
+            .Callback(() => cts.Cancel());
+
+        _httpMessageHandler.ResponseFactory = _ => new HttpResponseMessage(HttpStatusCode.OK);
+
+        var sut = CreateSut();
+        using var stream = new MemoryStream([1, 2, 3]);
+
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            async () => await sut.UploadAvatarAsync("avatar.jpg", "image/jpeg", stream, 3, cts.Token));
+
+        _executorMock.Verify(
+            e => e.Execute(It.Is<HttpCommand>(c => c.Endpoint == "api/Users/me/avatar"), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task UploadAvatarAsync_ReturnsFailure_WhenContentTypeCannotBeParsed()
+    {
+        var sut = CreateSut();
+        using var stream = new MemoryStream([1, 2, 3]);
+        var result = await sut.UploadAvatarAsync("avatar.jpg", "not a media type", stream, 3);
+
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e.Message.Contains("Invalid content type"));
+        _executorMock.Verify(
+            e => e.Execute<GenerateUploadUrlResponseDto>(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+        _executorMock.Verify(
+            e => e.Execute(It.IsAny<HttpCommand>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
     private sealed class FakeHttpMessageHandler : HttpMessageHandler
     {
+        private HttpResponseMessage? _lastResponse;
+
         public Func<HttpRequestMessage, HttpResponseMessage>? ResponseFactory { get; set; }
 
         public HttpRequestMessage? LastRequest { get; private set; }
@@ -277,8 +436,19 @@ public class WebUserProfileClientTests
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             LastRequest = request;
-            var response = ResponseFactory?.Invoke(request) ?? new HttpResponseMessage(HttpStatusCode.OK);
-            return Task.FromResult(response);
+            _lastResponse?.Dispose();
+            _lastResponse = ResponseFactory?.Invoke(request) ?? new HttpResponseMessage(HttpStatusCode.OK);
+            return Task.FromResult(_lastResponse);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _lastResponse?.Dispose();
+                _lastResponse = null;
+            }
+            base.Dispose(disposing);
         }
     }
 }

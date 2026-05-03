@@ -92,13 +92,14 @@ public sealed class WebUserProfileClient(
     public async Task<Result> UploadAvatarAsync(
         string fileName,
         string contentType,
-        byte[] fileContent,
+        Stream fileContent,
+        long contentLength,
         CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(fileName) || fileContent is null || fileContent.Length == 0)
+        if (string.IsNullOrWhiteSpace(fileName) || fileContent is null || contentLength <= 0)
             return Result.Fail("Avatar file is invalid.");
 
-        if (fileContent.LongLength > MaxAvatarBytes)
+        if (contentLength > MaxAvatarBytes)
             return Result.Fail("Avatar is too large (maximum 10 MB).");
 
         var safeContentType = string.IsNullOrWhiteSpace(contentType)
@@ -113,7 +114,7 @@ public sealed class WebUserProfileClient(
             .WithEndpoint("api/Photos/avatar")
             .WithBody(new GenerateAvatarUploadUrlRequest
             {
-                SizeBytes = fileContent.LongLength,
+                SizeBytes = contentLength,
                 FileName = fileName,
                 ContentType = safeContentType
             })
@@ -123,11 +124,16 @@ public sealed class WebUserProfileClient(
         if (prepareResult.IsFailed)
             return prepareResult.ToResult();
 
+        // IMPORTANT: Presigned upload uses httpClient.SendAsync directly (bypassing Execute pipeline).
+        // The injected HttpClient must NEVER have DefaultRequestHeaders mutated; authorization is applied
+        // per-request via RequestHeadersBehavior/AuthorizationHeaderSetter to HttpCommand.Headers.
+        // This ensures presigned URLs are not contaminated with auth headers that storage providers would reject.
         using var putRequest = new HttpRequestMessage(HttpMethod.Put, prepareResult.Value.UploadUrl)
         {
-            Content = new ByteArrayContent(fileContent)
+            Content = new StreamContent(fileContent)
         };
         putRequest.Content.Headers.ContentType = mediaType;
+        putRequest.Content.Headers.ContentLength = contentLength;
 
         using var putResponse = await httpClient.SendAsync(putRequest, ct);
         if (!putResponse.IsSuccessStatusCode)
@@ -142,7 +148,7 @@ public sealed class WebUserProfileClient(
                     FileName: fileName,
                     ContentType: safeContentType,
                     StorageKey: prepareResult.Value.StorageKey,
-                    Size: fileContent.LongLength)
+                    Size: contentLength)
             })
             .Authorize();
 

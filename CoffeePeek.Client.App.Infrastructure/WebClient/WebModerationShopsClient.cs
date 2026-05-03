@@ -37,7 +37,7 @@ public sealed class WebModerationShopsClient(
         var uploadRequest = photos
             .Select(p => new ShopPhotoUploadRequest
             {
-                SizeBytes = p.Content.Length,
+                SizeBytes = p.Content.LongLength,
                 FileName = p.FileName,
                 ContentType = string.IsNullOrWhiteSpace(p.ContentType) ? "application/octet-stream" : p.ContentType
             })
