@@ -1,10 +1,10 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- CoffeePeek design system — warm cream surfaces, saffron + matcha accents. -->
+    <!-- CoffeePeek design system — warm cream surfaces, warm gold primary (#D4A84B), digital gold accent (#EAB308). -->
 
-    <Color x:Key="PrimaryColor">#805600</Color>
-    <Color x:Key="PrimaryContainerColor">#FFBA46</Color>
-    <Color x:Key="PrimaryHoverColor">#9A6810</Color>
-    <Color x:Key="OnPrimaryColor">#FFFFFF</Color>
+    <Color x:Key="PrimaryColor">#D4A84B</Color>
+    <Color x:Key="PrimaryContainerColor">#EAB308</Color>
+    <Color x:Key="PrimaryHoverColor">#C8923A</Color>
+    <Color x:Key="OnPrimaryColor">#1C1917</Color>
 
     <Color x:Key="SurfaceColor">#FFF8F3</Color>
     <Color x:Key="SurfaceContainerLowestColor">#FFFFFF</Color>
