@@ -1,4 +1,6 @@
+using System.Net.Http;
 using CoffeePeek.Client.App.Core.Identity;
+using CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Responses;
 using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 using CoffeePeek.Client.App.Services;
@@ -38,6 +40,8 @@ public class ShopDetailViewModelTests
             _shopsClientMock.Object,
             _reviewsClientMock.Object,
             _navigatorMock.Object,
+            new HttpClient(),
+            new ApiOptions(),
             _identityMock.Object);
     }
 
