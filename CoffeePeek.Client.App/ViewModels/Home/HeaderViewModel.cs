@@ -29,7 +29,8 @@ public partial class HeaderViewModel : ViewModelBase
         IWorkspaceShellNavigator workspaceShellNavigator,
         MainWorkspaceSectionCoordinator mainTabs,
         IAccountSignOutService accountSignOutService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        ILayoutBreakpointService layoutBreakpoints)
     {
         _userIdentityAccessor = userIdentityAccessor;
         _userRoleAccessor = userRoleAccessor;
@@ -37,6 +38,16 @@ public partial class HeaderViewModel : ViewModelBase
         _workspaceShellNavigator = workspaceShellNavigator;
         MainTabs = mainTabs;
         _accountSignOutService = accountSignOutService;
+
+        IsCompactChrome = layoutBreakpoints.IsCompact;
+        layoutBreakpoints.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName != nameof(ILayoutBreakpointService.IsCompact))
+                return;
+
+            IsCompactChrome = layoutBreakpoints.IsCompact;
+        };
+
         MainTabTitles = BuildTabTitles();
 
         _clientSession.AccessTokenChanged += (_, _) => SyncRoleUi();
@@ -66,6 +77,9 @@ public partial class HeaderViewModel : ViewModelBase
 
     private void SyncRoleUi() =>
         IsModerator = _userRoleAccessor.IsInRole(WellKnownAppRoles.Moderator);
+
+    [ObservableProperty]
+    public partial bool IsCompactChrome { get; private set; }
 
     [ObservableProperty]
     public partial bool IsModerator { get; private set; }

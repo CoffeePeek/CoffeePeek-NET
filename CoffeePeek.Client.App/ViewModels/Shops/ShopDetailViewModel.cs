@@ -32,6 +32,7 @@ public partial class ShopDetailViewModel : ViewModelBase
     private readonly HttpClient _httpClient;
     private readonly ApiOptions _apiOptions;
     private readonly IUserIdentityAccessor _identityAccessor;
+    private readonly ILayoutBreakpointService _layoutBreakpoints;
     private Guid? _shopId;
 
     private Bitmap? _coverBitmap;
@@ -43,7 +44,8 @@ public partial class ShopDetailViewModel : ViewModelBase
         IWorkspaceShellNavigator shellNavigator,
         HttpClient httpClient,
         ApiOptions apiOptions,
-        IUserIdentityAccessor identityAccessor)
+        IUserIdentityAccessor identityAccessor,
+        ILayoutBreakpointService layoutBreakpoints)
     {
         _shopsClient = shopsClient;
         _reviewsClient = reviewsClient;
@@ -51,11 +53,43 @@ public partial class ShopDetailViewModel : ViewModelBase
         _httpClient = httpClient;
         _apiOptions = apiOptions;
         _identityAccessor = identityAccessor;
+        _layoutBreakpoints = layoutBreakpoints;
+
+        IsCompactLayout = layoutBreakpoints.IsCompact;
+        layoutBreakpoints.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName != nameof(ILayoutBreakpointService.IsCompact))
+                return;
+
+            if (IsCompactLayout == layoutBreakpoints.IsCompact)
+                return;
+
+            IsCompactLayout = layoutBreakpoints.IsCompact;
+        };
+
         Reviews.CollectionChanged += OnReviewsCollectionChanged;
     }
 
     private void OnReviewsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
         OnPropertyChanged(nameof(HasReviewItems));
+
+    [ObservableProperty]
+    public partial bool IsCompactLayout { get; private set; }
+
+    public Thickness DetailOuterMargin =>
+        IsCompactLayout ? new Thickness(12, 0, 12, 24) : new Thickness(24, 0, 24, 32);
+
+    public double DetailMinGridWidth => IsCompactLayout ? 0 : 520;
+
+    public int SidebarGridRow => IsCompactLayout ? 3 : 2;
+
+    public int SidebarGridColumn => IsCompactLayout ? 0 : 1;
+
+    public int DetailHeroColumnSpan => IsCompactLayout ? 1 : 2;
+
+    public Thickness DetailErrorBannerMargin =>
+        IsCompactLayout ? new Thickness(12, 16, 12, 0) : new Thickness(24);
+
 
     [ObservableProperty]
     public partial bool IsLoading { get; set; }
@@ -190,6 +224,16 @@ public partial class ShopDetailViewModel : ViewModelBase
 
     partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
     partial void OnReviewErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasReviewError));
+
+    partial void OnIsCompactLayoutChanged(bool oldValue, bool newValue)
+    {
+        OnPropertyChanged(nameof(DetailOuterMargin));
+        OnPropertyChanged(nameof(DetailMinGridWidth));
+        OnPropertyChanged(nameof(SidebarGridRow));
+        OnPropertyChanged(nameof(SidebarGridColumn));
+        OnPropertyChanged(nameof(DetailHeroColumnSpan));
+        OnPropertyChanged(nameof(DetailErrorBannerMargin));
+    }
 
     public async Task LoadAsync(Guid shopId, CancellationToken ct = default)
     {

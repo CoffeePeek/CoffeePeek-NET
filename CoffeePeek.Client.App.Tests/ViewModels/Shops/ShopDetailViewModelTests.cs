@@ -42,7 +42,8 @@ public class ShopDetailViewModelTests
             _navigatorMock.Object,
             new HttpClient(),
             new ApiOptions(),
-            _identityMock.Object);
+            _identityMock.Object,
+            new LayoutBreakpointService());
     }
 
     [Fact]

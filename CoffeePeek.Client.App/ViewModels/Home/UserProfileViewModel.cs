@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
+using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
@@ -14,17 +15,60 @@ using Lang = CoffeePeek.Client.App.Resources.Lang.Resources;
 
 namespace CoffeePeek.Client.App.ViewModels.Home;
 
-public partial class UserProfileViewModel(
-    HttpClient httpClient,
-    ApiOptions apiOptions,
-    IWebUserProfileClient profileClient,
-    IWebUserReviewsClient reviewsClient,
-    IUserIdentityAccessor identityAccessor,
-    IImagePickerService imagePickerService) : ViewModelBase
+public partial class UserProfileViewModel : ViewModelBase
 {
     private CancellationTokenSource? _loadCts;
     private CancellationTokenSource? _avatarUploadCts;
     private Guid? _userId;
+
+    public UserProfileViewModel(
+        HttpClient httpClient,
+        ApiOptions apiOptions,
+        IWebUserProfileClient profileClient,
+        IWebUserReviewsClient reviewsClient,
+        IUserIdentityAccessor identityAccessor,
+        IImagePickerService imagePickerService,
+        ILayoutBreakpointService layoutBreakpoints)
+    {
+        HttpClient = httpClient;
+        ApiOptions = apiOptions;
+        ProfileClient = profileClient;
+        ReviewsClient = reviewsClient;
+        IdentityAccessor = identityAccessor;
+        ImagePickerService = imagePickerService;
+        LayoutBreakpoints = layoutBreakpoints;
+
+        layoutBreakpoints.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName != nameof(ILayoutBreakpointService.IsCompact))
+                return;
+
+            OnPropertyChanged(nameof(ProfileHeaderPadding));
+            OnPropertyChanged(nameof(ProfileStatsSectionMargin));
+            OnPropertyChanged(nameof(ProfileReviewsSectionMargin));
+            OnPropertyChanged(nameof(ProfileEditFormHorizontalMargin));
+        };
+    }
+
+    private HttpClient HttpClient { get; }
+    private ApiOptions ApiOptions { get; }
+    private IWebUserProfileClient ProfileClient { get; }
+    private IWebUserReviewsClient ReviewsClient { get; }
+    private IUserIdentityAccessor IdentityAccessor { get; }
+    private IImagePickerService ImagePickerService { get; }
+    private ILayoutBreakpointService LayoutBreakpoints { get; }
+
+    public Thickness ProfileHeaderPadding =>
+        LayoutBreakpoints.IsCompact ? new Thickness(24, 28) : new Thickness(48, 40);
+
+    public Thickness ProfileStatsSectionMargin =>
+        LayoutBreakpoints.IsCompact ? new Thickness(16, 24) : new Thickness(48, 32);
+
+    public Thickness ProfileReviewsSectionMargin =>
+        LayoutBreakpoints.IsCompact ? new Thickness(16, 0) : new Thickness(48, 0);
+
+    public Thickness ProfileEditFormHorizontalMargin =>
+        LayoutBreakpoints.IsCompact ? new Thickness(16, 0) : new Thickness(48, 0);
 
     [ObservableProperty]
     public partial bool IsLoadingProfile { get; set; }
@@ -141,7 +185,7 @@ public partial class UserProfileViewModel(
         _avatarUploadCts = null;
         var ct = _loadCts.Token;
 
-        var currentUserId = identityAccessor.GetCurrentUserIdOrNull();
+        var currentUserId = IdentityAccessor.GetCurrentUserIdOrNull();
 
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
@@ -164,7 +208,7 @@ public partial class UserProfileViewModel(
             DisposeAvatar();
         });
 
-        var profileResult = await profileClient.GetPublicProfileAsync(userId, ct);
+        var profileResult = await ProfileClient.GetPublicProfileAsync(userId, ct);
         if (ct.IsCancellationRequested)
             return;
 
@@ -216,7 +260,7 @@ public partial class UserProfileViewModel(
             ShowReviewsEmpty = false;
         });
 
-        var reviewsResult = await reviewsClient.GetReviewsAsync(userId, page, 10, ct);
+        var reviewsResult = await ReviewsClient.GetReviewsAsync(userId, page, 10, ct);
         if (ct.IsCancellationRequested)
             return;
 
@@ -295,7 +339,7 @@ public partial class UserProfileViewModel(
 
         try
         {
-            using var response = await httpClient.GetAsync(uri, ct);
+            using var response = await HttpClient.GetAsync(uri, ct);
             response.EnsureSuccessStatusCode();
             await using var stream = await response.Content.ReadAsStreamAsync(ct);
             await using var ms = new MemoryStream();
@@ -327,7 +371,7 @@ public partial class UserProfileViewModel(
         if (Uri.TryCreate(avatarUrl, UriKind.Absolute, out var absolute))
             return absolute;
 
-        var baseAddr = apiOptions.BaseAddress.TrimEnd('/');
+        var baseAddr = ApiOptions.BaseAddress.TrimEnd('/');
         var path = avatarUrl.TrimStart('/');
         return Uri.TryCreate($"{baseAddr}/{path}", UriKind.Absolute, out var rel)
             ? rel
@@ -419,7 +463,7 @@ public partial class UserProfileViewModel(
                     return;
                 }
 
-                var result = await profileClient.UpdateUsernameAsync(trimmed);
+                var result = await ProfileClient.UpdateUsernameAsync(trimmed);
                 if (result.IsFailed)
                 {
                     EditErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.Profile_Edit_SaveError;
@@ -432,7 +476,7 @@ public partial class UserProfileViewModel(
 
             if (aboutChanged)
             {
-                var result = await profileClient.UpdateAboutAsync(EditAbout.Trim());
+                var result = await ProfileClient.UpdateAboutAsync(EditAbout.Trim());
                 if (result.IsFailed)
                 {
                     EditErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.Profile_Edit_SaveError;
@@ -466,11 +510,11 @@ public partial class UserProfileViewModel(
 
         try
         {
-            var picked = await imagePickerService.PickImageAsync(ct);
+            var picked = await ImagePickerService.PickImageAsync(ct);
             if (picked is null)
                 return;
 
-            var uploadResult = await profileClient.UploadAvatarAsync(
+            var uploadResult = await ProfileClient.UploadAvatarAsync(
                 picked.FileName,
                 picked.ContentType,
                 picked.Content,

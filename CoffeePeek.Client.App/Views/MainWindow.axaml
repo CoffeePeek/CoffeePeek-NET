@@ -2,8 +2,8 @@
     Background="{DynamicResource SurfaceBrush}"
     FontFamily="{StaticResource RFDewiExpanded}"
     Icon="/Assets/app.ico"
-    MinHeight="800"
-    MinWidth="450"
+    MinHeight="560"
+    MinWidth="360"
     Title="{Binding [ApplicationName], Source={x:Static loc:Loc.Instance}}"
     mc:Ignorable="d"
     x:Class="CoffeePeek.Client.App.Views.MainWindow"
@@ -20,7 +20,7 @@
             <Border Grid.Row="0" Margin="{StaticResource DefaultPadding}">
                 <ContentControl Content="{Binding HeaderViewModel}" />
             </Border>
-            <Border Grid.Row="1" Margin="32">
+            <Border Grid.Row="1" Margin="{Binding Layout.WorkspaceChromeMargin}">
                 <ContentControl Content="{Binding WorkspaceViewModel}" />
             </Border>
             <ContentControl

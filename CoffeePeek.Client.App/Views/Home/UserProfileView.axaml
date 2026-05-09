@@ -31,7 +31,7 @@
                     <Border
                         Background="{DynamicResource SurfaceContainerLowBrush}"
                         BorderThickness="0"
-                        Padding="48,40">
+                        Padding="{Binding ProfileHeaderPadding}">
                         <StackPanel Orientation="Horizontal" Spacing="32">
                             <Border
                                 Classes="shimmer-circle"
@@ -59,7 +59,7 @@
                     </Border>
                     <!--  Stats skeleton  -->
                     <StackPanel
-                        Margin="48,32"
+                        Margin="{Binding ProfileStatsSectionMargin}"
                         MaxWidth="960"
                         Spacing="32">
                         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="20">
@@ -146,7 +146,7 @@
                     <Border
                         Background="{DynamicResource SurfaceContainerLowBrush}"
                         BorderThickness="0"
-                        Padding="48,40">
+                        Padding="{Binding ProfileHeaderPadding}">
                         <StackPanel
                             HorizontalAlignment="Stretch"
                             MaxWidth="960"
@@ -233,7 +233,7 @@
                         Background="{DynamicResource SurfaceContainerLowBrush}"
                         BorderThickness="0"
                         IsVisible="{Binding IsEditing}"
-                        Margin="48,0"
+                        Margin="{Binding ProfileEditFormHorizontalMargin}"
                         MaxWidth="960"
                         Padding="32,24">
                         <StackPanel Spacing="16">
@@ -314,7 +314,7 @@
                     </Border>
 
                     <StackPanel
-                        Margin="48,32"
+                        Margin="{Binding ProfileStatsSectionMargin}"
                         MaxWidth="960"
                         Spacing="32">
                         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="20">

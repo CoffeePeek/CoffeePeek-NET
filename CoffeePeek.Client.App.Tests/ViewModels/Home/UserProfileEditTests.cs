@@ -35,7 +35,8 @@ public class UserProfileEditTests
             _profileClientMock.Object,
             _reviewsClientMock.Object,
             _identityMock.Object,
-            _imagePickerMock.Object);
+            _imagePickerMock.Object,
+            new LayoutBreakpointService());
     }
 
     private void SetupProfileSuccess(string userName = "testuser", string? about = "some bio")

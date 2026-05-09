@@ -45,22 +45,21 @@
                 HorizontalScrollBarVisibility="Disabled"
                 IsVisible="{Binding IsLoading}">
                 <Grid
-                    ColumnDefinitions="*,310"
-                    ColumnSpacing="24"
+                    x:Name="DetailSkeletonRootGrid"
                     HorizontalAlignment="Center"
-                    Margin="24,0,24,32"
+                    Margin="{Binding DetailOuterMargin}"
                     MaxWidth="1200"
-                    MinWidth="520"
-                    RowDefinitions="Auto,Auto,*">
+                    MinWidth="{Binding DetailMinGridWidth}"
+                    RowDefinitions="Auto,Auto,*,Auto">
                     <Border
                         Grid.Row="0"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="{Binding DetailHeroColumnSpan}"
                         Classes="shimmer shop-detail-hero"
                         CornerRadius="0,0,32,32"
                         Height="300" />
                     <StackPanel
                         Grid.Row="1"
-                        Grid.Column="0"
+                        Grid.ColumnSpan="{Binding DetailHeroColumnSpan}"
                         Margin="0,20,0,0"
                         Orientation="Horizontal"
                         Spacing="12">
@@ -84,9 +83,8 @@
                         <Border Classes="shimmer-line" Height="160" />
                     </StackPanel>
                     <StackPanel
-                        Grid.Row="1"
-                        Grid.RowSpan="2"
-                        Grid.Column="1"
+                        Grid.Row="{Binding SidebarGridRow}"
+                        Grid.Column="{Binding SidebarGridColumn}"
                         Margin="0,20,0,0"
                         Spacing="16">
                         <Border Classes="shimmer" CornerRadius="16" Height="220" />
@@ -102,7 +100,7 @@
                 CornerRadius="{StaticResource DefaultCornerRadius}"
                 HorizontalAlignment="Center"
                 IsVisible="{Binding HasError}"
-                Margin="24"
+                Margin="{Binding DetailErrorBannerMargin}"
                 Padding="16,12"
                 VerticalAlignment="Top">
                 <TextBlock
@@ -114,17 +112,16 @@
 
             <ScrollViewer HorizontalScrollBarVisibility="Disabled" IsVisible="{Binding !IsLoading}">
                 <Grid
-                    ColumnDefinitions="*,310"
-                    ColumnSpacing="24"
+                    x:Name="DetailBodyRootGrid"
                     HorizontalAlignment="Center"
-                    Margin="24,0,24,32"
+                    Margin="{Binding DetailOuterMargin}"
                     MaxWidth="1200"
-                    MinWidth="520"
-                    RowDefinitions="Auto,Auto,*">
+                    MinWidth="{Binding DetailMinGridWidth}"
+                    RowDefinitions="Auto,Auto,*,Auto">
                     <!-- Hero -->
                     <Border
                         Grid.Row="0"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="{Binding DetailHeroColumnSpan}"
                         Classes="shop-detail-hero">
                         <Panel>
                             <Border Background="{DynamicResource CardToneGradientBrush}" />
@@ -199,7 +196,7 @@
                     <!-- Quick info -->
                     <Grid
                         Grid.Row="1"
-                        Grid.ColumnSpan="2"
+                        Grid.ColumnSpan="{Binding DetailHeroColumnSpan}"
                         ColumnDefinitions="*,*,*"
                         Margin="0,20,0,0">
                         <Border Classes="shop-detail-quick-info" Grid.Column="0">
@@ -536,8 +533,8 @@
 
                     <!-- Sidebar -->
                     <StackPanel
-                        Grid.Row="2"
-                        Grid.Column="1"
+                        Grid.Row="{Binding SidebarGridRow}"
+                        Grid.Column="{Binding SidebarGridColumn}"
                         Margin="0,24,0,0"
                         Spacing="16">
                         <Border

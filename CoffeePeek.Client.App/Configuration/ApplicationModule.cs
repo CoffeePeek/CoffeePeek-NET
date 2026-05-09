@@ -37,6 +37,9 @@ public class ApplicationModule : Module
 
         builder.RegisterType<MainWorkspaceSectionCoordinator>().AsSelf().SingleInstance();
         builder.RegisterType<AccountSignOutService>().As<IAccountSignOutService>().SingleInstance();
+        builder.RegisterType<LayoutBreakpointService>()
+            .As<ILayoutBreakpointService>()
+            .SingleInstance();
 
         builder.RegisterType<MainViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<HeaderViewModel>().AsSelf().SingleInstance();

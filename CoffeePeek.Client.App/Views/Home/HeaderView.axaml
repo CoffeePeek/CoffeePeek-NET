@@ -36,6 +36,10 @@
             <Setter Property="FontWeight" Value="Normal" />
         </Style>
 
+        <Style Selector="ListBox.header-nav-hscroll ListBoxItem">
+            <Setter Property="Margin" Value="2,0,10,0" />
+        </Style>
+
         <Style Selector="ListBox.header-nav ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="Transparent" />
         </Style>
@@ -52,110 +56,197 @@
             <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
         </Style>
     </UserControl.Styles>
-    <Grid ColumnDefinitions="Auto,*,Auto" Margin="12,8" VerticalAlignment="Center">
-        <TextBlock
-            Grid.Column="0"
-            VerticalAlignment="Center"
-            Classes="Headline"
-            FontSize="20"
-            FontWeight="Normal"
-            LetterSpacing="1"
-            Text="{Binding [ApplicationName], Source={x:Static loc:Loc.Instance}}" />
-
-        <ScrollViewer
-            Grid.Column="1"
-            HorizontalAlignment="Stretch"
-            HorizontalScrollBarVisibility="Disabled"
-            VerticalAlignment="Center"
-            VerticalScrollBarVisibility="Disabled">
-            <ListBox
-                Classes="header-nav"
-                HorizontalAlignment="Center"
-                ItemsSource="{Binding MainTabTitles}"
-                SelectedIndex="{Binding MainTabs.SelectedIndex, Mode=TwoWay}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-            </ListBox>
-        </ScrollViewer>
-
-        <StackPanel
-            Grid.Column="2"
-            VerticalAlignment="Center"
-            Orientation="Horizontal"
-            Spacing="4">
-            <Button
-                Classes="header-icon-button"
-                IsEnabled="False"
-                ToolTip.Tip="Notifications coming soon">
-                <PathIcon
-                    Data="{StaticResource BellIcon}"
-                    Foreground="{DynamicResource OnSurfaceBrush}"
-                    Height="22"
-                    Width="22" />
-            </Button>
-            <Button
-                Margin="0,0,8,0"
-                Classes="Secondary"
-                Command="{Binding OpenModerationPanelCommand}"
-                Content="{Binding [Header_Moderation], Source={x:Static loc:Loc.Instance}}"
-                IsVisible="{Binding IsModerator}"
-                Padding="12,8" />
-            <Separator
-                Background="{DynamicResource BorderBrush}"
-                Height="28"
-                Margin="4,0,8,0"
+    <Panel>
+        <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding !IsCompactChrome}" Margin="12,8" VerticalAlignment="Center">
+            <TextBlock
+                Grid.Column="0"
                 VerticalAlignment="Center"
-                Width="1" />
+                Classes="Headline"
+                FontSize="20"
+                FontWeight="Normal"
+                LetterSpacing="1"
+                Text="{Binding [ApplicationName], Source={x:Static loc:Loc.Instance}}" />
 
-            <Button
-                Background="Transparent"
-                BorderThickness="0"
-                Padding="4,6">
-                <Button.Flyout>
-                    <MenuFlyout Placement="BottomEdgeAlignedRight">
-                        <MenuItem
-                            Command="{Binding NavigateToProfileCommand}"
-                            Header="{Binding [Header_Menu_Profile], Source={x:Static loc:Loc.Instance}}" />
-                        <MenuItem
-                            Command="{Binding OpenSettingsCommand}"
-                            Header="{Binding [Header_Menu_Settings], Source={x:Static loc:Loc.Instance}}" />
-                        <MenuItem
-                            Command="{Binding SignOutCommand}"
-                            Header="{Binding [Header_Menu_Logout], Source={x:Static loc:Loc.Instance}}" />
-                    </MenuFlyout>
-                </Button.Flyout>
-                <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Spacing="12">
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock
-                            FontSize="12"
-                            Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                            Text="{Binding [Header_WelcomeBack], Source={x:Static loc:Loc.Instance}}" />
-                        <TextBlock
-                            FontSize="13"
-                            FontWeight="Normal"
-                            Foreground="{DynamicResource OnSurfaceBrush}"
-                            Text="{Binding [Header_UserTagline], Source={x:Static loc:Loc.Instance}}" />
+            <ScrollViewer
+                Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalAlignment="Center"
+                VerticalScrollBarVisibility="Disabled">
+                <ListBox
+                    Classes="header-nav"
+                    HorizontalAlignment="Center"
+                    ItemsSource="{Binding MainTabTitles}"
+                    SelectedIndex="{Binding MainTabs.SelectedIndex, Mode=TwoWay}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+            </ScrollViewer>
+
+            <StackPanel
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="4">
+                <Button
+                    Classes="header-icon-button"
+                    IsEnabled="False"
+                    ToolTip.Tip="Notifications coming soon">
+                    <PathIcon
+                        Data="{StaticResource BellIcon}"
+                        Foreground="{DynamicResource OnSurfaceBrush}"
+                        Height="22"
+                        Width="22" />
+                </Button>
+                <Button
+                    Margin="0,0,8,0"
+                    Classes="Secondary"
+                    Command="{Binding OpenModerationPanelCommand}"
+                    Content="{Binding [Header_Moderation], Source={x:Static loc:Loc.Instance}}"
+                    IsVisible="{Binding IsModerator}"
+                    Padding="12,8" />
+                <Separator
+                    Background="{DynamicResource BorderBrush}"
+                    Height="28"
+                    Margin="4,0,8,0"
+                    VerticalAlignment="Center"
+                    Width="1" />
+
+                <Button
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="4,6">
+                    <Button.Flyout>
+                        <MenuFlyout Placement="BottomEdgeAlignedRight">
+                            <MenuItem
+                                Command="{Binding NavigateToProfileCommand}"
+                                Header="{Binding [Header_Menu_Profile], Source={x:Static loc:Loc.Instance}}" />
+                            <MenuItem
+                                Command="{Binding OpenSettingsCommand}"
+                                Header="{Binding [Header_Menu_Settings], Source={x:Static loc:Loc.Instance}}" />
+                            <MenuItem
+                                Command="{Binding SignOutCommand}"
+                                Header="{Binding [Header_Menu_Logout], Source={x:Static loc:Loc.Instance}}" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Spacing="12">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                Text="{Binding [Header_WelcomeBack], Source={x:Static loc:Loc.Instance}}" />
+                            <TextBlock
+                                FontSize="13"
+                                FontWeight="Normal"
+                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                Text="{Binding [Header_UserTagline], Source={x:Static loc:Loc.Instance}}" />
+                        </StackPanel>
+                        <Border
+                            Background="{DynamicResource SurfaceContainerHighBrush}"
+                            BorderBrush="{DynamicResource OutlineVariantGhostBrush}"
+                            BorderThickness="1"
+                            CornerRadius="40"
+                            Height="44"
+                            Width="44">
+                            <PathIcon
+                                Data="{StaticResource PersonIcon}"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                Height="22"
+                                Width="22"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        </Border>
                     </StackPanel>
-                    <Border
-                        Background="{DynamicResource SurfaceContainerHighBrush}"
-                        BorderBrush="{DynamicResource OutlineVariantGhostBrush}"
-                        BorderThickness="1"
-                        CornerRadius="40"
-                        Height="44"
-                        Width="44">
-                        <PathIcon
-                            Data="{StaticResource PersonIcon}"
-                            Foreground="{DynamicResource PrimaryBrush}"
-                            Height="22"
-                            Width="22"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center" />
-                    </Border>
-                </StackPanel>
-            </Button>
-        </StackPanel>
-    </Grid>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid IsVisible="{Binding IsCompactChrome}" Margin="8,6">
+            <Grid RowDefinitions="Auto,Auto">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Classes="Headline"
+                        FontSize="18"
+                        FontWeight="Normal"
+                        LetterSpacing="0.5"
+                        Text="{Binding [ApplicationName], Source={x:Static loc:Loc.Instance}}"
+                        TextTrimming="CharacterEllipsis" />
+
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="2"
+                        VerticalAlignment="Center">
+                        <Button
+                            Margin="0,0,8,0"
+                            Classes="Secondary"
+                            Command="{Binding OpenModerationPanelCommand}"
+                            Content="{Binding [Header_Moderation], Source={x:Static loc:Loc.Instance}}"
+                            IsVisible="{Binding IsModerator}"
+                            Padding="10,6"
+                            FontSize="12" />
+
+                        <Button
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="4,4">
+                            <Button.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                    <MenuItem
+                                        Command="{Binding NavigateToProfileCommand}"
+                                        Header="{Binding [Header_Menu_Profile], Source={x:Static loc:Loc.Instance}}" />
+                                    <MenuItem
+                                        Command="{Binding OpenSettingsCommand}"
+                                        Header="{Binding [Header_Menu_Settings], Source={x:Static loc:Loc.Instance}}" />
+                                    <MenuItem
+                                        Command="{Binding SignOutCommand}"
+                                        Header="{Binding [Header_Menu_Logout], Source={x:Static loc:Loc.Instance}}" />
+                                </MenuFlyout>
+                            </Button.Flyout>
+                            <Border
+                                Background="{DynamicResource SurfaceContainerHighBrush}"
+                                BorderBrush="{DynamicResource OutlineVariantGhostBrush}"
+                                BorderThickness="1"
+                                CornerRadius="40"
+                                Height="40"
+                                Width="40">
+                                <PathIcon
+                                    Data="{StaticResource PersonIcon}"
+                                    Foreground="{DynamicResource PrimaryBrush}"
+                                    Height="20"
+                                    Width="20"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <ScrollViewer
+                    Grid.Row="1"
+                    Margin="0,6,0,0"
+                    HorizontalAlignment="Stretch"
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalAlignment="Center"
+                    VerticalScrollBarVisibility="Disabled">
+                    <ListBox
+                        Classes="header-nav header-nav-hscroll"
+                        HorizontalAlignment="Left"
+                        ItemsSource="{Binding MainTabTitles}"
+                        SelectedIndex="{Binding MainTabs.SelectedIndex, Mode=TwoWay}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Panel>
 </UserControl>

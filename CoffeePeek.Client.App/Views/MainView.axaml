@@ -12,7 +12,9 @@
     <Grid Background="{DynamicResource SurfaceBrush}">
         <Grid IsVisible="{Binding Navigation.IsMainChromeVisible}" RowDefinitions="Auto,*">
             <ContentControl Content="{Binding HeaderViewModel}" Grid.Row="0" />
-            <ContentControl Content="{Binding WorkspaceViewModel}" Grid.Row="1" />
+            <Border Grid.Row="1" Margin="{Binding Layout.WorkspaceChromeMargin}">
+                <ContentControl Content="{Binding WorkspaceViewModel}" />
+            </Border>
             <ContentControl
                 Content="{Binding HomeViewModel}"
                 Grid.Row="0"

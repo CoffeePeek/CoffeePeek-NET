@@ -10,6 +10,8 @@ namespace CoffeePeek.Client.App;
 
 public partial class App : Application
 {
+    public IContainer Services => _container;
+
     private IContainer _container = null!;
     
     public override void Initialize()
