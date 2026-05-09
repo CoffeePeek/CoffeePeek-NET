@@ -52,7 +52,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.dotnet
-          key: ${{ runner.os }}-dotnet-wl-v2-${{ hashFiles('**/*.csproj', 'global.json', '**/*.props') }}
+          key: ${{ runner.os }}-dotnet-wl-v3-${{ hashFiles('global.json') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-wl-v3-
 
       - name: Restore .NET workloads
         run: dotnet workload restore "CoffeePeek.slnx"
