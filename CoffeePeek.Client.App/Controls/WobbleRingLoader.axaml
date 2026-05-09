@@ -4,25 +4,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--
-        Wobble Ring loader — a spinning arc with organic feel.
-        Inspired by loader 11 "Wobble ring" from the CoffeePeek organic-loaders design.
-        Sized to the parent via Width/Height; defaults to 20×20 for inline button use.
-        The arc covers ~75 % of the circle circumference (StrokeDashArray = 3π/4 · r · 2 ≈ ratio).
+        Wobble Ring loader (11) — spinning arc; rotation from LoaderStyles (RotateTransform.Angle).
+        Fixed 20×20 canvas. For different sizes set Width/Height on the UserControl.
     -->
-    <Canvas
-        Width="{Binding $parent[UserControl].Width}"
-        Height="{Binding $parent[UserControl].Height}"
-        HorizontalAlignment="Center"
-        VerticalAlignment="Center">
-
+    <Canvas Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Ellipse
+            Canvas.Left="0"
+            Canvas.Top="0"
             Classes="wobble-ring"
-            Height="{Binding $parent[Canvas].Height}"
+            Height="20"
+            RenderTransformOrigin="0.5,0.5"
             Stroke="{DynamicResource PrimaryBrush}"
-            StrokeDashArray="56,19"
+            StrokeDashArray="47,16"
             StrokeLineCap="Round"
             StrokeThickness="2.5"
-            Width="{Binding $parent[Canvas].Width}" />
-
+            Width="20" />
     </Canvas>
 </UserControl>
