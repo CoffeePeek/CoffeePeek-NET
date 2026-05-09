@@ -26,6 +26,8 @@ public class ApplicationModule : Module
 
         builder.RegisterType<ApplicationExecutorRunner>().As<IApplicationExecutorRunner>().SingleInstance();
         builder.RegisterType<RestoreSessionExecutor>().As<IBeforeMainShellExecutor>().SingleInstance();
+        builder.RegisterType<ApplyPersistedLanguageExecutor>().As<IBeforeMainShellExecutor>().SingleInstance();
+        builder.RegisterType<ApplyPersistedThemeExecutor>().As<IBeforeMainShellExecutor>().SingleInstance();
         builder.RegisterType<InitialRouteExecutor>().As<IBeforeMainShellExecutor>().SingleInstance();
 
         builder.RegisterType<WorkspaceShellNavigator>()
@@ -33,11 +35,15 @@ public class ApplicationModule : Module
             .As<IWorkspaceShellNavigator>()
             .SingleInstance();
 
+        builder.RegisterType<MainWorkspaceSectionCoordinator>().AsSelf().SingleInstance();
+        builder.RegisterType<AccountSignOutService>().As<IAccountSignOutService>().SingleInstance();
+
         builder.RegisterType<MainViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<HeaderViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<UserProfileViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<WorkspaceViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<HomeViewModel>().AsSelf().SingleInstance();
+        builder.RegisterType<SettingsViewModel>().AsSelf().SingleInstance();
         
         RegisterWelcomeFlow(builder);
         RegisterShopPage(builder);
@@ -49,6 +55,7 @@ public class ApplicationModule : Module
     private static void RegisterWelcomeFlow(ContainerBuilder builder)
     {
         builder.RegisterType<ThemeController>().As<IThemeController>().SingleInstance();
+        builder.RegisterType<LocalizationService>().As<ILocalizationService>().SingleInstance();
 
         builder.RegisterType<WelcomePageViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<LoginViewModel>().AsSelf().SingleInstance();
@@ -60,5 +67,6 @@ public class ApplicationModule : Module
         builder.RegisterType<ShopsPageViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<ShopDetailViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<SuggestShopViewModel>().AsSelf().SingleInstance();
+        builder.RegisterType<ModerationPanelViewModel>().AsSelf().SingleInstance();
     }
 }

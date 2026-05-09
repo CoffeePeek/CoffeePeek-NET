@@ -171,6 +171,294 @@ namespace CoffeePeek.Client.App.Resources.Lang {
             }
         }
         
+        public static string WelcomePage_HeroBadge {
+            get {
+                return ResourceManager.GetString("WelcomePage_HeroBadge", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_HeroHeadline {
+            get {
+                return ResourceManager.GetString("WelcomePage_HeroHeadline", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_HeroDescription {
+            get {
+                return ResourceManager.GetString("WelcomePage_HeroDescription", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_GetStarted {
+            get {
+                return ResourceManager.GetString("WelcomePage_GetStarted", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_ViewGallery {
+            get {
+                return ResourceManager.GetString("WelcomePage_ViewGallery", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Nav_Explore {
+            get {
+                return ResourceManager.GetString("WelcomePage_Nav_Explore", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Nav_Cafes {
+            get {
+                return ResourceManager.GetString("WelcomePage_Nav_Cafes", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Nav_Community {
+            get {
+                return ResourceManager.GetString("WelcomePage_Nav_Community", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_LogInHeader {
+            get {
+                return ResourceManager.GetString("WelcomePage_LogInHeader", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_SignUpHeader {
+            get {
+                return ResourceManager.GetString("WelcomePage_SignUpHeader", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Section_FeaturesTitle {
+            get {
+                return ResourceManager.GetString("WelcomePage_Section_FeaturesTitle", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Bento_RoastersTitle {
+            get {
+                return ResourceManager.GetString("WelcomePage_Bento_RoastersTitle", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Bento_RoastersDesc {
+            get {
+                return ResourceManager.GetString("WelcomePage_Bento_RoastersDesc", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Bento_RoastersCta {
+            get {
+                return ResourceManager.GetString("WelcomePage_Bento_RoastersCta", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Bento_BrewTitle {
+            get {
+                return ResourceManager.GetString("WelcomePage_Bento_BrewTitle", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Bento_BrewDesc {
+            get {
+                return ResourceManager.GetString("WelcomePage_Bento_BrewDesc", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Bento_PerksTitle {
+            get {
+                return ResourceManager.GetString("WelcomePage_Bento_PerksTitle", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Bento_PerksDesc {
+            get {
+                return ResourceManager.GetString("WelcomePage_Bento_PerksDesc", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Bento_CommunityTitle {
+            get {
+                return ResourceManager.GetString("WelcomePage_Bento_CommunityTitle", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Bento_CommunityDesc {
+            get {
+                return ResourceManager.GetString("WelcomePage_Bento_CommunityDesc", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_SearchPlaceholder {
+            get {
+                return ResourceManager.GetString("WelcomePage_SearchPlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_TrendingChip1 {
+            get {
+                return ResourceManager.GetString("WelcomePage_TrendingChip1", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_TrendingChip2 {
+            get {
+                return ResourceManager.GetString("WelcomePage_TrendingChip2", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_TrendingChip3 {
+            get {
+                return ResourceManager.GetString("WelcomePage_TrendingChip3", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_SocialProof {
+            get {
+                return ResourceManager.GetString("WelcomePage_SocialProof", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Footer_Copyright {
+            get {
+                return ResourceManager.GetString("WelcomePage_Footer_Copyright", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Footer_Privacy {
+            get {
+                return ResourceManager.GetString("WelcomePage_Footer_Privacy", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Footer_Terms {
+            get {
+                return ResourceManager.GetString("WelcomePage_Footer_Terms", resourceCulture);
+            }
+        }
+        
+        public static string WelcomePage_Footer_Contact {
+            get {
+                return ResourceManager.GetString("WelcomePage_Footer_Contact", resourceCulture);
+            }
+        }
+        
+        public static string Auth_HeroTagSaffron {
+            get {
+                return ResourceManager.GetString("Auth_HeroTagSaffron", resourceCulture);
+            }
+        }
+        
+        public static string Auth_LoginHeroHeadline {
+            get {
+                return ResourceManager.GetString("Auth_LoginHeroHeadline", resourceCulture);
+            }
+        }
+        
+        public static string Auth_LoginHeroSub {
+            get {
+                return ResourceManager.GetString("Auth_LoginHeroSub", resourceCulture);
+            }
+        }
+        
+        public static string Auth_EmailHeroTagline {
+            get {
+                return ResourceManager.GetString("Auth_EmailHeroTagline", resourceCulture);
+            }
+        }
+        
+        public static string Auth_RegisterHeroTagline {
+            get {
+                return ResourceManager.GetString("Auth_RegisterHeroTagline", resourceCulture);
+            }
+        }
+        
+        public static string Auth_LabelEmailCaps {
+            get {
+                return ResourceManager.GetString("Auth_LabelEmailCaps", resourceCulture);
+            }
+        }
+        
+        public static string Auth_LabelPasswordCaps {
+            get {
+                return ResourceManager.GetString("Auth_LabelPasswordCaps", resourceCulture);
+            }
+        }
+        
+        public static string Auth_LabelFullNameCaps {
+            get {
+                return ResourceManager.GetString("Auth_LabelFullNameCaps", resourceCulture);
+            }
+        }
+        
+        public static string Auth_LabelConfirmCaps {
+            get {
+                return ResourceManager.GetString("Auth_LabelConfirmCaps", resourceCulture);
+            }
+        }
+        
+        public static string Auth_ForgotPassword {
+            get {
+                return ResourceManager.GetString("Auth_ForgotPassword", resourceCulture);
+            }
+        }
+        
+        public static string Auth_RememberMachine {
+            get {
+                return ResourceManager.GetString("Auth_RememberMachine", resourceCulture);
+            }
+        }
+        
+        public static string Auth_OrContinueWith {
+            get {
+                return ResourceManager.GetString("Auth_OrContinueWith", resourceCulture);
+            }
+        }
+        
+        public static string Auth_RequestAccess {
+            get {
+                return ResourceManager.GetString("Auth_RequestAccess", resourceCulture);
+            }
+        }
+        
+        public static string Auth_Google {
+            get {
+                return ResourceManager.GetString("Auth_Google", resourceCulture);
+            }
+        }
+        
+        public static string Auth_Apple {
+            get {
+                return ResourceManager.GetString("Auth_Apple", resourceCulture);
+            }
+        }
+        
+        public static string Auth_FooterCrafted {
+            get {
+                return ResourceManager.GetString("Auth_FooterCrafted", resourceCulture);
+            }
+        }
+        
+        public static string Auth_CookieSettings {
+            get {
+                return ResourceManager.GetString("Auth_CookieSettings", resourceCulture);
+            }
+        }
+        
+        public static string Auth_SignInCaps {
+            get {
+                return ResourceManager.GetString("Auth_SignInCaps", resourceCulture);
+            }
+        }
+        
+        public static string RegisterPage_FullNamePlaceholder {
+            get {
+                return ResourceManager.GetString("RegisterPage_FullNamePlaceholder", resourceCulture);
+            }
+        }
+        
         public static string Auth_FillAllFields {
             get {
                 return ResourceManager.GetString("Auth_FillAllFields", resourceCulture);
@@ -393,6 +681,240 @@ namespace CoffeePeek.Client.App.Resources.Lang {
             }
         }
         
+        public static string Header_Catalog {
+            get {
+                return ResourceManager.GetString("Header_Catalog", resourceCulture);
+            }
+        }
+        
+        public static string Header_Favorites {
+            get {
+                return ResourceManager.GetString("Header_Favorites", resourceCulture);
+            }
+        }
+        
+        public static string Header_NearMe {
+            get {
+                return ResourceManager.GetString("Header_NearMe", resourceCulture);
+            }
+        }
+        
+        public static string Header_WelcomeBack {
+            get {
+                return ResourceManager.GetString("Header_WelcomeBack", resourceCulture);
+            }
+        }
+        
+        public static string Header_UserTagline {
+            get {
+                return ResourceManager.GetString("Header_UserTagline", resourceCulture);
+            }
+        }
+        
+        public static string Header_Menu_Profile {
+            get {
+                return ResourceManager.GetString("Header_Menu_Profile", resourceCulture);
+            }
+        }
+        
+        public static string Header_Menu_Settings {
+            get {
+                return ResourceManager.GetString("Header_Menu_Settings", resourceCulture);
+            }
+        }
+        
+        public static string Header_Menu_Logout {
+            get {
+                return ResourceManager.GetString("Header_Menu_Logout", resourceCulture);
+            }
+        }
+        
+        public static string Settings_PageTitle {
+            get {
+                return ResourceManager.GetString("Settings_PageTitle", resourceCulture);
+            }
+        }
+        
+        public static string Settings_ThemeSection {
+            get {
+                return ResourceManager.GetString("Settings_ThemeSection", resourceCulture);
+            }
+        }
+        
+        public static string Settings_ThemeSystem {
+            get {
+                return ResourceManager.GetString("Settings_ThemeSystem", resourceCulture);
+            }
+        }
+        
+        public static string Settings_ThemeLight {
+            get {
+                return ResourceManager.GetString("Settings_ThemeLight", resourceCulture);
+            }
+        }
+        
+        public static string Settings_ThemeDark {
+            get {
+                return ResourceManager.GetString("Settings_ThemeDark", resourceCulture);
+            }
+        }
+        
+        public static string Settings_Back {
+            get {
+                return ResourceManager.GetString("Settings_Back", resourceCulture);
+            }
+        }
+
+        public static string Settings_LanguageSection {
+            get {
+                return ResourceManager.GetString("Settings_LanguageSection", resourceCulture);
+            }
+        }
+
+        public static string Settings_Language_English {
+            get {
+                return ResourceManager.GetString("Settings_Language_English", resourceCulture);
+            }
+        }
+
+        public static string Settings_Language_Russian {
+            get {
+                return ResourceManager.GetString("Settings_Language_Russian", resourceCulture);
+            }
+        }
+
+        public static string Placeholder_Favorites_Title {
+            get {
+                return ResourceManager.GetString("Placeholder_Favorites_Title", resourceCulture);
+            }
+        }
+        
+        public static string Placeholder_Favorites_Message {
+            get {
+                return ResourceManager.GetString("Placeholder_Favorites_Message", resourceCulture);
+            }
+        }
+        
+        public static string Placeholder_NearMe_Title {
+            get {
+                return ResourceManager.GetString("Placeholder_NearMe_Title", resourceCulture);
+            }
+        }
+        
+        public static string Placeholder_NearMe_Message {
+            get {
+                return ResourceManager.GetString("Placeholder_NearMe_Message", resourceCulture);
+            }
+        }
+        
+        public static string Header_Moderation {
+            get {
+                return ResourceManager.GetString("Header_Moderation", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Title {
+            get {
+                return ResourceManager.GetString("Moderation_Title", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Subtitle {
+            get {
+                return ResourceManager.GetString("Moderation_Subtitle", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Refresh {
+            get {
+                return ResourceManager.GetString("Moderation_Refresh", resourceCulture);
+            }
+        }
+        
+        public static string ModerationStatus_Pending {
+            get {
+                return ResourceManager.GetString("ModerationStatus_Pending", resourceCulture);
+            }
+        }
+        
+        public static string ModerationStatus_Approved {
+            get {
+                return ResourceManager.GetString("ModerationStatus_Approved", resourceCulture);
+            }
+        }
+        
+        public static string ModerationStatus_Rejected {
+            get {
+                return ResourceManager.GetString("ModerationStatus_Rejected", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_SectionShops {
+            get {
+                return ResourceManager.GetString("Moderation_SectionShops", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_SectionReviews {
+            get {
+                return ResourceManager.GetString("Moderation_SectionReviews", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Approve {
+            get {
+                return ResourceManager.GetString("Moderation_Approve", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Reject {
+            get {
+                return ResourceManager.GetString("Moderation_Reject", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_RejectReasonPlaceholder {
+            get {
+                return ResourceManager.GetString("Moderation_RejectReasonPlaceholder", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_LoadError {
+            get {
+                return ResourceManager.GetString("Moderation_LoadError", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_ActionFailed {
+            get {
+                return ResourceManager.GetString("Moderation_ActionFailed", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_DefaultRejectReason {
+            get {
+                return ResourceManager.GetString("Moderation_DefaultRejectReason", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_EmptyShops {
+            get {
+                return ResourceManager.GetString("Moderation_EmptyShops", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_EmptyReviews {
+            get {
+                return ResourceManager.GetString("Moderation_EmptyReviews", resourceCulture);
+            }
+        }
+        
+        public static string Moderation_Loading {
+            get {
+                return ResourceManager.GetString("Moderation_Loading", resourceCulture);
+            }
+        }
+        
         public static string ShopPage_SearchPlaceholder {
             get {
                 return ResourceManager.GetString("ShopPage_SearchPlaceholder", resourceCulture);
@@ -444,6 +966,78 @@ namespace CoffeePeek.Client.App.Resources.Lang {
         public static string ShopPage_AdditionalFiltersHint {
             get {
                 return ResourceManager.GetString("ShopPage_AdditionalFiltersHint", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_BrowseMap {
+            get {
+                return ResourceManager.GetString("ShopPage_BrowseMap", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_EmptyMessage {
+            get {
+                return ResourceManager.GetString("ShopPage_EmptyMessage", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_EmptyClearFilters {
+            get {
+                return ResourceManager.GetString("ShopPage_EmptyClearFilters", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_EmptyTitle {
+            get {
+                return ResourceManager.GetString("ShopPage_EmptyTitle", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_FeatureArtisanDesc {
+            get {
+                return ResourceManager.GetString("ShopPage_FeatureArtisanDesc", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_FeatureArtisanTitle {
+            get {
+                return ResourceManager.GetString("ShopPage_FeatureArtisanTitle", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_FeaturePastriesDesc {
+            get {
+                return ResourceManager.GetString("ShopPage_FeaturePastriesDesc", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_FeaturePastriesTitle {
+            get {
+                return ResourceManager.GetString("ShopPage_FeaturePastriesTitle", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_FeatureWorkDesc {
+            get {
+                return ResourceManager.GetString("ShopPage_FeatureWorkDesc", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_FeatureWorkTitle {
+            get {
+                return ResourceManager.GetString("ShopPage_FeatureWorkTitle", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_HeroSubtitle {
+            get {
+                return ResourceManager.GetString("ShopPage_HeroSubtitle", resourceCulture);
+            }
+        }
+        
+        public static string ShopPage_HeroTitle {
+            get {
+                return ResourceManager.GetString("ShopPage_HeroTitle", resourceCulture);
             }
         }
         
@@ -596,6 +1190,60 @@ namespace CoffeePeek.Client.App.Resources.Lang {
                 return ResourceManager.GetString("ShopDetail_Open", resourceCulture);
             }
         }
+
+        public static string ShopDetail_AddReview {
+            get {
+                return ResourceManager.GetString("ShopDetail_AddReview", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_ReviewCommentPlaceholder {
+            get {
+                return ResourceManager.GetString("ShopDetail_ReviewCommentPlaceholder", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_RatingPlace {
+            get {
+                return ResourceManager.GetString("ShopDetail_RatingPlace", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_RatingService {
+            get {
+                return ResourceManager.GetString("ShopDetail_RatingService", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_RatingCoffee {
+            get {
+                return ResourceManager.GetString("ShopDetail_RatingCoffee", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_SubmitReview {
+            get {
+                return ResourceManager.GetString("ShopDetail_SubmitReview", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_DeleteReview {
+            get {
+                return ResourceManager.GetString("ShopDetail_DeleteReview", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_NoReviewsYet {
+            get {
+                return ResourceManager.GetString("ShopDetail_NoReviewsYet", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_ReviewActionFailed {
+            get {
+                return ResourceManager.GetString("ShopDetail_ReviewActionFailed", resourceCulture);
+            }
+        }
         
         public static string Profile_Edit {
             get {
@@ -654,6 +1302,24 @@ namespace CoffeePeek.Client.App.Resources.Lang {
         public static string Profile_Edit_UsernameRequired {
             get {
                 return ResourceManager.GetString("Profile_Edit_UsernameRequired", resourceCulture);
+            }
+        }
+
+        public static string Profile_AvatarUpload {
+            get {
+                return ResourceManager.GetString("Profile_AvatarUpload", resourceCulture);
+            }
+        }
+
+        public static string Profile_AvatarUploading {
+            get {
+                return ResourceManager.GetString("Profile_AvatarUploading", resourceCulture);
+            }
+        }
+
+        public static string Profile_AvatarUploadError {
+            get {
+                return ResourceManager.GetString("Profile_AvatarUploadError", resourceCulture);
             }
         }
 
@@ -900,6 +1566,84 @@ namespace CoffeePeek.Client.App.Resources.Lang {
         public static string SuggestShop_DaySunday {
             get {
                 return ResourceManager.GetString("SuggestShop_DaySunday", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_About {
+            get {
+                return ResourceManager.GetString("ShopDetail_About", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_OpenUntil {
+            get {
+                return ResourceManager.GetString("ShopDetail_OpenUntil", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_ClosedToday {
+            get {
+                return ResourceManager.GetString("ShopDetail_ClosedToday", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_GetDirections {
+            get {
+                return ResourceManager.GetString("ShopDetail_GetDirections", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_Share {
+            get {
+                return ResourceManager.GetString("ShopDetail_Share", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_Order {
+            get {
+                return ResourceManager.GetString("ShopDetail_Order", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_ReviewsEmptyTitle {
+            get {
+                return ResourceManager.GetString("ShopDetail_ReviewsEmptyTitle", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_ReviewsEmptySubtitle {
+            get {
+                return ResourceManager.GetString("ShopDetail_ReviewsEmptySubtitle", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_WriteReview {
+            get {
+                return ResourceManager.GetString("ShopDetail_WriteReview", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_Amenities {
+            get {
+                return ResourceManager.GetString("ShopDetail_Amenities", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_OpenNow {
+            get {
+                return ResourceManager.GetString("ShopDetail_OpenNow", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_Hours {
+            get {
+                return ResourceManager.GetString("ShopDetail_Hours", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_MapArea {
+            get {
+                return ResourceManager.GetString("ShopDetail_MapArea", resourceCulture);
             }
         }
     }

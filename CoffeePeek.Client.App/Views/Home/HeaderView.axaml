@@ -4,154 +4,158 @@
     x:Class="CoffeePeek.Client.App.Views.Home.HeaderView"
     x:DataType="home:HeaderViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:home="clr-namespace:CoffeePeek.Client.App.ViewModels.Home"
-    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Styles>
-        <Style Selector="TabItem">
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontWeight" Value="Regular" />
-            <Setter Property="Margin" Value="12, 0" />
-            <Setter Property="Padding" Value="4, 2" />
+        <Style Selector="Button.header-icon-button">
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="10" />
             <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
-
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Border
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{TemplateBinding CornerRadius}"
-                        Name="PART_LayoutRoot"
-                        Padding="{TemplateBinding Padding}">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <ContentPresenter
-                                Content="{TemplateBinding Header}"
-                                ContentTemplate="{TemplateBinding HeaderTemplate}"
-                                Foreground="{TemplateBinding Foreground}"
-                                HorizontalAlignment="Center"
-                                Name="PART_ContentPresenter"
-                                VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Border>
-                </ControlTemplate>
-            </Setter>
         </Style>
 
-        <Style Selector="TabItem:pointerover">
+        <Style Selector="Button.header-icon-button:pointerover">
             <Setter Property="Background" Value="{DynamicResource SurfaceContainerLowBrush}" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="Cursor" Value="Hand" />
         </Style>
 
-        <Style Selector="TabItem:selected">
-            <Setter Property="Background" Value="{DynamicResource SurfaceContainerHighBrush}" />
-            <Setter Property="BorderBrush" Value="Transparent" />
+        <Style Selector="ListBox.header-nav">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+
+        <Style Selector="ListBox.header-nav ListBoxItem">
+            <Setter Property="Padding" Value="8,10" />
+            <Setter Property="Margin" Value="4,0,16,0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource OnSurfaceVariantBrush}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Normal" />
+        </Style>
+
+        <Style Selector="ListBox.header-nav ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <Style Selector="ListBox.header-nav ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <Style Selector="ListBox.header-nav ListBoxItem:selected">
             <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
         </Style>
 
-        <Style Selector="TabItem /template/ Border#PART_SelectedPipe">
-            <Setter Property="IsVisible" Value="False" />
+        <Style Selector="ListBox.header-nav ListBoxItem:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
         </Style>
     </UserControl.Styles>
-    <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-        <StackPanel
+    <Grid ColumnDefinitions="Auto,*,Auto" Margin="12,8" VerticalAlignment="Center">
+        <TextBlock
             Grid.Column="0"
-            Margin="8,0"
-            Orientation="Horizontal"
-            VerticalAlignment="Center">
-            <TextBlock
-                Classes="Headline"
-                FontWeight="Bold"
-                Foreground="{DynamicResource PrimaryBrush}">
-                <Run Foreground="{DynamicResource OnSurfaceBrush}" Text="Coffee" /><Run Foreground="{DynamicResource PrimaryBrush}" Text="Peek" />
-            </TextBlock>
-        </StackPanel>
+            VerticalAlignment="Center"
+            Classes="Headline"
+            FontSize="20"
+            FontWeight="Normal"
+            LetterSpacing="1"
+            Text="{Binding [ApplicationName], Source={x:Static loc:Loc.Instance}}" />
 
         <ScrollViewer
             Grid.Column="1"
-            HorizontalScrollBarVisibility="Hidden"
-            VerticalScrollBarVisibility="Disabled"
-            VerticalAlignment="Center">
-            <TabControl SelectedIndex="{Binding MainTabSelectedIndex, Mode=TwoWay}">
-                <TabItem>
-                    <Interaction.Behaviors>
-                        <EventTriggerBehavior EventName="PointerPressed">
-                            <InvokeCommandAction Command="{Binding CloseProfileShellCommand}" />
-                        </EventTriggerBehavior>
-                    </Interaction.Behaviors>
-                    <TabItem.Header>
-                        <StackPanel
-                            Margin="4,0"
-                            Orientation="Horizontal"
-                            Spacing="4">
-                            <PathIcon
-                                Data="{StaticResource SearchIcon}"
-                                Height="16"
-                                Width="16" />
-                            <TextBlock Text="{x:Static lang:Resources.Header_Shops}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </TabItem.Header>
-                </TabItem>
-                <TabItem>
-                    <Interaction.Behaviors>
-                        <EventTriggerBehavior EventName="PointerPressed">
-                            <InvokeCommandAction Command="{Binding CloseProfileShellCommand}" />
-                        </EventTriggerBehavior>
-                    </Interaction.Behaviors>
-                    <TabItem.Header>
-                        <StackPanel
-                            Margin="4,0"
-                            Orientation="Horizontal"
-                            Spacing="4">
-                            <PathIcon
-                                Data="{StaticResource MapIcon}"
-                                Height="16"
-                                Width="16" />
-                            <TextBlock Text="{x:Static lang:Resources.Header_Map}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </TabItem.Header>
-                </TabItem>
-            </TabControl>
+            HorizontalAlignment="Stretch"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalAlignment="Center"
+            VerticalScrollBarVisibility="Disabled">
+            <ListBox
+                Classes="header-nav"
+                HorizontalAlignment="Center"
+                ItemsSource="{Binding MainTabTitles}"
+                SelectedIndex="{Binding MainTabs.SelectedIndex, Mode=TwoWay}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
         </ScrollViewer>
 
         <StackPanel
             Grid.Column="2"
-            Margin="8,0"
+            VerticalAlignment="Center"
             Orientation="Horizontal"
-            VerticalAlignment="Center">
+            Spacing="4">
+            <Button
+                Classes="header-icon-button"
+                IsEnabled="False"
+                ToolTip.Tip="Notifications coming soon">
+                <PathIcon
+                    Data="{StaticResource BellIcon}"
+                    Foreground="{DynamicResource OnSurfaceBrush}"
+                    Height="22"
+                    Width="22" />
+            </Button>
+            <Button
+                Margin="0,0,8,0"
+                Classes="Secondary"
+                Command="{Binding OpenModerationPanelCommand}"
+                Content="{Binding [Header_Moderation], Source={x:Static loc:Loc.Instance}}"
+                IsVisible="{Binding IsModerator}"
+                Padding="12,8" />
             <Separator
                 Background="{DynamicResource BorderBrush}"
-                Height="20"
+                Height="28"
+                Margin="4,0,8,0"
                 VerticalAlignment="Center"
                 Width="1" />
-            <Border Background="Transparent">
-                <Interaction.Behaviors>
-                    <EventTriggerBehavior EventName="PointerPressed">
-                        <InvokeCommandAction Command="{Binding NavigateToProfileCommand}" />
-                    </EventTriggerBehavior>
-                </Interaction.Behaviors>
-                <StackPanel Orientation="Horizontal">
+
+            <Button
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="4,6">
+                <Button.Flyout>
+                    <MenuFlyout Placement="BottomEdgeAlignedRight">
+                        <MenuItem
+                            Command="{Binding NavigateToProfileCommand}"
+                            Header="{Binding [Header_Menu_Profile], Source={x:Static loc:Loc.Instance}}" />
+                        <MenuItem
+                            Command="{Binding OpenSettingsCommand}"
+                            Header="{Binding [Header_Menu_Settings], Source={x:Static loc:Loc.Instance}}" />
+                        <MenuItem
+                            Command="{Binding SignOutCommand}"
+                            Header="{Binding [Header_Menu_Logout], Source={x:Static loc:Loc.Instance}}" />
+                    </MenuFlyout>
+                </Button.Flyout>
+                <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Spacing="12">
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock FontSize="12" Text="Username" />
                         <TextBlock
-                            FontSize="10"
-                            FontWeight="Regular"
-                            Foreground="{DynamicResource PrimaryBrush}"
-                            Text="Mainteiner" />
+                            FontSize="12"
+                            Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            Text="{Binding [Header_WelcomeBack], Source={x:Static loc:Loc.Instance}}" />
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Normal"
+                            Foreground="{DynamicResource OnSurfaceBrush}"
+                            Text="{Binding [Header_UserTagline], Source={x:Static loc:Loc.Instance}}" />
                     </StackPanel>
-                    <Ellipse
-                        Fill="{DynamicResource PrimaryBrush}"
-                        Height="40"
-                        Margin="12,0,0,0"
-                        Width="40" />
+                    <Border
+                        Background="{DynamicResource SurfaceContainerHighBrush}"
+                        BorderBrush="{DynamicResource OutlineVariantGhostBrush}"
+                        BorderThickness="1"
+                        CornerRadius="40"
+                        Height="44"
+                        Width="44">
+                        <PathIcon
+                            Data="{StaticResource PersonIcon}"
+                            Foreground="{DynamicResource PrimaryBrush}"
+                            Height="22"
+                            Width="22"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+                    </Border>
                 </StackPanel>
-            </Border>
+            </Button>
         </StackPanel>
     </Grid>
 </UserControl>

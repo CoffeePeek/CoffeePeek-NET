@@ -1,35 +1,56 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
-        <Border Padding="20" Background="{DynamicResource SurfaceBrush}">
-            <StackPanel Spacing="8">
-                <TextBox PlaceholderText="hello@example.com" />
-                <TextBox Text="SomeText" />
+        <Border Background="{DynamicResource SurfaceBrush}" Padding="20">
+            <StackPanel Spacing="12">
+                <TextBox PlaceholderText="Email address" />
+                <TextBox Text="Some text" />
+                <TextBox IsEnabled="False" PlaceholderText="Disabled" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
-    <!-- Minimal: no box; bottom rule only; focus → primary + glow feel via thicker line -->
+    <!--
+        Pill inputs: 26 px radius, 52 px min-height, warm-gold tint border.
+        Normal → hover (darker border) → focus amber ring → disabled muted → error red.
+        Design spec: border-radius:26px, height:52px, border:1px solid rgba(158,123,54,0.4)
+                     focus: border-color:#EAB308, box-shadow: 0 0 0 4px rgba(234,179,8,.08)
+    -->
     <Style Selector="TextBox">
-        <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+        <Setter Property="FontFamily" Value="{StaticResource RFDewiExpanded}" />
         <Setter Property="SelectionBrush" Value="{DynamicResource TextSelectionBrush}" />
         <Setter Property="SelectionForegroundBrush" Value="{DynamicResource TextSelectionForegroundBrush}" />
-        <Setter Property="CaretBrush" Value="{DynamicResource PrimaryBrush}" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{DynamicResource OutlineVariantGhostBrush}" />
-        <Setter Property="BorderThickness" Value="{StaticResource DefaultThickness}" />
-        <Setter Property="CornerRadius" Value="{StaticResource SuperLargeRadius}" />
-        <Setter Property="Padding" Value="12" />
-        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="CaretBrush" Value="{DynamicResource TextBoxFocusBorderBrush}" />
+        <Setter Property="Background" Value="{DynamicResource TextBoxSurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource TextBoxBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{StaticResource TextBoxBorderThickness}" />
+        <Setter Property="CornerRadius" Value="{StaticResource InputCornerRadius}" />
+        <Setter Property="Padding" Value="16,12" />
+        <Setter Property="MinHeight" Value="52" />
+        <Setter Property="FontSize" Value="15" />
         <Setter Property="Foreground" Value="{DynamicResource OnSurfaceBrush}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource TextBoxPlaceholderBrush}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
     <Style Selector="TextBox:pointerover">
-        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
-        <Setter Property="BorderThickness" Value="{StaticResource DefaultThickness}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource TextBoxHoverBorderBrush}" />
     </Style>
-    
+
     <Style Selector="TextBox:focus">
-        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
-        <Setter Property="BorderThickness" Value="{StaticResource DefaultThickness}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource TextBoxFocusBorderBrush}" />
+    </Style>
+
+    <Style Selector="TextBox:disabled">
+        <Setter Property="Background" Value="{DynamicResource TextBoxDisabledSurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource TextBoxDisabledBorderBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBoxDisabledForegroundBrush}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource TextBoxDisabledForegroundBrush}" />
+    </Style>
+
+    <!--  form-field: same chrome, slightly taller, explicit vertical alignment  -->
+    <Style Selector="TextBox.form-field">
+        <Setter Property="MinHeight" Value="56" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 </Styles>

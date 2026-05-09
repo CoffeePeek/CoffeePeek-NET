@@ -21,9 +21,9 @@ public class SearchCoffeeShopsHandler
         var searchHash = CreateSearchHash(queryRequest);
         var cacheKey = CacheKey.Shop.Search(searchHash);
 
-        var cachedResponse = await redisService.GetAsync(cacheKey, async () =>
+        var cachedResponse = await redisService.GetAsync(cacheKey, async token =>
         {
-            var (items, totalCount) = await coffeeShopQueries.Search(queryRequest, ct);
+            var (items, totalCount) = await coffeeShopQueries.Search(queryRequest, token);
             
             return new GetCoffeeShopsResponse
             {
@@ -32,7 +32,7 @@ public class SearchCoffeeShopsHandler
                 CurrentPage = queryRequest.PageNumber,
                 TotalPages = (int)Math.Ceiling(totalCount / (double)queryRequest.PageSize)
             };
-        });
+        }, cancellationToken: ct);
         
         if (cachedResponse == null) return Response<GetCoffeeShopsResponse>.Error("Error");
 

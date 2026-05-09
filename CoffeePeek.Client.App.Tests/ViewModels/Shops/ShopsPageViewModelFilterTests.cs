@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Net.Http;
+using CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Responses;
 using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 using CoffeePeek.Client.App.Services;
@@ -70,7 +72,12 @@ public class ShopsPageViewModelFilterTests
                 BrewMethods = [new BrewMethodDto { Id = Guid.NewGuid(), Name = "Pour Over" }]
             }));
 
-        return new ShopsPageViewModel(_shopsClientMock.Object, _catalogsClientMock.Object, _navigatorMock.Object);
+        return new ShopsPageViewModel(
+            _shopsClientMock.Object,
+            _catalogsClientMock.Object,
+            _navigatorMock.Object,
+            new HttpClient(),
+            new ApiOptions { BaseAddress = "https://localhost/" });
     }
 
     [Fact]

@@ -2,7 +2,7 @@ namespace CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 
 public class GoogleLoginUser
 {
-    public string Email { get; set; }
-    public string Username { get; set; }
-    public string AvatarUrl { get; set; }
+    public required string Email { get; init; }
+    public required string Username { get; init; }
+    public required string AvatarUrl { get; init; }
 }

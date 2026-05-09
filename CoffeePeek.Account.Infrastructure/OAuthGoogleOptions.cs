@@ -1,7 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CoffeePeek.Account.Infrastructure;
 
 public class OAuthGoogleOptions
 {
-    public string ClientId { get; set; }
-    public string ClientSecret { get; set; }
+    [Required(AllowEmptyStrings = false)]
+    public string ClientId { get; set; } = string.Empty;
+
+    [Required(AllowEmptyStrings = false)]
+    public string ClientSecret { get; set; } = string.Empty;
 }

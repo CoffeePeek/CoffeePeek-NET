@@ -22,20 +22,20 @@ public static class GetCoffeeShopHandler
     {
         var cacheKey = CacheKey.Shop.Detail(query.Id);
 
-        var shopDto = await redisService.GetAsync(cacheKey, async () =>
+        var shopDto = await redisService.GetAsync(cacheKey, async token =>
         {
-            var dto = await shopQueries.GetDetailsById(query.Id, ct);
+            var dto = await shopQueries.GetDetailsById(query.Id, token);
             if (dto == null) return null;
 
-            var (avgRating, count) = await reviewRepository.GetReviewStatsByCoffeeShopId(query.Id, ct);
-            var (reviews, _) = await reviewRepository.GetByCoffeeShopId(query.Id, 1, 10, ct);
+            var (avgRating, count) = await reviewRepository.GetReviewStatsByCoffeeShopId(query.Id, token);
+            var (reviews, _) = await reviewRepository.GetByCoffeeShopId(query.Id, 1, 10, token);
 
             return dto with { 
                 Rating = avgRating, 
                 ReviewCount = count, 
                 Reviews = mapper.Map<ReviewDto[]>(reviews)
             };
-        }, cacheKey.DefaultTtl);
+        }, cacheKey.DefaultTtl, ct);
 
         if (shopDto == null)
             return Response<GetCoffeeShopResponse>.Error("Shop not found");

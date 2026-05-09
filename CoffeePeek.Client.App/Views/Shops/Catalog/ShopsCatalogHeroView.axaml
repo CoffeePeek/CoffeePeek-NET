@@ -1,0 +1,28 @@
+<UserControl
+    d:DesignHeight="120"
+    d:DesignWidth="960"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Shops.Catalog.ShopsCatalogHeroView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Margin="20,8,20,0" Spacing="8">
+        <TextBlock
+            Classes="Headline"
+            FontSize="34"
+            FontWeight="Normal"
+            Foreground="{DynamicResource OnSurfaceBrush}"
+            HorizontalAlignment="Center"
+            Text="{Binding [ShopPage_HeroTitle], Source={x:Static loc:Loc.Instance}}"
+            TextAlignment="Center" />
+        <TextBlock
+            FontSize="16"
+            Foreground="{DynamicResource OnSurfaceVariantBrush}"
+            HorizontalAlignment="Center"
+            Text="{Binding [ShopPage_HeroSubtitle], Source={x:Static loc:Loc.Instance}}"
+            TextAlignment="Center"
+            TextWrapping="Wrap" />
+    </StackPanel>
+</UserControl>

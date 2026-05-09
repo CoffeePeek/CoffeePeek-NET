@@ -27,6 +27,9 @@ public sealed partial class LoginViewModel(
     [ObservableProperty]
     public partial string? ErrorMessage { get; set; }
 
+    [ObservableProperty]
+    public partial bool RememberThisMachine { get; set; }
+
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
     public bool ThemeShowsSunIcon =>
@@ -49,6 +52,13 @@ public sealed partial class LoginViewModel(
         navigationService.NavigateTo<RegisterViewModel>(r => r.ResetForEmailStep());
 
     [RelayCommand]
+    private void ForgotPassword()
+    {
+        // TODO CP-158: implement password recovery flow.
+        ErrorMessage = "Password recovery is coming soon.";
+    }
+
+    [RelayCommand]
     private async Task LoginAsync()
     {
         ErrorMessage = null;
@@ -68,7 +78,8 @@ public sealed partial class LoginViewModel(
         }
 
         session.SetAccessToken(result.Value.AccessToken);
-        await localUserSettings.SetAccessTokenAsync(result.Value.AccessToken);
+        if (RememberThisMachine)
+            await localUserSettings.SetAccessTokenAsync(result.Value.AccessToken);
         Password = string.Empty;
         navigationService.Reset();
     }
