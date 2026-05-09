@@ -17,6 +17,7 @@ public sealed class LocalizationService : ILocalizationService
 
         CurrentLanguage = languageCode;
         Lang.Culture = new CultureInfo(languageCode);
+        Loc.Instance.NotifyLanguageChanged();
         LanguageChanged?.Invoke(this, EventArgs.Empty);
     }
 }
