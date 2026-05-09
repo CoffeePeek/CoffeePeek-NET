@@ -235,8 +235,9 @@ jobs:
             --project CoffeePeek.Account.Persistence/CoffeePeek.Account.Persistence.csproj \
             --startup-project CoffeePeek.AccountService/CoffeePeek.AccountService.csproj \
             --connection "${{ secrets.DB_CONNECTION_ACCOUNT }}" \
+            --configuration Release \
             --no-build
-          
+
           echo "--- Applying ShopsService migrations ---"
           export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_SHOPS }}"
           dotnet ef database update \
@@ -244,8 +245,9 @@ jobs:
             --project CoffeePeek.Shops.Persistance/CoffeePeek.Shops.Persistance.csproj \
             --startup-project CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj \
             --connection "${{ secrets.DB_CONNECTION_SHOPS }}" \
+            --configuration Release \
             --no-build
-          
+
           echo "--- Applying ModerationService migrations ---"
           export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_MODERATION }}"
           dotnet ef database update \
@@ -253,12 +255,14 @@ jobs:
             --project CoffeeShop.Moderation.Persistence/CoffeeShop.Moderation.Persistence.csproj \
             --startup-project CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj \
             --connection "${{ secrets.DB_CONNECTION_MODERATION }}" \
+            --configuration Release \
             --no-build
-          
+
           echo "--- Applying MediaService migrations ---"
           dotnet ef database update \
             --context MediaDbContext \
             --project CoffeePeek.MediaService/CoffeePeek.MediaService.csproj \
             --startup-project CoffeePeek.MediaService/CoffeePeek.MediaService.csproj \
             --connection "${{ secrets.DB_CONNECTION_MEDIA }}" \
+            --configuration Release \
             --no-build
