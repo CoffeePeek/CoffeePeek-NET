@@ -52,6 +52,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Setup Node.js (Vercel CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
@@ -83,12 +88,18 @@ jobs:
             -o ./dist \
             -p:AllowMissingPrunePackageData=true
 
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
       - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: dist/wwwroot
-          production: ${{ github.ref == 'refs/heads/main' }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: dist/wwwroot
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            vercel deploy --prod --yes --token "${{ secrets.VERCEL_TOKEN }}" .
+          else
+            vercel deploy --yes --token "${{ secrets.VERCEL_TOKEN }}" .
+          fi
