@@ -4,8 +4,8 @@
     x:Class="CoffeePeek.Client.App.Views.WelcomeFlow.Welcome.WelcomePageView"
     x:DataType="welcome:WelcomePageViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:welcome="clr-namespace:CoffeePeek.Client.App.ViewModels.WelcomeFlow.Welcome"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -43,7 +43,7 @@
             HorizontalAlignment="Right"
             Margin="0,20,20,0"
             Padding="12"
-            ToolTip.Tip="{x:Static lang:Resources.Auth_ThemeToggle}"
+            ToolTip.Tip="{Binding [Auth_ThemeToggle], Source={x:Static loc:Loc.Instance}}"
             VerticalAlignment="Top"
             ZIndex="40">
             <Panel Height="22" Width="22">
@@ -84,14 +84,14 @@
                             FontSize="22"
                             FontWeight="Normal"
                             Foreground="{DynamicResource OnSurfaceBrush}"
-                            Text="{x:Static lang:Resources.Auth_BrandCoffee}"
+                            Text="{Binding [Auth_BrandCoffee], Source={x:Static loc:Loc.Instance}}"
                             VerticalAlignment="Center" />
                         <TextBlock
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="22"
                             FontWeight="Normal"
                             Foreground="{DynamicResource PrimaryBrush}"
-                            Text="{x:Static lang:Resources.Auth_BrandPeek}"
+                            Text="{Binding [Auth_BrandPeek], Source={x:Static loc:Loc.Instance}}"
                             VerticalAlignment="Center" />
                     </StackPanel>
 
@@ -107,7 +107,7 @@
                                 FontSize="15"
                                 FontWeight="Normal"
                                 Foreground="{DynamicResource OnSurfaceBrush}"
-                                Text="{x:Static lang:Resources.WelcomePage_Nav_Explore}" />
+                                Text="{Binding [WelcomePage_Nav_Explore], Source={x:Static loc:Loc.Instance}}" />
                             <Border
                                 Background="{DynamicResource PrimaryBrush}"
                                 CornerRadius="1"
@@ -115,7 +115,7 @@
                         </StackPanel>
                         <Button
                             Classes="Transparent"
-                            Content="{x:Static lang:Resources.WelcomePage_Nav_Cafes}"
+                            Content="{Binding [WelcomePage_Nav_Cafes], Source={x:Static loc:Loc.Instance}}"
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="15"
                             FontWeight="Normal"
@@ -125,7 +125,7 @@
                             VerticalAlignment="Center" />
                         <Button
                             Classes="Transparent"
-                            Content="{x:Static lang:Resources.WelcomePage_Nav_Community}"
+                            Content="{Binding [WelcomePage_Nav_Community], Source={x:Static loc:Loc.Instance}}"
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="15"
                             FontWeight="Normal"
@@ -143,7 +143,7 @@
                         <Button
                             Classes="Transparent"
                             Command="{Binding GoToLoginCommand}"
-                            Content="{x:Static lang:Resources.WelcomePage_LogInHeader}"
+                            Content="{Binding [WelcomePage_LogInHeader], Source={x:Static loc:Loc.Instance}}"
                             CornerRadius="{StaticResource PillRadius}"
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="14"
@@ -153,7 +153,7 @@
                             VerticalAlignment="Center" />
                         <Button
                             Command="{Binding GoToRegisterCommand}"
-                            Content="{x:Static lang:Resources.WelcomePage_SignUpHeader}"
+                            Content="{Binding [WelcomePage_SignUpHeader], Source={x:Static loc:Loc.Instance}}"
                             CornerRadius="{StaticResource PillRadius}"
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="14"
@@ -186,7 +186,7 @@
                                     FontWeight="Normal"
                                     Foreground="{DynamicResource OnSurfaceBrush}"
                                     LetterSpacing="0.06"
-                                    Text="{x:Static lang:Resources.WelcomePage_HeroBadge}" />
+                                    Text="{Binding [WelcomePage_HeroBadge], Source={x:Static loc:Loc.Instance}}" />
                             </Border>
                             <TextBlock
                                 FontFamily="{StaticResource RFDewiExpanded}"
@@ -195,7 +195,7 @@
                                 Foreground="{DynamicResource OnSurfaceBrush}"
                                 LetterSpacing="-0.02"
                                 LineHeight="48"
-                                Text="{x:Static lang:Resources.WelcomePage_HeroHeadline}"
+                                Text="{Binding [WelcomePage_HeroHeadline], Source={x:Static loc:Loc.Instance}}"
                                 TextWrapping="Wrap" />
                             <TextBlock
                                 FontFamily="{StaticResource RFDewiExpanded}"
@@ -203,12 +203,12 @@
                                 Foreground="{DynamicResource OnSurfaceVariantBrush}"
                                 LineHeight="24"
                                 MaxWidth="520"
-                                Text="{x:Static lang:Resources.WelcomePage_HeroDescription}"
+                                Text="{Binding [WelcomePage_HeroDescription], Source={x:Static loc:Loc.Instance}}"
                                 TextWrapping="Wrap" />
                             <StackPanel Orientation="Horizontal" Spacing="14">
                                 <Button
                                     Command="{Binding GoToRegisterCommand}"
-                                    Content="{x:Static lang:Resources.WelcomePage_GetStarted}"
+                                    Content="{Binding [WelcomePage_GetStarted], Source={x:Static loc:Loc.Instance}}"
                                     CornerRadius="{StaticResource PillRadius}"
                                     FontFamily="{StaticResource RFDewiExpanded}"
                                     FontSize="16"
@@ -217,7 +217,7 @@
                                     Padding="28,14" />
                                 <Button
                                     Classes="Secondary"
-                                    Content="{x:Static lang:Resources.WelcomePage_ViewGallery}"
+                                    Content="{Binding [WelcomePage_ViewGallery], Source={x:Static loc:Loc.Instance}}"
                                     CornerRadius="{StaticResource PillRadius}"
                                     FontFamily="{StaticResource RFDewiExpanded}"
                                     FontSize="16"
@@ -299,7 +299,7 @@
                             FontSize="13"
                             FontWeight="Normal"
                             Foreground="{DynamicResource OnSurfaceBrush}"
-                            Text="{x:Static lang:Resources.WelcomePage_SocialProof}"
+                            Text="{Binding [WelcomePage_SocialProof], Source={x:Static loc:Loc.Instance}}"
                             VerticalAlignment="Center" />
                     </StackPanel>
                 </Border>
@@ -313,7 +313,7 @@
                         Foreground="{DynamicResource OnSurfaceBrush}"
                         Grid.Row="0"
                         Margin="0,8,0,12"
-                        Text="{x:Static lang:Resources.WelcomePage_Section_FeaturesTitle}" />
+                        Text="{Binding [WelcomePage_Section_FeaturesTitle], Source={x:Static loc:Loc.Instance}}" />
                     <Grid
                         ColumnDefinitions="*,*,*"
                         ColumnSpacing="16"
@@ -335,13 +335,13 @@
                                         FontSize="22"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource OnSurfaceBrush}"
-                                        Text="{x:Static lang:Resources.WelcomePage_Bento_RoastersTitle}" />
+                                        Text="{Binding [WelcomePage_Bento_RoastersTitle], Source={x:Static loc:Loc.Instance}}" />
                                     <TextBlock
                                         FontFamily="{StaticResource RFDewiExpanded}"
                                         FontSize="14"
                                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
                                         LineHeight="20"
-                                        Text="{x:Static lang:Resources.WelcomePage_Bento_RoastersDesc}"
+                                        Text="{Binding [WelcomePage_Bento_RoastersDesc], Source={x:Static loc:Loc.Instance}}"
                                         TextWrapping="Wrap" />
                                     <Button
                                         Classes="Transparent"
@@ -354,7 +354,7 @@
                                         LetterSpacing="0.08"
                                         Padding="0">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <TextBlock Text="{x:Static lang:Resources.WelcomePage_Bento_RoastersCta}" />
+                                            <TextBlock Text="{Binding [WelcomePage_Bento_RoastersCta], Source={x:Static loc:Loc.Instance}}" />
                                             <PathIcon
                                                 Data="{StaticResource ArrowRightIcon}"
                                                 Foreground="{DynamicResource PrimaryBrush}"
@@ -405,7 +405,7 @@
                                     FontSize="20"
                                     FontWeight="Normal"
                                     Foreground="{DynamicResource OnSurfaceBrush}"
-                                    Text="{x:Static lang:Resources.WelcomePage_Bento_BrewTitle}"
+                                    Text="{Binding [WelcomePage_Bento_BrewTitle], Source={x:Static loc:Loc.Instance}}"
                                     TextWrapping="Wrap" />
                                 <TextBlock
                                     FontFamily="{StaticResource RFDewiExpanded}"
@@ -413,7 +413,7 @@
                                     Foreground="{DynamicResource OnSurfaceBrush}"
                                     LineHeight="20"
                                     Opacity="0.9"
-                                    Text="{x:Static lang:Resources.WelcomePage_Bento_BrewDesc}"
+                                    Text="{Binding [WelcomePage_Bento_BrewDesc], Source={x:Static loc:Loc.Instance}}"
                                     TextWrapping="Wrap" />
                             </StackPanel>
                         </Border>
@@ -433,14 +433,14 @@
                                         FontSize="22"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource OnSurfaceBrush}"
-                                        Text="{x:Static lang:Resources.WelcomePage_Bento_CommunityTitle}" />
+                                        Text="{Binding [WelcomePage_Bento_CommunityTitle], Source={x:Static loc:Loc.Instance}}" />
                                     <TextBlock
                                         FontFamily="{StaticResource RFDewiExpanded}"
                                         FontSize="14"
                                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
                                         LineHeight="20"
                                         MaxWidth="420"
-                                        Text="{x:Static lang:Resources.WelcomePage_Bento_CommunityDesc}"
+                                        Text="{Binding [WelcomePage_Bento_CommunityDesc], Source={x:Static loc:Loc.Instance}}"
                                         TextWrapping="Wrap" />
                                 </StackPanel>
                                 <UniformGrid
@@ -529,14 +529,14 @@
                                     FontSize="20"
                                     FontWeight="Normal"
                                     Foreground="{DynamicResource OnSurfaceBrush}"
-                                    Text="{x:Static lang:Resources.WelcomePage_Bento_PerksTitle}"
+                                    Text="{Binding [WelcomePage_Bento_PerksTitle], Source={x:Static loc:Loc.Instance}}"
                                     TextWrapping="Wrap" />
                                 <TextBlock
                                     FontFamily="{StaticResource RFDewiExpanded}"
                                     FontSize="14"
                                     Foreground="{DynamicResource OnSurfaceVariantBrush}"
                                     LineHeight="20"
-                                    Text="{x:Static lang:Resources.WelcomePage_Bento_PerksDesc}"
+                                    Text="{Binding [WelcomePage_Bento_PerksDesc], Source={x:Static loc:Loc.Instance}}"
                                     TextWrapping="Wrap" />
                             </StackPanel>
                         </Border>
@@ -556,7 +556,7 @@
                         IsHitTestVisible="False"
                         IsTabStop="False"
                         MinHeight="52"
-                        PlaceholderText="{x:Static lang:Resources.WelcomePage_SearchPlaceholder}">
+                        PlaceholderText="{Binding [WelcomePage_SearchPlaceholder], Source={x:Static loc:Loc.Instance}}">
                         <TextBox.InnerLeftContent>
                             <PathIcon
                                 Data="{StaticResource SearchIcon}"
@@ -581,7 +581,7 @@
                                 FontSize="12"
                                 FontWeight="Normal"
                                 Foreground="{DynamicResource OnSurfaceBrush}"
-                                Text="{x:Static lang:Resources.WelcomePage_TrendingChip1}" />
+                                Text="{Binding [WelcomePage_TrendingChip1], Source={x:Static loc:Loc.Instance}}" />
                         </Border>
                         <Border
                             Background="{DynamicResource PrimaryGoldTransparent}"
@@ -593,7 +593,7 @@
                                 FontSize="12"
                                 FontWeight="Normal"
                                 Foreground="{DynamicResource OnSurfaceBrush}"
-                                Text="{x:Static lang:Resources.WelcomePage_TrendingChip2}" />
+                                Text="{Binding [WelcomePage_TrendingChip2], Source={x:Static loc:Loc.Instance}}" />
                         </Border>
                         <Border
                             Background="{DynamicResource PrimaryGoldTransparent}"
@@ -605,7 +605,7 @@
                                 FontSize="12"
                                 FontWeight="Normal"
                                 Foreground="{DynamicResource OnSurfaceBrush}"
-                                Text="{x:Static lang:Resources.WelcomePage_TrendingChip3}" />
+                                Text="{Binding [WelcomePage_TrendingChip3], Source={x:Static loc:Loc.Instance}}" />
                         </Border>
                     </StackPanel>
                 </StackPanel>
@@ -617,7 +617,7 @@
                         FontSize="13"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
                         Grid.Column="0"
-                        Text="{x:Static lang:Resources.WelcomePage_Footer_Copyright}"
+                        Text="{Binding [WelcomePage_Footer_Copyright], Source={x:Static loc:Loc.Instance}}"
                         VerticalAlignment="Center" />
                     <StackPanel
                         Grid.Column="1"
@@ -626,7 +626,7 @@
                         VerticalAlignment="Center">
                         <Button
                             Classes="Transparent"
-                            Content="{x:Static lang:Resources.WelcomePage_Footer_Privacy}"
+                            Content="{Binding [WelcomePage_Footer_Privacy], Source={x:Static loc:Loc.Instance}}"
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="13"
                             Foreground="{DynamicResource OnSurfaceVariantBrush}"
@@ -634,7 +634,7 @@
                             Padding="0" />
                         <Button
                             Classes="Transparent"
-                            Content="{x:Static lang:Resources.WelcomePage_Footer_Terms}"
+                            Content="{Binding [WelcomePage_Footer_Terms], Source={x:Static loc:Loc.Instance}}"
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="13"
                             Foreground="{DynamicResource OnSurfaceVariantBrush}"
@@ -642,7 +642,7 @@
                             Padding="0" />
                         <Button
                             Classes="Transparent"
-                            Content="{x:Static lang:Resources.WelcomePage_Footer_Contact}"
+                            Content="{Binding [WelcomePage_Footer_Contact], Source={x:Static loc:Loc.Instance}}"
                             FontFamily="{StaticResource RFDewiExpanded}"
                             FontSize="13"
                             Foreground="{DynamicResource OnSurfaceVariantBrush}"

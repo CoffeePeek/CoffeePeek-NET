@@ -5,8 +5,8 @@
     x:Class="CoffeePeek.Client.App.Views.Shops.ShopDetailView"
     x:DataType="shops:ShopDetailViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -26,7 +26,7 @@
                     <TextBlock
                         FontSize="14"
                         Foreground="{DynamicResource OnSurfaceBrush}"
-                        Text="{x:Static lang:Resources.Common_Back}"
+                        Text="{Binding [Common_Back], Source={x:Static loc:Loc.Instance}}"
                         VerticalAlignment="Center" />
                 </StackPanel>
             </Button>
@@ -164,7 +164,7 @@
                                             FontSize="12"
                                             FontWeight="Normal"
                                             Foreground="{DynamicResource PrimaryBrush}"
-                                            Text="{x:Static lang:Resources.ShopDetail_Open}" />
+                                            Text="{Binding [ShopDetail_Open], Source={x:Static loc:Loc.Instance}}" />
                                     </Border>
                                     <Border
                                         Background="{DynamicResource PrimaryGradientBrush}"
@@ -175,7 +175,7 @@
                                             FontSize="12"
                                             FontWeight="Normal"
                                             Foreground="{DynamicResource OnPrimaryBrush}"
-                                            Text="{x:Static lang:Resources.ShopPage_Trending}" />
+                                            Text="{Binding [ShopPage_Trending], Source={x:Static loc:Loc.Instance}}" />
                                     </Border>
                                 </StackPanel>
                                 <TextBlock
@@ -244,7 +244,7 @@
                                 Classes="Headline"
                                 FontSize="20"
                                 FontWeight="Black"
-                                Text="{x:Static lang:Resources.ShopDetail_About}" />
+                                Text="{Binding [ShopDetail_About], Source={x:Static loc:Loc.Instance}}" />
                             <TextBlock
                                 FontSize="14"
                                 FontWeight="Normal"
@@ -261,13 +261,13 @@
                                 FontWeight="Black"
                                 IsVisible="{Binding CanShare}"
                                 Padding="20,10"
-                                Content="{x:Static lang:Resources.ShopDetail_Share}" />
+                                Content="{Binding [ShopDetail_Share], Source={x:Static loc:Loc.Instance}}" />
                             <Button
                                 Command="{Binding OrderOrCallCommand}"
                                 FontWeight="Black"
                                 IsVisible="{Binding CanOrder}"
                                 Padding="20,10"
-                                Content="{x:Static lang:Resources.ShopDetail_Order}" />
+                                Content="{Binding [ShopDetail_Order], Source={x:Static loc:Loc.Instance}}" />
                         </StackPanel>
 
                         <ItemsControl ItemsSource="{Binding Tags}">
@@ -290,7 +290,7 @@
                                 FontSize="14"
                                 FontWeight="Black"
                                 Foreground="{DynamicResource OnSurfaceBrush}"
-                                Text="{x:Static lang:Resources.ShopDetail_Contact}" />
+                                Text="{Binding [ShopDetail_Contact], Source={x:Static loc:Loc.Instance}}" />
                             <StackPanel
                                 IsVisible="{Binding Phone, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                 Orientation="Horizontal"
@@ -362,7 +362,7 @@
                                     FontSize="18"
                                     FontWeight="Black"
                                     Foreground="{DynamicResource OnSurfaceBrush}"
-                                    Text="{x:Static lang:Resources.ShopDetail_Reviews}" />
+                                    Text="{Binding [ShopDetail_Reviews], Source={x:Static loc:Loc.Instance}}" />
 
                                 <!-- Submit new review form -->
                                 <Border
@@ -375,28 +375,28 @@
                                         <TextBlock
                                             FontSize="15"
                                             FontWeight="SemiBold"
-                                            Text="{x:Static lang:Resources.ShopDetail_AddReview}" />
+                                            Text="{Binding [ShopDetail_AddReview], Source={x:Static loc:Loc.Instance}}" />
                                         <TextBox
                                             AcceptsReturn="True"
                                             MinHeight="84"
-                                            PlaceholderText="{x:Static lang:Resources.ShopDetail_ReviewCommentPlaceholder}"
+                                            PlaceholderText="{Binding [ShopDetail_ReviewCommentPlaceholder], Source={x:Static loc:Loc.Instance}}"
                                             Text="{Binding NewReviewComment}"
                                             TextWrapping="Wrap" />
                                         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
                                             <StackPanel Grid.Column="0" Spacing="4">
-                                                <TextBlock FontSize="12" Text="{x:Static lang:Resources.ShopDetail_RatingPlace}" />
+                                                <TextBlock FontSize="12" Text="{Binding [ShopDetail_RatingPlace], Source={x:Static loc:Loc.Instance}}" />
                                                 <ComboBox
                                                     ItemsSource="{Binding ScoreOptions}"
                                                     SelectedItem="{Binding PlaceScore}" />
                                             </StackPanel>
                                             <StackPanel Grid.Column="1" Spacing="4">
-                                                <TextBlock FontSize="12" Text="{x:Static lang:Resources.ShopDetail_RatingService}" />
+                                                <TextBlock FontSize="12" Text="{Binding [ShopDetail_RatingService], Source={x:Static loc:Loc.Instance}}" />
                                                 <ComboBox
                                                     ItemsSource="{Binding ScoreOptions}"
                                                     SelectedItem="{Binding ServiceScore}" />
                                             </StackPanel>
                                             <StackPanel Grid.Column="2" Spacing="4">
-                                                <TextBlock FontSize="12" Text="{x:Static lang:Resources.ShopDetail_RatingCoffee}" />
+                                                <TextBlock FontSize="12" Text="{Binding [ShopDetail_RatingCoffee], Source={x:Static loc:Loc.Instance}}" />
                                                 <ComboBox
                                                     ItemsSource="{Binding ScoreOptions}"
                                                     SelectedItem="{Binding CoffeeScore}" />
@@ -405,7 +405,7 @@
                                         <Button
                                             Classes="Primary"
                                             Command="{Binding SubmitReviewCommand}"
-                                            Content="{x:Static lang:Resources.ShopDetail_SubmitReview}"
+                                            Content="{Binding [ShopDetail_SubmitReview], Source={x:Static loc:Loc.Instance}}"
                                             HorizontalAlignment="Left"
                                             IsEnabled="{Binding !IsSubmittingReview}"
                                             Padding="14,8" />
@@ -434,16 +434,16 @@
                                         FontSize="16"
                                         FontWeight="Black"
                                         Foreground="{DynamicResource OnSurfaceBrush}"
-                                        Text="{x:Static lang:Resources.ShopDetail_ReviewsEmptyTitle}" />
+                                        Text="{Binding [ShopDetail_ReviewsEmptyTitle], Source={x:Static loc:Loc.Instance}}" />
                                     <TextBlock
                                         FontSize="14"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                                        Text="{x:Static lang:Resources.ShopDetail_ReviewsEmptySubtitle}"
+                                        Text="{Binding [ShopDetail_ReviewsEmptySubtitle], Source={x:Static loc:Loc.Instance}}"
                                         TextWrapping="Wrap" />
                                     <Button
                                         Command="{Binding WriteReviewCommand}"
-                                        Content="{x:Static lang:Resources.ShopDetail_WriteReview}"
+                                        Content="{Binding [ShopDetail_WriteReview], Source={x:Static loc:Loc.Instance}}"
                                         FontWeight="Black"
                                         HorizontalAlignment="Left"
                                         Padding="20,10" />
@@ -485,7 +485,7 @@
                                                                 Classes="Secondary"
                                                                 Command="{Binding $parent[UserControl].((shops:ShopDetailViewModel)DataContext).DeleteReviewCommand}"
                                                                 CommandParameter="{Binding .}"
-                                                                Content="{x:Static lang:Resources.ShopDetail_DeleteReview}"
+                                                                Content="{Binding [ShopDetail_DeleteReview], Source={x:Static loc:Loc.Instance}}"
                                                                 IsEnabled="{Binding !$parent[UserControl].((shops:ShopDetailViewModel)DataContext).IsDeletingReview}"
                                                                 IsVisible="{Binding IsOwnReview}"
                                                                 Padding="10,3" />
@@ -527,7 +527,7 @@
                                     FontSize="16"
                                     FontWeight="Black"
                                     Foreground="{DynamicResource ShopDetailSidebarAccentBrush}"
-                                    Text="{x:Static lang:Resources.ShopDetail_Hours}" />
+                                    Text="{Binding [ShopDetail_Hours], Source={x:Static loc:Loc.Instance}}" />
                                 <StackPanel IsVisible="{Binding IsOpen}" Orientation="Horizontal" Spacing="8">
                                     <Ellipse
                                         Width="8"
@@ -538,7 +538,7 @@
                                         FontSize="13"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource ShopDetailSidebarOnDarkBrush}"
-                                        Text="{x:Static lang:Resources.ShopDetail_OpenNow}"
+                                        Text="{Binding [ShopDetail_OpenNow], Source={x:Static loc:Loc.Instance}}"
                                         VerticalAlignment="Center" />
                                 </StackPanel>
                                 <ItemsControl ItemsSource="{Binding Schedule}">
@@ -573,7 +573,7 @@
                                     FontSize="14"
                                     FontWeight="Black"
                                     Foreground="{DynamicResource ShopDetailSidebarAccentBrush}"
-                                    Text="{x:Static lang:Resources.ShopDetail_MapArea}" />
+                                    Text="{Binding [ShopDetail_MapArea], Source={x:Static loc:Loc.Instance}}" />
                                 <Border Classes="shop-detail-map-stub">
                                     <Panel>
                                         <Border Background="{DynamicResource CardToneGradientBrush}" />
@@ -593,7 +593,7 @@
                                     HorizontalAlignment="Stretch"
                                     IsVisible="{Binding CanGetDirections}"
                                     Padding="16,10"
-                                    Content="{x:Static lang:Resources.ShopDetail_GetDirections}" />
+                                    Content="{Binding [ShopDetail_GetDirections], Source={x:Static loc:Loc.Instance}}" />
                             </StackPanel>
                         </Border>
 
@@ -603,7 +603,7 @@
                                     FontSize="14"
                                     FontWeight="Black"
                                     Foreground="{DynamicResource ShopDetailSidebarAccentBrush}"
-                                    Text="{x:Static lang:Resources.ShopDetail_Amenities}" />
+                                    Text="{Binding [ShopDetail_Amenities], Source={x:Static loc:Loc.Instance}}" />
                                 <ItemsControl ItemsSource="{Binding AmenityLabels}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>

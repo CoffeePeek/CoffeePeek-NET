@@ -10,6 +10,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid Background="{DynamicResource SurfaceBrush}" RowDefinitions="Auto,*">
+
+        <!--  Header bar  -->
         <Border
             Grid.Row="0"
             Background="{DynamicResource SurfaceContainerLowBrush}"
@@ -40,33 +42,74 @@
         </Border>
 
         <ScrollViewer Grid.Row="1" Padding="24,20">
-            <StackPanel MaxWidth="560" HorizontalAlignment="Left" Spacing="20">
-                <TextBlock
-                    FontSize="14"
-                    FontWeight="Normal"
-                    Foreground="{DynamicResource OnSurfaceBrush}"
-                    Text="{Binding ThemeSectionTitle}" />
-                <ListBox
-                    Classes="flat"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    ItemsSource="{Binding ThemeRows}"
-                    SelectedItem="{Binding SelectedThemeRow}"
-                    SelectionMode="Single">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="home:ThemeRow">
-                            <Border
-                                Background="{DynamicResource SurfaceContainerLowBrush}"
-                                CornerRadius="{StaticResource DefaultCornerRadius}"
-                                Padding="16,14">
-                                <TextBlock
-                                    FontSize="15"
-                                    Foreground="{DynamicResource OnSurfaceBrush}"
-                                    Text="{Binding Label}" />
-                            </Border>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+            <StackPanel MaxWidth="560" HorizontalAlignment="Left" Spacing="28">
+
+                <!--  Appearance / Theme  -->
+                <StackPanel Spacing="12">
+                    <TextBlock
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        Text="{Binding ThemeSectionTitle}" />
+                    <ListBox
+                        Classes="flat"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ItemsSource="{Binding ThemeRows}"
+                        SelectedItem="{Binding SelectedThemeRow}"
+                        SelectionMode="Single">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="home:ThemeRow">
+                                <Border
+                                    Background="{DynamicResource SurfaceContainerLowBrush}"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                    Padding="16,14">
+                                    <TextBlock
+                                        FontSize="15"
+                                        Foreground="{DynamicResource OnSurfaceBrush}"
+                                        Text="{Binding Label}" />
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+
+                <!--  Language  -->
+                <StackPanel Spacing="12">
+                    <TextBlock
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        Text="{Binding LanguageSectionTitle}" />
+                    <ListBox
+                        Classes="flat"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ItemsSource="{Binding LanguageRows}"
+                        SelectedItem="{Binding SelectedLanguageRow}"
+                        SelectionMode="Single">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="home:LanguageRow">
+                                <Border
+                                    Background="{DynamicResource SurfaceContainerLowBrush}"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                    Padding="16,14">
+                                    <TextBlock
+                                        FontSize="15"
+                                        Foreground="{DynamicResource OnSurfaceBrush}"
+                                        Text="{Binding Label}" />
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"
+                        Text="* Some interface elements (header, menus) will fully update on next app launch." />
+                </StackPanel>
+
             </StackPanel>
         </ScrollViewer>
     </Grid>

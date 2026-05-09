@@ -51,6 +51,27 @@ public sealed class JsonFileLocalUserSettings(LocalUserSettingsOptions options) 
         }
     }
 
+    public async Task<string?> GetLanguageAsync(CancellationToken cancellationToken = default)
+    {
+        var doc = await LoadDocumentAsync(cancellationToken).ConfigureAwait(false);
+        return NormalizeLanguage(doc?.Language);
+    }
+
+    public async Task SetLanguageAsync(string? languageCode, CancellationToken cancellationToken = default)
+    {
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var doc = await LoadDocumentUnlockedAsync(cancellationToken).ConfigureAwait(false);
+            doc.Language = NormalizeLanguage(languageCode);
+            await SaveDocumentUnlockedAsync(doc, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
     public async Task ClearAsync(CancellationToken cancellationToken = default)
     {
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -135,11 +156,28 @@ public sealed class JsonFileLocalUserSettings(LocalUserSettingsOptions options) 
         return null;
     }
 
+    private static string? NormalizeLanguage(string? lang)
+    {
+        if (string.IsNullOrWhiteSpace(lang))
+            return null;
+
+        if (string.Equals(lang, LanguageValues.Russian, StringComparison.OrdinalIgnoreCase))
+            return LanguageValues.Russian;
+
+        if (string.Equals(lang, LanguageValues.English, StringComparison.OrdinalIgnoreCase))
+            return LanguageValues.English;
+
+        return null;
+    }
+
     private sealed class UserSettingsDocument
     {
         public string? AccessToken { get; set; }
 
         /// <summary>Light, Dark, or omitted/null for system.</summary>
         public string? Theme { get; set; }
+
+        /// <summary>en, ru, or omitted/null to follow OS locale.</summary>
+        public string? Language { get; set; }
     }
 }

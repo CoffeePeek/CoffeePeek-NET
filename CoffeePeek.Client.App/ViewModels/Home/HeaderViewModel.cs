@@ -19,12 +19,8 @@ public partial class HeaderViewModel : ViewModelBase
 
     public MainWorkspaceSectionCoordinator MainTabs { get; }
 
-    public string[] MainTabTitles { get; } =
-    [
-        Lang.Header_Catalog,
-        Lang.Header_Favorites,
-        Lang.Header_NearMe
-    ];
+    [ObservableProperty]
+    public partial string[] MainTabTitles { get; private set; }
 
     public HeaderViewModel(
         IUserIdentityAccessor userIdentityAccessor,
@@ -32,7 +28,8 @@ public partial class HeaderViewModel : ViewModelBase
         IClientSession clientSession,
         IWorkspaceShellNavigator workspaceShellNavigator,
         MainWorkspaceSectionCoordinator mainTabs,
-        IAccountSignOutService accountSignOutService)
+        IAccountSignOutService accountSignOutService,
+        ILocalizationService localizationService)
     {
         _userIdentityAccessor = userIdentityAccessor;
         _userRoleAccessor = userRoleAccessor;
@@ -40,9 +37,15 @@ public partial class HeaderViewModel : ViewModelBase
         _workspaceShellNavigator = workspaceShellNavigator;
         MainTabs = mainTabs;
         _accountSignOutService = accountSignOutService;
+        MainTabTitles = BuildTabTitles();
 
         _clientSession.AccessTokenChanged += (_, _) => SyncRoleUi();
         SyncRoleUi();
+
+        localizationService.LanguageChanged += (_, _) =>
+        {
+            MainTabTitles = BuildTabTitles();
+        };
 
         MainTabs.PropertyChanged += (_, e) =>
         {
@@ -53,6 +56,13 @@ public partial class HeaderViewModel : ViewModelBase
             _workspaceShellNavigator.CloseSettings();
         };
     }
+
+    private static string[] BuildTabTitles() =>
+    [
+        Lang.Header_Catalog,
+        Lang.Header_Favorites,
+        Lang.Header_NearMe
+    ];
 
     private void SyncRoleUi() =>
         IsModerator = _userRoleAccessor.IsInRole(WellKnownAppRoles.Moderator);

@@ -3,8 +3,8 @@
     x:Class="CoffeePeek.Client.App.Views.Shops.Catalog.ShopsCatalogEmptyStateView"
     x:DataType="shops:ShopsPageViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -39,14 +39,14 @@
                     FontWeight="Normal"
                     Foreground="{DynamicResource OnSurfaceBrush}"
                     HorizontalAlignment="Center"
-                    Text="{x:Static lang:Resources.ShopPage_EmptyTitle}"
+                    Text="{Binding [ShopPage_EmptyTitle], Source={x:Static loc:Loc.Instance}}"
                     TextAlignment="Center" />
                 <TextBlock
                     FontSize="15"
                     Foreground="{DynamicResource OnSurfaceVariantBrush}"
                     HorizontalAlignment="Center"
                     LineHeight="22"
-                    Text="{x:Static lang:Resources.ShopPage_EmptyMessage}"
+                    Text="{Binding [ShopPage_EmptyMessage], Source={x:Static loc:Loc.Instance}}"
                     TextAlignment="Center"
                     TextWrapping="Wrap" />
                 <StackPanel
@@ -63,7 +63,7 @@
                                 Width="18" />
                             <TextBlock
                                 Foreground="{DynamicResource OnPrimaryBrush}"
-                                Text="{x:Static lang:Resources.ShopPage_EmptyClearFilters}"
+                                Text="{Binding [ShopPage_EmptyClearFilters], Source={x:Static loc:Loc.Instance}}"
                                 VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
@@ -77,7 +77,7 @@
                                 Foreground="{DynamicResource PrimaryBrush}"
                                 Height="18"
                                 Width="18" />
-                            <TextBlock Text="{x:Static lang:Resources.ShopPage_BrowseMap}" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding [ShopPage_BrowseMap], Source={x:Static loc:Loc.Instance}}" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -105,11 +105,11 @@
                     <TextBlock
                         FontWeight="Normal"
                         Foreground="{DynamicResource OnSurfaceBrush}"
-                        Text="{x:Static lang:Resources.ShopPage_FeaturePastriesTitle}" />
+                        Text="{Binding [ShopPage_FeaturePastriesTitle], Source={x:Static loc:Loc.Instance}}" />
                     <TextBlock
                         FontSize="13"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                        Text="{x:Static lang:Resources.ShopPage_FeaturePastriesDesc}"
+                        Text="{Binding [ShopPage_FeaturePastriesDesc], Source={x:Static loc:Loc.Instance}}"
                         TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
@@ -130,11 +130,11 @@
                     <TextBlock
                         FontWeight="Normal"
                         Foreground="{DynamicResource OnSurfaceBrush}"
-                        Text="{x:Static lang:Resources.ShopPage_FeatureWorkTitle}" />
+                        Text="{Binding [ShopPage_FeatureWorkTitle], Source={x:Static loc:Loc.Instance}}" />
                     <TextBlock
                         FontSize="13"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                        Text="{x:Static lang:Resources.ShopPage_FeatureWorkDesc}"
+                        Text="{Binding [ShopPage_FeatureWorkDesc], Source={x:Static loc:Loc.Instance}}"
                         TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
@@ -155,11 +155,11 @@
                     <TextBlock
                         FontWeight="Normal"
                         Foreground="{DynamicResource OnSurfaceBrush}"
-                        Text="{x:Static lang:Resources.ShopPage_FeatureArtisanTitle}" />
+                        Text="{Binding [ShopPage_FeatureArtisanTitle], Source={x:Static loc:Loc.Instance}}" />
                     <TextBlock
                         FontSize="13"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                        Text="{x:Static lang:Resources.ShopPage_FeatureArtisanDesc}"
+                        Text="{Binding [ShopPage_FeatureArtisanDesc], Source={x:Static loc:Loc.Instance}}"
                         TextWrapping="Wrap" />
                 </StackPanel>
             </Border>

@@ -764,7 +764,25 @@ namespace CoffeePeek.Client.App.Resources.Lang {
                 return ResourceManager.GetString("Settings_Back", resourceCulture);
             }
         }
-        
+
+        public static string Settings_LanguageSection {
+            get {
+                return ResourceManager.GetString("Settings_LanguageSection", resourceCulture);
+            }
+        }
+
+        public static string Settings_Language_English {
+            get {
+                return ResourceManager.GetString("Settings_Language_English", resourceCulture);
+            }
+        }
+
+        public static string Settings_Language_Russian {
+            get {
+                return ResourceManager.GetString("Settings_Language_Russian", resourceCulture);
+            }
+        }
+
         public static string Placeholder_Favorites_Title {
             get {
                 return ResourceManager.GetString("Placeholder_Favorites_Title", resourceCulture);

@@ -5,9 +5,9 @@
     x:Class="CoffeePeek.Client.App.Views.WelcomeFlow.Auth.LoginView"
     x:DataType="auth:LoginViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:auth="clr-namespace:CoffeePeek.Client.App.ViewModels.WelcomeFlow.Auth"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid Background="{DynamicResource SurfaceBrush}">
@@ -25,7 +25,7 @@
             HorizontalAlignment="Right"
             Margin="0,16,16,0"
             Padding="12"
-            ToolTip.Tip="{x:Static lang:Resources.Auth_ThemeToggle}"
+            ToolTip.Tip="{Binding [Auth_ThemeToggle], Source={x:Static loc:Loc.Instance}}"
             VerticalAlignment="Top"
             ZIndex="30">
             <Panel Height="22" Width="22">
@@ -98,7 +98,7 @@
                                         FontFamily="{StaticResource RFDewiExpanded}"
                                         FontSize="13"
                                         FontWeight="Normal"
-                                        Text="{x:Static lang:Resources.Auth_HeroTagSaffron}">
+                                        Text="{Binding [Auth_HeroTagSaffron], Source={x:Static loc:Loc.Instance}}">
                                         <TextBlock.Foreground>
                                             <SolidColorBrush Color="{DynamicResource PrimaryContainerColor}" />
                                         </TextBlock.Foreground>
@@ -110,14 +110,14 @@
                                     FontWeight="Normal"
                                     Foreground="White"
                                     LineHeight="32"
-                                    Text="{x:Static lang:Resources.Auth_LoginHeroHeadline}"
+                                    Text="{Binding [Auth_LoginHeroHeadline], Source={x:Static loc:Loc.Instance}}"
                                     TextWrapping="Wrap" />
                                 <TextBlock
                                     FontFamily="{StaticResource RFDewiExpanded}"
                                     FontSize="14"
                                     Foreground="#E8FFFFFF"
                                     LineHeight="20"
-                                    Text="{x:Static lang:Resources.Auth_LoginHeroSub}"
+                                    Text="{Binding [Auth_LoginHeroSub], Source={x:Static loc:Loc.Instance}}"
                                     TextWrapping="Wrap" />
                             </StackPanel>
                         </Panel>
@@ -134,7 +134,7 @@
                                 <Button
                                     Classes="Secondary"
                                     Command="{Binding GoBackCommand}"
-                                    Content="{x:Static lang:Resources.Common_Back}"
+                                    Content="{Binding [Common_Back], Source={x:Static loc:Loc.Instance}}"
                                     CornerRadius="{StaticResource PillRadius}"
                                     HorizontalAlignment="Left"
                                     Padding="14,8" />
@@ -148,13 +148,13 @@
                                         FontSize="20"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource OnSurfaceBrush}"
-                                        Text="{x:Static lang:Resources.Auth_BrandCoffee}" />
+                                        Text="{Binding [Auth_BrandCoffee], Source={x:Static loc:Loc.Instance}}" />
                                     <TextBlock
                                         FontFamily="{StaticResource RFDewiExpanded}"
                                         FontSize="20"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource PrimaryBrush}"
-                                        Text="{x:Static lang:Resources.Auth_BrandPeek}" />
+                                        Text="{Binding [Auth_BrandPeek], Source={x:Static loc:Loc.Instance}}" />
                                 </StackPanel>
 
                                 <StackPanel Spacing="6">
@@ -163,13 +163,13 @@
                                         FontSize="26"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource OnSurfaceBrush}"
-                                        Text="{x:Static lang:Resources.LoginPage_Title}" />
+                                        Text="{Binding [LoginPage_Title], Source={x:Static loc:Loc.Instance}}" />
                                     <TextBlock
                                         FontFamily="{StaticResource RFDewiExpanded}"
                                         FontSize="15"
                                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
                                         LineHeight="22"
-                                        Text="{x:Static lang:Resources.LoginPage_Subtitle}"
+                                        Text="{Binding [LoginPage_Subtitle], Source={x:Static loc:Loc.Instance}}"
                                         TextWrapping="Wrap" />
                                 </StackPanel>
 
@@ -193,10 +193,10 @@
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
                                         LetterSpacing="0.06"
-                                        Text="{x:Static lang:Resources.Auth_LabelEmailCaps}" />
+                                        Text="{Binding [Auth_LabelEmailCaps], Source={x:Static loc:Loc.Instance}}" />
                                     <TextBox
                                         Classes="form-field"
-                                        PlaceholderText="{x:Static lang:Resources.LoginPage_EmailPlaceholder}"
+                                        PlaceholderText="{Binding [LoginPage_EmailPlaceholder], Source={x:Static loc:Loc.Instance}}"
                                         Text="{Binding Email}">
                                         <TextBox.InnerLeftContent>
                                             <PathIcon
@@ -219,12 +219,12 @@
                                             Foreground="{DynamicResource OnSurfaceVariantBrush}"
                                             Grid.Column="0"
                                             LetterSpacing="0.06"
-                                            Text="{x:Static lang:Resources.Auth_LabelPasswordCaps}"
+                                            Text="{Binding [Auth_LabelPasswordCaps], Source={x:Static loc:Loc.Instance}}"
                                             VerticalAlignment="Center" />
                                         <Button
                                             Classes="Transparent"
                                             Command="{Binding ForgotPasswordCommand}"
-                                            Content="{x:Static lang:Resources.Auth_ForgotPassword}"
+                                            Content="{Binding [Auth_ForgotPassword], Source={x:Static loc:Loc.Instance}}"
                                             FontSize="12"
                                             FontWeight="Normal"
                                             Grid.Column="1"
@@ -234,7 +234,7 @@
                                     <TextBox
                                         Classes="form-field"
                                         PasswordChar="*"
-                                        PlaceholderText="{x:Static lang:Resources.LoginPage_PasswordPlaceholder}"
+                                        PlaceholderText="{Binding [LoginPage_PasswordPlaceholder], Source={x:Static loc:Loc.Instance}}"
                                         Text="{Binding Password}">
                                         <TextBox.InnerLeftContent>
                                             <PathIcon
@@ -253,7 +253,7 @@
                                         FontFamily="{StaticResource RFDewiExpanded}"
                                         FontSize="13"
                                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                                        Text="{x:Static lang:Resources.Auth_RememberMachine}" />
+                                        Text="{Binding [Auth_RememberMachine], Source={x:Static loc:Loc.Instance}}" />
                                 </CheckBox>
 
                                 <Button
@@ -272,7 +272,7 @@
                                             Orientation="Horizontal"
                                             Spacing="10"
                                             VerticalAlignment="Center">
-                                            <TextBlock Text="{x:Static lang:Resources.LoginPage_LoginButton}" VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding [LoginPage_LoginButton], Source={x:Static loc:Loc.Instance}}" VerticalAlignment="Center" />
                                             <PathIcon
                                                 Data="{StaticResource ArrowRightIcon}"
                                                 Foreground="{DynamicResource OnPrimaryBrush}"
@@ -296,7 +296,7 @@
                                         FontFamily="{StaticResource RFDewiExpanded}"
                                         FontSize="13"
                                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                                        Text="{x:Static lang:Resources.Auth_NoAccount}"
+                                        Text="{Binding [Auth_NoAccount], Source={x:Static loc:Loc.Instance}}"
                                         VerticalAlignment="Center" />
                                     <Button
                                         Background="Transparent"
@@ -307,7 +307,7 @@
                                         Foreground="{DynamicResource PrimaryBrush}"
                                         Padding="0"
                                         VerticalAlignment="Center">
-                                        <TextBlock Text="{x:Static lang:Resources.Auth_RequestAccess}" />
+                                        <TextBlock Text="{Binding [Auth_RequestAccess], Source={x:Static loc:Loc.Instance}}" />
                                     </Button>
                                 </StackPanel>
 
@@ -347,7 +347,7 @@
                     FontSize="12"
                     Foreground="{DynamicResource OnSurfaceVariantBrush}"
                     Grid.Column="0"
-                    Text="{x:Static lang:Resources.Auth_FooterCrafted}"
+                    Text="{Binding [Auth_FooterCrafted], Source={x:Static loc:Loc.Instance}}"
                     VerticalAlignment="Center" />
                 <StackPanel
                     Grid.Column="1"
@@ -356,7 +356,7 @@
                     VerticalAlignment="Center">
                     <Button
                         Classes="Transparent"
-                        Content="{x:Static lang:Resources.WelcomePage_Footer_Privacy}"
+                        Content="{Binding [WelcomePage_Footer_Privacy], Source={x:Static loc:Loc.Instance}}"
                         FontFamily="{StaticResource RFDewiExpanded}"
                         FontSize="12"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
@@ -364,7 +364,7 @@
                         Padding="0" />
                     <Button
                         Classes="Transparent"
-                        Content="{x:Static lang:Resources.WelcomePage_Footer_Terms}"
+                        Content="{Binding [WelcomePage_Footer_Terms], Source={x:Static loc:Loc.Instance}}"
                         FontFamily="{StaticResource RFDewiExpanded}"
                         FontSize="12"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
@@ -372,7 +372,7 @@
                         Padding="0" />
                     <Button
                         Classes="Transparent"
-                        Content="{x:Static lang:Resources.Auth_CookieSettings}"
+                        Content="{Binding [Auth_CookieSettings], Source={x:Static loc:Loc.Instance}}"
                         FontFamily="{StaticResource RFDewiExpanded}"
                         FontSize="12"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"

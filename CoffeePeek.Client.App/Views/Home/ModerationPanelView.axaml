@@ -5,10 +5,10 @@
     x:Class="CoffeePeek.Client.App.Views.Home.ModerationPanelView"
     x:DataType="home:ModerationPanelViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ac="using:Avalonia.Data.Converters"
     xmlns:home="clr-namespace:CoffeePeek.Client.App.ViewModels.Home"
-    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
@@ -19,23 +19,23 @@
                         <Button
                             Classes="Secondary"
                             Command="{Binding CloseCommand}"
-                            Content="{x:Static lang:Resources.Common_Back}" />
+                            Content="{Binding [Common_Back], Source={x:Static loc:Loc.Instance}}" />
                         <TextBlock
                             Classes="Headline"
                             FontSize="24"
-                            Text="{x:Static lang:Resources.Moderation_Title}"
+                            Text="{Binding [Moderation_Title], Source={x:Static loc:Loc.Instance}}"
                             VerticalAlignment="Center" />
                     </StackPanel>
                     <TextBlock
                         FontSize="14"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                        Text="{x:Static lang:Resources.Moderation_Subtitle}"
+                        Text="{Binding [Moderation_Subtitle], Source={x:Static loc:Loc.Instance}}"
                         TextWrapping="Wrap" />
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Spacing="8">
                         <Button
                             Classes="Primary"
                             Command="{Binding RefreshCommand}"
-                            Content="{x:Static lang:Resources.Moderation_Refresh}"
+                            Content="{Binding [Moderation_Refresh], Source={x:Static loc:Loc.Instance}}"
                             Padding="14,8" />
                     </StackPanel>
                     <Border
@@ -50,7 +50,7 @@
                     <TextBlock
                         FontSize="16"
                         FontWeight="SemiBold"
-                        Text="{x:Static lang:Resources.Moderation_SectionShops}" />
+                        Text="{Binding [Moderation_SectionShops], Source={x:Static loc:Loc.Instance}}" />
                     <ItemsControl ItemsSource="{Binding Shops}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="home:ModerationShopRowViewModel">
@@ -86,13 +86,13 @@
                                                 Classes="Primary"
                                                 Command="{Binding ApproveCommand}"
                                                 CommandParameter="{Binding .}"
-                                                Content="{x:Static lang:Resources.Moderation_Approve}"
+                                                Content="{Binding [Moderation_Approve], Source={x:Static loc:Loc.Instance}}"
                                                 Padding="12,6" />
                                             <Button
                                                 Classes="Secondary"
                                                 Command="{Binding RejectCommand}"
                                                 CommandParameter="{Binding .}"
-                                                Content="{x:Static lang:Resources.Moderation_Reject}"
+                                                Content="{Binding [Moderation_Reject], Source={x:Static loc:Loc.Instance}}"
                                                 Padding="12,6" />
                                         </StackPanel>
                                     </StackPanel>
@@ -104,11 +104,11 @@
                         FontSize="14"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
                         IsVisible="{Binding HasEmptyShops}"
-                        Text="{x:Static lang:Resources.Moderation_EmptyShops}" />
+                        Text="{Binding [Moderation_EmptyShops], Source={x:Static loc:Loc.Instance}}" />
                     <TextBlock
                         FontSize="16"
                         FontWeight="SemiBold"
-                        Text="{x:Static lang:Resources.Moderation_SectionReviews}" />
+                        Text="{Binding [Moderation_SectionReviews], Source={x:Static loc:Loc.Instance}}" />
                     <ItemsControl ItemsSource="{Binding Reviews}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="home:ModerationReviewRowViewModel">
@@ -138,7 +138,7 @@
                                         <TextBox
                                             IsVisible="{Binding CanModerate}"
                                             MinHeight="40"
-                                            PlaceholderText="{x:Static lang:Resources.Moderation_RejectReasonPlaceholder}"
+                                            PlaceholderText="{Binding [Moderation_RejectReasonPlaceholder], Source={x:Static loc:Loc.Instance}}"
                                             Text="{Binding RejectReason}" />
                                         <StackPanel
                                             IsVisible="{Binding CanModerate}"
@@ -148,13 +148,13 @@
                                                 Classes="Primary"
                                                 Command="{Binding ApproveCommand}"
                                                 CommandParameter="{Binding .}"
-                                                Content="{x:Static lang:Resources.Moderation_Approve}"
+                                                Content="{Binding [Moderation_Approve], Source={x:Static loc:Loc.Instance}}"
                                                 Padding="12,6" />
                                             <Button
                                                 Classes="Secondary"
                                                 Command="{Binding RejectCommand}"
                                                 CommandParameter="{Binding .}"
-                                                Content="{x:Static lang:Resources.Moderation_Reject}"
+                                                Content="{Binding [Moderation_Reject], Source={x:Static loc:Loc.Instance}}"
                                                 Padding="12,6" />
                                         </StackPanel>
                                     </StackPanel>
@@ -166,7 +166,7 @@
                         FontSize="14"
                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
                         IsVisible="{Binding HasEmptyReviews}"
-                        Text="{x:Static lang:Resources.Moderation_EmptyReviews}" />
+                        Text="{Binding [Moderation_EmptyReviews], Source={x:Static loc:Loc.Instance}}" />
                 </StackPanel>
             </Border>
         </ScrollViewer>
@@ -179,7 +179,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 FontSize="15"
-                Text="{x:Static lang:Resources.Moderation_Loading}" />
+                Text="{Binding [Moderation_Loading], Source={x:Static loc:Loc.Instance}}" />
         </Border>
     </Grid>
 </UserControl>

@@ -113,6 +113,15 @@
     <data name="Settings_Back" xml:space="preserve">
         <value>Назад</value>
     </data>
+    <data name="Settings_LanguageSection" xml:space="preserve">
+        <value>Язык</value>
+    </data>
+    <data name="Settings_Language_English" xml:space="preserve">
+        <value>Английский</value>
+    </data>
+    <data name="Settings_Language_Russian" xml:space="preserve">
+        <value>Русский</value>
+    </data>
     <data name="Placeholder_Favorites_Title" xml:space="preserve">
         <value>Избранное</value>
     </data>

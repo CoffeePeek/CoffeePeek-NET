@@ -5,9 +5,9 @@
     x:Class="CoffeePeek.Client.App.Views.Shops.Catalog.ShopsCatalogChipStripView"
     x:DataType="shops:ShopsPageViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:cities="clr-namespace:CoffeePeek.Contract.Dtos.Internal;assembly=CoffeePeek.Contract"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -57,7 +57,7 @@
                         Classes="Label"
                         Grid.Row="0"
                         Margin="16,0,16,8"
-                        Text="{x:Static lang:Resources.ShopPage_CityPopupTitle}" />
+                        Text="{Binding [ShopPage_CityPopupTitle], Source={x:Static loc:Loc.Instance}}" />
                     <ScrollViewer Grid.Row="1" MaxHeight="220">
                         <ItemsControl ItemsSource="{Binding Cities}">
                             <ItemsControl.ItemTemplate>

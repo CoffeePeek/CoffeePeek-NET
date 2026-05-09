@@ -5,8 +5,8 @@
     x:Class="CoffeePeek.Client.App.Views.Shops.Catalog.ShopsCatalogAdditionalFiltersView"
     x:DataType="shops:ShopsPageViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:search="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops.Search"
     xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
@@ -58,11 +58,11 @@
                 <Button
                     Classes="Secondary"
                     Command="{Binding ClearFiltersCommand}"
-                    Content="{x:Static lang:Resources.ShopPage_FilterClear}"
+                    Content="{Binding [ShopPage_FilterClear], Source={x:Static loc:Loc.Instance}}"
                     Padding="16,8" />
                 <Button
                     Command="{Binding ApplyFiltersCommand}"
-                    Content="{x:Static lang:Resources.ShopPage_FilterApply}"
+                    Content="{Binding [ShopPage_FilterApply], Source={x:Static loc:Loc.Instance}}"
                     Padding="16,8" />
             </StackPanel>
         </StackPanel>

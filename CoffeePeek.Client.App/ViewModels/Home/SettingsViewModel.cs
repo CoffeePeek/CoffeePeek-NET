@@ -7,12 +7,7 @@ using Lang = CoffeePeek.Client.App.Resources.Lang.Resources;
 
 namespace CoffeePeek.Client.App.ViewModels.Home;
 
-public enum ThemePreferencePick
-{
-    System,
-    Light,
-    Dark
-}
+public enum ThemePreferencePick { System, Light, Dark }
 
 public sealed class ThemeRow(ThemePreferencePick pick, string label)
 {
@@ -20,21 +15,27 @@ public sealed class ThemeRow(ThemePreferencePick pick, string label)
     public string Label { get; } = label;
 }
 
+public sealed class LanguageRow(string code, string label)
+{
+    public string Code { get; } = code;
+    public string Label { get; } = label;
+}
+
 public partial class SettingsViewModel(
     IWorkspaceShellNavigator workspaceShellNavigator,
     ILocalUserSettings localUserSettings,
-    IThemeController themeController) : ViewModelBase
+    IThemeController themeController,
+    ILocalizationService localizationService) : ViewModelBase
 {
     private bool _suppressPersist;
     private bool _syncingRow;
     private CancellationTokenSource? _persistThemeCts;
+    private CancellationTokenSource? _persistLangCts;
 
-    public ThemeRow[] ThemeRows { get; } =
-    [
-        new(ThemePreferencePick.System, Lang.Settings_ThemeSystem),
-        new(ThemePreferencePick.Light, Lang.Settings_ThemeLight),
-        new(ThemePreferencePick.Dark, Lang.Settings_ThemeDark)
-    ];
+    // ── Theme ────────────────────────────────────────────────────────────────
+
+    [ObservableProperty]
+    public partial ThemeRow[] ThemeRows { get; private set; } = BuildThemeRows();
 
     [ObservableProperty]
     public partial ThemePreferencePick SelectedTheme { get; set; }
@@ -42,10 +43,35 @@ public partial class SettingsViewModel(
     [ObservableProperty]
     public partial ThemeRow? SelectedThemeRow { get; set; }
 
+    // ── Language ─────────────────────────────────────────────────────────────
+
+    [ObservableProperty]
+    public partial LanguageRow[] LanguageRows { get; private set; } = BuildLanguageRows();
+
+    [ObservableProperty]
+    public partial LanguageRow? SelectedLanguageRow { get; set; }
+
+    // ── Labels (refreshed on language change) ────────────────────────────────
+
+    [ObservableProperty]
+    public partial string PageTitle { get; private set; } = Lang.Settings_PageTitle;
+
+    [ObservableProperty]
+    public partial string ThemeSectionTitle { get; private set; } = Lang.Settings_ThemeSection;
+
+    [ObservableProperty]
+    public partial string LanguageSectionTitle { get; private set; } = Lang.Settings_LanguageSection;
+
+    [ObservableProperty]
+    public partial string CloseLabel { get; private set; } = Lang.Settings_Back;
+
+    // ── Lifecycle ────────────────────────────────────────────────────────────
+
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
-        var stored = await localUserSettings.GetThemePreferenceAsync(cancellationToken).ConfigureAwait(false);
-        var pick = ThemePreferenceMapper.ToPick(stored);
+        // Theme
+        var storedTheme = await localUserSettings.GetThemePreferenceAsync(cancellationToken).ConfigureAwait(false);
+        var pick = ThemePreferenceMapper.ToPick(storedTheme);
 
         _suppressPersist = true;
         _syncingRow = true;
@@ -53,7 +79,40 @@ public partial class SettingsViewModel(
         SelectedThemeRow = ThemeRows.First(r => r.Pick == pick);
         _syncingRow = false;
         _suppressPersist = false;
+
+        // Language
+        var storedLang = await localUserSettings.GetLanguageAsync(cancellationToken).ConfigureAwait(false);
+        var langCode = storedLang ?? localizationService.CurrentLanguage;
+        _suppressPersist = true;
+        SelectedLanguageRow = LanguageRows.FirstOrDefault(r => r.Code == langCode) ?? LanguageRows[0];
+        _suppressPersist = false;
+
+        // Refresh all labels now that language is resolved
+        localizationService.LanguageChanged += OnLanguageChanged;
     }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        // Rebuild rows with new labels
+        _suppressPersist = true;
+        _syncingRow = true;
+        var currentTheme = SelectedTheme;
+        var currentLangCode = SelectedLanguageRow?.Code ?? localizationService.CurrentLanguage;
+        ThemeRows = BuildThemeRows();
+        LanguageRows = BuildLanguageRows();
+        SelectedThemeRow = ThemeRows.First(r => r.Pick == currentTheme);
+        SelectedLanguageRow = LanguageRows.FirstOrDefault(r => r.Code == currentLangCode) ?? LanguageRows[0];
+        _syncingRow = false;
+        _suppressPersist = false;
+
+        // Refresh label properties
+        PageTitle = Lang.Settings_PageTitle;
+        ThemeSectionTitle = Lang.Settings_ThemeSection;
+        LanguageSectionTitle = Lang.Settings_LanguageSection;
+        CloseLabel = Lang.Settings_Back;
+    }
+
+    // ── Theme change ─────────────────────────────────────────────────────────
 
     partial void OnSelectedThemeChanged(ThemePreferencePick value)
     {
@@ -90,18 +149,52 @@ public partial class SettingsViewModel(
             await localUserSettings.SetThemePreferenceAsync(stored, cancellationToken).ConfigureAwait(false);
             themeController.ApplyTheme(ThemePreferenceMapper.ToVariant(stored));
         }
-        catch (OperationCanceledException)
-        {
-            // A newer theme selection superseded this persistence request.
-        }
+        catch (OperationCanceledException) { }
     }
+
+    // ── Language change ───────────────────────────────────────────────────────
+
+    partial void OnSelectedLanguageRowChanged(LanguageRow? value)
+    {
+        if (_suppressPersist || value is null)
+            return;
+
+        if (value.Code == localizationService.CurrentLanguage)
+            return;
+
+        _persistLangCts?.Cancel();
+        _persistLangCts?.Dispose();
+        _persistLangCts = new CancellationTokenSource();
+        _ = PersistLanguageAsync(value.Code, _persistLangCts.Token);
+    }
+
+    private async Task PersistLanguageAsync(string code, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await localUserSettings.SetLanguageAsync(code, cancellationToken).ConfigureAwait(false);
+            localizationService.ApplyLanguage(code);
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    // ── Commands ─────────────────────────────────────────────────────────────
 
     [RelayCommand]
     private void Close() => workspaceShellNavigator.CloseSettings();
 
-    public string PageTitle => Lang.Settings_PageTitle;
+    // ── Helpers ──────────────────────────────────────────────────────────────
 
-    public string ThemeSectionTitle => Lang.Settings_ThemeSection;
+    private static ThemeRow[] BuildThemeRows() =>
+    [
+        new(ThemePreferencePick.System, Lang.Settings_ThemeSystem),
+        new(ThemePreferencePick.Light,  Lang.Settings_ThemeLight),
+        new(ThemePreferencePick.Dark,   Lang.Settings_ThemeDark)
+    ];
 
-    public string CloseLabel => Lang.Settings_Back;
+    private static LanguageRow[] BuildLanguageRows() =>
+    [
+        new(LanguageValues.English, Lang.Settings_Language_English),
+        new(LanguageValues.Russian, Lang.Settings_Language_Russian)
+    ];
 }

@@ -4,9 +4,9 @@
     x:Class="CoffeePeek.Client.App.Views.Home.HeaderView"
     x:DataType="home:HeaderViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:home="clr-namespace:CoffeePeek.Client.App.ViewModels.Home"
-    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Styles>
@@ -60,7 +60,7 @@
             FontSize="20"
             FontWeight="Normal"
             LetterSpacing="1"
-            Text="{x:Static lang:Resources.ApplicationName}" />
+            Text="{Binding [ApplicationName], Source={x:Static loc:Loc.Instance}}" />
 
         <ScrollViewer
             Grid.Column="1"
@@ -100,7 +100,7 @@
                 Margin="0,0,8,0"
                 Classes="Secondary"
                 Command="{Binding OpenModerationPanelCommand}"
-                Content="{x:Static lang:Resources.Header_Moderation}"
+                Content="{Binding [Header_Moderation], Source={x:Static loc:Loc.Instance}}"
                 IsVisible="{Binding IsModerator}"
                 Padding="12,8" />
             <Separator
@@ -118,13 +118,13 @@
                     <MenuFlyout Placement="BottomEdgeAlignedRight">
                         <MenuItem
                             Command="{Binding NavigateToProfileCommand}"
-                            Header="{x:Static lang:Resources.Header_Menu_Profile}" />
+                            Header="{Binding [Header_Menu_Profile], Source={x:Static loc:Loc.Instance}}" />
                         <MenuItem
                             Command="{Binding OpenSettingsCommand}"
-                            Header="{x:Static lang:Resources.Header_Menu_Settings}" />
+                            Header="{Binding [Header_Menu_Settings], Source={x:Static loc:Loc.Instance}}" />
                         <MenuItem
                             Command="{Binding SignOutCommand}"
-                            Header="{x:Static lang:Resources.Header_Menu_Logout}" />
+                            Header="{Binding [Header_Menu_Logout], Source={x:Static loc:Loc.Instance}}" />
                     </MenuFlyout>
                 </Button.Flyout>
                 <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Spacing="12">
@@ -132,12 +132,12 @@
                         <TextBlock
                             FontSize="12"
                             Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                            Text="{x:Static lang:Resources.Header_WelcomeBack}" />
+                            Text="{Binding [Header_WelcomeBack], Source={x:Static loc:Loc.Instance}}" />
                         <TextBlock
                             FontSize="13"
                             FontWeight="Normal"
                             Foreground="{DynamicResource OnSurfaceBrush}"
-                            Text="{x:Static lang:Resources.Header_UserTagline}" />
+                            Text="{Binding [Header_UserTagline], Source={x:Static loc:Loc.Instance}}" />
                     </StackPanel>
                     <Border
                         Background="{DynamicResource SurfaceContainerHighBrush}"

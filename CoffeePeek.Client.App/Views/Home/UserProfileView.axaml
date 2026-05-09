@@ -5,10 +5,10 @@
     x:Class="CoffeePeek.Client.App.Views.Home.UserProfileView"
     x:DataType="home:UserProfileViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:ac="using:Avalonia.Data.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:home="clr-namespace:CoffeePeek.Client.App.ViewModels.Home"
-    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid Background="{DynamicResource SurfaceBrush}" RowDefinitions="*">
@@ -171,7 +171,7 @@
                                 <Button
                                     Classes="Secondary"
                                     Command="{Binding UploadAvatarCommand}"
-                                    Content="{x:Static lang:Resources.Profile_AvatarUpload}"
+                                    Content="{Binding [Profile_AvatarUpload], Source={x:Static loc:Loc.Instance}}"
                                     FontSize="12"
                                     HorizontalAlignment="Left"
                                     IsEnabled="{Binding !IsUploadingAvatar}"
@@ -181,7 +181,7 @@
                                     FontSize="12"
                                     Foreground="{DynamicResource OnSurfaceVariantBrush}"
                                     IsVisible="{Binding IsUploadingAvatar}"
-                                    Text="{x:Static lang:Resources.Profile_AvatarUploading}" />
+                                    Text="{Binding [Profile_AvatarUploading], Source={x:Static loc:Loc.Instance}}" />
                                 <TextBlock
                                     FontSize="12"
                                     Foreground="{DynamicResource AuthErrorForegroundBrush}"
@@ -198,7 +198,7 @@
                                     <Button
                                         Classes="Secondary"
                                         Command="{Binding StartEditingCommand}"
-                                        Content="{x:Static lang:Resources.Profile_Edit}"
+                                        Content="{Binding [Profile_Edit], Source={x:Static loc:Loc.Instance}}"
                                         FontSize="12"
                                         IsVisible="{Binding IsOwnProfile}"
                                         Padding="12,4"
@@ -233,16 +233,16 @@
                                 Classes="Headline"
                                 FontSize="20"
                                 FontWeight="Normal"
-                                Text="{x:Static lang:Resources.Profile_EditTitle}" />
+                                Text="{Binding [Profile_EditTitle], Source={x:Static loc:Loc.Instance}}" />
 
                             <StackPanel Spacing="6">
                                 <TextBlock
                                     FontSize="13"
                                     Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                                    Text="{x:Static lang:Resources.Profile_Edit_Username}" />
+                                    Text="{Binding [Profile_Edit_Username], Source={x:Static loc:Loc.Instance}}" />
                                 <TextBox
                                     MaxLength="32"
-                                    PlaceholderText="{x:Static lang:Resources.Profile_Edit_UsernamePlaceholder}"
+                                    PlaceholderText="{Binding [Profile_Edit_UsernamePlaceholder], Source={x:Static loc:Loc.Instance}}"
                                     Text="{Binding EditUserName}" />
                             </StackPanel>
 
@@ -250,12 +250,12 @@
                                 <TextBlock
                                     FontSize="13"
                                     Foreground="{DynamicResource OnSurfaceVariantBrush}"
-                                    Text="{x:Static lang:Resources.Profile_Edit_About}" />
+                                    Text="{Binding [Profile_Edit_About], Source={x:Static loc:Loc.Instance}}" />
                                 <TextBox
                                     AcceptsReturn="True"
                                     MaxLength="500"
                                     MinHeight="80"
-                                    PlaceholderText="{x:Static lang:Resources.Profile_Edit_AboutPlaceholder}"
+                                    PlaceholderText="{Binding [Profile_Edit_AboutPlaceholder], Source={x:Static loc:Loc.Instance}}"
                                     Text="{Binding EditAbout}"
                                     TextWrapping="Wrap" />
                             </StackPanel>
@@ -280,12 +280,12 @@
                                 <Button
                                     Classes="Secondary"
                                     Command="{Binding CancelEditingCommand}"
-                                    Content="{x:Static lang:Resources.Profile_Edit_Cancel}"
+                                    Content="{Binding [Profile_Edit_Cancel], Source={x:Static loc:Loc.Instance}}"
                                     IsEnabled="{Binding !IsSaving}"
                                     Padding="16,8" />
                                 <Button
                                     Command="{Binding SaveProfileCommand}"
-                                    Content="{x:Static lang:Resources.Profile_Edit_Save}"
+                                    Content="{Binding [Profile_Edit_Save], Source={x:Static loc:Loc.Instance}}"
                                     IsEnabled="{Binding !IsSaving}"
                                     Padding="16,8" />
                             </StackPanel>
@@ -312,7 +312,7 @@
                                         FontSize="11"
                                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
                                         HorizontalAlignment="Center"
-                                        Text="{x:Static lang:Resources.Profile_StatCheckIns}" />
+                                        Text="{Binding [Profile_StatCheckIns], Source={x:Static loc:Loc.Instance}}" />
                                 </StackPanel>
                             </Border>
                             <Border
@@ -331,7 +331,7 @@
                                         FontSize="11"
                                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
                                         HorizontalAlignment="Center"
-                                        Text="{x:Static lang:Resources.Profile_StatReviews}" />
+                                        Text="{Binding [Profile_StatReviews], Source={x:Static loc:Loc.Instance}}" />
                                 </StackPanel>
                             </Border>
                             <Border
@@ -350,7 +350,7 @@
                                         FontSize="11"
                                         Foreground="{DynamicResource OnSurfaceVariantBrush}"
                                         HorizontalAlignment="Center"
-                                        Text="{x:Static lang:Resources.Profile_StatRating}" />
+                                        Text="{Binding [Profile_StatRating], Source={x:Static loc:Loc.Instance}}" />
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -360,7 +360,7 @@
                                 Classes="Headline"
                                 FontSize="22"
                                 FontWeight="Normal"
-                                Text="{x:Static lang:Resources.Profile_LastReviews}" />
+                                Text="{Binding [Profile_LastReviews], Source={x:Static loc:Loc.Instance}}" />
                             <TextBlock
                                 FontSize="13"
                                 Foreground="{DynamicResource OnSurfaceVariantBrush}"
@@ -463,7 +463,7 @@
                                                         <Button
                                                             Classes="Transparent"
                                                             Command="{Binding GoToShopCommand}"
-                                                            Content="{x:Static lang:Resources.Profile_GoToShop}"
+                                                            Content="{Binding [Profile_GoToShop], Source={x:Static loc:Loc.Instance}}"
                                                             Padding="4,0" />
                                                     </StackPanel>
                                                 </StackPanel>
@@ -480,7 +480,7 @@
                                     Padding="32">
                                     <TextBlock
                                         HorizontalAlignment="Center"
-                                        Text="{x:Static lang:Resources.Profile_NoReviews}"
+                                        Text="{Binding [Profile_NoReviews], Source={x:Static loc:Loc.Instance}}"
                                         TextAlignment="Center" />
                                 </Border>
                             </Panel>
@@ -493,13 +493,13 @@
                                 <Button
                                     Classes="Secondary"
                                     Command="{Binding ReviewPrevCommand}"
-                                    Content="{x:Static lang:Resources.Profile_PreviousPage}"
+                                    Content="{Binding [Profile_PreviousPage], Source={x:Static loc:Loc.Instance}}"
                                     IsEnabled="{Binding CanReviewPrev}" />
                                 <TextBlock Text="{Binding PaginationSummary}" VerticalAlignment="Center" />
                                 <Button
                                     Classes="Secondary"
                                     Command="{Binding ReviewNextCommand}"
-                                    Content="{x:Static lang:Resources.Profile_NextPage}"
+                                    Content="{Binding [Profile_NextPage], Source={x:Static loc:Loc.Instance}}"
                                     IsEnabled="{Binding CanReviewNext}" />
                             </StackPanel>
                         </StackPanel>

@@ -26,6 +26,7 @@ public class ApplicationModule : Module
 
         builder.RegisterType<ApplicationExecutorRunner>().As<IApplicationExecutorRunner>().SingleInstance();
         builder.RegisterType<RestoreSessionExecutor>().As<IBeforeMainShellExecutor>().SingleInstance();
+        builder.RegisterType<ApplyPersistedLanguageExecutor>().As<IBeforeMainShellExecutor>().SingleInstance();
         builder.RegisterType<ApplyPersistedThemeExecutor>().As<IBeforeMainShellExecutor>().SingleInstance();
         builder.RegisterType<InitialRouteExecutor>().As<IBeforeMainShellExecutor>().SingleInstance();
 
@@ -54,6 +55,7 @@ public class ApplicationModule : Module
     private static void RegisterWelcomeFlow(ContainerBuilder builder)
     {
         builder.RegisterType<ThemeController>().As<IThemeController>().SingleInstance();
+        builder.RegisterType<LocalizationService>().As<ILocalizationService>().SingleInstance();
 
         builder.RegisterType<WelcomePageViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<LoginViewModel>().AsSelf().SingleInstance();

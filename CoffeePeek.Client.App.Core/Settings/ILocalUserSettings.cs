@@ -14,5 +14,10 @@ public interface ILocalUserSettings
 
     Task SetThemePreferenceAsync(string? themeLightDarkOrNull, CancellationToken cancellationToken = default);
 
+    /// <summary>Returns <c>en</c>, <c>ru</c>, or <c>null</c> to follow the OS locale.</summary>
+    Task<string?> GetLanguageAsync(CancellationToken cancellationToken = default);
+
+    Task SetLanguageAsync(string? languageCode, CancellationToken cancellationToken = default);
+
     Task ClearAsync(CancellationToken cancellationToken = default);
 }

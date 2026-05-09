@@ -3,8 +3,8 @@
     x:Class="CoffeePeek.Client.App.Views.Shops.Catalog.ShopsCatalogSearchRowView"
     x:DataType="shops:ShopsPageViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -15,7 +15,7 @@
         <TextBox
             Grid.Column="0"
             MinHeight="56"
-            PlaceholderText="{x:Static lang:Resources.ShopPage_SearchPlaceholder}"
+            PlaceholderText="{Binding [ShopPage_SearchPlaceholder], Source={x:Static loc:Loc.Instance}}"
             Text="{Binding SearchQuery}"
             VerticalContentAlignment="Center">
             <TextBox.InnerLeftContent>
@@ -40,7 +40,7 @@
                         <TextBlock
                             FontSize="14"
                             Foreground="{DynamicResource OnPrimaryBrush}"
-                            Text="{x:Static lang:Resources.ShopPage_Filter}"
+                            Text="{Binding [ShopPage_Filter], Source={x:Static loc:Loc.Instance}}"
                             VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
@@ -50,7 +50,7 @@
         <Button
             Classes="Secondary"
             Command="{Binding OpenSuggestShopCommand}"
-            Content="{x:Static lang:Resources.ShopPage_SuggestShop}"
+            Content="{Binding [ShopPage_SuggestShop], Source={x:Static loc:Loc.Instance}}"
             Grid.Column="1"
             VerticalAlignment="Center" />
     </Grid>
