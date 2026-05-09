@@ -19,12 +19,6 @@ public class UserProfileEditTests
     private readonly Mock<IWebUserProfileClient> _profileClientMock = new();
     private readonly Mock<IWebUserReviewsClient> _reviewsClientMock = new();
     private readonly Mock<IUserIdentityAccessor> _identityMock = new();
-    private readonly Mock<IWorkspaceShellNavigator> _navigatorMock = new();
-    private readonly Mock<IThemeController> _themeMock = new();
-    private readonly Mock<IClientSession> _sessionMock = new();
-    private readonly Mock<INavigationService> _navMock = new();
-    private readonly Mock<IWebAuthenticationClient> _authClientMock = new();
-    private readonly Mock<ILocalUserSettings> _settingsMock = new();
     private readonly Mock<IImagePickerService> _imagePickerMock = new();
 
     private static readonly Guid OwnUserId = Guid.NewGuid();
@@ -40,12 +34,6 @@ public class UserProfileEditTests
             new ApiOptions { BaseAddress = "https://test.local" },
             _profileClientMock.Object,
             _reviewsClientMock.Object,
-            _themeMock.Object,
-            _navigatorMock.Object,
-            _sessionMock.Object,
-            _navMock.Object,
-            _authClientMock.Object,
-            _settingsMock.Object,
             _identityMock.Object,
             _imagePickerMock.Object);
     }

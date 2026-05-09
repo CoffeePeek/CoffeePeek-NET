@@ -1,7 +1,7 @@
 <Window
     Background="{DynamicResource SurfaceBrush}"
-    FontFamily="{StaticResource Sora}"
-    Icon="/Assets/avalonia-logo.ico"
+    FontFamily="{StaticResource RFDewiExpanded}"
+    Icon="/Assets/app.ico"
     MinHeight="800"
     MinWidth="450"
     Title="{x:Static lang:Resources.ApplicationName}"

@@ -5,12 +5,9 @@ using Avalonia.Threading;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
 using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 using CoffeePeek.Client.App.Services;
-using CoffeePeek.Client.App.Core.Cache;
 using CoffeePeek.Client.App.Core.Identity;
-using CoffeePeek.Client.App.Core.Settings;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Client.App.ViewModels.Abstract;
-using CoffeePeek.Client.App.ViewModels.WelcomeFlow.Welcome;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Lang = CoffeePeek.Client.App.Resources.Lang.Resources;
@@ -22,12 +19,6 @@ public partial class UserProfileViewModel(
     ApiOptions apiOptions,
     IWebUserProfileClient profileClient,
     IWebUserReviewsClient reviewsClient,
-    IThemeController themeController,
-    IWorkspaceShellNavigator workspaceShellNavigator,
-    IClientSession clientSession,
-    INavigationService navigationService,
-    IWebAuthenticationClient authenticationClient,
-    ILocalUserSettings localUserSettings,
     IUserIdentityAccessor identityAccessor,
     IImagePickerService imagePickerService) : ViewModelBase
 {
@@ -514,25 +505,6 @@ public partial class UserProfileViewModel(
     private void OpenShop(Guid coffeeShopId)
     {
         _ = coffeeShopId;
-    }
-
-    [RelayCommand]
-    private void ToggleTheme()
-    {
-        themeController.ToggleLightDark();
-    }
-
-    [RelayCommand]
-    private async Task SignOutAsync()
-    {
-        _avatarUploadCts?.Cancel();
-        _avatarUploadCts?.Dispose();
-        _avatarUploadCts = null;
-        workspaceShellNavigator.CloseUserProfile();
-        _ = await authenticationClient.Logout();
-        clientSession.Clear();
-        await localUserSettings.ClearAsync();
-        navigationService.NavigateTo<WelcomePageViewModel>();
     }
 
     private void DisposeAvatar()

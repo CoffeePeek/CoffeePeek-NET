@@ -32,7 +32,12 @@ public class AuthService(
         var accessToken = jwtTokenService.GenerateAccessToken(user);
         var refreshToken = jwtTokenService.GenerateRefreshToken();
 
-        var authResult = new AuthResult {AccessToken = accessToken, RefreshToken = refreshToken};
+        var authResult = new AuthResult
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            ExpiredAt = DateTime.UtcNow.AddMinutes(jwtOptions.Value.AccessTokenLifetimeMinutes)
+        };
         
         user.AddSession(
             authResult.RefreshToken,
