@@ -1,0 +1,23 @@
+<UserControl
+    x:Class="CoffeePeek.Client.App.Controls.WobbleRingLoader"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Wobble Ring loader (11) — spinning arc; rotation from LoaderStyles (RotateTransform.Angle).
+        Fixed 20×20 canvas. For different sizes set Width/Height on the UserControl.
+    -->
+    <Canvas Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Ellipse
+            Canvas.Left="0"
+            Canvas.Top="0"
+            Classes="wobble-ring"
+            Height="20"
+            RenderTransformOrigin="0.5,0.5"
+            Stroke="{DynamicResource PrimaryBrush}"
+            StrokeDashArray="47,16"
+            StrokeLineCap="Round"
+            StrokeThickness="2.5"
+            Width="20" />
+    </Canvas>
+</UserControl>

@@ -5,6 +5,7 @@
     x:Class="CoffeePeek.Client.App.Views.WelcomeFlow.Auth.LoginView"
     x:DataType="auth:LoginViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:controls="clr-namespace:CoffeePeek.Client.App.Controls"
     xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:auth="clr-namespace:CoffeePeek.Client.App.ViewModels.WelcomeFlow.Auth"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -279,11 +280,12 @@
                                                 Height="18"
                                                 Width="18" />
                                         </StackPanel>
-                                        <ProgressBar
-                                            Height="3"
-                                            IsIndeterminate="True"
+                                        <controls:WobbleRingLoader
+                                            Height="22"
+                                            HorizontalAlignment="Center"
                                             IsVisible="{Binding LoginCommand.IsRunning}"
-                                            VerticalAlignment="Center" />
+                                            VerticalAlignment="Center"
+                                            Width="22" />
                                     </Panel>
                                 </Button>
 

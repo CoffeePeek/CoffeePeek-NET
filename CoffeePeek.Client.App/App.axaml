@@ -46,5 +46,6 @@
         <StyleInclude Source="Resources/Styles/ShopsPageStyles.axaml" />
         <StyleInclude Source="Resources/Styles/ShopDetailStyles.axaml" />
         <StyleInclude Source="Resources/Styles/ShimmerStyles.axaml" />
+        <StyleInclude Source="Resources/Styles/LoaderStyles.axaml" />
     </Application.Styles>
 </Application>
