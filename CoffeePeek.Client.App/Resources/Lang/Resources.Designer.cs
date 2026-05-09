@@ -1172,6 +1172,60 @@ namespace CoffeePeek.Client.App.Resources.Lang {
                 return ResourceManager.GetString("ShopDetail_Open", resourceCulture);
             }
         }
+
+        public static string ShopDetail_AddReview {
+            get {
+                return ResourceManager.GetString("ShopDetail_AddReview", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_ReviewCommentPlaceholder {
+            get {
+                return ResourceManager.GetString("ShopDetail_ReviewCommentPlaceholder", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_RatingPlace {
+            get {
+                return ResourceManager.GetString("ShopDetail_RatingPlace", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_RatingService {
+            get {
+                return ResourceManager.GetString("ShopDetail_RatingService", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_RatingCoffee {
+            get {
+                return ResourceManager.GetString("ShopDetail_RatingCoffee", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_SubmitReview {
+            get {
+                return ResourceManager.GetString("ShopDetail_SubmitReview", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_DeleteReview {
+            get {
+                return ResourceManager.GetString("ShopDetail_DeleteReview", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_NoReviewsYet {
+            get {
+                return ResourceManager.GetString("ShopDetail_NoReviewsYet", resourceCulture);
+            }
+        }
+
+        public static string ShopDetail_ReviewActionFailed {
+            get {
+                return ResourceManager.GetString("ShopDetail_ReviewActionFailed", resourceCulture);
+            }
+        }
         
         public static string Profile_Edit {
             get {

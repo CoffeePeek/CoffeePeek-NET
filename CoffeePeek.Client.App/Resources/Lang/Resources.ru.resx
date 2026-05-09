@@ -263,6 +263,33 @@
     <data name="ShopDetail_Open" xml:space="preserve">
         <value>ОТКРЫТО</value>
     </data>
+    <data name="ShopDetail_AddReview" xml:space="preserve">
+        <value>Оставить отзыв</value>
+    </data>
+    <data name="ShopDetail_ReviewCommentPlaceholder" xml:space="preserve">
+        <value>Поделитесь впечатлениями (необязательно)</value>
+    </data>
+    <data name="ShopDetail_RatingPlace" xml:space="preserve">
+        <value>Место</value>
+    </data>
+    <data name="ShopDetail_RatingService" xml:space="preserve">
+        <value>Сервис</value>
+    </data>
+    <data name="ShopDetail_RatingCoffee" xml:space="preserve">
+        <value>Кофе</value>
+    </data>
+    <data name="ShopDetail_SubmitReview" xml:space="preserve">
+        <value>Отправить отзыв</value>
+    </data>
+    <data name="ShopDetail_DeleteReview" xml:space="preserve">
+        <value>Удалить</value>
+    </data>
+    <data name="ShopDetail_NoReviewsYet" xml:space="preserve">
+        <value>Пока нет отзывов</value>
+    </data>
+    <data name="ShopDetail_ReviewActionFailed" xml:space="preserve">
+        <value>Не удалось выполнить действие с отзывом</value>
+    </data>
     <data name="Profile_Edit" xml:space="preserve">
         <value>Изменить</value>
     </data>

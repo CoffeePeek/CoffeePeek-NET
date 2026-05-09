@@ -8,6 +8,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using CoffeePeek.Client.App.Core.Identity;
 using CoffeePeek.Client.App.Infrastructure.HTTP.Configuration;
 using CoffeePeek.Client.App.Infrastructure.HTTP.WebClients;
 using CoffeePeek.Client.App.Services;
@@ -26,23 +27,30 @@ public partial class ShopDetailViewModel : ViewModelBase
     private const int MaxAmenityLabels = 4;
 
     private readonly IWebCoffeeShopsClient _shopsClient;
+    private readonly IWebCoffeeShopReviewsClient _reviewsClient;
     private readonly IWorkspaceShellNavigator _shellNavigator;
     private readonly HttpClient _httpClient;
     private readonly ApiOptions _apiOptions;
+    private readonly IUserIdentityAccessor _identityAccessor;
+    private Guid? _shopId;
 
     private Bitmap? _coverBitmap;
     private CancellationTokenSource? _heroLoadCts;
 
     public ShopDetailViewModel(
         IWebCoffeeShopsClient shopsClient,
+        IWebCoffeeShopReviewsClient reviewsClient,
         IWorkspaceShellNavigator shellNavigator,
         HttpClient httpClient,
-        ApiOptions apiOptions)
+        ApiOptions apiOptions,
+        IUserIdentityAccessor identityAccessor)
     {
         _shopsClient = shopsClient;
+        _reviewsClient = reviewsClient;
         _shellNavigator = shellNavigator;
         _httpClient = httpClient;
         _apiOptions = apiOptions;
+        _identityAccessor = identityAccessor;
         Reviews.CollectionChanged += OnReviewsCollectionChanged;
     }
 
@@ -105,11 +113,13 @@ public partial class ShopDetailViewModel : ViewModelBase
     [ObservableProperty]
     public partial bool HasContact { get; set; }
 
-    /// <summary>True when shop details (not only reviews) are ready to show after a successful load.</summary>
     [ObservableProperty]
     public partial bool IsDetailContentVisible { get; set; }
 
     public bool HasReviewItems => Reviews.Count > 0;
+
+    [ObservableProperty]
+    public partial bool HasReviews { get; set; }
 
     [ObservableProperty]
     public partial bool CanCreateReview { get; set; }
@@ -119,6 +129,29 @@ public partial class ShopDetailViewModel : ViewModelBase
 
     [ObservableProperty]
     public partial bool HasMapCoordinates { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsSubmittingReview { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsDeletingReview { get; set; }
+
+    [ObservableProperty]
+    public partial string NewReviewComment { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial int PlaceScore { get; set; } = 5;
+
+    [ObservableProperty]
+    public partial int ServiceScore { get; set; } = 5;
+
+    [ObservableProperty]
+    public partial int CoffeeScore { get; set; } = 5;
+
+    [ObservableProperty]
+    public partial string? ReviewErrorMessage { get; set; }
+
+    public bool HasReviewError => !string.IsNullOrWhiteSpace(ReviewErrorMessage);
 
     [ObservableProperty]
     public partial string? Phone { get; set; }
@@ -153,20 +186,24 @@ public partial class ShopDetailViewModel : ViewModelBase
     public ObservableCollection<string> AmenityLabels { get; } = [];
     public ObservableCollection<ScheduleLineViewModel> Schedule { get; } = [];
     public ObservableCollection<ShopReviewViewModel> Reviews { get; } = [];
+    public IReadOnlyList<int> ScoreOptions { get; } = [1, 2, 3, 4, 5];
 
     partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
+    partial void OnReviewErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasReviewError));
 
-    public async Task LoadAsync(Guid shopId, CancellationToken cancellationToken = default)
+    public async Task LoadAsync(Guid shopId, CancellationToken ct = default)
     {
+        _shopId = shopId;
         IsLoading = true;
         ErrorMessage = null;
         IsDetailContentVisible = false;
+        ReviewErrorMessage = null;
         CancelHeroLoad();
         await Dispatcher.UIThread.InvokeAsync(() => CoverBitmap = null);
 
         try
         {
-            var result = await _shopsClient.GetByIdAsync(shopId, cancellationToken);
+            var result = await _shopsClient.GetByIdAsync(shopId, ct);
 
             if (result.IsFailed)
             {
@@ -181,7 +218,8 @@ public partial class ShopDetailViewModel : ViewModelBase
             var photoUrl = shop.Photos is { Length: > 0 } p && !string.IsNullOrWhiteSpace(p[0].FullUrl)
                 ? p[0].FullUrl
                 : null;
-            _ = LoadHeroAsync(photoUrl, cancellationToken);
+            _ = LoadHeroAsync(photoUrl, ct);
+            await LoadReviewPermissionsAsync(shopId, ct);
         }
         finally
         {
@@ -237,6 +275,63 @@ public partial class ShopDetailViewModel : ViewModelBase
 
     partial void OnCanCreateReviewChanged(bool value) => WriteReviewCommand.NotifyCanExecuteChanged();
 
+    [RelayCommand]
+    private async Task SubmitReviewAsync(CancellationToken ct = default)
+    {
+        if (_shopId is null || !CanCreateReview)
+            return;
+
+        IsSubmittingReview = true;
+        ReviewErrorMessage = null;
+
+        try
+        {
+            var createResult = await _reviewsClient.CreateAsync(
+                _shopId.Value,
+                new CreateCoffeeShopReviewInput(PlaceScore, ServiceScore, CoffeeScore, NewReviewComment),
+                ct);
+
+            if (createResult.IsFailed)
+            {
+                ReviewErrorMessage = createResult.Errors.FirstOrDefault()?.Message ?? Lang.ShopDetail_ReviewActionFailed;
+                return;
+            }
+
+            NewReviewComment = string.Empty;
+            await RefreshReviewsAsync(_shopId.Value, ct);
+        }
+        finally
+        {
+            IsSubmittingReview = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteReviewAsync(ShopReviewViewModel? review, CancellationToken ct = default)
+    {
+        if (_shopId is null || review is null || !review.IsOwnReview)
+            return;
+
+        IsDeletingReview = true;
+        ReviewErrorMessage = null;
+
+        try
+        {
+            var result = await _reviewsClient.DeleteAsync(review.Id, ct);
+            if (result.IsFailed)
+            {
+                ReviewErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.ShopDetail_ReviewActionFailed;
+                return;
+            }
+
+            await RefreshReviewsAsync(_shopId.Value, ct);
+        }
+        finally
+        {
+            IsDeletingReview = false;
+        }
+    }
+
     private void OpenWebsiteIfAny()
     {
         if (string.IsNullOrWhiteSpace(Website))
@@ -254,6 +349,8 @@ public partial class ShopDetailViewModel : ViewModelBase
 
     private void MapFromDto(CoffeeShopDetailsDto dto)
     {
+        var currentUserId = _identityAccessor.GetCurrentUserIdOrNull();
+
         Name = dto.Name;
         Description = dto.Description;
         HasDescription = !string.IsNullOrWhiteSpace(dto.Description);
@@ -348,13 +445,7 @@ public partial class ShopDetailViewModel : ViewModelBase
         }
 
         OpenUntilText = BuildOpenUntilText(dto.Schedules);
-
-        Reviews.Clear();
-        if (dto.Reviews is not null)
-        {
-            foreach (var r in dto.Reviews)
-                Reviews.Add(ShopReviewViewModel.From(r));
-        }
+        MapReviewStateFromDto(dto, currentUserId);
 
         OnPropertyChanged(nameof(HasReviewItems));
         OnPropertyChanged(nameof(CanGetDirections));
@@ -393,6 +484,47 @@ public partial class ShopDetailViewModel : ViewModelBase
         var lastClose = intervals.Max(i => i.CloseTime);
         var formatted = DateTime.Today.Add(lastClose).ToString("HH:mm", CultureInfo.CurrentCulture);
         return string.Format(CultureInfo.CurrentCulture, Lang.ShopDetail_OpenUntil, formatted);
+    }
+
+    private async Task RefreshReviewsAsync(Guid shopId, CancellationToken ct)
+    {
+        var result = await _shopsClient.GetByIdAsync(shopId, ct);
+        if (result.IsFailed)
+        {
+            ReviewErrorMessage = result.Errors.FirstOrDefault()?.Message ?? Lang.ShopDetail_ReviewActionFailed;
+            return;
+        }
+
+        var currentUserId = _identityAccessor.GetCurrentUserIdOrNull();
+        MapReviewStateFromDto(result.Value.ShopDto, currentUserId);
+        await LoadReviewPermissionsAsync(shopId, ct);
+    }
+
+    private void MapReviewStateFromDto(CoffeeShopDetailsDto dto, Guid? currentUserId)
+    {
+        Rating = (double)dto.Rating;
+        RatingLabel = dto.Rating.ToString("0.0", CultureInfo.InvariantCulture);
+        ReviewCount = dto.ReviewCount;
+
+        Reviews.Clear();
+        HasReviews = dto.Reviews is { Length: > 0 };
+        if (dto.Reviews is null)
+            return;
+
+        foreach (var r in dto.Reviews)
+            Reviews.Add(ShopReviewViewModel.From(r, currentUserId));
+    }
+
+    private async Task LoadReviewPermissionsAsync(Guid shopId, CancellationToken ct)
+    {
+        var permissionResult = await _reviewsClient.CanCreateAsync(shopId, ct);
+        if (permissionResult.IsFailed)
+        {
+            CanCreateReview = false;
+            return;
+        }
+
+        CanCreateReview = permissionResult.Value.CanCreate;
     }
 
     private async Task LoadHeroAsync(string? imageUrl, CancellationToken parentCancellationToken = default)
