@@ -1,4 +1,3 @@
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.MediaService.Data;
