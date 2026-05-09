@@ -24,7 +24,7 @@ public sealed class WebModerationPanelClient(IHttpCommandExecutor httpCommandExe
         if (result.IsFailed)
             return Result.Fail(result.Errors);
 
-        return Result.Ok(result.Value.ModerationShop);
+        return Result.Ok(result.Value.ModerationShops);
     }
 
     public async Task<Result<ModerationReviewDto[]>> GetAllReviewsAsync(CancellationToken ct = default)
@@ -38,7 +38,7 @@ public sealed class WebModerationPanelClient(IHttpCommandExecutor httpCommandExe
         if (result.IsFailed)
             return Result.Fail(result.Errors);
 
-        return Result.Ok(result.Value.Reviews);
+        return Result.Ok(result.Value.ReviewDtos);
     }
 
     public Task<Result> UpdateShopStatusAsync(
@@ -56,7 +56,7 @@ public sealed class WebModerationPanelClient(IHttpCommandExecutor httpCommandExe
         return Execute(command, ct);
     }
 
-    public Task<Result> ChangeReviewStatusAsync(
+    public Task<Result> UpdateReviewStatusAsync(
         Guid reviewId,
         ModerationStatus status,
         string? rejectReason,

@@ -122,7 +122,7 @@ public partial class ModerationPanelViewModel(
             return;
 
         ErrorMessage = null;
-        var result = await moderationPanelClient.ChangeReviewStatusAsync(
+        var result = await moderationPanelClient.UpdateReviewStatusAsync(
             row.Model.Id,
             ModerationStatus.Approved,
             null,
@@ -141,7 +141,7 @@ public partial class ModerationPanelViewModel(
 
         ErrorMessage = null;
         var reason = string.IsNullOrWhiteSpace(row.RejectReason) ? Lang.Moderation_DefaultRejectReason : row.RejectReason.Trim();
-        var result = await moderationPanelClient.ChangeReviewStatusAsync(
+        var result = await moderationPanelClient.UpdateReviewStatusAsync(
             row.Model.Id,
             ModerationStatus.Rejected,
             reason,

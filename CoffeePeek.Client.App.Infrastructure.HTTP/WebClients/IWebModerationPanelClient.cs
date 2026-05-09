@@ -16,7 +16,7 @@ public interface IWebModerationPanelClient
         ModerationStatus status,
         CancellationToken ct = default);
 
-    Task<Result> ChangeReviewStatusAsync(
+    Task<Result> UpdateReviewStatusAsync(
         Guid reviewId,
         ModerationStatus status,
         string? rejectReason,

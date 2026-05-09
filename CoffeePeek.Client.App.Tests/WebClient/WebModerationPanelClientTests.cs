@@ -38,7 +38,7 @@ public class WebModerationPanelClientTests
             {
                 IsSuccess = true,
                 StatusCode = 200,
-                Data = new GetAllModerationShopsResultDto { ModerationShop = [shop] }
+                Data = new GetAllModerationShopsResultDto { ModerationShops = [shop] }
             });
 
         var sut = CreateSut();
@@ -78,7 +78,7 @@ public class WebModerationPanelClientTests
     }
 
     [Fact]
-    public async Task ChangeReviewStatusAsync_PutBodyToModerationReviews()
+    public async Task UpdateReviewStatusAsync_PutBodyToModerationReviews()
     {
         var id = Guid.NewGuid();
         HttpCommand? captured = null;
@@ -88,7 +88,7 @@ public class WebModerationPanelClientTests
             .ReturnsAsync(new ApiResponse { IsSuccess = true, StatusCode = 200 });
 
         var sut = CreateSut();
-        var r = await sut.ChangeReviewStatusAsync(id, ModerationStatus.Rejected, "bad");
+        var r = await sut.UpdateReviewStatusAsync(id, ModerationStatus.Rejected, "bad");
 
         r.IsSuccess.Should().BeTrue();
         captured.Should().NotBeNull();
@@ -121,7 +121,7 @@ public class WebModerationPanelClientTests
             {
                 IsSuccess = true,
                 StatusCode = 200,
-                Data = new GetAllModerationReviewsResultDto { Reviews = [review] }
+                Data = new GetAllModerationReviewsResultDto { ReviewDtos = [review] }
             });
 
         var sut = CreateSut();

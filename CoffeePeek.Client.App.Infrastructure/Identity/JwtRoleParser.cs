@@ -34,13 +34,13 @@ internal static class JwtRoleParser
 
     private static IReadOnlyList<string> CollectRolesFrom(JsonElement root)
     {
-        var list = new List<string>();
-        AddRoleIfPresent(root, "role", list);
-        AddRoleIfPresent(root, LongRoleClaimType, list);
-        return list;
+        var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        AddRoleIfPresent(root, "role", set);
+        AddRoleIfPresent(root, LongRoleClaimType, set);
+        return [.. set];
     }
 
-    private static void AddRoleIfPresent(JsonElement root, string property, List<string> list)
+    private static void AddRoleIfPresent(JsonElement root, string property, HashSet<string> list)
     {
         if (!root.TryGetProperty(property, out var el))
             return;
