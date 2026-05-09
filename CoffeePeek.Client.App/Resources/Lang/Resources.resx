@@ -19,13 +19,13 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="LoginPage_LoginButton" xml:space="preserve">
-        <value>Login</value>
+        <value>Sign In</value>
     </data>
     <data name="LoginPage_Title" xml:space="preserve">
-        <value>Sign in</value>
+        <value>Welcome back</value>
     </data>
     <data name="LoginPage_Subtitle" xml:space="preserve">
-        <value>Sign in to your account</value>
+        <value>Please enter your details to continue.</value>
     </data>
     <data name="ApplicationName" xml:space="preserve">
         <value>CoffeePeek</value>
@@ -40,7 +40,7 @@
         <value>The ultimate companion for coffee enthusiasts. Discover the finest coffee shops, find your dream job in the coffee industry, explore brewing tools, and share your experiences with a like-minded community.</value>
     </data>
     <data name="RegisterPage_RegisterButton" xml:space="preserve">
-        <value>Register</value>
+        <value>Create Account</value>
     </data>
     <data name="WelcomePage_Card1Title" xml:space="preserve">
         <value>Coffee Map</value>
@@ -81,6 +81,93 @@
     <data name="WelcomePage_Footer" xml:space="preserve">
         <value>Join our community of coffee enthusiasts! Share your expertise, discover new spots, and grow your career in the coffee industry with CoffeePeek.</value>
     </data>
+    <data name="WelcomePage_HeroBadge" xml:space="preserve">
+        <value>★ PREMIUM EXPERIENCE</value>
+    </data>
+    <data name="WelcomePage_HeroHeadline" xml:space="preserve">
+        <value>Your gateway to the world's finest roasters.</value>
+    </data>
+    <data name="WelcomePage_HeroDescription" xml:space="preserve">
+        <value>Discover exceptional beans, trusted roasters, and guides from people who live coffee. Start exploring or peek inside the gallery.</value>
+    </data>
+    <data name="WelcomePage_GetStarted" xml:space="preserve">
+        <value>Get Started</value>
+    </data>
+    <data name="WelcomePage_ViewGallery" xml:space="preserve">
+        <value>View Gallery</value>
+    </data>
+    <data name="WelcomePage_Nav_Explore" xml:space="preserve">
+        <value>Explore</value>
+    </data>
+    <data name="WelcomePage_Nav_Cafes" xml:space="preserve">
+        <value>Cafes</value>
+    </data>
+    <data name="WelcomePage_Nav_Community" xml:space="preserve">
+        <value>Community</value>
+    </data>
+    <data name="WelcomePage_LogInHeader" xml:space="preserve">
+        <value>Log In</value>
+    </data>
+    <data name="WelcomePage_SignUpHeader" xml:space="preserve">
+        <value>Sign Up</value>
+    </data>
+    <data name="WelcomePage_Section_FeaturesTitle" xml:space="preserve">
+        <value>Crafted for Enthusiasts</value>
+    </data>
+    <data name="WelcomePage_Bento_RoastersTitle" xml:space="preserve">
+        <value>Local Roasters</value>
+    </data>
+    <data name="WelcomePage_Bento_RoastersDesc" xml:space="preserve">
+        <value>Trace beans back to roasters near you and on the map — profiles, highlights, and what they do best.</value>
+    </data>
+    <data name="WelcomePage_Bento_RoastersCta" xml:space="preserve">
+        <value>EXPLORE MAP</value>
+    </data>
+    <data name="WelcomePage_Bento_BrewTitle" xml:space="preserve">
+        <value>Brewing Guides</value>
+    </data>
+    <data name="WelcomePage_Bento_BrewDesc" xml:space="preserve">
+        <value>Step-by-step brew recipes and gear notes, from V60 to cold brew.</value>
+    </data>
+    <data name="WelcomePage_Bento_PerksTitle" xml:space="preserve">
+        <value>Exclusive Perks</value>
+    </data>
+    <data name="WelcomePage_Bento_PerksDesc" xml:space="preserve">
+        <value>Early drops, tasting notes, and member-only drops from partner roasters.</value>
+    </data>
+    <data name="WelcomePage_Bento_CommunityTitle" xml:space="preserve">
+        <value>Join the Community</value>
+    </data>
+    <data name="WelcomePage_Bento_CommunityDesc" xml:space="preserve">
+        <value>Chat, compare gear, celebrate wins, and share the cafés you love.</value>
+    </data>
+    <data name="WelcomePage_SearchPlaceholder" xml:space="preserve">
+        <value>Search for beans, roasters, or guides...</value>
+    </data>
+    <data name="WelcomePage_TrendingChip1" xml:space="preserve">
+        <value>Trending: Ethiopian Yirgacheffe</value>
+    </data>
+    <data name="WelcomePage_TrendingChip2" xml:space="preserve">
+        <value>V60 Mastery</value>
+    </data>
+    <data name="WelcomePage_TrendingChip3" xml:space="preserve">
+        <value>Cold Brew Tips</value>
+    </data>
+    <data name="WelcomePage_SocialProof" xml:space="preserve">
+        <value>2.4k+ Active Brewers</value>
+    </data>
+    <data name="WelcomePage_Footer_Copyright" xml:space="preserve">
+        <value>CoffeePeek. Brewed with passion.</value>
+    </data>
+    <data name="WelcomePage_Footer_Privacy" xml:space="preserve">
+        <value>Privacy Policy</value>
+    </data>
+    <data name="WelcomePage_Footer_Terms" xml:space="preserve">
+        <value>Terms of Service</value>
+    </data>
+    <data name="WelcomePage_Footer_Contact" xml:space="preserve">
+        <value>Contact Us</value>
+    </data>
     <data name="Auth_FillAllFields" xml:space="preserve">
         <value>Please fill in all required fields.</value>
     </data>
@@ -103,7 +190,7 @@
         <value>Account created, but automatic sign-in failed. Please sign in manually.</value>
     </data>
     <data name="LoginPage_EmailPlaceholder" xml:space="preserve">
-        <value>Email</value>
+        <value>name@example.com</value>
     </data>
     <data name="LoginPage_PasswordPlaceholder" xml:space="preserve">
         <value>Password</value>
@@ -112,28 +199,31 @@
         <value>Back</value>
     </data>
     <data name="RegisterPage_Title" xml:space="preserve">
-        <value>Create account</value>
+        <value>Join the Club</value>
     </data>
     <data name="Register_CheckEmailTitle" xml:space="preserve">
-        <value>Check email</value>
+        <value>Check your email</value>
     </data>
     <data name="Register_CheckEmailSubtitle" xml:space="preserve">
         <value>Enter your email to continue</value>
     </data>
     <data name="Register_CompleteSubtitle" xml:space="preserve">
-        <value>Complete your registration</value>
+        <value>Start your specialty coffee journey today.</value>
     </data>
     <data name="Auth_NoAccount" xml:space="preserve">
-        <value>No account?</value>
+        <value>Don't have an account?</value>
     </data>
     <data name="Auth_CreateAccount" xml:space="preserve">
         <value>Create account</value>
     </data>
     <data name="Auth_HasAccount" xml:space="preserve">
-        <value>Already have an account?</value>
+        <value>Already a member?</value>
     </data>
     <data name="Auth_SignIn" xml:space="preserve">
         <value>Sign in</value>
+    </data>
+    <data name="Auth_SignInCaps" xml:space="preserve">
+        <value>SIGN IN</value>
     </data>
     <data name="Auth_ChangeEmail" xml:space="preserve">
         <value>Change email</value>
@@ -154,7 +244,7 @@
         <value>Please accept the privacy policy to continue.</value>
     </data>
     <data name="Auth_PrivacyConsent" xml:space="preserve">
-        <value>I agree to the Privacy Policy and consent to the processing of personal data.</value>
+        <value>I agree to the Terms &amp; Conditions and Privacy Policy.</value>
     </data>
     <data name="Auth_PasswordMinLength" xml:space="preserve">
         <value>Password must be at least 6 characters.</value>
@@ -171,8 +261,62 @@
     <data name="Register_Continue" xml:space="preserve">
         <value>Continue</value>
     </data>
+    <data name="Auth_HeroTagSaffron" xml:space="preserve">
+        <value>Saffron Brew</value>
+    </data>
+    <data name="Auth_LoginHeroHeadline" xml:space="preserve">
+        <value>Your morning, perfectly ground.</value>
+    </data>
+    <data name="Auth_LoginHeroSub" xml:space="preserve">
+        <value>Enter the aroma of specialty coffee culture. Your beans are waiting.</value>
+    </data>
+    <data name="Auth_EmailHeroTagline" xml:space="preserve">
+        <value>Crafted for comfort, poured for you.</value>
+    </data>
+    <data name="Auth_RegisterHeroTagline" xml:space="preserve">
+        <value>Elevate your daily ritual with the perfect bean.</value>
+    </data>
+    <data name="Auth_LabelEmailCaps" xml:space="preserve">
+        <value>EMAIL ADDRESS</value>
+    </data>
+    <data name="Auth_LabelPasswordCaps" xml:space="preserve">
+        <value>PASSWORD</value>
+    </data>
+    <data name="Auth_LabelFullNameCaps" xml:space="preserve">
+        <value>FULL NAME</value>
+    </data>
+    <data name="Auth_LabelConfirmCaps" xml:space="preserve">
+        <value>CONFIRM PASSWORD</value>
+    </data>
+    <data name="Auth_ForgotPassword" xml:space="preserve">
+        <value>Forgot Password?</value>
+    </data>
+    <data name="Auth_RememberMachine" xml:space="preserve">
+        <value>Remember this machine</value>
+    </data>
+    <data name="Auth_OrContinueWith" xml:space="preserve">
+        <value>OR CONTINUE WITH</value>
+    </data>
+    <data name="Auth_RequestAccess" xml:space="preserve">
+        <value>Request Access</value>
+    </data>
+    <data name="Auth_Google" xml:space="preserve">
+        <value>Google</value>
+    </data>
+    <data name="Auth_Apple" xml:space="preserve">
+        <value>Apple</value>
+    </data>
+    <data name="Auth_FooterCrafted" xml:space="preserve">
+        <value>CoffeePeek. Crafted for comfort.</value>
+    </data>
+    <data name="Auth_CookieSettings" xml:space="preserve">
+        <value>Cookie Settings</value>
+    </data>
     <data name="RegisterPage_UserNamePlaceholder" xml:space="preserve">
         <value>Username</value>
+    </data>
+    <data name="RegisterPage_FullNamePlaceholder" xml:space="preserve">
+        <value>Your name</value>
     </data>
     <data name="RegisterPage_ConfirmPasswordPlaceholder" xml:space="preserve">
         <value>Confirm password</value>
@@ -191,6 +335,60 @@
     </data>
     <data name="Header_Map" xml:space="preserve">
         <value>Map</value>
+    </data>
+    <data name="Header_Catalog" xml:space="preserve">
+        <value>Catalog</value>
+    </data>
+    <data name="Header_Favorites" xml:space="preserve">
+        <value>Favorites</value>
+    </data>
+    <data name="Header_NearMe" xml:space="preserve">
+        <value>Near Me</value>
+    </data>
+    <data name="Header_WelcomeBack" xml:space="preserve">
+        <value>Welcome back</value>
+    </data>
+    <data name="Header_UserTagline" xml:space="preserve">
+        <value>Coffee enthusiast</value>
+    </data>
+    <data name="Header_Menu_Profile" xml:space="preserve">
+        <value>Profile</value>
+    </data>
+    <data name="Header_Menu_Settings" xml:space="preserve">
+        <value>Settings</value>
+    </data>
+    <data name="Header_Menu_Logout" xml:space="preserve">
+        <value>Log out</value>
+    </data>
+    <data name="Settings_PageTitle" xml:space="preserve">
+        <value>Settings</value>
+    </data>
+    <data name="Settings_ThemeSection" xml:space="preserve">
+        <value>Appearance</value>
+    </data>
+    <data name="Settings_ThemeSystem" xml:space="preserve">
+        <value>Match system</value>
+    </data>
+    <data name="Settings_ThemeLight" xml:space="preserve">
+        <value>Light</value>
+    </data>
+    <data name="Settings_ThemeDark" xml:space="preserve">
+        <value>Dark</value>
+    </data>
+    <data name="Settings_Back" xml:space="preserve">
+        <value>Back</value>
+    </data>
+    <data name="Placeholder_Favorites_Title" xml:space="preserve">
+        <value>Favorites</value>
+    </data>
+    <data name="Placeholder_Favorites_Message" xml:space="preserve">
+        <value>This section is not implemented yet. Soon you will see your favorite coffee shops here.</value>
+    </data>
+    <data name="Placeholder_NearMe_Title" xml:space="preserve">
+        <value>Near me</value>
+    </data>
+    <data name="Placeholder_NearMe_Message" xml:space="preserve">
+        <value>This section is not implemented yet. A map and nearby shops will appear here later.</value>
     </data>
     <data name="Header_Moderation" xml:space="preserve">
         <value>Moderation</value>
@@ -247,7 +445,7 @@
         <value>Loading…</value>
     </data>
     <data name="ShopPage_SearchPlaceholder" xml:space="preserve">
-        <value>Search for your perfect brew...</value>
+        <value>Search shops, flavors, or streets...</value>
     </data>
     <data name="ShopPage_Filter" xml:space="preserve">
         <value>Filters</value>
@@ -256,13 +454,13 @@
         <value>Minsk</value>
     </data>
     <data name="ShopPage_Filter_OpenTime" xml:space="preserve">
-        <value>Open</value>
+        <value>Time</value>
     </data>
     <data name="ShopPage_Filter_New" xml:space="preserve">
         <value>New</value>
     </data>
     <data name="ShopPage_Filter_Favorite" xml:space="preserve">
-        <value>Favorite</value>
+        <value>Favorites</value>
     </data>
     <data name="ShopPage_Filter_Visited" xml:space="preserve">
         <value>Visited</value>
@@ -536,5 +734,80 @@
     </data>
     <data name="SuggestShop_DaySunday" xml:space="preserve">
         <value>Sunday</value>
+    </data>
+    <data name="ShopPage_HeroTitle" xml:space="preserve">
+        <value>Morning Brews</value>
+    </data>
+    <data name="ShopPage_HeroSubtitle" xml:space="preserve">
+        <value>Find the perfect spot for your next caffeine fix.</value>
+    </data>
+    <data name="ShopPage_EmptyClearFilters" xml:space="preserve">
+        <value>Clear filters</value>
+    </data>
+    <data name="ShopPage_EmptyTitle" xml:space="preserve">
+        <value>No shops yet</value>
+    </data>
+    <data name="ShopPage_EmptyMessage" xml:space="preserve">
+        <value>We couldn't find any coffee shops matching your current search or filters. Try adjusting your preferences or exploring a different area.</value>
+    </data>
+    <data name="ShopPage_BrowseMap" xml:space="preserve">
+        <value>Browse map</value>
+    </data>
+    <data name="ShopPage_FeaturePastriesTitle" xml:space="preserve">
+        <value>Pastries</value>
+    </data>
+    <data name="ShopPage_FeaturePastriesDesc" xml:space="preserve">
+        <value>Best coffee &amp; croissant pairs.</value>
+    </data>
+    <data name="ShopPage_FeatureWorkTitle" xml:space="preserve">
+        <value>Work friendly</value>
+    </data>
+    <data name="ShopPage_FeatureWorkDesc" xml:space="preserve">
+        <value>Top-rated spots with fast Wi‑Fi.</value>
+    </data>
+    <data name="ShopPage_FeatureArtisanTitle" xml:space="preserve">
+        <value>Artisanal</value>
+    </data>
+    <data name="ShopPage_FeatureArtisanDesc" xml:space="preserve">
+        <value>Specialty beans and roasters.</value>
+    </data>
+    <data name="ShopDetail_About" xml:space="preserve">
+        <value>About this café</value>
+    </data>
+    <data name="ShopDetail_OpenUntil" xml:space="preserve">
+        <value>Open until {0}</value>
+    </data>
+    <data name="ShopDetail_ClosedToday" xml:space="preserve">
+        <value>Closed today</value>
+    </data>
+    <data name="ShopDetail_GetDirections" xml:space="preserve">
+        <value>Directions</value>
+    </data>
+    <data name="ShopDetail_Share" xml:space="preserve">
+        <value>Share</value>
+    </data>
+    <data name="ShopDetail_Order" xml:space="preserve">
+        <value>Order</value>
+    </data>
+    <data name="ShopDetail_ReviewsEmptyTitle" xml:space="preserve">
+        <value>No reviews yet</value>
+    </data>
+    <data name="ShopDetail_ReviewsEmptySubtitle" xml:space="preserve">
+        <value>Be the first to share your experience at this café.</value>
+    </data>
+    <data name="ShopDetail_WriteReview" xml:space="preserve">
+        <value>Write a review</value>
+    </data>
+    <data name="ShopDetail_Amenities" xml:space="preserve">
+        <value>Amenities</value>
+    </data>
+    <data name="ShopDetail_OpenNow" xml:space="preserve">
+        <value>Open now</value>
+    </data>
+    <data name="ShopDetail_Hours" xml:space="preserve">
+        <value>Hours</value>
+    </data>
+    <data name="ShopDetail_MapArea" xml:space="preserve">
+        <value>Location</value>
     </data>
 </root>

@@ -10,10 +10,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
-        <ContentControl Content="{Binding ShopPage}" IsVisible="{Binding IsShopsListVisible}" />
+        <ContentControl Content="{Binding ShopPage}" IsVisible="{Binding IsCatalogVisible}" />
+        <ContentControl Content="{Binding FavoritesPlaceholder}" IsVisible="{Binding IsFavoritesPlaceholderVisible}" />
+        <ContentControl Content="{Binding NearMePlaceholder}" IsVisible="{Binding IsNearMePlaceholderVisible}" />
         <ContentControl Content="{Binding ShopDetail}" IsVisible="{Binding IsShopDetailOpen}" />
         <ContentControl Content="{Binding UserProfile}" IsVisible="{Binding IsProfileOpen}" />
         <ContentControl Content="{Binding SuggestShop}" IsVisible="{Binding IsSuggestShopOpen}" />
+        <ContentControl Content="{Binding Settings}" IsVisible="{Binding IsSettingsOpen}" />
         <ContentControl Content="{Binding ModerationPanel}" IsVisible="{Binding IsModerationPanelOpen}" />
     </Grid>
 </UserControl>

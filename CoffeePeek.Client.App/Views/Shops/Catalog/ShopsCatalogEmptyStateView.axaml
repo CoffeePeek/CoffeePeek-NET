@@ -1,0 +1,168 @@
+<UserControl
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Shops.Catalog.ShopsCatalogEmptyStateView"
+    x:DataType="shops:ShopsPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Spacing="20">
+        <Border
+            Background="{DynamicResource SurfaceContainerLowBrush}"
+            BorderThickness="0"
+            CornerRadius="{StaticResource LargeRadius}"
+            IsVisible="{Binding HasEmptyShops}"
+            Padding="28,32">
+            <StackPanel
+                HorizontalAlignment="Center"
+                MaxWidth="520"
+                Spacing="16">
+                <Border
+                    Background="{DynamicResource SurfaceContainerHighBrush}"
+                    CornerRadius="48"
+                    Height="88"
+                    HorizontalAlignment="Center"
+                    Width="88">
+                    <PathIcon
+                        Data="{StaticResource CoffeeBrandIcon}"
+                        Foreground="{DynamicResource PrimaryBrush}"
+                        Height="40"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Width="40" />
+                </Border>
+                <TextBlock
+                    Classes="Headline"
+                    FontSize="22"
+                    FontWeight="Normal"
+                    Foreground="{DynamicResource OnSurfaceBrush}"
+                    HorizontalAlignment="Center"
+                    Text="{x:Static lang:Resources.ShopPage_EmptyTitle}"
+                    TextAlignment="Center" />
+                <TextBlock
+                    FontSize="15"
+                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                    HorizontalAlignment="Center"
+                    LineHeight="22"
+                    Text="{x:Static lang:Resources.ShopPage_EmptyMessage}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Margin="0,8,0,0"
+                    Orientation="Horizontal"
+                    Spacing="12">
+                    <Button Command="{Binding ClearFiltersCommand}" Padding="20,12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon
+                                Data="{StaticResource FiltersIcon}"
+                                Foreground="{DynamicResource OnPrimaryBrush}"
+                                Height="18"
+                                Width="18" />
+                            <TextBlock
+                                Foreground="{DynamicResource OnPrimaryBrush}"
+                                Text="{x:Static lang:Resources.ShopPage_EmptyClearFilters}"
+                                VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button
+                        Classes="Secondary"
+                        Command="{Binding BrowseMapCommand}"
+                        Padding="20,12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon
+                                Data="{StaticResource MapIcon}"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                Height="18"
+                                Width="18" />
+                            <TextBlock Text="{x:Static lang:Resources.ShopPage_BrowseMap}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <StackPanel
+            IsVisible="{Binding HasEmptyShops}"
+            Orientation="Horizontal"
+            Spacing="12">
+            <Border
+                Background="{DynamicResource SurfaceContainerLowBrush}"
+                BorderThickness="0"
+                CornerRadius="{StaticResource LargeRadius}"
+                HorizontalAlignment="Stretch"
+                MinHeight="120"
+                MinWidth="200"
+                Padding="20,16">
+                <StackPanel Spacing="8">
+                    <PathIcon
+                        Data="{StaticResource CoffeeBrandIcon}"
+                        Foreground="{DynamicResource PrimaryBrush}"
+                        Height="28"
+                        Width="28" />
+                    <TextBlock
+                        FontWeight="Normal"
+                        Foreground="{DynamicResource OnSurfaceBrush}"
+                        Text="{x:Static lang:Resources.ShopPage_FeaturePastriesTitle}" />
+                    <TextBlock
+                        FontSize="13"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        Text="{x:Static lang:Resources.ShopPage_FeaturePastriesDesc}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+            <Border
+                Background="{DynamicResource SurfaceContainerLowBrush}"
+                BorderThickness="0"
+                CornerRadius="{StaticResource LargeRadius}"
+                HorizontalAlignment="Stretch"
+                MinHeight="120"
+                MinWidth="200"
+                Padding="20,16">
+                <StackPanel Spacing="8">
+                    <PathIcon
+                        Data="{StaticResource MonitorIcon}"
+                        Foreground="{DynamicResource PrimaryBrush}"
+                        Height="28"
+                        Width="28" />
+                    <TextBlock
+                        FontWeight="Normal"
+                        Foreground="{DynamicResource OnSurfaceBrush}"
+                        Text="{x:Static lang:Resources.ShopPage_FeatureWorkTitle}" />
+                    <TextBlock
+                        FontSize="13"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        Text="{x:Static lang:Resources.ShopPage_FeatureWorkDesc}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+            <Border
+                Background="{DynamicResource SurfaceContainerLowBrush}"
+                BorderThickness="0"
+                CornerRadius="{StaticResource LargeRadius}"
+                HorizontalAlignment="Stretch"
+                MinHeight="120"
+                MinWidth="200"
+                Padding="20,16">
+                <StackPanel Spacing="8">
+                    <PathIcon
+                        Data="{StaticResource AwardIcon}"
+                        Foreground="{DynamicResource PrimaryBrush}"
+                        Height="28"
+                        Width="28" />
+                    <TextBlock
+                        FontWeight="Normal"
+                        Foreground="{DynamicResource OnSurfaceBrush}"
+                        Text="{x:Static lang:Resources.ShopPage_FeatureArtisanTitle}" />
+                    <TextBlock
+                        FontSize="13"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        Text="{x:Static lang:Resources.ShopPage_FeatureArtisanDesc}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

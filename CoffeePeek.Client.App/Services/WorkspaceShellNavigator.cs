@@ -1,8 +1,8 @@
 namespace CoffeePeek.Client.App.Services;
 
 /// <summary>
-/// Routes shell overlays (user profile, shop detail, suggest-shop, moderation panel) without injecting
-/// <c>WorkspaceViewModel</c> into feature view models (avoids Autofac circular dependencies).
+/// Routes shell overlays (user profile, shop detail, suggest-shop, settings, moderation) without
+/// injecting <c>WorkspaceViewModel</c> into feature view models (avoids Autofac circular dependencies).
 /// </summary>
 public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
 {
@@ -12,6 +12,8 @@ public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
     private Action? _closeShopDetail;
     private Action? _openSuggestShop;
     private Action? _closeSuggestShop;
+    private Action? _openSettings;
+    private Action? _closeSettings;
     private Action? _openModerationPanel;
     private Action? _closeModerationPanel;
 
@@ -33,6 +35,12 @@ public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
         _closeSuggestShop = close;
     }
 
+    public void AttachSettings(Action open, Action close)
+    {
+        _openSettings = open;
+        _closeSettings = close;
+    }
+
     public void AttachModerationPanel(Action open, Action close)
     {
         _openModerationPanel = open;
@@ -50,6 +58,10 @@ public sealed class WorkspaceShellNavigator : IWorkspaceShellNavigator
     public void OpenSuggestShop() => _openSuggestShop?.Invoke();
 
     public void CloseSuggestShop() => _closeSuggestShop?.Invoke();
+
+    public void OpenSettings() => _openSettings?.Invoke();
+
+    public void CloseSettings() => _closeSettings?.Invoke();
 
     public void OpenModerationPanel() => _openModerationPanel?.Invoke();
 

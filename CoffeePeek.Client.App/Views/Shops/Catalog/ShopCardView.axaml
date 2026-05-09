@@ -1,0 +1,140 @@
+<UserControl
+    d:DesignHeight="320"
+    d:DesignWidth="280"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Shops.Catalog.ShopCardView"
+    x:CompileBindings="False"
+    x:DataType="shops:ShopCardViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Button
+        Classes="shop-card-host"
+        Command="{Binding $parent[ItemsControl].DataContext.OpenShopCommand}"
+        CommandParameter="{Binding Id}"
+        Cursor="Hand"
+        Padding="0">
+        <Border Classes="shop-card">
+            <Grid RowDefinitions="Auto,Auto">
+                <Panel Grid.Row="0" Height="176">
+                    <Border ClipToBounds="True" CornerRadius="16,16,0,0">
+                        <Panel>
+                            <Image
+                                IsVisible="{Binding HasCoverImage}"
+                                Source="{Binding CoverBitmap}"
+                                Stretch="UniformToFill" />
+                            <Border Background="{DynamicResource CardToneGradientBrush}" IsVisible="{Binding !HasCoverImage}" />
+                        </Panel>
+                    </Border>
+                    <Border
+                        Background="{DynamicResource AuthLinkBrush}"
+                        CornerRadius="{StaticResource SmallCornerRadius}"
+                        HorizontalAlignment="Left"
+                        Margin="12,0,0,12"
+                        Padding="8,4"
+                        VerticalAlignment="Bottom">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                Text="★" />
+                            <TextBlock
+                                FontSize="13"
+                                FontWeight="Normal"
+                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                Text="{Binding Rating}" />
+                        </StackPanel>
+                    </Border>
+                    <Border
+                        Background="{DynamicResource SurfaceLowestBrush}"
+                        CornerRadius="24"
+                        Height="40"
+                        HorizontalAlignment="Right"
+                        Margin="10"
+                        VerticalAlignment="Top"
+                        Width="40">
+                        <Panel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <PathIcon
+                                Data="{StaticResource HeartIcon}"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                Height="18"
+                                IsVisible="{Binding !IsFavorite}"
+                                Opacity="0.35"
+                                Width="18" />
+                            <PathIcon
+                                Data="{StaticResource HeartIcon}"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                Height="18"
+                                IsVisible="{Binding IsFavorite}"
+                                Width="18" />
+                        </Panel>
+                    </Border>
+                </Panel>
+
+                <StackPanel
+                    Grid.Row="1"
+                    Margin="16,14,16,18"
+                    Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock
+                            FontSize="17"
+                            FontWeight="Normal"
+                            Foreground="{DynamicResource OnSurfaceBrush}"
+                            Grid.Column="0"
+                            Text="{Binding Name}"
+                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            FontSize="15"
+                            FontWeight="Normal"
+                            Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            Grid.Column="1"
+                            IsVisible="{Binding PriceLabel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                            Text="{Binding PriceLabel}"
+                            VerticalAlignment="Center" />
+                    </Grid>
+                    <StackPanel
+                        IsVisible="{Binding LocationLine, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                        Orientation="Horizontal"
+                        Spacing="6">
+                        <PathIcon
+                            Data="{StaticResource MapPinIcon}"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Width="14" />
+                        <TextBlock
+                            FontSize="13"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            Text="{Binding LocationLine}"
+                            TextTrimming="CharacterEllipsis"
+                            VerticalAlignment="Center" />
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding Tags}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Background="{DynamicResource PrimaryGoldTransparent}"
+                                    BorderThickness="0"
+                                    CornerRadius="{StaticResource SmallCornerRadius}"
+                                    Padding="8,4">
+                                    <TextBlock
+                                        FontSize="10"
+                                        FontWeight="Normal"
+                                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                        Text="{Binding}" />
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Button>
+</UserControl>

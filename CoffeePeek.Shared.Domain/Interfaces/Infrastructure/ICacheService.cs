@@ -2,8 +2,12 @@
 
 public interface ICacheService
 {
-    Task<T?> GetAsync<T>(CacheKey cacheKey);
-    Task<T?> GetAsync<T>(CacheKey cacheKey, Func<Task<T>> factory, TimeSpan? expiration = null);
+    Task<T?> GetAsync<T>(CacheKey cacheKey, CancellationToken cancellationToken = default);
+    Task<T?> GetAsync<T>(
+        CacheKey cacheKey,
+        Func<CancellationToken, Task<T>> factory,
+        TimeSpan? expiration = null,
+        CancellationToken cancellationToken = default);
     Task SetAsync<T>(CacheKey cacheKey, T value, TimeSpan? customTtl = null);
     Task RemoveAsync(CacheKey cacheKey);
     Task<bool> ExistsAsync(CacheKey cacheKey);

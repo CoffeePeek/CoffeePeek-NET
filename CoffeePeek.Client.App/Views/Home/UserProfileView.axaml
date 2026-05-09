@@ -11,72 +11,101 @@
     xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid Background="{DynamicResource SurfaceBrush}" RowDefinitions="Auto,*">
-        <StackPanel
-            Grid.Row="0"
-            HorizontalAlignment="Right"
-            Margin="16,12,16,8"
-            Orientation="Horizontal"
-            Spacing="12"
-            ZIndex="2">
-            <Button
-                Classes="Secondary"
-                Command="{Binding ToggleThemeCommand}"
-                Content="{x:Static lang:Resources.Profile_ThemeToggle}" />
-            <Button Command="{Binding SignOutCommand}" Content="{x:Static lang:Resources.Profile_Logout}" />
-        </StackPanel>
-
-        <Grid Grid.Row="1">
-            <!-- Loading shimmer skeleton -->
+    <Grid Background="{DynamicResource SurfaceBrush}" RowDefinitions="*">
+        <Grid Grid.Row="0">
+            <!--  Loading shimmer skeleton  -->
             <Border
                 Background="{DynamicResource SurfaceBrush}"
                 IsVisible="{Binding IsLoadingProfile}"
                 MinHeight="360">
                 <StackPanel Spacing="0">
-                    <!-- Header skeleton: avatar + name -->
+                    <!--  Header skeleton: avatar + name  -->
                     <Border
                         Background="{DynamicResource SurfaceContainerLowBrush}"
                         BorderThickness="0"
                         Padding="48,40">
                         <StackPanel Orientation="Horizontal" Spacing="32">
-                            <Border Classes="shimmer-circle" CornerRadius="64" Height="128" Width="128" />
+                            <Border
+                                Classes="shimmer-circle"
+                                CornerRadius="64"
+                                Height="128"
+                                Width="128" />
                             <StackPanel Spacing="12" VerticalAlignment="Center">
-                                <Border Classes="shimmer-line" Height="28" Width="200" HorizontalAlignment="Left" />
-                                <Border Classes="shimmer-line" Height="13" Width="140" HorizontalAlignment="Left" />
-                                <Border Classes="shimmer-line" Height="13" Width="260" HorizontalAlignment="Left" />
+                                <Border
+                                    Classes="shimmer-line"
+                                    Height="28"
+                                    HorizontalAlignment="Left"
+                                    Width="200" />
+                                <Border
+                                    Classes="shimmer-line"
+                                    Height="13"
+                                    HorizontalAlignment="Left"
+                                    Width="140" />
+                                <Border
+                                    Classes="shimmer-line"
+                                    Height="13"
+                                    HorizontalAlignment="Left"
+                                    Width="260" />
                             </StackPanel>
                         </StackPanel>
                     </Border>
-                    <!-- Stats skeleton -->
-                    <StackPanel Margin="48,32" MaxWidth="960" Spacing="32">
+                    <!--  Stats skeleton  -->
+                    <StackPanel
+                        Margin="48,32"
+                        MaxWidth="960"
+                        Spacing="32">
                         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="20">
                             <Border
                                 Background="{DynamicResource SurfaceContainerLowBrush}"
                                 CornerRadius="{StaticResource DefaultCornerRadius}"
                                 Padding="24">
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
-                                    <Border Classes="shimmer-line" Height="32" Width="60" HorizontalAlignment="Center" />
-                                    <Border Classes="shimmer-line" Height="11" Width="80" HorizontalAlignment="Center" />
+                                    <Border
+                                        Classes="shimmer-line"
+                                        Height="32"
+                                        HorizontalAlignment="Center"
+                                        Width="60" />
+                                    <Border
+                                        Classes="shimmer-line"
+                                        Height="11"
+                                        HorizontalAlignment="Center"
+                                        Width="80" />
                                 </StackPanel>
                             </Border>
                             <Border
+                                Background="{DynamicResource SurfaceContainerLowBrush}"
+                                CornerRadius="{StaticResource DefaultCornerRadius}"
                                 Grid.Column="1"
-                                Background="{DynamicResource SurfaceContainerLowBrush}"
-                                CornerRadius="{StaticResource DefaultCornerRadius}"
                                 Padding="24">
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
-                                    <Border Classes="shimmer-line" Height="32" Width="50" HorizontalAlignment="Center" />
-                                    <Border Classes="shimmer-line" Height="11" Width="70" HorizontalAlignment="Center" />
+                                    <Border
+                                        Classes="shimmer-line"
+                                        Height="32"
+                                        HorizontalAlignment="Center"
+                                        Width="50" />
+                                    <Border
+                                        Classes="shimmer-line"
+                                        Height="11"
+                                        HorizontalAlignment="Center"
+                                        Width="70" />
                                 </StackPanel>
                             </Border>
                             <Border
-                                Grid.Column="2"
                                 Background="{DynamicResource SurfaceContainerLowBrush}"
                                 CornerRadius="{StaticResource DefaultCornerRadius}"
+                                Grid.Column="2"
                                 Padding="24">
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
-                                    <Border Classes="shimmer-line" Height="32" Width="40" HorizontalAlignment="Center" />
-                                    <Border Classes="shimmer-line" Height="11" Width="90" HorizontalAlignment="Center" />
+                                    <Border
+                                        Classes="shimmer-line"
+                                        Height="32"
+                                        HorizontalAlignment="Center"
+                                        Width="40" />
+                                    <Border
+                                        Classes="shimmer-line"
+                                        Height="11"
+                                        HorizontalAlignment="Center"
+                                        Width="90" />
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -84,7 +113,7 @@
                 </StackPanel>
             </Border>
 
-            <!-- Error -->
+            <!--  Error  -->
             <Border
                 Background="{DynamicResource SurfaceBrush}"
                 IsVisible="{Binding ErrorMessage, Converter={x:Static ac:StringConverters.IsNotNullOrEmpty}}"
@@ -103,18 +132,16 @@
                 </StackPanel>
             </Border>
 
-            <!-- Profile body -->
-            <ScrollViewer
-                HorizontalScrollBarVisibility="Disabled"
-                IsVisible="{Binding ShowProfileBody}">
+            <!--  Profile body  -->
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" IsVisible="{Binding ShowProfileBody}">
                 <StackPanel Spacing="0">
                     <Border
                         Background="{DynamicResource SurfaceContainerLowBrush}"
                         BorderThickness="0"
                         Padding="48,40">
                         <StackPanel
-                            MaxWidth="960"
                             HorizontalAlignment="Stretch"
+                            MaxWidth="960"
                             Orientation="Horizontal"
                             Spacing="32">
                             <Border
@@ -128,12 +155,10 @@
                                         IsVisible="{Binding HasAvatar}"
                                         Source="{Binding AvatarImage}"
                                         Stretch="UniformToFill" />
-                                    <Border
-                                        Background="{DynamicResource PrimaryGradientBrush}"
-                                        IsVisible="{Binding !HasAvatar}">
+                                    <Border Background="{DynamicResource PrimaryGradientBrush}" IsVisible="{Binding !HasAvatar}">
                                         <TextBlock
                                             FontSize="48"
-                                            FontWeight="Bold"
+                                            FontWeight="Normal"
                                             Foreground="{DynamicResource OnPrimaryBrush}"
                                             HorizontalAlignment="Center"
                                             Text="{Binding InitialLetter}"
@@ -167,7 +192,7 @@
                                     <TextBlock
                                         Classes="Headline"
                                         FontSize="32"
-                                        FontWeight="Bold"
+                                        FontWeight="Normal"
                                         Text="{Binding UserName}"
                                         VerticalAlignment="Center" />
                                     <Button
@@ -195,7 +220,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Edit profile form -->
+                    <!--  Edit profile form  -->
                     <Border
                         Background="{DynamicResource SurfaceContainerLowBrush}"
                         BorderThickness="0"
@@ -207,7 +232,7 @@
                             <TextBlock
                                 Classes="Headline"
                                 FontSize="20"
-                                FontWeight="Bold"
+                                FontWeight="Normal"
                                 Text="{x:Static lang:Resources.Profile_EditTitle}" />
 
                             <StackPanel Spacing="6">
@@ -217,8 +242,8 @@
                                     Text="{x:Static lang:Resources.Profile_Edit_Username}" />
                                 <TextBox
                                     MaxLength="32"
-                                    Text="{Binding EditUserName}"
-                                    Watermark="{x:Static lang:Resources.Profile_Edit_UsernamePlaceholder}" />
+                                    PlaceholderText="{x:Static lang:Resources.Profile_Edit_UsernamePlaceholder}"
+                                    Text="{Binding EditUserName}" />
                             </StackPanel>
 
                             <StackPanel Spacing="6">
@@ -230,9 +255,9 @@
                                     AcceptsReturn="True"
                                     MaxLength="500"
                                     MinHeight="80"
+                                    PlaceholderText="{x:Static lang:Resources.Profile_Edit_AboutPlaceholder}"
                                     Text="{Binding EditAbout}"
-                                    TextWrapping="Wrap"
-                                    Watermark="{x:Static lang:Resources.Profile_Edit_AboutPlaceholder}" />
+                                    TextWrapping="Wrap" />
                             </StackPanel>
 
                             <Border
@@ -267,7 +292,10 @@
                         </StackPanel>
                     </Border>
 
-                    <StackPanel Margin="48,32" MaxWidth="960" Spacing="32">
+                    <StackPanel
+                        Margin="48,32"
+                        MaxWidth="960"
+                        Spacing="32">
                         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="20">
                             <Border
                                 Background="{DynamicResource SurfaceContainerLowBrush}"
@@ -277,7 +305,7 @@
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
                                     <TextBlock
                                         FontSize="32"
-                                        FontWeight="Bold"
+                                        FontWeight="Normal"
                                         HorizontalAlignment="Center"
                                         Text="{Binding CheckInCount}" />
                                     <TextBlock
@@ -288,15 +316,15 @@
                                 </StackPanel>
                             </Border>
                             <Border
-                                Grid.Column="1"
                                 Background="{DynamicResource SurfaceContainerLowBrush}"
                                 BorderThickness="0"
                                 CornerRadius="{StaticResource DefaultCornerRadius}"
+                                Grid.Column="1"
                                 Padding="24">
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
                                     <TextBlock
                                         FontSize="32"
-                                        FontWeight="Bold"
+                                        FontWeight="Normal"
                                         HorizontalAlignment="Center"
                                         Text="{Binding ReviewCount}" />
                                     <TextBlock
@@ -307,15 +335,15 @@
                                 </StackPanel>
                             </Border>
                             <Border
-                                Grid.Column="2"
                                 Background="{DynamicResource SurfaceContainerLowBrush}"
                                 BorderThickness="0"
                                 CornerRadius="{StaticResource DefaultCornerRadius}"
+                                Grid.Column="2"
                                 Padding="24">
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
                                     <TextBlock
                                         FontSize="32"
-                                        FontWeight="Bold"
+                                        FontWeight="Normal"
                                         HorizontalAlignment="Center"
                                         Text="{Binding AverageRatingLabel}" />
                                     <TextBlock
@@ -331,7 +359,7 @@
                             <TextBlock
                                 Classes="Headline"
                                 FontSize="22"
-                                FontWeight="Bold"
+                                FontWeight="Normal"
                                 Text="{x:Static lang:Resources.Profile_LastReviews}" />
                             <TextBlock
                                 FontSize="13"
@@ -339,20 +367,34 @@
                                 Text="{Binding ReviewsSubtitle}" />
 
                             <Panel MinHeight="120">
-                                <StackPanel
-                                    IsVisible="{Binding IsLoadingReviews}"
-                                    Spacing="16">
+                                <StackPanel IsVisible="{Binding IsLoadingReviews}" Spacing="16">
                                     <Border
                                         Background="{DynamicResource SurfaceContainerLowBrush}"
                                         CornerRadius="{StaticResource DefaultCornerRadius}"
                                         Padding="20">
                                         <StackPanel Spacing="8">
                                             <Grid ColumnDefinitions="*,Auto">
-                                                <Border Classes="shimmer-line" Height="16" Width="200" HorizontalAlignment="Left" />
-                                                <Border Grid.Column="1" Classes="shimmer-line" Height="11" Width="70" />
+                                                <Border
+                                                    Classes="shimmer-line"
+                                                    Height="16"
+                                                    HorizontalAlignment="Left"
+                                                    Width="200" />
+                                                <Border
+                                                    Classes="shimmer-line"
+                                                    Grid.Column="1"
+                                                    Height="11"
+                                                    Width="70" />
                                             </Grid>
-                                            <Border Classes="shimmer-line" Height="13" Width="320" HorizontalAlignment="Left" />
-                                            <Border Classes="shimmer-line" Height="14" Width="80" HorizontalAlignment="Left" />
+                                            <Border
+                                                Classes="shimmer-line"
+                                                Height="13"
+                                                HorizontalAlignment="Left"
+                                                Width="320" />
+                                            <Border
+                                                Classes="shimmer-line"
+                                                Height="14"
+                                                HorizontalAlignment="Left"
+                                                Width="80" />
                                         </StackPanel>
                                     </Border>
                                     <Border
@@ -361,11 +403,27 @@
                                         Padding="20">
                                         <StackPanel Spacing="8">
                                             <Grid ColumnDefinitions="*,Auto">
-                                                <Border Classes="shimmer-line" Height="16" Width="160" HorizontalAlignment="Left" />
-                                                <Border Grid.Column="1" Classes="shimmer-line" Height="11" Width="60" />
+                                                <Border
+                                                    Classes="shimmer-line"
+                                                    Height="16"
+                                                    HorizontalAlignment="Left"
+                                                    Width="160" />
+                                                <Border
+                                                    Classes="shimmer-line"
+                                                    Grid.Column="1"
+                                                    Height="11"
+                                                    Width="60" />
                                             </Grid>
-                                            <Border Classes="shimmer-line" Height="13" Width="280" HorizontalAlignment="Left" />
-                                            <Border Classes="shimmer-line" Height="14" Width="90" HorizontalAlignment="Left" />
+                                            <Border
+                                                Classes="shimmer-line"
+                                                Height="13"
+                                                HorizontalAlignment="Left"
+                                                Width="280" />
+                                            <Border
+                                                Classes="shimmer-line"
+                                                Height="14"
+                                                HorizontalAlignment="Left"
+                                                Width="90" />
                                         </StackPanel>
                                     </Border>
                                 </StackPanel>
@@ -382,13 +440,13 @@
                                                 <StackPanel Spacing="6">
                                                     <Grid ColumnDefinitions="*,Auto">
                                                         <TextBlock
-                                                            FontWeight="Bold"
+                                                            FontWeight="Normal"
                                                             Text="{Binding Title}"
                                                             TextWrapping="Wrap" />
                                                         <TextBlock
-                                                            Grid.Column="1"
                                                             FontSize="11"
                                                             Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                            Grid.Column="1"
                                                             Text="{Binding FormattedDate}" />
                                                     </Grid>
                                                     <TextBlock
@@ -437,9 +495,7 @@
                                     Command="{Binding ReviewPrevCommand}"
                                     Content="{x:Static lang:Resources.Profile_PreviousPage}"
                                     IsEnabled="{Binding CanReviewPrev}" />
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    Text="{Binding PaginationSummary}" />
+                                <TextBlock Text="{Binding PaginationSummary}" VerticalAlignment="Center" />
                                 <Button
                                     Classes="Secondary"
                                     Command="{Binding ReviewNextCommand}"

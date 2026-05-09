@@ -1,0 +1,90 @@
+<UserControl
+    d:DesignHeight="80"
+    d:DesignWidth="960"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Shops.Catalog.ShopsCatalogChipStripView"
+    x:DataType="shops:ShopsPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:cities="clr-namespace:CoffeePeek.Contract.Dtos.Internal;assembly=CoffeePeek.Contract"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:lang="clr-namespace:CoffeePeek.Client.App.Resources.Lang"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Panel Margin="20,20,20,0" x:Name="ChipStripHost">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <ListBox
+                Background="Transparent"
+                Classes="filter-chips"
+                ItemsSource="{Binding FilterChips}"
+                SelectedItem="{Binding SelectedFilterChip}"
+                SelectionMode="Single">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="shops:FilterChipViewModel">
+                        <Border Classes="filter-chip" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="14"
+                                FontWeight="Normal"
+                                Text="{Binding DisplayName}"
+                                VerticalAlignment="Center" />
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+
+        <Popup
+            IsLightDismissEnabled="True"
+            IsOpen="{Binding IsCityPopupOpen, Mode=TwoWay}"
+            Placement="BottomEdgeAlignedLeft"
+            PlacementTarget="{Binding #ChipStripHost}"
+            VerticalOffset="4">
+            <Border
+                Background="{DynamicResource SurfaceContainerLowBrush}"
+                BorderThickness="0"
+                CornerRadius="{StaticResource DefaultCornerRadius}"
+                MaxHeight="280"
+                MaxWidth="360"
+                MinWidth="220"
+                Padding="0,8">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock
+                        Classes="Label"
+                        Grid.Row="0"
+                        Margin="16,0,16,8"
+                        Text="{x:Static lang:Resources.ShopPage_CityPopupTitle}" />
+                    <ScrollViewer Grid.Row="1" MaxHeight="220">
+                        <ItemsControl ItemsSource="{Binding Cities}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="cities:CityDto">
+                                    <Button
+                                        Classes="Transparent"
+                                        Command="{Binding $parent[ItemsControl].DataContext.SelectCityCommand}"
+                                        CommandParameter="{Binding}"
+                                        CornerRadius="0"
+                                        Foreground="{DynamicResource OnSurfaceBrush}"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        MinHeight="48"
+                                        Padding="16,12">
+                                        <Button.Styles>
+                                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                                <Setter Property="Background" Value="{DynamicResource SurfaceContainerBrush}" />
+                                            </Style>
+                                        </Button.Styles>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Popup>
+    </Panel>
+</UserControl>
