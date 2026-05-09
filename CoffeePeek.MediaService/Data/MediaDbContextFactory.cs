@@ -18,9 +18,11 @@ public class MediaDbContextFactory : IDesignTimeDbContextFactory<MediaDbContext>
 
         var connectionString = configuration.GetSection("PostgresCpOptions:ConnectionString").Value;
 
+        // Design-time fallback for `dotnet ef` when PostgresCpOptions is not configured (runtime uses DI).
         if (string.IsNullOrEmpty(connectionString))
         {
-            throw new InvalidOperationException("ConnectionString not found in environment variables.");
+            connectionString =
+                "Host=127.0.0.1;Port=5432;Database=ef_design_time;Username=postgres;Password=postgres";
         }
 
         optionsBuilder.UseNpgsql(connectionString);

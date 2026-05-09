@@ -1,6 +1,5 @@
 using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Moderation.Domain.Entities;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using ModerationReview = CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate.ModerationReview;
 using ModerationShop = CoffeePeek.Moderation.Domain.Aggregates.ModerationShop;
