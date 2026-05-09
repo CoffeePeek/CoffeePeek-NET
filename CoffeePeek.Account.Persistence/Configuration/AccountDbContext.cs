@@ -2,7 +2,6 @@
 using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Account.Persistence.Configuration;
