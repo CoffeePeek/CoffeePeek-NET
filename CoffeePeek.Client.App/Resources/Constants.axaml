@@ -1,5 +1,5 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!--  Design-system radii: small 8px / 0.5rem, default 16px / 1rem, large 32px / 2rem, super 48px / 3rem.  -->
+    <!--  Design-system radii (design spec): button 12px | input 26px | card 16px | large 32px | pill 9999px  -->
     <Thickness x:Key="DefaultThickness">0.6</Thickness>
     <Thickness x:Key="TextBoxBorderThickness">1</Thickness>
 
@@ -8,9 +8,11 @@
 
     <Thickness x:Key="DefaultPadding">8</Thickness>
 
-    <CornerRadius x:Key="SuperLargeRadius">48</CornerRadius>
-    <CornerRadius x:Key="LargeRadius">32</CornerRadius>
+    <CornerRadius x:Key="ButtonCornerRadius">12</CornerRadius>
+    <CornerRadius x:Key="InputCornerRadius">26</CornerRadius>
     <CornerRadius x:Key="DefaultCornerRadius">16</CornerRadius>
-    <CornerRadius x:Key="SmallCornerRadius">8</CornerRadius>
+    <CornerRadius x:Key="LargeRadius">24</CornerRadius>
+    <CornerRadius x:Key="SuperLargeRadius">32</CornerRadius>
     <CornerRadius x:Key="PillRadius">9999</CornerRadius>
+    <CornerRadius x:Key="SmallCornerRadius">8</CornerRadius>
 </ResourceDictionary>
