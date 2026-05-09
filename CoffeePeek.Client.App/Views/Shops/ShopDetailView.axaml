@@ -5,6 +5,7 @@
     x:Class="CoffeePeek.Client.App.Views.Shops.ShopDetailView"
     x:DataType="shops:ShopDetailViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:controls="clr-namespace:CoffeePeek.Client.App.Controls"
     xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -33,6 +34,13 @@
         </Border>
 
         <Grid Grid.Row="1">
+            <!-- Goo Trio centered while loading -->
+            <controls:GooTrioLoader
+                HorizontalAlignment="Center"
+                IsVisible="{Binding IsLoading}"
+                VerticalAlignment="Center"
+                ZIndex="1" />
+
             <ScrollViewer
                 HorizontalScrollBarVisibility="Disabled"
                 IsVisible="{Binding IsLoading}">
@@ -405,10 +413,23 @@
                                         <Button
                                             Classes="Primary"
                                             Command="{Binding SubmitReviewCommand}"
-                                            Content="{Binding [ShopDetail_SubmitReview], Source={x:Static loc:Loc.Instance}}"
                                             HorizontalAlignment="Left"
                                             IsEnabled="{Binding !IsSubmittingReview}"
-                                            Padding="14,8" />
+                                            Padding="14,8">
+                                            <Panel MinWidth="100">
+                                                <TextBlock
+                                                    HorizontalAlignment="Center"
+                                                    IsVisible="{Binding !IsSubmittingReview}"
+                                                    Text="{Binding [ShopDetail_SubmitReview], Source={x:Static loc:Loc.Instance}}"
+                                                    VerticalAlignment="Center" />
+                                                <controls:WobbleRingLoader
+                                                    Height="18"
+                                                    HorizontalAlignment="Center"
+                                                    IsVisible="{Binding IsSubmittingReview}"
+                                                    VerticalAlignment="Center"
+                                                    Width="18" />
+                                            </Panel>
+                                        </Button>
                                     </StackPanel>
                                 </Border>
 

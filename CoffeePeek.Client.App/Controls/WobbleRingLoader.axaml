@@ -1,0 +1,28 @@
+<UserControl
+    x:Class="CoffeePeek.Client.App.Controls.WobbleRingLoader"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Wobble Ring loader — a spinning arc with organic feel.
+        Inspired by loader 11 "Wobble ring" from the CoffeePeek organic-loaders design.
+        Sized to the parent via Width/Height; defaults to 20×20 for inline button use.
+        The arc covers ~75 % of the circle circumference (StrokeDashArray = 3π/4 · r · 2 ≈ ratio).
+    -->
+    <Canvas
+        Width="{Binding $parent[UserControl].Width}"
+        Height="{Binding $parent[UserControl].Height}"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center">
+
+        <Ellipse
+            Classes="wobble-ring"
+            Height="{Binding $parent[Canvas].Height}"
+            Stroke="{DynamicResource PrimaryBrush}"
+            StrokeDashArray="56,19"
+            StrokeLineCap="Round"
+            StrokeThickness="2.5"
+            Width="{Binding $parent[Canvas].Width}" />
+
+    </Canvas>
+</UserControl>

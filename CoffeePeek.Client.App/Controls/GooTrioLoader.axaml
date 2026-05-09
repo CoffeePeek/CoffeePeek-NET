@@ -1,0 +1,44 @@
+<UserControl
+    x:Class="CoffeePeek.Client.App.Controls.GooTrioLoader"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Goo Trio loader — three organic blobs orbiting each other.
+        Inspired by loader 02 "Goo trio" from the CoffeePeek organic-loaders design.
+        160×160 canvas: blobs translate ±44 px horizontally (1,2) and ±28 px vertically (3).
+    -->
+    <Canvas Width="160" Height="160">
+
+        <!-- Blob 1: gold, moves left → right -->
+        <Ellipse
+            Canvas.Left="4"
+            Canvas.Top="48"
+            Classes="goo-blob-1"
+            Fill="{DynamicResource PrimaryBrush}"
+            Height="64"
+            Opacity="0.92"
+            Width="64" />
+
+        <!-- Blob 2: warm amber, moves right → left -->
+        <Ellipse
+            Canvas.Left="92"
+            Canvas.Top="48"
+            Classes="goo-blob-2"
+            Fill="{DynamicResource PrimaryContainerBrush}"
+            Height="64"
+            Opacity="0.75"
+            Width="64" />
+
+        <!-- Blob 3: light amber, moves down → up -->
+        <Ellipse
+            Canvas.Left="60"
+            Canvas.Top="88"
+            Classes="goo-blob-3"
+            Fill="{DynamicResource PrimaryHoverBrush}"
+            Height="40"
+            Opacity="0.6"
+            Width="40" />
+
+    </Canvas>
+</UserControl>

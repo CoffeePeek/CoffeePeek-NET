@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.2.1] - 2026-05-09
+
+### Added
+
+- **Goo Trio loader (02)** — organic three-blob loading animation added to all loading pages: shop catalog, shop detail, and user profile. Blobs oscillate in gold/amber palette using CSS-style Canvas animations.
+- **Wobble Ring loader (11)** — compact spinning arc shown inside buttons during async operations. Applied to: Submit Review, Save Profile, and Login buttons. Replaces the generic ProgressBar with a themed organic spinner.
+- `Controls/GooTrioLoader` and `Controls/WobbleRingLoader` — reusable Avalonia `UserControl`s for page-level and inline button loading states.
+- `Resources/Styles/LoaderStyles.axaml` — shared animation styles for both loaders, registered globally in `App.axaml`.
+
+### Fixed
+
+- `ILocalizationService`, `LocalizationService`, `Loc` singleton, and `ApplyPersistedLanguageExecutor` — missing implementations that caused build failure.
+- `GetAllModerationReviewsResultDto.Reviews` renamed to `ReviewDtos`; redundant `[JsonPropertyName]` removed.
+- `GetAllModerationShopsResultDto.ModerationShop` and server `GetAllModerationShopsResponse` renamed to `ModerationShops` (plural).
+- `ChangeReviewStatusAsync` renamed to `UpdateReviewStatusAsync` for consistent verb usage across the moderation client.
+- `ClientSession.SetAccessToken` / `Clear` — made thread-safe with `lock` and `Volatile.Read`.
+- `JwtRoleParser.CollectRolesFrom` — uses `HashSet<string>` to deduplicate roles from both claim name variants.
+- `ShopDetailViewModelTests` updated to match updated constructor signature (`HttpClient`, `ApiOptions`).
+
 ## [Unreleased]
 
 ### Added
