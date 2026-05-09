@@ -483,10 +483,10 @@
                                                                 VerticalAlignment="Center" />
                                                             <Button
                                                                 Classes="Secondary"
-                                                                Command="{Binding $parent[UserControl].DataContext.(shops:ShopDetailViewModel.DeleteReviewCommand)}"
+                                                                Command="{Binding $parent[UserControl].((shops:ShopDetailViewModel)DataContext).DeleteReviewCommand}"
                                                                 CommandParameter="{Binding .}"
                                                                 Content="{x:Static lang:Resources.ShopDetail_DeleteReview}"
-                                                                IsEnabled="{Binding !$parent[UserControl].DataContext.(shops:ShopDetailViewModel.IsDeletingReview)}"
+                                                                IsEnabled="{Binding !$parent[UserControl].((shops:ShopDetailViewModel)DataContext).IsDeletingReview}"
                                                                 IsVisible="{Binding IsOwnReview}"
                                                                 Padding="10,3" />
                                                         </StackPanel>
