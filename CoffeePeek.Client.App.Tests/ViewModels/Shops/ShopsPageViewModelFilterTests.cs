@@ -72,12 +72,14 @@ public class ShopsPageViewModelFilterTests
                 BrewMethods = [new BrewMethodDto { Id = Guid.NewGuid(), Name = "Pour Over" }]
             }));
 
+        var layoutMock = new Mock<ILayoutBreakpointService>();
         return new ShopsPageViewModel(
             _shopsClientMock.Object,
             _catalogsClientMock.Object,
             _navigatorMock.Object,
             new HttpClient(),
-            new ApiOptions { BaseAddress = "https://localhost/" });
+            new ApiOptions { BaseAddress = "https://localhost/" },
+            layoutMock.Object);
     }
 
     [Fact]

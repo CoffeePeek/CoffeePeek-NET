@@ -43,10 +43,16 @@ public partial class UserProfileViewModel : ViewModelBase
             if (e.PropertyName != nameof(ILayoutBreakpointService.IsCompact))
                 return;
 
+            OnPropertyChanged(nameof(IsCompact));
+            OnPropertyChanged(nameof(ProfileAvatarSize));
+            OnPropertyChanged(nameof(ProfileAvatarCornerRadius));
+            OnPropertyChanged(nameof(ProfileHeaderSpacing));
             OnPropertyChanged(nameof(ProfileHeaderPadding));
             OnPropertyChanged(nameof(ProfileStatsSectionMargin));
             OnPropertyChanged(nameof(ProfileReviewsSectionMargin));
             OnPropertyChanged(nameof(ProfileEditFormHorizontalMargin));
+            OnPropertyChanged(nameof(ProfileStatsColumnSpacing));
+            OnPropertyChanged(nameof(ProfileStatCardPadding));
         };
     }
 
@@ -57,6 +63,14 @@ public partial class UserProfileViewModel : ViewModelBase
     private IUserIdentityAccessor IdentityAccessor { get; }
     private IImagePickerService ImagePickerService { get; }
     private ILayoutBreakpointService LayoutBreakpoints { get; }
+
+    public bool IsCompact => LayoutBreakpoints.IsCompact;
+
+    public double ProfileAvatarSize => LayoutBreakpoints.IsCompact ? 72 : 128;
+    public double ProfileAvatarCornerRadius => LayoutBreakpoints.IsCompact ? 36 : 64;
+    public int ProfileHeaderSpacing => LayoutBreakpoints.IsCompact ? 16 : 32;
+    public int ProfileStatsColumnSpacing => LayoutBreakpoints.IsCompact ? 8 : 20;
+    public Thickness ProfileStatCardPadding => LayoutBreakpoints.IsCompact ? new Thickness(12, 16) : new Thickness(24);
 
     public Thickness ProfileHeaderPadding =>
         LayoutBreakpoints.IsCompact ? new Thickness(24, 28) : new Thickness(48, 40);

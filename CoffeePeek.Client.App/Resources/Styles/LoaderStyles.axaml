@@ -79,29 +79,9 @@
     </Style>
 
     <!--
-        ═══════════════════════════════════════════════════════
-        WOBBLE RING LOADER (11) — spinning partial arc
-        StrokeDashArray="56,19" shows ~75 % of the arc for a 20×20 ring.
-        RotateTransform animates from 0° → 360° in 1.6 s with easing.
-        ═══════════════════════════════════════════════════════
+        WOBBLE RING LOADER (11) — rotation is driven by DispatcherTimer in
+        WobbleRingLoader.axaml.cs because Avalonia has no built-in animator
+        for RenderTransform. No style needed here.
     -->
-    <!-- Rotate via RotateTransform.Angle — RenderTransform itself cannot be keyframe-animated in Avalonia. -->
-    <Style Selector="Ellipse.wobble-ring">
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-        <Style.Animations>
-            <Animation
-                Duration="0:0:1.6"
-                Easing="CubicEaseInOut"
-                FillMode="Both"
-                IterationCount="INFINITE">
-                <KeyFrame Cue="0%">
-                    <Setter Property="RotateTransform.Angle" Value="0" />
-                </KeyFrame>
-                <KeyFrame Cue="100%">
-                    <Setter Property="RotateTransform.Angle" Value="360" />
-                </KeyFrame>
-            </Animation>
-        </Style.Animations>
-    </Style>
 
 </Styles>
