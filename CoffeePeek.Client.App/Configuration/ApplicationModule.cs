@@ -6,6 +6,7 @@ using CoffeePeek.Client.App.Startup;
 using CoffeePeek.Client.App.ViewModels;
 using CoffeePeek.Client.App.ViewModels.Abstract;
 using CoffeePeek.Client.App.ViewModels.Home;
+using CoffeePeek.Client.App.ViewModels.Mobile;
 using CoffeePeek.Client.App.ViewModels.Shops;
 using CoffeePeek.Client.App.ViewModels.WelcomeFlow.Auth;
 using CoffeePeek.Client.App.ViewModels.WelcomeFlow.Welcome;
@@ -42,6 +43,7 @@ public class ApplicationModule : Module
             .SingleInstance();
 
         builder.RegisterType<MainViewModel>().AsSelf().SingleInstance();
+        builder.RegisterType<MobileShellViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<HeaderViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<UserProfileViewModel>().AsSelf().SingleInstance();
         builder.RegisterType<WorkspaceViewModel>().AsSelf().SingleInstance();

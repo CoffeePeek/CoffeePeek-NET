@@ -4,7 +4,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using CoffeePeek.Client.App.Core.Execution;
 using CoffeePeek.Client.App.ViewModels;
+using CoffeePeek.Client.App.ViewModels.Mobile;
 using CoffeePeek.Client.App.Views;
+using CoffeePeek.Client.App.Views.Mobile;
 
 namespace CoffeePeek.Client.App;
 
@@ -18,12 +20,12 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
         _container = Bootstrapper.BuildContainer();
-        _container.Resolve<IApplicationExecutorRunner>().RunAfterInitAsync().GetAwaiter().GetResult();
+        _ = _container.Resolve<IApplicationExecutorRunner>().RunAfterInitAsync();
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
-        _container.Resolve<IApplicationExecutorRunner>().RunBeforeMainShellAsync().GetAwaiter().GetResult();
+        _ = _container.Resolve<IApplicationExecutorRunner>().RunBeforeMainShellAsync();
 
         var mainViewModel = _container.Resolve<MainViewModel>();
 
@@ -36,15 +38,20 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleView)
         {
-            var mainView = new MainView { DataContext = mainViewModel };
-            // Android: inset from system bars / notch; keyboard handled by MainActivity (AdjustResize).
             if (OperatingSystem.IsAndroid())
-                mainView.Padding = new Thickness(12, 28, 12, 12);
-            singleView.MainView = mainView;
+            {
+                var mobileRoot = new MobileRootView { DataContext = mainViewModel };
+                mobileRoot.SetMobileShellViewModel(_container.Resolve<MobileShellViewModel>());
+                singleView.MainView = mobileRoot;
+            }
+            else
+            {
+                singleView.MainView = new MainView { DataContext = mainViewModel };
+            }
         }
 
         base.OnFrameworkInitializationCompleted();
 
-        _container.Resolve<IApplicationExecutorRunner>().RunAfterStartupAsync().GetAwaiter().GetResult();
+        _ = _container.Resolve<IApplicationExecutorRunner>().RunAfterStartupAsync();
     }
 }

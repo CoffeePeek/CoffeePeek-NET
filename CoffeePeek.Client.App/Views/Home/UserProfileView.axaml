@@ -64,11 +64,11 @@
                         Spacing="32">
                         <Grid
                             ColumnDefinitions="*,*,*"
-                            ColumnSpacing="{Binding ProfileStatsColumnSpacing}">
+                            ColumnSpacing="20">
                             <Border
                                 Background="{DynamicResource SurfaceContainerLowBrush}"
                                 CornerRadius="{StaticResource DefaultCornerRadius}"
-                                Padding="{Binding ProfileStatCardPadding}">
+                                Padding="24">
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
                                     <Border
                                         Classes="shimmer-line"
@@ -86,7 +86,7 @@
                                 Background="{DynamicResource SurfaceContainerLowBrush}"
                                 CornerRadius="{StaticResource DefaultCornerRadius}"
                                 Grid.Column="1"
-                                Padding="{Binding ProfileStatCardPadding}">
+                                Padding="24">
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
                                     <Border
                                         Classes="shimmer-line"
@@ -104,7 +104,7 @@
                                 Background="{DynamicResource SurfaceContainerLowBrush}"
                                 CornerRadius="{StaticResource DefaultCornerRadius}"
                                 Grid.Column="2"
-                                Padding="{Binding ProfileStatCardPadding}">
+                                Padding="24">
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
                                     <Border
                                         Classes="shimmer-line"
@@ -153,13 +153,13 @@
                             HorizontalAlignment="Stretch"
                             MaxWidth="960"
                             Orientation="Horizontal"
-                            Spacing="{Binding ProfileHeaderSpacing}">
+                            Spacing="32">
                             <Border
                                 BorderThickness="0"
                                 ClipToBounds="True"
-                                CornerRadius="{Binding ProfileAvatarCornerRadius}"
-                                Height="{Binding ProfileAvatarSize}"
-                                Width="{Binding ProfileAvatarSize}">
+                                CornerRadius="64"
+                                Height="128"
+                                Width="128">
                                 <Panel>
                                     <Image
                                         IsVisible="{Binding HasAvatar}"
@@ -167,7 +167,7 @@
                                         Stretch="UniformToFill" />
                                     <Border Background="{DynamicResource PrimaryGradientBrush}" IsVisible="{Binding !HasAvatar}">
                                         <TextBlock
-                                            FontSize="36"
+                                            FontSize="48"
                                             FontWeight="Normal"
                                             Foreground="{DynamicResource OnPrimaryBrush}"
                                             HorizontalAlignment="Center"
@@ -321,12 +321,12 @@
                         Spacing="32">
                         <Grid
                             ColumnDefinitions="*,*,*"
-                            ColumnSpacing="{Binding ProfileStatsColumnSpacing}">
+                            ColumnSpacing="20">
                             <Border
                                 Background="{DynamicResource SurfaceContainerLowBrush}"
                                 BorderThickness="0"
                                 CornerRadius="{StaticResource DefaultCornerRadius}"
-                                Padding="{Binding ProfileStatCardPadding}">
+                                Padding="24">
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
                                     <TextBlock
                                         FontSize="32"
@@ -345,7 +345,7 @@
                                 BorderThickness="0"
                                 CornerRadius="{StaticResource DefaultCornerRadius}"
                                 Grid.Column="1"
-                                Padding="{Binding ProfileStatCardPadding}">
+                                Padding="24">
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
                                     <TextBlock
                                         FontSize="32"
@@ -364,7 +364,7 @@
                                 BorderThickness="0"
                                 CornerRadius="{StaticResource DefaultCornerRadius}"
                                 Grid.Column="2"
-                                Padding="{Binding ProfileStatCardPadding}">
+                                Padding="24">
                                 <StackPanel HorizontalAlignment="Center" Spacing="8">
                                     <TextBlock
                                         FontSize="32"

@@ -1,0 +1,305 @@
+<UserControl
+    d:DesignHeight="812"
+    d:DesignWidth="375"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Mobile.MobileShopDetailView"
+    x:DataType="shops:ShopDetailViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:controls="clr-namespace:CoffeePeek.Client.App.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid
+        Background="{DynamicResource SurfaceBrush}"
+        RowDefinitions="Auto,*">
+
+        <!-- Top navigation bar -->
+        <Border
+            Grid.Row="0"
+            Background="{DynamicResource SurfaceContainerLowBrush}"
+            Padding="4,8">
+            <Button
+                Classes="Transparent"
+                Command="{Binding GoBackCommand}"
+                HorizontalAlignment="Left"
+                Padding="8,6">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock
+                        FontSize="18"
+                        Text="←"
+                        VerticalAlignment="Center" />
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="{DynamicResource OnSurfaceBrush}"
+                        Text="{Binding [Common_Back], Source={x:Static loc:Loc.Instance}}"
+                        VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </Border>
+
+        <!-- Scrollable content -->
+        <ScrollViewer
+            Grid.Row="1"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="0">
+
+                <!-- Hero image + loading overlay -->
+                <Panel Height="240">
+                    <Border ClipToBounds="True" Height="240">
+                        <Panel>
+                            <Border Background="{DynamicResource CardToneGradientBrush}" />
+                            <Image
+                                IsVisible="{Binding HasHeroImage}"
+                                Source="{Binding CoverBitmap}"
+                                Stretch="UniformToFill" />
+                        </Panel>
+                    </Border>
+                    <controls:GooTrioLoader
+                        HorizontalAlignment="Center"
+                        IsVisible="{Binding IsLoading}"
+                        VerticalAlignment="Center" />
+                </Panel>
+
+                <!-- Main content (hidden while loading) -->
+                <StackPanel
+                    IsVisible="{Binding !IsLoading}"
+                    Margin="16,16,16,24"
+                    Spacing="12">
+
+                    <!-- Name + status badges -->
+                    <WrapPanel Orientation="Horizontal">
+                        <TextBlock
+                            FontSize="22"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource OnSurfaceBrush}"
+                            Margin="0,0,8,4"
+                            Text="{Binding Name}"
+                            TextWrapping="Wrap"
+                            VerticalAlignment="Center" />
+                        <Border
+                            Background="{DynamicResource PrimaryBrush}"
+                            CornerRadius="{StaticResource PillRadius}"
+                            IsVisible="{Binding IsOpen}"
+                            Margin="0,0,6,4"
+                            Padding="8,4"
+                            VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="11"
+                                Foreground="{DynamicResource OnPrimaryBrush}"
+                                Text="{Binding [ShopDetail_Open], Source={x:Static loc:Loc.Instance}}" />
+                        </Border>
+                        <Border
+                            Background="{DynamicResource SurfaceContainerBrush}"
+                            CornerRadius="{StaticResource PillRadius}"
+                            IsVisible="{Binding IsNew}"
+                            Margin="0,0,0,4"
+                            Padding="8,4"
+                            VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="11"
+                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                Text="{Binding [ShopPage_Trending], Source={x:Static loc:Loc.Instance}}" />
+                        </Border>
+                    </WrapPanel>
+
+                    <!-- Address / location line -->
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        Text="{Binding QuickAddressLine}" />
+
+                    <!-- Rating row -->
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="{DynamicResource PrimaryBrush}"
+                            Text="★"
+                            VerticalAlignment="Center" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="{DynamicResource OnSurfaceBrush}"
+                            Text="{Binding RatingLabel}"
+                            VerticalAlignment="Center" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            Text="·"
+                            VerticalAlignment="Center" />
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            Text="{Binding ReviewCount}"
+                            VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Description -->
+                    <Border
+                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                        IsVisible="{Binding HasDescription}"
+                        Padding="16">
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                            LineHeight="22"
+                            Text="{Binding Description}"
+                            TextWrapping="Wrap" />
+                    </Border>
+
+                    <!-- Error banner -->
+                    <Border
+                        Background="{DynamicResource AuthErrorBackgroundBrush}"
+                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                        IsVisible="{Binding HasError}"
+                        Padding="12,8">
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="{DynamicResource AuthErrorForegroundBrush}"
+                            Text="{Binding ErrorMessage}"
+                            TextWrapping="Wrap" />
+                    </Border>
+
+                    <!-- Reviews section heading -->
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource OnSurfaceBrush}"
+                        Text="{Binding [ShopDetail_Reviews], Source={x:Static loc:Loc.Instance}}" />
+
+                    <!-- Write review form -->
+                    <Border
+                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                        IsVisible="{Binding CanCreateReview}"
+                        Padding="16">
+                        <StackPanel Spacing="12">
+
+                            <!-- Score pickers -->
+                            <Grid
+                                ColumnDefinitions="*,*,*"
+                                ColumnSpacing="8">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock
+                                        FontSize="12"
+                                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                        Text="{Binding [ShopDetail_RatingPlace], Source={x:Static loc:Loc.Instance}}" />
+                                    <ComboBox
+                                        HorizontalAlignment="Stretch"
+                                        ItemsSource="{Binding ScoreOptions}"
+                                        SelectedItem="{Binding PlaceScore}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <TextBlock
+                                        FontSize="12"
+                                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                        Text="{Binding [ShopDetail_RatingService], Source={x:Static loc:Loc.Instance}}" />
+                                    <ComboBox
+                                        HorizontalAlignment="Stretch"
+                                        ItemsSource="{Binding ScoreOptions}"
+                                        SelectedItem="{Binding ServiceScore}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Spacing="4">
+                                    <TextBlock
+                                        FontSize="12"
+                                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                        Text="{Binding [ShopDetail_RatingCoffee], Source={x:Static loc:Loc.Instance}}" />
+                                    <ComboBox
+                                        HorizontalAlignment="Stretch"
+                                        ItemsSource="{Binding ScoreOptions}"
+                                        SelectedItem="{Binding CoffeeScore}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Comment input -->
+                            <TextBox
+                                AcceptsReturn="True"
+                                MinHeight="80"
+                                PlaceholderText="{Binding [ShopDetail_ReviewCommentPlaceholder], Source={x:Static loc:Loc.Instance}}"
+                                Text="{Binding NewReviewComment}"
+                                TextWrapping="Wrap" />
+
+                            <!-- Submit button -->
+                            <Button
+                                Command="{Binding SubmitReviewCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                IsEnabled="{Binding !IsSubmittingReview}"
+                                Padding="14,10">
+                                <Panel MinHeight="20">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        IsVisible="{Binding !IsSubmittingReview}"
+                                        Text="{Binding [ShopDetail_SubmitReview], Source={x:Static loc:Loc.Instance}}"
+                                        VerticalAlignment="Center" />
+                                    <controls:WobbleRingLoader
+                                        Height="18"
+                                        HorizontalAlignment="Center"
+                                        IsVisible="{Binding IsSubmittingReview}"
+                                        VerticalAlignment="Center"
+                                        Width="18" />
+                                </Panel>
+                            </Button>
+
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Review list -->
+                    <ItemsControl
+                        IsVisible="{Binding HasReviewItems}"
+                        ItemsSource="{Binding Reviews}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="shops:ShopReviewViewModel">
+                                <Border
+                                    Background="{DynamicResource SurfaceContainerLowBrush}"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                    Margin="0,0,0,8"
+                                    Padding="16">
+                                    <StackPanel Spacing="6">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock
+                                                FontSize="15"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                                Text="{Binding Header}"
+                                                TextWrapping="Wrap" />
+                                            <TextBlock
+                                                FontSize="11"
+                                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                Grid.Column="1"
+                                                Text="{Binding DateLabel}"
+                                                VerticalAlignment="Top" />
+                                        </Grid>
+                                        <TextBlock
+                                            FontSize="12"
+                                            Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                            Text="{Binding Username}" />
+                                        <TextBlock
+                                            FontSize="13"
+                                            Foreground="{DynamicResource OnSurfaceBrush}"
+                                            IsVisible="{Binding HasComment}"
+                                            Text="{Binding Comment}"
+                                            TextWrapping="Wrap" />
+                                        <Button
+                                            Classes="Secondary"
+                                            Command="{Binding $parent[UserControl].((shops:ShopDetailViewModel)DataContext).DeleteReviewCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Content="{Binding [ShopDetail_DeleteReview], Source={x:Static loc:Loc.Instance}}"
+                                            IsVisible="{Binding IsOwnReview}"
+                                            Padding="10,4" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+</UserControl>

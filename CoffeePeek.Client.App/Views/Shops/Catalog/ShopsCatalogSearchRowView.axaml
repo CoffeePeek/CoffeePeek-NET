@@ -52,7 +52,6 @@
             Command="{Binding OpenSuggestShopCommand}"
             Content="{Binding [ShopPage_SuggestShop], Source={x:Static loc:Loc.Instance}}"
             Grid.Column="1"
-            IsVisible="{Binding !IsCompact}"
             VerticalAlignment="Center" />
     </Grid>
 </UserControl>

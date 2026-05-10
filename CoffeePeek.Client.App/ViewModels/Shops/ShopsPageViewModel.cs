@@ -24,7 +24,6 @@ public partial class ShopsPageViewModel : ViewModelBase
     private readonly IWorkspaceShellNavigator _shellNavigator;
     private readonly HttpClient _httpClient;
     private readonly ApiOptions _apiOptions;
-    private readonly ILayoutBreakpointService _layoutBreakpoints;
     private readonly CatalogFilterGroupViewModel _beanFilters = new(Lang.ShopPage_FilterBeans);
     private readonly CatalogFilterGroupViewModel _roasterFilters = new(Lang.ShopPage_FilterRoasters);
     private readonly CatalogFilterGroupViewModel _brewMethodFilters = new(Lang.ShopPage_FilterBrewMethods);
@@ -45,21 +44,13 @@ public partial class ShopsPageViewModel : ViewModelBase
         IWebCatalogsClient catalogsClient,
         IWorkspaceShellNavigator shellNavigator,
         HttpClient httpClient,
-        ApiOptions apiOptions,
-        ILayoutBreakpointService layoutBreakpoints)
+        ApiOptions apiOptions)
     {
         _shopsClient = shopsClient;
         _catalogsClient = catalogsClient;
         _shellNavigator = shellNavigator;
         _httpClient = httpClient;
         _apiOptions = apiOptions;
-        _layoutBreakpoints = layoutBreakpoints;
-
-        layoutBreakpoints.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == nameof(ILayoutBreakpointService.IsCompact))
-                OnPropertyChanged(nameof(IsCompact));
-        };
 
         foreach (var group in new[] { _beanFilters, _roasterFilters, _brewMethodFilters, _equipmentFilters })
         {
@@ -92,8 +83,6 @@ public partial class ShopsPageViewModel : ViewModelBase
 
     [ObservableProperty]
     public partial string? ErrorMessage { get; set; }
-
-    public bool IsCompact => _layoutBreakpoints.IsCompact;
 
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 

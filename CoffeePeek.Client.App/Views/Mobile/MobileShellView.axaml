@@ -1,0 +1,371 @@
+<UserControl
+    d:DesignHeight="812"
+    d:DesignWidth="375"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Mobile.MobileShellView"
+    x:CompileBindings="False"
+    x:DataType="mobile:MobileShellViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mobile="clr-namespace:CoffeePeek.Client.App.ViewModels.Mobile"
+    xmlns:mobileViews="clr-namespace:CoffeePeek.Client.App.Views.Mobile"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Content area -->
+        <Panel Grid.Row="0">
+
+            <!-- Catalog -->
+            <Border IsVisible="{Binding IsCatalogVisible}">
+                <mobileViews:MobileShopsListView DataContext="{Binding Workspace.ShopPage}" />
+            </Border>
+
+            <!-- Near Me placeholder -->
+            <Border IsVisible="{Binding IsNearMePlaceholderVisible}">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Spacing="16"
+                    VerticalAlignment="Center">
+                    <TextBlock
+                        FontSize="48"
+                        HorizontalAlignment="Center"
+                        Text="☕" />
+                    <TextBlock
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource OnSurfaceBrush}"
+                        HorizontalAlignment="Center"
+                        Text="Near Me coming soon" />
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        HorizontalAlignment="Center"
+                        Text="We're working on location-based discovery"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <!-- Shop Detail -->
+            <Border IsVisible="{Binding IsShopDetailOpen}">
+                <mobileViews:MobileShopDetailView DataContext="{Binding Workspace.ShopDetail}" />
+            </Border>
+
+            <!-- User Profile (with back button from shell so no GoBackCommand needed on VM) -->
+            <Border IsVisible="{Binding IsProfileOpen}">
+                <Grid RowDefinitions="Auto,*">
+                    <Border
+                        Grid.Row="0"
+                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                        IsVisible="{Binding !Workspace.UserProfile.IsOwnProfile}"
+                        Padding="4,8">
+                        <Button
+                            Classes="Transparent"
+                            Command="{Binding SelectCatalogCommand}"
+                            HorizontalAlignment="Left"
+                            Padding="8,6">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock FontSize="18" Text="←" VerticalAlignment="Center" />
+                                <TextBlock
+                                    FontSize="14"
+                                    Foreground="{DynamicResource OnSurfaceBrush}"
+                                    Text="{Binding [Common_Back], Source={x:Static loc:Loc.Instance}}"
+                                    VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </Border>
+                    <mobileViews:MobileProfileView
+                        Grid.Row="1"
+                        DataContext="{Binding Workspace.UserProfile}" />
+                </Grid>
+            </Border>
+
+            <!-- Settings -->
+            <Border IsVisible="{Binding IsSettingsOpen}">
+                <ContentControl Content="{Binding Workspace.Settings}" />
+            </Border>
+
+            <!-- Moderation Panel -->
+            <Border IsVisible="{Binding IsModerationPanelOpen}">
+                <ContentControl Content="{Binding Workspace.ModerationPanel}" />
+            </Border>
+
+        </Panel>
+
+        <!-- Bottom navigation bar -->
+        <Border
+            Grid.Row="1"
+            Background="{DynamicResource SurfaceContainerLowBrush}"
+            BorderBrush="{DynamicResource OutlineVariantGhostBrush}"
+            BorderThickness="0,1,0,0"
+            MinHeight="60">
+            <Grid>
+
+                <!-- 3-tab layout (non-moderator) -->
+                <Grid
+                    ColumnDefinitions="*,*,*"
+                    IsVisible="{Binding !IsModerator}">
+
+                    <!-- Catalog tab -->
+                    <Button
+                        Grid.Column="0"
+                        Classes="Transparent"
+                        Command="{Binding SelectCatalogCommand}"
+                        HorizontalAlignment="Stretch"
+                        Padding="0,8">
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <!-- Active indicator dot -->
+                            <Border
+                                Background="{DynamicResource PrimaryBrush}"
+                                CornerRadius="2"
+                                Height="3"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsCatalogVisible}"
+                                Width="20" />
+                            <PathIcon
+                                Width="22"
+                                Height="22"
+                                Data="{StaticResource SearchIcon}"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsCatalogVisible}" />
+                            <PathIcon
+                                Width="22"
+                                Height="22"
+                                Data="{StaticResource SearchIcon}"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding !IsCatalogVisible}" />
+                            <TextBlock
+                                FontSize="11"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsCatalogVisible}"
+                                Text="{Binding [Header_Catalog], Source={x:Static loc:Loc.Instance}}" />
+                            <TextBlock
+                                FontSize="11"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding !IsCatalogVisible}"
+                                Text="{Binding [Header_Catalog], Source={x:Static loc:Loc.Instance}}" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Near Me tab -->
+                    <Button
+                        Grid.Column="1"
+                        Classes="Transparent"
+                        Command="{Binding SelectNearMeCommand}"
+                        HorizontalAlignment="Stretch"
+                        Padding="0,8">
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <Border
+                                Background="{DynamicResource PrimaryBrush}"
+                                CornerRadius="2"
+                                Height="3"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsNearMePlaceholderVisible}"
+                                Width="20" />
+                            <PathIcon
+                                Width="22"
+                                Height="22"
+                                Data="{StaticResource FiltersIcon}"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsNearMePlaceholderVisible}" />
+                            <PathIcon
+                                Width="22"
+                                Height="22"
+                                Data="{StaticResource FiltersIcon}"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding !IsNearMePlaceholderVisible}" />
+                            <TextBlock
+                                FontSize="11"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsNearMePlaceholderVisible}"
+                                Text="{Binding [Header_NearMe], Source={x:Static loc:Loc.Instance}}" />
+                            <TextBlock
+                                FontSize="11"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding !IsNearMePlaceholderVisible}"
+                                Text="{Binding [Header_NearMe], Source={x:Static loc:Loc.Instance}}" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Profile tab -->
+                    <Button
+                        Grid.Column="2"
+                        Classes="Transparent"
+                        Command="{Binding SelectProfileCommand}"
+                        HorizontalAlignment="Stretch"
+                        Padding="0,8">
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <Border
+                                Background="{DynamicResource PrimaryBrush}"
+                                CornerRadius="2"
+                                Height="3"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsProfileOpen}"
+                                Width="20" />
+                            <PathIcon
+                                Width="22"
+                                Height="22"
+                                Data="{StaticResource HeartIcon}"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsProfileOpen}" />
+                            <PathIcon
+                                Width="22"
+                                Height="22"
+                                Data="{StaticResource HeartIcon}"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding !IsProfileOpen}" />
+                            <TextBlock
+                                FontSize="11"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsProfileOpen}"
+                                Text="{Binding [Header_Profile], Source={x:Static loc:Loc.Instance}}" />
+                            <TextBlock
+                                FontSize="11"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding !IsProfileOpen}"
+                                Text="{Binding [Header_Profile], Source={x:Static loc:Loc.Instance}}" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <!-- 4-tab layout (moderator) -->
+                <Grid
+                    ColumnDefinitions="*,*,*,*"
+                    IsVisible="{Binding IsModerator}">
+
+                    <!-- Catalog tab -->
+                    <Button
+                        Grid.Column="0"
+                        Classes="Transparent"
+                        Command="{Binding SelectCatalogCommand}"
+                        HorizontalAlignment="Stretch"
+                        Padding="0,8">
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <PathIcon
+                                Width="20"
+                                Height="20"
+                                Data="{StaticResource SearchIcon}"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsCatalogVisible}" />
+                            <PathIcon
+                                Width="20"
+                                Height="20"
+                                Data="{StaticResource SearchIcon}"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding !IsCatalogVisible}" />
+                            <TextBlock
+                                FontSize="10"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                Text="{Binding [Header_Catalog], Source={x:Static loc:Loc.Instance}}" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Near Me tab -->
+                    <Button
+                        Grid.Column="1"
+                        Classes="Transparent"
+                        Command="{Binding SelectNearMeCommand}"
+                        HorizontalAlignment="Stretch"
+                        Padding="0,8">
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <PathIcon
+                                Width="20"
+                                Height="20"
+                                Data="{StaticResource FiltersIcon}"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center" />
+                            <TextBlock
+                                FontSize="10"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                Text="{Binding [Header_NearMe], Source={x:Static loc:Loc.Instance}}" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Profile tab -->
+                    <Button
+                        Grid.Column="2"
+                        Classes="Transparent"
+                        Command="{Binding SelectProfileCommand}"
+                        HorizontalAlignment="Stretch"
+                        Padding="0,8">
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <PathIcon
+                                Width="20"
+                                Height="20"
+                                Data="{StaticResource HeartIcon}"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsProfileOpen}" />
+                            <PathIcon
+                                Width="20"
+                                Height="20"
+                                Data="{StaticResource HeartIcon}"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding !IsProfileOpen}" />
+                            <TextBlock
+                                FontSize="10"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                Text="{Binding [Header_Profile], Source={x:Static loc:Loc.Instance}}" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Moderation tab -->
+                    <Button
+                        Grid.Column="3"
+                        Classes="Transparent"
+                        Command="{Binding SelectModerationCommand}"
+                        HorizontalAlignment="Stretch"
+                        Padding="0,8">
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <PathIcon
+                                Width="20"
+                                Height="20"
+                                Data="{StaticResource ArrowRightIcon}"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding IsModerationPanelOpen}" />
+                            <PathIcon
+                                Width="20"
+                                Height="20"
+                                Data="{StaticResource ArrowRightIcon}"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding !IsModerationPanelOpen}" />
+                            <TextBlock
+                                FontSize="10"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                Text="{Binding [Header_Moderation], Source={x:Static loc:Loc.Instance}}" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+</UserControl>

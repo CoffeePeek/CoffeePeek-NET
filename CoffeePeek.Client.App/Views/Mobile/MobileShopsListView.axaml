@@ -1,0 +1,117 @@
+<UserControl
+    d:DesignHeight="812"
+    d:DesignWidth="375"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Mobile.MobileShopsListView"
+    x:DataType="shops:ShopsPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:controls="clr-namespace:CoffeePeek.Client.App.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mobileViews="clr-namespace:CoffeePeek.Client.App.Views.Mobile"
+    xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Search bar -->
+        <Border
+            Grid.Row="0"
+            Margin="12,12,12,0">
+            <Panel>
+                <TextBox
+                    MinHeight="52"
+                    PlaceholderText="{Binding [ShopPage_SearchPlaceholder], Source={x:Static loc:Loc.Instance}}"
+                    Text="{Binding SearchQuery}"
+                    VerticalContentAlignment="Center" />
+                <PathIcon
+                    Width="18"
+                    Height="18"
+                    Data="{StaticResource SearchIcon}"
+                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                    HorizontalAlignment="Left"
+                    IsHitTestVisible="False"
+                    Margin="14,0,0,0"
+                    VerticalAlignment="Center" />
+            </Panel>
+        </Border>
+
+        <!-- Filter chips horizontal strip -->
+        <ScrollViewer
+            Grid.Row="1"
+            HorizontalScrollBarVisibility="Auto"
+            Margin="12,8,12,0"
+            VerticalScrollBarVisibility="Disabled">
+            <ListBox
+                ItemsSource="{Binding FilterChips}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="6" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+        </ScrollViewer>
+
+        <!-- Main content area -->
+        <Panel Grid.Row="2" Margin="0,8,0,0">
+
+            <!-- Loading spinner -->
+            <controls:GooTrioLoader
+                Height="160"
+                HorizontalAlignment="Center"
+                IsVisible="{Binding IsLoading}"
+                VerticalAlignment="Center"
+                Width="160" />
+
+            <!-- Error banner -->
+            <Border
+                Background="{DynamicResource AuthErrorBackgroundBrush}"
+                CornerRadius="{StaticResource DefaultCornerRadius}"
+                HorizontalAlignment="Center"
+                IsVisible="{Binding HasError}"
+                Margin="12,0"
+                Padding="16,12"
+                VerticalAlignment="Top">
+                <TextBlock
+                    FontSize="14"
+                    Foreground="{DynamicResource AuthErrorForegroundBrush}"
+                    Text="{Binding ErrorMessage}"
+                    TextWrapping="Wrap" />
+            </Border>
+
+            <!-- Shop list -->
+            <ScrollViewer
+                HorizontalScrollBarVisibility="Disabled"
+                IsVisible="{Binding ShowShopGrid}"
+                VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="0">
+                    <ItemsControl ItemsSource="{Binding Shops}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="shops:ShopCardViewModel">
+                                <mobileViews:MobileShopCardView />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Load more -->
+                    <Button
+                        Command="{Binding LoadNextPageCommand}"
+                        HorizontalAlignment="Center"
+                        IsVisible="{Binding ShowLoadMoreButton}"
+                        Margin="0,8,0,16">
+                        <TextBlock Text="{Binding [ShopPage_LoadMore], Source={x:Static loc:Loc.Instance}}" />
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
+
+        </Panel>
+
+    </Grid>
+</UserControl>

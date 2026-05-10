@@ -1,0 +1,106 @@
+<UserControl
+    d:DesignHeight="280"
+    d:DesignWidth="375"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Mobile.MobileShopCardView"
+    x:CompileBindings="False"
+    x:DataType="shops:ShopCardViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shops="clr-namespace:CoffeePeek.Client.App.ViewModels.Shops"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Button
+        Classes="shop-card-host"
+        Command="{Binding $parent[ItemsControl].DataContext.OpenShopCommand}"
+        CommandParameter="{Binding Id}"
+        HorizontalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch"
+        Padding="0">
+        <Border
+            Background="{DynamicResource SurfaceContainerLowBrush}"
+            CornerRadius="{StaticResource LargeRadius}"
+            Margin="12,0,12,12">
+            <Grid RowDefinitions="160,Auto">
+
+                <!-- Hero image area -->
+                <Panel Grid.Row="0" Height="160">
+                    <Border
+                        ClipToBounds="True"
+                        CornerRadius="16,16,0,0">
+                        <Panel>
+                            <Image
+                                IsVisible="{Binding HasCoverImage}"
+                                Source="{Binding CoverBitmap}"
+                                Stretch="UniformToFill" />
+                            <Border
+                                Background="{DynamicResource CardToneGradientBrush}"
+                                IsVisible="{Binding !HasCoverImage}" />
+                        </Panel>
+                    </Border>
+
+                    <!-- Rating badge (bottom-left) -->
+                    <Border
+                        Background="{DynamicResource SurfaceContainerHighBrush}"
+                        CornerRadius="{StaticResource SmallCornerRadius}"
+                        HorizontalAlignment="Left"
+                        Margin="12,0,0,12"
+                        Opacity="0.95"
+                        Padding="8,4"
+                        VerticalAlignment="Bottom">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="{DynamicResource PrimaryBrush}"
+                                Text="★"
+                                VerticalAlignment="Center" />
+                            <TextBlock
+                                FontSize="13"
+                                FontWeight="Normal"
+                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                Text="{Binding Rating}"
+                                VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Open badge (top-right) -->
+                    <Border
+                        Background="{DynamicResource PrimaryBrush}"
+                        CornerRadius="{StaticResource SmallCornerRadius}"
+                        HorizontalAlignment="Right"
+                        IsVisible="{Binding IsOpen}"
+                        Margin="0,10,10,0"
+                        Padding="8,4"
+                        VerticalAlignment="Top">
+                        <TextBlock
+                            FontSize="11"
+                            FontWeight="Normal"
+                            Foreground="{DynamicResource OnPrimaryBrush}"
+                            Text="{Binding [ShopDetail_Open], Source={x:Static loc:Loc.Instance}}" />
+                    </Border>
+                </Panel>
+
+                <!-- Card content -->
+                <StackPanel
+                    Grid.Row="1"
+                    Margin="16,12,16,16"
+                    Spacing="4">
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource OnSurfaceBrush}"
+                        Text="{Binding Name}"
+                        TextTrimming="CharacterEllipsis" />
+                    <TextBlock
+                        FontSize="13"
+                        Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                        Text="{Binding LocationLine}"
+                        TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+
+            </Grid>
+        </Border>
+    </Button>
+</UserControl>

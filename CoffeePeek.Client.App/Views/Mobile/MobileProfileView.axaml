@@ -1,0 +1,254 @@
+<UserControl
+    d:DesignHeight="812"
+    d:DesignWidth="375"
+    mc:Ignorable="d"
+    x:Class="CoffeePeek.Client.App.Views.Mobile.MobileProfileView"
+    x:DataType="home:UserProfileViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:controls="clr-namespace:CoffeePeek.Client.App.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:home="clr-namespace:CoffeePeek.Client.App.ViewModels.Home"
+    xmlns:loc="clr-namespace:CoffeePeek.Client.App.Services"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Background="{DynamicResource SurfaceBrush}">
+
+        <!-- Scrollable body -->
+        <ScrollViewer
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="0">
+
+                <!-- Loading spinner -->
+                <controls:GooTrioLoader
+                    Height="160"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding IsLoadingProfile}"
+                    Margin="0,80,0,0"
+                    VerticalAlignment="Top"
+                    Width="160" />
+
+                <!-- Profile body -->
+                <StackPanel IsVisible="{Binding ShowProfileBody}" Spacing="0">
+
+                    <!-- Header card: avatar + name -->
+                    <Border
+                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                        Padding="24,32">
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            Spacing="12">
+
+                            <!-- Avatar circle -->
+                            <Border
+                                ClipToBounds="True"
+                                CornerRadius="40"
+                                Height="80"
+                                HorizontalAlignment="Center"
+                                Width="80">
+                                <Panel>
+                                    <Image
+                                        IsVisible="{Binding HasAvatar}"
+                                        Source="{Binding AvatarImage}"
+                                        Stretch="UniformToFill" />
+                                    <Border
+                                        Background="{DynamicResource PrimaryGradientBrush}"
+                                        IsVisible="{Binding !HasAvatar}">
+                                        <TextBlock
+                                            FontSize="32"
+                                            FontWeight="Normal"
+                                            Foreground="{DynamicResource OnPrimaryBrush}"
+                                            HorizontalAlignment="Center"
+                                            Text="{Binding InitialLetter}"
+                                            VerticalAlignment="Center" />
+                                    </Border>
+                                </Panel>
+                            </Border>
+
+                            <!-- Username -->
+                            <TextBlock
+                                FontSize="22"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource OnSurfaceBrush}"
+                                HorizontalAlignment="Center"
+                                Text="{Binding UserName}"
+                                TextAlignment="Center" />
+
+                            <!-- Member since -->
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                IsVisible="{Binding HasMemberSince}"
+                                Text="{Binding MemberSinceLabel}"
+                                TextAlignment="Center" />
+
+                            <!-- Avatar upload button (own profile only) -->
+                            <Button
+                                Classes="Secondary"
+                                Command="{Binding UploadAvatarCommand}"
+                                FontSize="12"
+                                HorizontalAlignment="Center"
+                                IsEnabled="{Binding !IsUploadingAvatar}"
+                                IsVisible="{Binding IsOwnProfile}"
+                                Padding="16,6">
+                                <TextBlock Text="{Binding [Profile_AvatarUpload], Source={x:Static loc:Loc.Instance}}" />
+                            </Button>
+
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Stats row -->
+                    <Grid
+                        ColumnDefinitions="*,*,*"
+                        ColumnSpacing="8"
+                        Margin="16,16,16,0">
+
+                        <!-- Check-ins -->
+                        <Border
+                            Background="{DynamicResource SurfaceContainerLowBrush}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            Grid.Column="0"
+                            Padding="12,16">
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                Spacing="4">
+                                <TextBlock
+                                    FontSize="28"
+                                    FontWeight="Normal"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding CheckInCount}" />
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding [Profile_StatCheckIns], Source={x:Static loc:Loc.Instance}}"
+                                    TextAlignment="Center"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Reviews -->
+                        <Border
+                            Background="{DynamicResource SurfaceContainerLowBrush}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            Grid.Column="1"
+                            Padding="12,16">
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                Spacing="4">
+                                <TextBlock
+                                    FontSize="28"
+                                    FontWeight="Normal"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding ReviewCount}" />
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding [Profile_StatReviews], Source={x:Static loc:Loc.Instance}}"
+                                    TextAlignment="Center"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Average rating -->
+                        <Border
+                            Background="{DynamicResource SurfaceContainerLowBrush}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            Grid.Column="2"
+                            Padding="12,16">
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                Spacing="4">
+                                <TextBlock
+                                    FontSize="28"
+                                    FontWeight="Normal"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding AverageRatingLabel}" />
+                                <TextBlock
+                                    FontSize="11"
+                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding [Profile_StatRating], Source={x:Static loc:Loc.Instance}}"
+                                    TextAlignment="Center"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+
+                    <!-- Reviews section -->
+                    <StackPanel Margin="16,20,16,16" Spacing="16">
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource OnSurfaceBrush}"
+                            Text="{Binding [Profile_LastReviews], Source={x:Static loc:Loc.Instance}}" />
+
+                        <!-- Review list -->
+                        <ItemsControl
+                            IsVisible="{Binding HasReviews}"
+                            ItemsSource="{Binding Reviews}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="home:UserProfileReviewRowViewModel">
+                                    <Border
+                                        Background="{DynamicResource SurfaceContainerLowBrush}"
+                                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                                        Margin="0,0,0,8"
+                                        Padding="16">
+                                        <StackPanel Spacing="6">
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <TextBlock
+                                                    FontSize="15"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{DynamicResource OnSurfaceBrush}"
+                                                    Text="{Binding Title}"
+                                                    TextWrapping="Wrap" />
+                                                <TextBlock
+                                                    FontSize="11"
+                                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                    Grid.Column="1"
+                                                    Text="{Binding FormattedDate}"
+                                                    VerticalAlignment="Top" />
+                                            </Grid>
+                                            <TextBlock
+                                                FontSize="14"
+                                                Foreground="{DynamicResource PrimaryBrush}"
+                                                Text="{Binding StarsText}" />
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock
+                                                    FontSize="12"
+                                                    Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                                    Text="{Binding FormattedDate}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Empty state -->
+                        <Border
+                            Background="{DynamicResource SurfaceContainerLowBrush}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            IsVisible="{Binding ShowReviewsEmpty}"
+                            Padding="32">
+                            <TextBlock
+                                Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                HorizontalAlignment="Center"
+                                Text="{Binding [Profile_NoReviews], Source={x:Static loc:Loc.Instance}}"
+                                TextAlignment="Center"
+                                TextWrapping="Wrap" />
+                        </Border>
+
+                    </StackPanel>
+
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+</UserControl>
