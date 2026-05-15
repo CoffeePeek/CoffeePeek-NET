@@ -78,18 +78,4 @@
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.5" />
   </ItemGroup>
-  <ItemGroup Label="Avalonia">
-    <PackageVersion Include="Avalonia" Version="12.0.0" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.0.0" />
-    <PackageVersion Include="AvaloniaUI.DeveloperTools" Version="2.2.0" />
-    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <!--ANDROID-->
-    <PackageVersion Include="Avalonia.Android" Version="12.0.0" />
-    <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.2.0.2" />
-    <!--BROWSER-->
-    <PackageVersion Include="Avalonia.Browser" Version="12.0.0" />
-    <!--Desktop-->
-    <PackageVersion Include="Avalonia.Desktop" Version="12.0.0" />
-    <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.0" />
-  </ItemGroup>
 </Project>
