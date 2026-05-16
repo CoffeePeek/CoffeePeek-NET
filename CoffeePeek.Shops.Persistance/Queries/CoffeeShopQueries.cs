@@ -66,6 +66,7 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
         var totalCount = await query.CountAsync(ct);
         
         var items = await query
+            .AsSplitQuery()
             .OrderBy(x => x.Name)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
@@ -79,8 +80,9 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
     {
         return await context.Shops
             .AsNoTracking()
+            .AsSplitQuery()
             .Where(x => x.Id == id)
-            .ProjectToType<CoffeeShopDetailsDto>() 
+            .ProjectToType<CoffeeShopDetailsDto>()
             .FirstOrDefaultAsync(ct);
     }
 
@@ -109,6 +111,7 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
     {
         return context.UserFavorites.AsNoTracking()
             .Include(x => x.CoffeeShop)
+            .AsSplitQuery()
             .Where(x => x.UserId == userId)
             .Select(x => x.CoffeeShop)
             .ProjectToType<CoffeeShopDetailsDto>()
