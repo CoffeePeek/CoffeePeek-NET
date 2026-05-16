@@ -28,14 +28,6 @@ namespace Internal.Generated.WolverineHandlers
             * Dependency: Descriptor: ServiceType: CoffeePeek.Account.Persistence.Configuration.AccountDbContext Lifetime: Scoped ImplementationFactory: Microsoft.Extensions.DependencyInjection.EntityFrameworkServiceCollectionExtensions+<>c__5"2.<AddDbContextPool>b__5_0
             * The service registration for CoffeePeek.Account.Persistence.Configuration.AccountDbContext is an 'opaque' lambda factory with the Scoped lifetime and requires service location
             */
-            var unitOfWork = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<CoffeePeek.Shared.Kernel.IUnitOfWork>(serviceScope.ServiceProvider);
-            
-            /*
-            * Dependency: Descriptor: ServiceType: CoffeePeek.Account.Domain.Entities.UserAggregate.IUserRepository Lifetime: Scoped ImplementationType: CoffeePeek.Account.Persistence.Repositories.UserRepository
-            * 
-            * Dependency: Descriptor: ServiceType: CoffeePeek.Account.Persistence.Configuration.AccountDbContext Lifetime: Scoped ImplementationFactory: Microsoft.Extensions.DependencyInjection.EntityFrameworkServiceCollectionExtensions+<>c__5"2.<AddDbContextPool>b__5_0
-            * The service registration for CoffeePeek.Account.Persistence.Configuration.AccountDbContext is an 'opaque' lambda factory with the Scoped lifetime and requires service location
-            */
             var authService = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<CoffeePeek.Account.Application.Common.Interfaces.IAuthService>(serviceScope.ServiceProvider);
             
             /*
@@ -62,7 +54,7 @@ namespace Internal.Generated.WolverineHandlers
                 System.Diagnostics.Activity.Current?.SetTag("handler.type", "CoffeePeek.Account.Application.Features.Auth.Login.LoginUserHandler");
                 
                 // The actual message execution
-                var outgoing1 = await CoffeePeek.Account.Application.Features.Auth.Login.LoginUserHandler.Handle(loginUserCommand, authService, _emailExistenceFilter, unitOfWork, cancellation).ConfigureAwait(false);
+                var outgoing1 = await CoffeePeek.Account.Application.Features.Auth.Login.LoginUserHandler.Handle(loginUserCommand, authService, _emailExistenceFilter, cancellation).ConfigureAwait(false);
 
                 
                 // Outgoing, cascaded message

@@ -91,15 +91,17 @@ public class UserCredentialTests
         var email = Email.Create("test@example.com");
         const string token = "expired_token";
         var credential = UserCredential.CreateBasic(email, "hash", token);
-        
-        // Wait for expiration (or manipulate time if using time provider)
-        // For this test, we'll need to use reflection or accept that we can't easily test this
-        // In production, you'd use IDateTimeProvider for testability
 
-        // Act & Assert
-        // This test requires the credential to have an expired token
-        // Since we can't easily manipulate time, we document the behavior
-        credential.EmailConfirmationExpiresAt.Should().BeAfter(DateTime.UtcNow);
+        // Set expiry to the past via reflection
+        typeof(UserCredential)
+            .GetProperty(nameof(UserCredential.EmailConfirmationExpiresAt))!
+            .SetValue(credential, DateTime.UtcNow.AddMinutes(-1));
+
+        // Act
+        Action act = () => credential.ConfirmEmail(token);
+
+        // Assert
+        act.Should().Throw<DomainException>().WithMessage("*expired*");
     }
 
     [Fact]

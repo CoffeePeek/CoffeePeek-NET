@@ -234,7 +234,7 @@ public class UserTests
         var user = User.Register("test@example.com", "testuser", "hash", Role.Create("User"));
 
         // Act
-        user.SoftDelete();
+        user.SetSoftDelete();
 
         // Assert
         user.IsSoftDelete.Should().BeTrue();

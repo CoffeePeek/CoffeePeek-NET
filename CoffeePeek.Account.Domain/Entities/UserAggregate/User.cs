@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Account.Domain.Entities.RoleAggregate;
+﻿using System.Text.RegularExpressions;
+using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Events;
 using CoffeePeek.Shared.Domain.Entities;
 using CoffeePeek.Shared.Kernel.Exceptions;
@@ -40,7 +41,7 @@ public class User : AggregateRoot<Guid>
         {
             throw;
         }
-        catch
+        catch (Exception ex) when (ex is not DomainException)
         {
             throw new DomainException("Invalid email or username");
         }
@@ -70,10 +71,26 @@ public class User : AggregateRoot<Guid>
         return new User
         {
             Id = userId,
-            Username = Username.Create(email.Value.Split('@')[0]),
+            Username = Username.Create(SanitizeUsernameFromEmail(email.Value)),
             Credentials = UserCredential.CreateExternal(email, provider, providerId),
             Statistics = UserStatistics.Empty()
         };
+    }
+
+    private static string SanitizeUsernameFromEmail(string email)
+    {
+        var local = email.Split('@')[0];
+        // Keep only chars valid for Username: letters, digits, dots, underscores
+        var sanitized = Regex.Replace(local, @"[^a-zA-Z0-9._]", "");
+        // Must start with a letter
+        if (sanitized.Length == 0 || !char.IsLetter(sanitized[0]))
+            sanitized = "user" + sanitized;
+        // Enforce min/max length
+        if (sanitized.Length < 3)
+            sanitized = sanitized.PadRight(3, '0');
+        if (sanitized.Length > 30)
+            sanitized = sanitized[..30];
+        return sanitized;
     }
 
     public void AddSession(string token, TimeSpan ttl, string device, string ip)
@@ -143,11 +160,6 @@ public class User : AggregateRoot<Guid>
         {
             Username = userName;
         }
-    }
-
-    public void SoftDelete()
-    {
-        IsSoftDelete = true;
     }
 
     public void ConfirmEmail(string token)

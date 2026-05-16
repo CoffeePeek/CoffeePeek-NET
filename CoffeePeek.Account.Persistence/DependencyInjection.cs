@@ -44,21 +44,10 @@ public static class DependencyInjection
 #endif
         
         // 2. Repository Implementations
-        services.AddScoped<UserRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IQueryUserRepository, QueryUserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPhotoMetadataRepository, PhotoMetadataRepository>();
-        services.AddScoped<IQueryUserRepository, QueryUserRepository>();
-
-        // 3. Repository Decorators (после базовых репозиториев)
-        services.AddScoped<IUserRepository, UserRepository>();
-        //services.AddScoped<IUserRepository>(provider =>
-        //{
-        //    var baseRepo = provider.GetRequiredService<UserRepository>();
-        //    var redisService = provider.GetRequiredService<ICacheService>();
-        //    return new CachedUserRepository(baseRepo, redisService);
-        //});
-
-        services.AddCacheModule();
 
         return services;
     }

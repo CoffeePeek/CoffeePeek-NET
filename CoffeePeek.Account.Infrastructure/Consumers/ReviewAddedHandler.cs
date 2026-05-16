@@ -8,12 +8,10 @@ public class ReviewAddedHandler(IUserRepository userRepository, IUnitOfWork unit
 {
     public async Task Handle(ReviewAddedEvent message)
     {
-        var user = await userRepository.GetById(message.UserId);
-
-        if (user == null) return;
+        var user = await userRepository.GetById(message.UserId)
+            ?? throw new InvalidOperationException($"User {message.UserId} not found for review-added event");
 
         user.Statistics.IncrementReviews();
-
         await unitOfWork.SaveChangesAsync();
     }
 }

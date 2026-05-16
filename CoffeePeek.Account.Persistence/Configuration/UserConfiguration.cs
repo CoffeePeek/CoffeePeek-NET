@@ -10,6 +10,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
+        builder.Property(u => u.About)
+            .HasMaxLength(600);
+
         builder.Property(u => u.Username)
             .HasConversion(v => v.Value, v => Username.Create(v))
             .HasMaxLength(BusinessConstants.MaxUserNameLength)
