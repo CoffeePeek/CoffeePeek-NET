@@ -19,6 +19,8 @@ public class MapsterConfiguration : IRegister
             .Map(dest => dest.Photos, src => src.ShopPhotos)
             .Map(dest => dest.ShopContact, src => src.Contact)
             .Map(dest => dest.Beans, src => src.CoffeeBeans)
+            // IsOpen uses Schedules which can't be translated to SQL — mark as not open; set in handler if needed
+            .Map(dest => dest.IsOpen, src => false)
             // Rating and ReviewCount are set manually in handlers via repository
             .Ignore(dest => dest.Rating)
             .Ignore(dest => dest.ReviewCount)
