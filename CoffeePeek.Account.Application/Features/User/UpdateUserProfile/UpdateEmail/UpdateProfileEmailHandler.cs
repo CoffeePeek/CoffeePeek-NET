@@ -5,28 +5,37 @@ using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateEmail;
 
-//TODO CP-157 реализовать смену почты с интеграцией с Resend
 public class UpdateEmailRequestHandler
 {
-    public static async Task<UpdateEntityResponse<string>> Handle(
-        UpdateProfileEmailCommand request, 
+    public static async Task<(UpdateEntityResponse<string>, UserRegisteredInternalEvent)> Handle(
+        UpdateProfileEmailCommand request,
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
-        var user = await userRepository.GetById(request.UserId, ct);
+        var user = await userRepository.GetById(request.UserId, ct)
+                   ?? throw new NotFoundException("User not found");
 
-        if (user == null)
-        {
-            throw new NotFoundException("User not found");
-        }
+        var existingOwner = await userRepository.GetByEmail(request.Email, ct);
+        if (existingOwner is not null && existingOwner.Id != request.UserId)
+            throw new DomainException("Email is already taken");
 
+        // UpdateEmail internally calls ResetEmailConfirmedFlow():
+        // sets EmailConfirmed=false and generates a new EmailConfirmationToken
         user.Credentials.UpdateEmail(request.Email);
 
         await userRepository.Update(user, ct);
-        
         await unitOfWork.SaveChangesAsync(ct);
 
-        return UpdateEntityResponse<string>.Success(user.Credentials.Email, "Email updated successfully");
+        var confirmationEvent = new UserRegisteredInternalEvent(
+            user.Id,
+            user.Credentials.Email.Value,
+            user.Username.Value,
+            user.Credentials.EmailConfirmationToken!);
+
+        return (
+            UpdateEntityResponse<string>.Success(user.Credentials.Email, "Email updated. A confirmation link has been sent to your new address."),
+            confirmationEvent
+        );
     }
 }

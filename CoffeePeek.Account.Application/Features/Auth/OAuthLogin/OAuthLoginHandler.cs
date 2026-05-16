@@ -2,6 +2,7 @@ using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Shared.Auth.Options;
 using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.Extensions.Options;
 
@@ -37,8 +38,22 @@ public static class GoogleLoginHandler
             request.DeviceName,
             request.IpAddress);
 
-        await unitOfWork.SaveChangesAsync(ct);
-        
+        try
+        {
+            await unitOfWork.SaveChangesAsync(ct);
+        }
+        catch (ConflictException)
+        {
+            // Concurrent OAuth login with the same Google account created the user first.
+            // Re-fetch the saved user, issue a fresh session for this login attempt.
+            user = await externalAuthService.GetOrCreate(
+                payload.Email, ProviderConsts.GoogleProvider, payload.Subject, ct);
+            accessToken = tokenService.GenerateAccessToken(user);
+            refreshToken = tokenService.GenerateRefreshToken();
+            user.AddSession(refreshToken, TimeSpan.FromDays(options.Value.RefreshTokenLifetimeDays), request.DeviceName, request.IpAddress);
+            await unitOfWork.SaveChangesAsync(ct);
+        }
+
         return Response<GoogleLoginResponse>.Success(new GoogleLoginResponse
         {
             AccessToken = accessToken,

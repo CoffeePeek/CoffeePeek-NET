@@ -11,6 +11,7 @@ public static class UpdateUsernameHandler
     public static async Task<(UpdateEntityResponse<string>, UserNameChangedEvent)> Handle(
         UpdateProfileUsernameCommand command,
         IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
         var user = await userRepository.GetById(command.UserId, ct)
@@ -18,6 +19,9 @@ public static class UpdateUsernameHandler
 
         var userName = Username.Create(command.Username);
         user.UpdateUsername(userName);
+
+        await userRepository.Update(user, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         var @event = new UserNameChangedEvent
         {
