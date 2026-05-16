@@ -33,7 +33,7 @@ public static class GoogleLoginHandler
 
         user.AddSession(
             refreshToken,
-            ttl: TimeSpan.FromDays(options.Value.AccessTokenLifetimeMinutes),
+            ttl: TimeSpan.FromDays(options.Value.RefreshTokenLifetimeDays),
             request.DeviceName,
             request.IpAddress);
 

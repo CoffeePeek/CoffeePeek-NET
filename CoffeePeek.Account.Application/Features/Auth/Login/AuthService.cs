@@ -28,6 +28,11 @@ public class AuthService(
             throw new UnauthorizedException("Invalid credentials");
         }
 
+        if (!user.Credentials.EmailConfirmed)
+        {
+            throw new UnauthorizedException("Email is not confirmed");
+        }
+
         user.RevokeAllSessions();
         var accessToken = jwtTokenService.GenerateAccessToken(user);
         var refreshToken = jwtTokenService.GenerateRefreshToken();
@@ -41,7 +46,7 @@ public class AuthService(
         
         user.AddSession(
             authResult.RefreshToken,
-            ttl:TimeSpan.FromMinutes(jwtOptions.Value.AccessTokenLifetimeMinutes), 
+            ttl: TimeSpan.FromDays(jwtOptions.Value.RefreshTokenLifetimeDays),
             device,
             ip);
 
