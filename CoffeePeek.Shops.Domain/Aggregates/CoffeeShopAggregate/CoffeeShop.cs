@@ -40,11 +40,12 @@ public sealed class CoffeeShop : Entity<Guid>
     {
     }
 
-    public CoffeeShop(Guid creatorId, string name, PriceRange priceRange, Guid moderationId)
+    public CoffeeShop(Guid creatorId, string name, string? description, PriceRange priceRange, Guid moderationId)
     {
         Id = Guid.NewGuid();
         CreatorId = creatorId;
         Name = name;
+        Description = description;
         PriceRange = priceRange;
         ModerationId = moderationId;
     }

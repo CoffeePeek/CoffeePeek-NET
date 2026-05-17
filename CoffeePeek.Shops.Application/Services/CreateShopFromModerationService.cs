@@ -22,8 +22,7 @@ public class CreateShopFromModerationService(
             throw new InvalidOperationException($"Shop with ModerationId {moderationId} already exists");
         }
 
-        var shop = new CoffeeShop(creatorId, shopDto.Name, (PriceRange)shopDto.PriceRange, moderationId);
-        shop.UpdateDetails(shopDto.Name, shopDto.Description, (PriceRange)shopDto.PriceRange);
+        var shop = new CoffeeShop(creatorId, shopDto.Name, shopDto.Description, (PriceRange)shopDto.PriceRange, moderationId);
 
         if (shopDto.Location != null)
         {

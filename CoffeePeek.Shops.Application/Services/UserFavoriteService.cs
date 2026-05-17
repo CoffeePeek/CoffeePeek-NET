@@ -16,12 +16,12 @@ public class UserFavoriteService(
     {
         if (userId == Guid.Empty)
         {
-            throw new InvalidOperationException("UserId cannot be empty");
+            throw new ValidationException("UserId cannot be empty");
         }
 
         if (coffeeShopId == Guid.Empty)
         {
-            throw new InvalidOperationException("CoffeeShopId cannot be empty");
+            throw new ValidationException("CoffeeShopId cannot be empty");
         }
 
         var shopExists = await queryCoffeeShopRepository.Exists(coffeeShopId, ct);
@@ -50,12 +50,12 @@ public class UserFavoriteService(
     {
         if (userId == Guid.Empty)
         {
-            throw new InvalidOperationException("UserId cannot be empty");
+            throw new ValidationException("UserId cannot be empty");
         }
 
         if (coffeeShopId == Guid.Empty)
         {
-            throw new InvalidOperationException("CoffeeShopId cannot be empty");
+            throw new ValidationException("CoffeeShopId cannot be empty");
         }
 
         var favorite = await userFavoriteRepository.GetByUserAndShopAsync(userId, coffeeShopId, ct);
