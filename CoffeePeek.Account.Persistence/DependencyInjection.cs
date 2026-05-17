@@ -21,27 +21,25 @@ public static class DependencyInjection
     
     public static IServiceCollection AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
     {
-#if DEBUG
-        builder.AddNpgsqlDbContext<AccountDbContext>(
-            connectionName: AppResources.AccountDb,
-            configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
-            configureSettings: settings => { settings.DisableRetry = true; }
-        );
-    
-        services.AddScoped<IUnitOfWork, UnitOfWork<AccountDbContext>>();
-#else
-        var connectionString = GetConnectionString(services);
-
-        services.AddDatabase<AccountDbContext>(
-            connectionString,
-            opt => opt.AddInterceptors(new AuditInterceptor())
-        );
-        
-        static string GetConnectionString(IServiceCollection services)
+        if (builder.Environment.IsDevelopment())
         {
-            return services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+            builder.AddNpgsqlDbContext<AccountDbContext>(
+                connectionName: AppResources.AccountDb,
+                configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
+                configureSettings: settings => { settings.DisableRetry = true; }
+            );
         }
-#endif
+        else
+        {
+            var connectionString = services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+
+            services.AddDatabase<AccountDbContext>(
+                connectionString,
+                opt => opt.AddInterceptors(new AuditInterceptor())
+            );
+        }
+
+        services.AddScoped<IUnitOfWork, UnitOfWork<AccountDbContext>>();
         
         // 2. Repository Implementations
         services.AddScoped<IUserRepository, UserRepository>();
