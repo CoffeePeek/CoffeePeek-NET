@@ -25,15 +25,19 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IWeb
 
         var statusCode = GetStatusCode(exception);
 
-#if DEBUG
-        var errorResponse = new ErrorResponse(GetSafeMessage(exception))
+        ErrorResponse errorResponse;
+        if (environment.IsDevelopment())
         {
-            StackTrace = exception.StackTrace,
-            InnerException = exception.InnerException?.Message
-        };
-#else
-        var errorResponse = new ErrorResponse(GetSafeMessage(exception));
-#endif
+            errorResponse = new ErrorResponse(GetSafeMessage(exception))
+            {
+                StackTrace = exception.StackTrace,
+                InnerException = exception.InnerException?.Message
+            };
+        }
+        else
+        {
+            errorResponse = new ErrorResponse(GetSafeMessage(exception));
+        }
 
         httpContext.Response.StatusCode = statusCode;
         
