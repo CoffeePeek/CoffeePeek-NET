@@ -9,9 +9,9 @@
 
 - [ ] **TD-01**: `#if DEBUG` в persistence DI заменён на runtime feature flag через `IHostEnvironment` или appsettings во всех 4 сервисах
 - [ ] **TD-02**: Дублирующий вызов `UpdateDetails` после конструктора удалён из `CreateShopFromModerationService`
-- [ ] **TD-03**: `CancellationToken.None` заменён на проброс токена от caller в `AuthService` и `UserNameChangedEventHandler`
+- [x] **TD-03**: `CancellationToken.None` заменён на проброс токена от caller в `AuthService` и `UserNameChangedEventHandler`
 - [ ] **TD-04**: `InvalidOperationException` в `UserFavoriteService` заменён на `ValidationException` для 400-ответа вместо 500
-- [ ] **TD-05**: `RevokeAllSessions()` удалён из login flow; `AddSession` управляет лимитом сессий самостоятельно
+- [x] **TD-05**: `RevokeAllSessions()` удалён из login flow; `AddSession` управляет лимитом сессий самостоятельно
 - [ ] **TD-06**: Пустой `CoffeeShopRepository.cs` удалён или реализован
 - [ ] **TD-07**: `#if DEBUG` в shared libraries (`WolverineModule`, `CorsModule`, `GlobalExceptionHandler`) заменён на runtime config
 
@@ -76,9 +76,9 @@
 |-------------|-------|--------|
 | TD-01 | Phase 1 | Pending |
 | TD-02 | Phase 1 | Pending |
-| TD-03 | Phase 1 | Pending |
+| TD-03 | Phase 1 | Complete |
 | TD-04 | Phase 1 | Pending |
-| TD-05 | Phase 1 | Pending |
+| TD-05 | Phase 1 | Complete |
 | TD-06 | Phase 1 | Pending |
 | TD-07 | Phase 1 | Pending |
 | BUG-01 | Phase 2 | Pending |

@@ -23,11 +23,11 @@
   2. `UserFavoriteService` returns HTTP 400 (not 500) on empty UserId
   3. `AuthService.LoginAsync` does not revoke all sessions when logging in from a new device
   4. No occurrences of `CancellationToken.None` remain in production code
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 
 Plans:
 - [ ] 01-01-PLAN.md — Remove redundant UpdateDetails, replace InvalidOperationException with ValidationException, delete empty CoffeeShopRepository (TD-02, TD-04, TD-06)
-- [ ] 01-02-PLAN.md — Remove RevokeAllSessions from login, thread CancellationToken in AuthService and UserNameChangedHandler (TD-03, TD-05)
+- [x] 01-02-PLAN.md — Remove RevokeAllSessions from login, thread CancellationToken in AuthService and UserNameChangedHandler (TD-03, TD-05)
 - [ ] 01-03-PLAN.md — Replace #if DEBUG in shared libraries: WolverineModule, CorsModule, GlobalExceptionHandler (TD-07)
 - [ ] 01-04-PLAN.md — Replace #if DEBUG in all four persistence DI files (TD-01)
 
@@ -81,7 +81,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Tech Debt Cleanup | 0/4 | Not started | - |
+| 1. Tech Debt Cleanup | 1/4 | In Progress|  |
 | 2. Bug Fixes | 0/0 | Not started | - |
 | 3. Security Hardening | 0/0 | Not started | - |
 | 4. Performance Optimization | 0/0 | Not started | - |
