@@ -34,7 +34,7 @@ public class SearchCoffeeShopsHandler
             };
         }, cancellationToken: ct);
         
-        if (cachedResponse == null) return Response<GetCoffeeShopsResponse>.Error("Error");
+        if (cachedResponse == null) return Response<GetCoffeeShopsResponse>.Error("Failed to retrieve coffee shop search results");
 
         if (queryRequest.UserId.HasValue)
         {
