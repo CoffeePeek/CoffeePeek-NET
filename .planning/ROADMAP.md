@@ -4,7 +4,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Tech Debt Cleanup** - Eliminate compile-time branching, hardcoded tokens, empty files, wrong exceptions, broken login flow
+- [x] **Phase 1: Tech Debt Cleanup** - Eliminate compile-time branching, hardcoded tokens, empty files, wrong exceptions, broken login flow (completed 2026-05-17)
 - [ ] **Phase 2: Bug Fixes** - Fix all known functional bugs — cache invalidation, ownership checks, personalization
 - [ ] **Phase 3: Security Hardening** - Eliminate security vulnerabilities — Sentry PII, rate limiting, API key in URL, health checks
 - [ ] **Phase 4: Performance Optimization** - Eliminate performance bottlenecks — correlated subquery, Redis KEYS, N+1
@@ -23,13 +23,13 @@
   2. `UserFavoriteService` returns HTTP 400 (not 500) on empty UserId
   3. `AuthService.LoginAsync` does not revoke all sessions when logging in from a new device
   4. No occurrences of `CancellationToken.None` remain in production code
-**Plans:** 2/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 - [x] 01-01-PLAN.md — Remove redundant UpdateDetails, replace InvalidOperationException with ValidationException, delete empty CoffeeShopRepository (TD-02, TD-04, TD-06)
 - [x] 01-02-PLAN.md — Remove RevokeAllSessions from login, thread CancellationToken in AuthService and UserNameChangedHandler (TD-03, TD-05)
-- [ ] 01-03-PLAN.md — Replace #if DEBUG in shared libraries: WolverineModule, CorsModule, GlobalExceptionHandler (TD-07)
-- [ ] 01-04-PLAN.md — Replace #if DEBUG in all four persistence DI files (TD-01)
+- [x] 01-03-PLAN.md — Replace #if DEBUG in shared libraries: WolverineModule, CorsModule, GlobalExceptionHandler (TD-07)
+- [x] 01-04-PLAN.md — Replace #if DEBUG in all four persistence DI files (TD-01)
 
 ### Phase 2: Bug Fixes
 **Goal:** Fix all known functional bugs — cache invalidation, ownership checks, personalization
@@ -81,7 +81,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Tech Debt Cleanup | 2/4 | In Progress|  |
+| 1. Tech Debt Cleanup | 4/4 | Complete   | 2026-05-17 |
 | 2. Bug Fixes | 0/0 | Not started | - |
 | 3. Security Hardening | 0/0 | Not started | - |
 | 4. Performance Optimization | 0/0 | Not started | - |

@@ -7,7 +7,7 @@
 
 ### Tech Debt (Phase 1)
 
-- [ ] **TD-01**: `#if DEBUG` в persistence DI заменён на runtime feature flag через `IHostEnvironment` или appsettings во всех 4 сервисах
+- [x] **TD-01**: `#if DEBUG` в persistence DI заменён на runtime feature flag через `IHostEnvironment` или appsettings во всех 4 сервисах
 - [x] **TD-02**: Дублирующий вызов `UpdateDetails` после конструктора удалён из `CreateShopFromModerationService`
 - [x] **TD-03**: `CancellationToken.None` заменён на проброс токена от caller в `AuthService` и `UserNameChangedEventHandler`
 - [x] **TD-04**: `InvalidOperationException` в `UserFavoriteService` заменён на `ValidationException` для 400-ответа вместо 500
@@ -74,7 +74,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TD-01 | Phase 1 | Pending |
+| TD-01 | Phase 1 | Complete |
 | TD-02 | Phase 1 | Complete |
 | TD-03 | Phase 1 | Complete |
 | TD-04 | Phase 1 | Complete |
