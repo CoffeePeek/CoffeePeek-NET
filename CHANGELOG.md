@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.3.0] - 2026-05-17
+
+### Added
+
+- **Предложение кофейни** — клиентский сценарий с progressive-form UX: обязательные поля (`название`, `адрес`, `город`) + опциональные секции, раскрываемые по желанию.
+- **Загрузка фотографий для предложения кофейни** — presigned upload flow (`api/Photos/shop`) с последующей отправкой на модерацию (`api/ModerationShops`).
+- **Создание и удаление отзывов** на странице деталей кофейни: форма оценки (`место/сервис/кофе`) + комментарий, удаление только собственных отзывов.
+- **Панель модератора** — отображается в шапке при наличии роли `Moderator` в JWT; очереди кофеен и отзывов с бэка, смена статусов, разбор `role` claim из токена и unit-тесты.
+- **Новый HTTP-клиент модерации** в клиентском приложении с unit-тестами для ViewModel и WebClient сценариев.
+- **CI/CD: деплой Avalonia Browser (WASM) на Vercel** — workflow публикует `dist/wwwroot` Release-сборки; preview на `dev`, продакшн на `main`.
+
+### Changed
+
+- **Редизайн домашней страницы** — bento-grid layout, обновлённая цветовая схема и design system (`Resources/Styles`, `Resources/Themes`).
+- **Обработка ошибок в auth-слое** — встроенные ошибки заменены на `DomainException` во всех обработчиках auth (login, logout, register, refresh, confirm email, Google OAuth).
+- **Логика переключения языка** — переработана поддержка мультиязычности в клиентском приложении.
+- **AppHost** — Avalonia Desktop/Android исключены из Aspire-оркестрации; проект переориентирован на Browser (WASM).
+
+### Fixed
+
+- Миграции Account DB Context обновлены под актуальную схему.
+- Исправлена конфигурация Vercel CLI в CI/CD workflow.
+- Удалены `appsettings.Development.json` из auth-сервисных проектов (секреты не должны коммититься).
+
 ## [v0.2.1] - 2026-05-09
 
 ### Added
@@ -23,16 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ClientSession.SetAccessToken` / `Clear` — made thread-safe with `lock` and `Volatile.Read`.
 - `JwtRoleParser.CollectRolesFrom` — uses `HashSet<string>` to deduplicate roles from both claim name variants.
 - `ShopDetailViewModelTests` updated to match updated constructor signature (`HttpClient`, `ApiOptions`).
-
-## [Unreleased]
-
-### Added
-
-- Добавлен клиентский сценарий `Предложить кофейню` с ненавязчивой progressive-form UX: сначала обязательные поля (`название`, `адрес`, `город`), расширенные секции раскрываются по желанию пользователя.
-- Добавлена загрузка фотографий для предложения кофейни через presigned upload flow (`api/Photos/shop`) с последующей отправкой на модерацию (`api/ModerationShops`).
-- Добавлен новый HTTP-клиент модерации в клиентском приложении и покрытие unit-тестами для ViewModel и WebClient сценариев.
-- Добавлены создание и удаление отзывов на странице деталей кофейни: форма оценки (`место/сервис/кофе`) + комментарий, удаление только собственных отзывов, а также новый HTTP-клиент и unit-тесты для review flow.
-- Добавлена панель модератора: отображается в шапке при наличии роли `Moderator` в JWT, загрузка очередей кофеен и отзывов с бэка (`api/ModerationShops`, `api/ModerationReviews`), смена статусов, разбор `role` claim из токена и unit-тесты.
 
 ## [v0.2.0] - 2026-04-25
 
