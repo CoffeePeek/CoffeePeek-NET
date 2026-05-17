@@ -16,7 +16,8 @@ public class LoginUserHandler
             request.Email,
             request.Password,
             request.DeviceName,
-            request.IpAddress);
+            request.IpAddress,
+            ct);
 
         emailExistenceFilter.Add(request.Email);
 

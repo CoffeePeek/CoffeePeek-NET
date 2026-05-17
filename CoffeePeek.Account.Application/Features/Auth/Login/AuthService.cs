@@ -14,15 +14,15 @@ public class AuthService(
     IPasswordHasherService passwordHasher,
     IOptions<JWTOptions> jwtOptions) : IAuthService
 {
-    public async Task<AuthResult> LoginAsync(string email, string password, string device, string ip)
+    public async Task<AuthResult> LoginAsync(string email, string password, string device, string ip, CancellationToken cancellationToken = default)
     {
-        var user = await userRepository.GetByEmail(email, CancellationToken.None);
+        var user = await userRepository.GetByEmail(email, cancellationToken);
 
         if (user == null)
         {
             throw new NotFoundException("User not found");
         }
-        
+
         if (!user.Credentials.ValidatePassword(password, passwordHasher))
         {
             throw new UnauthorizedException("Invalid credentials");
@@ -33,7 +33,6 @@ public class AuthService(
             throw new UnauthorizedException("Email is not confirmed");
         }
 
-        user.RevokeAllSessions();
         var accessToken = jwtTokenService.GenerateAccessToken(user);
         var refreshToken = jwtTokenService.GenerateRefreshToken();
 
