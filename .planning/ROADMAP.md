@@ -40,7 +40,13 @@ Plans:
   2. Authenticated user sees correct IsFavorite/IsVisited in `GET /api/CoffeeShops/{id}`
   3. Bean catalog cache is invalidated after changes (cache key patterns match)
   4. `CoffeeShopApprovedEventHandler` explicitly calls `SaveChangesAsync`
-**Plans**: TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Surgical single-line fixes: CoffeeBean cache pattern prefix, descriptive search error message, thread userId into GetCoffeeShop (BUG-01, BUG-02, BUG-04)
+- [ ] 02-02-PLAN.md — Wave 0 scaffold: create CoffeePeek.Shops.Application.Tests project and register in CoffeePeek.slnx
+- [ ] 02-03-PLAN.md — Add ForbiddenException, ownership check in DeleteReviewFromCoffeeShopHandler, controller wiring, regression tests (BUG-03)
+- [ ] 02-04-PLAN.md — Inject IUnitOfWork into CreateShopFromModerationService and call SaveChangesAsync after Add, regression tests (BUG-05)
 
 ### Phase 3: Security Hardening
 **Goal:** Eliminate security vulnerabilities — Sentry PII, rate limiting, API key in URL, health checks
@@ -82,7 +88,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Tech Debt Cleanup | 4/4 | Complete   | 2026-05-17 |
-| 2. Bug Fixes | 0/0 | Not started | - |
+| 2. Bug Fixes | 0/4 | Planned | - |
 | 3. Security Hardening | 0/0 | Not started | - |
 | 4. Performance Optimization | 0/0 | Not started | - |
 | 5. Test Coverage | 0/0 | Not started | - |
