@@ -19,27 +19,25 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
     {
-#if DEBUG
-        builder.AddNpgsqlDbContext<ModerationDbContext>(
-            connectionName: AppResources.ModerationDb,
-            configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
-            configureSettings: settings => { settings.DisableRetry = true; }
-        );
-    
-        services.AddScoped<IUnitOfWork, UnitOfWork<ModerationDbContext>>();
-#else
-        var connectionString = GetConnectionString(services);
-
-        services.AddDatabase<ModerationDbContext>(
-            connectionString,
-            opt => opt.AddInterceptors(new AuditInterceptor())
-        );
-        
-        static string GetConnectionString(IServiceCollection services)
+        if (builder.Environment.IsDevelopment())
         {
-            return services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+            builder.AddNpgsqlDbContext<ModerationDbContext>(
+                connectionName: AppResources.ModerationDb,
+                configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
+                configureSettings: settings => { settings.DisableRetry = true; }
+            );
         }
-#endif
+        else
+        {
+            var connectionString = services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+
+            services.AddDatabase<ModerationDbContext>(
+                connectionString,
+                opt => opt.AddInterceptors(new AuditInterceptor())
+            );
+        }
+
+        services.AddScoped<IUnitOfWork, UnitOfWork<ModerationDbContext>>();
         
         services.AddScoped<IQueryModerationReviewRepository, QueryModerationReviewRepository>();
         services.AddScoped<IQueryModerationShopRepository, QueryModerationShopRepository>();
