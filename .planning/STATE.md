@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Tech Debt Resolution
 status: executing
-last_updated: "2026-05-17T13:46:47.268Z"
+last_updated: "2026-05-17T13:47:46Z"
 last_activity: 2026-05-17
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 8
-  completed_plans: 4
+  completed_plans: 6
   percent: 0
 ---
 
@@ -65,6 +65,9 @@ Phase 5 [..........] 0%
 - Sentry PII -> false by default in committed config; override only in local dev
 - `RevokeAllSessions()` method kept in User.cs — only removed from LoginAsync call site; still used in RotateRefreshToken security-breach path
 - `IUnitOfWork` registration moved outside if/else in Account, Shops, Moderation persistence DI — it's needed in both Aspire and standalone paths
+- BUG-01: CoffeeBean.ListPattern() must use "coffeebean:list:*" prefix to match write key for Redis cache invalidation
+- BUG-02: SearchCoffeeShopsHandler returns descriptive message "Failed to retrieve coffee shop search results" (not empty "Error")
+- BUG-04: GetCoffeeShop uses GetUserId() (nullable) not GetUserIdOrThrow() — endpoint is anonymous-friendly without [Authorize]
 
 ### Active Blockers
 
@@ -76,6 +79,16 @@ None
 - `DeleteReviewFromCoffeeShop` is CRITICAL — any authenticated user can delete any review (BUG-03, Phase 2)
 - `SendDefaultPii: true` is HIGH — passwords would be sent to Sentry if DSN is filled in (SEC-01, Phase 3)
 - Naming typos (CoffePeek, Persistance, CoffeeShop.Moderation.*) are accepted as-is per CLAUDE.md
+
+## Phase 2 — In Progress
+
+### Plan 01 — Completed 2026-05-17
+
+BUG-01, BUG-02, BUG-04 fixed; BUG-01 regression test added:
+- BUG-01: CacheKey.CoffeeBean.ListPattern() → "coffeebean:list:*" (was "bean:list:*")
+- BUG-02: SearchCoffeeShopsHandler error message → "Failed to retrieve coffee shop search results"
+- BUG-04: CoffeeShopsController.GetCoffeeShop → new GetCoffeeShopQuery(id, userContext.GetUserId())
+- Regression: CoffeeBeanCacheKeyTests.ListPattern_StartsWithSamePrefixAsListAllKey [Fact]
 
 ## Phase 1 — Completed 2026-05-17
 
@@ -91,5 +104,6 @@ All 7 TD items resolved:
 
 ## Session Continuity
 
-Last session: 2026-05-17T13:46:47.263Z
-Resume: Run `/gsd:plan-phase 2` to plan Phase 2 (Known Bugs).
+Last session: 2026-05-17T13:47:46Z
+Stopped at: Completed 02-01-PLAN.md (BUG-01, BUG-02, BUG-04 fixed)
+Resume: Continue Phase 2 with plan 02-02.

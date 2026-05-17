@@ -17,10 +17,10 @@
 
 ### Known Bugs (Phase 2)
 
-- [ ] **BUG-01**: Cache key mismatch для CoffeeBeans исправлен — `CacheKey.CoffeeBean.ListPattern()` возвращает `"coffeebean:list:*"` вместо `"bean:list:*"`
-- [ ] **BUG-02**: `SearchCoffeeShopsHandler` возвращает описательный error message вместо пустого `"Error"` на null из Redis
+- [x] **BUG-01**: Cache key mismatch для CoffeeBeans исправлен — `CacheKey.CoffeeBean.ListPattern()` возвращает `"coffeebean:list:*"` вместо `"bean:list:*"`
+- [x] **BUG-02**: `SearchCoffeeShopsHandler` возвращает описательный error message вместо пустого `"Error"` на null из Redis
 - [ ] **BUG-03**: `DeleteReviewFromCoffeeShopHandler` проверяет `review.UserId == requestingUserId` перед удалением; не-владелец получает 403
-- [ ] **BUG-04**: `CoffeeShopsController.GetCoffeeShop` передаёт `userId` в `GetCoffeeShopQuery`; `IsFavorite`/`IsVisited` корректны для авторизованных пользователей
+- [x] **BUG-04**: `CoffeeShopsController.GetCoffeeShop` передаёт `userId` в `GetCoffeeShopQuery`; `IsFavorite`/`IsVisited` корректны для авторизованных пользователей
 - [ ] **BUG-05**: `CoffeeShopApprovedEventHandler` явно вызывает `unitOfWork.SaveChangesAsync()` после `shopRepository.Add()`
 
 ### Security (Phase 3)
@@ -81,10 +81,10 @@
 | TD-05 | Phase 1 | Complete |
 | TD-06 | Phase 1 | Complete |
 | TD-07 | Phase 1 | Pending |
-| BUG-01 | Phase 2 | Pending |
-| BUG-02 | Phase 2 | Pending |
+| BUG-01 | Phase 2 | Complete |
+| BUG-02 | Phase 2 | Complete |
 | BUG-03 | Phase 2 | Pending |
-| BUG-04 | Phase 2 | Pending |
+| BUG-04 | Phase 2 | Complete |
 | BUG-05 | Phase 2 | Pending |
 | SEC-01 | Phase 3 | Pending |
 | SEC-02 | Phase 3 | Pending |
