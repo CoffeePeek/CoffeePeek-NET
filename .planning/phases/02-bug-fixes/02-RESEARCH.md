@@ -440,16 +440,16 @@ return shop.Id;
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should BUG-05 be fixed in `CreateShopFromModerationService` or in `ModerationShopApproveHandler`?**
    - What we know: both options work; Option B (service) is cleaner
    - What's unclear: whether `CreateShopFromModerationService` is called from any other place that already provides a surrounding `SaveChanges`
-   - Recommendation: grep for `CreateShopFromApprovedEventAsync` — currently it's called only from `ModerationShopApproveHandler`. Fix in the service (Option B).
+   - RESOLVED: Grepped `CreateShopFromApprovedEventAsync` — called only from `ModerationShopApproveHandler`. Fix is in the service (Option B), as implemented by Plan 02-04.
 
 2. **Should Phase 2 create `CoffeePeek.Shops.Application.Tests` or defer to Phase 5?**
    - What we know: Phase 5 (TEST-03) explicitly requires a BUG-03 regression test
-   - Recommendation: Create the project in Phase 2 with the minimal BUG-03 and BUG-05 tests; Phase 5 expands it with TEST-01 through TEST-05 tests. Starting the project in Phase 2 means Phase 5 finds existing infrastructure rather than starting from scratch.
+   - RESOLVED: Project is created in Phase 2 (Plan 02-02) with minimal BUG-03 and BUG-05 tests; Phase 5 expands it. Plans 02-03 and 02-04 add their regression tests to this project.
 
 ---
 

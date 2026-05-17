@@ -8,7 +8,7 @@ last_activity: 2026-05-17
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 4
+  total_plans: 8
   completed_plans: 4
   percent: 20
 ---
@@ -22,12 +22,12 @@ progress:
 
 ## Current Phase
 
-Phase 2: Known Bugs — Pending
+Phase 2: Bug Fixes — Ready to execute (4 plans)
 
 ## Next Up
 
-Phase 2: Known Bugs
--> Run: /gsd:plan-phase 2
+Phase 2: Bug Fixes
+-> Run: /gsd:execute-phase 2
 
 ## Project Reference
 
