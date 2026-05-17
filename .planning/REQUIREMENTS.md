@@ -13,7 +13,7 @@
 - [x] **TD-04**: `InvalidOperationException` в `UserFavoriteService` заменён на `ValidationException` для 400-ответа вместо 500
 - [x] **TD-05**: `RevokeAllSessions()` удалён из login flow; `AddSession` управляет лимитом сессий самостоятельно
 - [x] **TD-06**: Пустой `CoffeeShopRepository.cs` удалён или реализован
-- [ ] **TD-07**: `#if DEBUG` в shared libraries (`WolverineModule`, `CorsModule`, `GlobalExceptionHandler`) заменён на runtime config
+- [x] **TD-07**: `#if DEBUG` в shared libraries (`WolverineModule`, `CorsModule`, `GlobalExceptionHandler`) заменён на runtime config
 
 ### Known Bugs (Phase 2)
 

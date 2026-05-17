@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Tech Debt Resolution
 status: executing
-last_updated: "2026-05-17T10:29:41.633Z"
+last_updated: "2026-05-17T12:00:00.000Z"
 last_activity: 2026-05-17
 progress:
   total_phases: 5
@@ -22,24 +22,24 @@ progress:
 
 ## Current Phase
 
-Phase 1: Tech Debt Cleanup — Pending
+Phase 2: Known Bugs — Pending
 
 ## Next Up
 
-Phase 1: Tech Debt Cleanup
--> Run: /gsd:plan-phase 1
+Phase 2: Known Bugs
+-> Run: /gsd:plan-phase 2
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Every bug, vulnerability, and performance issue from CONCERNS.md is fixed and covered by a test.
-**Current focus:** Phase 1 — Tech Debt Cleanup
+**Current focus:** Phase 2 — Known Bugs
 
 ## Progress Bar
 
 ```
-Phase 1 [..........] 0%
+Phase 1 [##########] 100% COMPLETE
 Phase 2 [..........] 0%
 Phase 3 [..........] 0%
 Phase 4 [..........] 0%
@@ -51,9 +51,9 @@ Phase 5 [..........] 0%
 | Metric | Value |
 |--------|-------|
 | Phases total | 5 |
-| Phases complete | 0 |
+| Phases complete | 1 |
 | Requirements total | 27 |
-| Requirements done | 0 |
+| Requirements done | 7 |
 
 ## Accumulated Context
 
@@ -61,8 +61,10 @@ Phase 5 [..........] 0%
 
 - Order: Tech Debt -> Bugs -> Security -> Perf -> Tests — start with code cleanliness, then correctness, then safety
 - Tests as a separate final phase — written after fixes to lock in correct behavior
-- `#if DEBUG` -> runtime feature flag using `IHostEnvironment` or appsettings
+- `#if DEBUG` -> runtime `IHostEnvironment.IsDevelopment()` — same compiled binary works in all environments
 - Sentry PII -> false by default in committed config; override only in local dev
+- `RevokeAllSessions()` method kept in User.cs — only removed from LoginAsync call site; still used in RotateRefreshToken security-breach path
+- `IUnitOfWork` registration moved outside if/else in Account, Shops, Moderation persistence DI — it's needed in both Aspire and standalone paths
 
 ### Active Blockers
 
@@ -71,11 +73,22 @@ None
 ### Notes
 
 - `CoffeePeek.Shops.*` contains the majority of critical issues
-- `DeleteReviewFromCoffeeShop` is CRITICAL — any authenticated user can delete any review
-- `SendDefaultPii: true` is HIGH — passwords would be sent to Sentry if DSN is filled in
+- `DeleteReviewFromCoffeeShop` is CRITICAL — any authenticated user can delete any review (BUG-03, Phase 2)
+- `SendDefaultPii: true` is HIGH — passwords would be sent to Sentry if DSN is filled in (SEC-01, Phase 3)
 - Naming typos (CoffePeek, Persistance, CoffeeShop.Moderation.*) are accepted as-is per CLAUDE.md
+
+## Phase 1 — Completed 2026-05-17
+
+All 7 TD items resolved:
+- TD-01: #if DEBUG → IsDevelopment() in all 4 persistence DI files
+- TD-02: Redundant UpdateDetails call removed from CreateShopFromModerationService (description added to constructor)
+- TD-03: CancellationToken.None → caller token in AuthService.LoginAsync + UserNameChangedHandler.Handle
+- TD-04: InvalidOperationException → ValidationException (HTTP 400 not 500) in UserFavoriteService
+- TD-05: RevokeAllSessions() call removed from LoginAsync; AddSession enforces MaxActiveSessions
+- TD-06: Empty CoffeeShopRepository.cs deleted
+- TD-07: #if DEBUG → IsDevelopment() in WolverineModule, CorsModule, GlobalExceptionHandler
 
 ## Session Continuity
 
-Last session: 2026-05-17T10:29:41.629Z
-Resume: Run `/gsd:plan-phase 1` to begin Phase 1 planning.
+Last session: 2026-05-17T12:00:00.000Z
+Resume: Run `/gsd:plan-phase 2` to plan Phase 2 (Known Bugs).
