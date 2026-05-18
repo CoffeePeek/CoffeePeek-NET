@@ -5,7 +5,7 @@
 ## Phases
 
 - [x] **Phase 1: Tech Debt Cleanup** - Eliminate compile-time branching, hardcoded tokens, empty files, wrong exceptions, broken login flow (completed 2026-05-17)
-- [ ] **Phase 2: Bug Fixes** - Fix all known functional bugs — cache invalidation, ownership checks, personalization
+- [x] **Phase 2: Bug Fixes** - Fix all known functional bugs — cache invalidation, ownership checks, personalization (completed 2026-05-18)
 - [ ] **Phase 3: Security Hardening** - Eliminate security vulnerabilities — Sentry PII, rate limiting, API key in URL, health checks
 - [ ] **Phase 4: Performance Optimization** - Eliminate performance bottlenecks — correlated subquery, Redis KEYS, N+1
 - [ ] **Phase 5: Test Coverage** - Close critical test gaps — Shops Application handlers, Shops Domain, regression tests
@@ -40,15 +40,15 @@ Plans:
   2. Authenticated user sees correct IsFavorite/IsVisited in `GET /api/CoffeeShops/{id}`
   3. Bean catalog cache is invalidated after changes (cache key patterns match)
   4. `CoffeeShopApprovedEventHandler` explicitly calls `SaveChangesAsync`
-**Plans:** 2/4 plans executed
+**Plans:** 4/4 plans complete
 
 **Wave 1** *(parallel — disjoint files)*
 - [x] 02-01-PLAN.md — Surgical single-line fixes: CoffeeBean cache pattern prefix, descriptive search error message, thread userId into GetCoffeeShop, BUG-01 regression test (BUG-01, BUG-02, BUG-04)
 - [x] 02-02-PLAN.md — Wave 0 scaffold: create CoffeePeek.Shops.Application.Tests project and register in CoffeePeek.slnx
 
-**Wave 2** *(blocked on Wave 1 / 02-02 completion)*
-- [ ] 02-03-PLAN.md — Add ForbiddenException, ownership check in DeleteReviewFromCoffeeShopHandler, controller wiring, regression tests (BUG-03)
-- [ ] 02-04-PLAN.md — Inject IUnitOfWork into CreateShopFromModerationService and call SaveChangesAsync after Add, regression tests (BUG-05)
+**Wave 2** *(parallel — disjoint files)*
+- [x] 02-03-PLAN.md — Add ForbiddenException, ownership check in DeleteReviewFromCoffeeShopHandler, controller wiring, regression tests (BUG-03)
+- [x] 02-04-PLAN.md — Inject IUnitOfWork into CreateShopFromModerationService and call SaveChangesAsync after Add, regression tests (BUG-05)
 
 **Cross-cutting constraints:**
 - `CoffeePeek.Shops.Application.Tests` project must exist before Wave 2 test files compile
@@ -94,7 +94,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Tech Debt Cleanup | 4/4 | Complete   | 2026-05-17 |
-| 2. Bug Fixes | 2/4 | In Progress|  |
+| 2. Bug Fixes | 4/4 | Complete   | 2026-05-18 |
 | 3. Security Hardening | 0/0 | Not started | - |
 | 4. Performance Optimization | 0/0 | Not started | - |
 | 5. Test Coverage | 0/0 | Not started | - |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Tech Debt Resolution
 status: executing
-last_updated: "2026-05-17T13:47:46Z"
-last_activity: 2026-05-17
+last_updated: "2026-05-18T00:00:00Z"
+last_activity: 2026-05-18
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 2
   total_plans: 8
-  completed_plans: 6
-  percent: 0
+  completed_plans: 8
+  percent: 40
 ---
 
 # Project State
@@ -22,25 +22,25 @@ progress:
 
 ## Current Phase
 
-Phase 2: Bug Fixes — Ready to execute (4 plans)
+Phase 3: Security Hardening — Ready to plan
 
 ## Next Up
 
-Phase 2: Bug Fixes
--> Run: /gsd:execute-phase 2
+Phase 3: Security Hardening
+-> Run: /gsd:plan-phase 3 then /gsd:execute-phase 3
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Every bug, vulnerability, and performance issue from CONCERNS.md is fixed and covered by a test.
-**Current focus:** Phase 2 — Known Bugs
+**Current focus:** Phase 3 — Security Hardening
 
 ## Progress Bar
 
 ```
 Phase 1 [##########] 100% COMPLETE
-Phase 2 [..........] 0%
+Phase 2 [##########] 100% COMPLETE
 Phase 3 [..........] 0%
 Phase 4 [..........] 0%
 Phase 5 [..........] 0%
@@ -51,9 +51,9 @@ Phase 5 [..........] 0%
 | Metric | Value |
 |--------|-------|
 | Phases total | 5 |
-| Phases complete | 1 |
+| Phases complete | 2 |
 | Requirements total | 27 |
-| Requirements done | 7 |
+| Requirements done | 12 |
 
 ## Accumulated Context
 
@@ -80,15 +80,14 @@ None
 - `SendDefaultPii: true` is HIGH — passwords would be sent to Sentry if DSN is filled in (SEC-01, Phase 3)
 - Naming typos (CoffePeek, Persistance, CoffeeShop.Moderation.*) are accepted as-is per CLAUDE.md
 
-## Phase 2 — In Progress
+## Phase 2 — Completed 2026-05-18
 
-### Plan 01 — Completed 2026-05-17
-
-BUG-01, BUG-02, BUG-04 fixed; BUG-01 regression test added:
+All 5 BUG items resolved:
 - BUG-01: CacheKey.CoffeeBean.ListPattern() → "coffeebean:list:*" (was "bean:list:*")
 - BUG-02: SearchCoffeeShopsHandler error message → "Failed to retrieve coffee shop search results"
+- BUG-03: DeleteReviewFromCoffeeShopHandler — ownership check + ForbiddenException (HTTP 403) + 3 regression tests
 - BUG-04: CoffeeShopsController.GetCoffeeShop → new GetCoffeeShopQuery(id, userContext.GetUserId())
-- Regression: CoffeeBeanCacheKeyTests.ListPattern_StartsWithSamePrefixAsListAllKey [Fact]
+- BUG-05: CreateShopFromModerationService — IUnitOfWork injected, SaveChangesAsync called after Add + 2 regression tests
 
 ## Phase 1 — Completed 2026-05-17
 
@@ -104,6 +103,6 @@ All 7 TD items resolved:
 
 ## Session Continuity
 
-Last session: 2026-05-17T13:47:46Z
-Stopped at: Completed 02-01-PLAN.md (BUG-01, BUG-02, BUG-04 fixed)
-Resume: Continue Phase 2 with plan 02-02.
+Last session: 2026-05-18T00:00:00Z
+Stopped at: Phase 2 complete — all 4 plans executed, 5 bugs fixed, 6 regression tests added.
+Resume: Plan and execute Phase 3 (Security Hardening).
