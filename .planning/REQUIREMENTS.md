@@ -27,7 +27,7 @@
 
 - [ ] **SEC-01**: Sentry конфиг в committed `appsettings.json` имеет `SendDefaultPii: false` и `MaxRequestBodySize: "None"` во всех сервисах
 - [x] **SEC-02**: YARP active health checks включены на всех 4 кластерах с `ConsecutiveFailures` политикой
-- [ ] **SEC-03**: Rate limiting в Gateway партиционируется по `X-Forwarded-For`/`X-Real-IP` вместо `RemoteIpAddress`
+- [x] **SEC-03**: Rate limiting в Gateway партиционируется по `X-Forwarded-For`/`X-Real-IP` вместо `RemoteIpAddress`
 - [ ] **SEC-04**: Yandex API ключ передаётся через заголовок запроса, а не встраивается в URL
 - [x] **SEC-05**: `MapController` имеет явную политику rate limiting; отсутствие `[Authorize]` задокументировано в OpenAPI
 
@@ -88,7 +88,7 @@
 | BUG-05 | Phase 2 | Pending |
 | SEC-01 | Phase 3 | Pending |
 | SEC-02 | Phase 3 | Complete |
-| SEC-03 | Phase 3 | Pending |
+| SEC-03 | Phase 3 | Complete |
 | SEC-04 | Phase 3 | Pending |
 | SEC-05 | Phase 3 | Complete |
 | PERF-01 | Phase 4 | Pending |
