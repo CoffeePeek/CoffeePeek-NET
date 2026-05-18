@@ -442,17 +442,19 @@ services.AddHttpClient<IYandexGeocodingService, YandexGeocodingService>(client =
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Yandex API key header support (A2)**
    - What we know: The API key is currently passed as `?apikey=...` in the URL; moving it to headers is the preferred fix
    - What's unclear: Whether Yandex Geocoding API v1.x accepts authentication via HTTP header
    - Recommendation: Planner should default to the URL-construction approach with a log sanitization filter as a safe fallback; document the header approach as the preferred long-term fix pending Yandex confirmation
+   - **RESOLVED:** Gated by a blocking checkpoint in Plan 03-04 Task 1 — executor must confirm Yandex API header auth support before proceeding to Task 2. Option B (log sanitization comment) is the safe fallback if header auth is unsupported.
 
 2. **Health endpoint security exposure**
    - What we know: Removing the `IsDevelopment()` guard exposes `/health` in Production
    - What's unclear: Whether Railway routing exposes the downstream services' `/health` endpoints externally (they use internal `.railway.internal` hostnames, so they should be inaccessible from the internet)
    - Recommendation: Safe to expose; the health endpoints return only `{"status":"Healthy"}` with no PII and are on internal hostnames only
+   - **RESOLVED:** Safe to expose — downstream services use `.railway.internal` hostnames which are not routable from the public internet. Health endpoints return only `{"status":"Healthy"}` with no PII.
 
 ---
 

@@ -22,12 +22,12 @@ progress:
 
 ## Current Phase
 
-Phase 3: Security Hardening — Ready to plan
+Phase 3: Security Hardening — Ready to execute (4 plans, 1 wave)
 
 ## Next Up
 
 Phase 3: Security Hardening
--> Run: /gsd:plan-phase 3 then /gsd:execute-phase 3
+-> Run: /gsd:execute-phase 3
 
 ## Project Reference
 
