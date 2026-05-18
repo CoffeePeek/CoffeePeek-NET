@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Tech Debt Resolution
 status: executing
-stopped_at: Phase 2 complete — all 4 plans executed, 5 bugs fixed, 6 regression tests added.
-last_updated: "2026-05-18T19:10:33.678Z"
+stopped_at: Completed 03-03-PLAN.md — X-Forwarded-For rate limit partitioning + MapController AllowAnonymous
+last_updated: "2026-05-18T19:11:16.508Z"
 last_activity: 2026-05-17
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 12
-  completed_plans: 12
-  percent: 44
+  completed_plans: 11
+  percent: 40
 ---
 
 # Project State
@@ -71,6 +71,8 @@ Phase 5 [..........] 0%
 - BUG-01: CoffeeBean.ListPattern() must use "coffeebean:list:*" prefix to match write key for Redis cache invalidation
 - BUG-02: SearchCoffeeShopsHandler returns descriptive message "Failed to retrieve coffee shop search results" (not empty "Error")
 - BUG-04: GetCoffeeShop uses GetUserId() (nullable) not GetUserIdOrThrow() — endpoint is anonymous-friendly without [Authorize]
+- SEC-03: X-Forwarded-For leftmost IP as GlobalLimiter partition key; RemoteIpAddress as fallback for non-proxy deployments
+- SEC-05: [AllowAnonymous] on MapController without [EnableRateLimiting] — rate limiting enforced at YARP layer
 
 ### Active Blockers
 
@@ -107,6 +109,6 @@ All 7 TD items resolved:
 
 ## Session Continuity
 
-Last session: 2026-05-18T19:10:25.731Z
-Stopped at: Phase 2 complete — all 4 plans executed, 5 bugs fixed, 6 regression tests added.
-Resume: Plan and execute Phase 3 (Security Hardening).
+Last session: 2026-05-18T19:11:16.482Z
+Stopped at: Completed 03-03-PLAN.md — X-Forwarded-For rate limit partitioning + MapController AllowAnonymous
+Resume: Continue Phase 3 (plans 03-01, 03-02, 03-04 remain).

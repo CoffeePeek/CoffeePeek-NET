@@ -68,7 +68,7 @@ Plans:
 **Wave 1** *(all parallel — disjoint files)*
 - [ ] 03-01-PLAN.md — Fix Sentry PII config: SendDefaultPii=false, MaxRequestBodySize=None in Account, Shops, Moderation appsettings.json (SEC-01)
 - [ ] 03-02-PLAN.md — Enable YARP health checks (Enabled:true on 4 clusters) + remove IsDevelopment() guard from ServiceDefaults + add RateLimiterPolicy to shops-Map-route (SEC-02, SEC-05)
-- [ ] 03-03-PLAN.md — Fix rate limiting partition key to X-Forwarded-For in Gateway; add [AllowAnonymous] to MapController (SEC-03, SEC-05)
+- [x] 03-03-PLAN.md — Fix rate limiting partition key to X-Forwarded-For in Gateway; add [AllowAnonymous] to MapController (SEC-03, SEC-05)
 - [ ] 03-04-PLAN.md — Move Yandex API key from URL to DefaultRequestHeaders in Moderation Infrastructure (SEC-04) [has checkpoint]
 
 ### Phase 4: Performance Optimization
@@ -101,7 +101,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Tech Debt Cleanup | 4/4 | Complete   | 2026-05-17 |
 | 2. Bug Fixes | 4/4 | Complete   | 2026-05-18 |
-| 3. Security Hardening | 0/4 | Planned (ready to execute) | - |
+| 3. Security Hardening | 1/4 | In Progress | - |
 | 4. Performance Optimization | 0/0 | Not started | - |
 | 5. Test Coverage | 0/0 | Not started | - |
 
