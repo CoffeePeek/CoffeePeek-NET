@@ -41,7 +41,6 @@
   <Folder Name="/CoffeePeek/CoffeePeek.Shops/Tests/">
     <Project Path="CoffeePeek.Shops.Application.Tests/CoffeePeek.Shops.Application.Tests.csproj" />
     <Project Path="CoffeePeek.Shops.Domain.Tests/CoffeePeek.Shops.Domain.Tests.csproj" />
-    <Project Path="CoffeePeek.Shops.Application.Tests/CoffeePeek.Shops.Application.Tests.csproj" />
   </Folder>
   <Folder Name="/CoffeePeek/Shared/">
     <Project Path="CoffeePeek.Contract/CoffeePeek.Contract.csproj" />
