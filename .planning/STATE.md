@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Tech Debt Resolution
 status: executing
-stopped_at: Completed 03-03-PLAN.md — X-Forwarded-For rate limit partitioning + MapController AllowAnonymous
-last_updated: "2026-05-18T19:11:16.508Z"
-last_activity: 2026-05-17
+stopped_at: Completed 03-04-PLAN.md — Yandex API key moved from URL to DefaultRequestHeaders (Phase 3 complete)
+last_updated: "2026-05-18T19:25:00.000Z"
+last_activity: 2026-05-18
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 12
-  completed_plans: 11
-  percent: 40
+  completed_plans: 12
+  percent: 60
 ---
 
 # Project State
@@ -23,12 +23,12 @@ progress:
 
 ## Current Phase
 
-Phase 3: Security Hardening — Executing (plan 03-03 complete, 1/4 plans done)
+Phase 3: Security Hardening — COMPLETE (4/4 plans done)
 
 ## Next Up
 
-Phase 3: Security Hardening
--> Run: /gsd:execute-phase 3
+Phase 4: Performance Optimization
+-> Run: /gsd:execute-phase 4
 
 ## Project Reference
 
@@ -42,7 +42,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 ```
 Phase 1 [##########] 100% COMPLETE
 Phase 2 [##########] 100% COMPLETE
-Phase 3 [##........] 25%
+Phase 3 [##########] 100% COMPLETE
 Phase 4 [..........] 0%
 Phase 5 [..........] 0%
 ```
@@ -57,6 +57,7 @@ Phase 5 [..........] 0%
 | Requirements done | 12 |
 | Phase 03-security-hardening P02 | 5m | 2 tasks | 2 files |
 | Phase 03-security-hardening P03 | 5m | 2 tasks | 2 files |
+| Phase 03-security-hardening P04 | 8m | 1 task | 2 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,7 @@ Phase 5 [..........] 0%
 - BUG-04: GetCoffeeShop uses GetUserId() (nullable) not GetUserIdOrThrow() — endpoint is anonymous-friendly without [Authorize]
 - SEC-03: X-Forwarded-For leftmost IP as GlobalLimiter partition key; RemoteIpAddress as fallback for non-proxy deployments
 - SEC-05: [AllowAnonymous] on MapController without [EnableRateLimiting] — rate limiting enforced at YARP layer
+- SEC-04: Option A — Yandex API key moved to X-Yandex-API-Key DefaultRequestHeaders; URL is a relative path with no apikey param
 
 ### Active Blockers
 
@@ -84,6 +86,16 @@ None
 - `DeleteReviewFromCoffeeShop` is CRITICAL — any authenticated user can delete any review (BUG-03, Phase 2)
 - `SendDefaultPii: true` is HIGH — passwords would be sent to Sentry if DSN is filled in (SEC-01, Phase 3)
 - Naming typos (CoffePeek, Persistance, CoffeeShop.Moderation.*) are accepted as-is per CLAUDE.md
+
+## Phase 3 — Completed 2026-05-18
+
+All 5 SEC items resolved:
+
+- SEC-01: SendDefaultPii=false + MaxRequestBodySize=None in Account, Shops, Moderation appsettings.json
+- SEC-02: YARP health checks enabled (Enabled:true) on all 4 clusters + ConsecutiveFailures policy + removed IsDevelopment() guard
+- SEC-03: X-Forwarded-For leftmost IP as GlobalLimiter partition key; RemoteIpAddress as fallback
+- SEC-04: Yandex API key moved from URL query string to X-Yandex-API-Key DefaultRequestHeaders header
+- SEC-05: [AllowAnonymous] on MapController; RateLimiterPolicy added to shops-Map-route
 
 ## Phase 2 — Completed 2026-05-18
 
@@ -109,6 +121,6 @@ All 7 TD items resolved:
 
 ## Session Continuity
 
-Last session: 2026-05-18T19:11:16.482Z
-Stopped at: Completed 03-03-PLAN.md — X-Forwarded-For rate limit partitioning + MapController AllowAnonymous
-Resume: Continue Phase 3 (plans 03-01, 03-02, 03-04 remain).
+Last session: 2026-05-18T19:25:00.000Z
+Stopped at: Completed 03-04-PLAN.md — Yandex API key moved from URL to DefaultRequestHeaders (Phase 3 complete)
+Resume: Begin Phase 4 — Performance Optimization.
