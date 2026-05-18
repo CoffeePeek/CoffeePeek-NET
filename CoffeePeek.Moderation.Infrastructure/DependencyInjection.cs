@@ -14,6 +14,8 @@ public static class DependencyInjection
         {
             client.BaseAddress = new Uri(yandexOptions.BaseUrl);
             client.Timeout = TimeSpan.FromSeconds(yandexOptions.TimeoutSeconds);
+            // API key in header — never appears in request URLs or logs
+            client.DefaultRequestHeaders.Add("X-Yandex-API-Key", yandexOptions.ApiKey);
         });
         
         return services;

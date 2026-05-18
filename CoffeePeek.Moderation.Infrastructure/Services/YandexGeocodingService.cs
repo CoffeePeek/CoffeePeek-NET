@@ -26,7 +26,7 @@ public class YandexGeocodingService(
         try
         {
             var encodedAddress = Uri.EscapeDataString(address);
-            var url = $"{_options.BaseUrl}?apikey={_options.ApiKey}&geocode={encodedAddress}&format=json&results=1";
+            var url = $"?geocode={encodedAddress}&format=json&results=1";
 
             var response = await httpClient.GetFromJsonAsync<YandexGeocodingResponse>(url, cancellationToken);
 
