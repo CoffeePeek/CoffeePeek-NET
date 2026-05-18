@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Application.Features.Auth.Login;
+using CoffeePeek.Account.Domain;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
@@ -59,7 +60,7 @@ public class AuthServiceTests
         _jwtMock.Setup(j => j.GenerateRefreshToken()).Returns("refresh_token");
 
         // Act
-        var result = await CreateSut().LoginAsync(email, password, "device", "ip");
+        var result = await CreateSut().LoginAsync(email, password, "device", "ip", _ct);
 
         // Assert
         result.AccessToken.Should().Be("access_token");
@@ -112,7 +113,7 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task LoginAsync_WithValidCredentials_RevokesAllExistingSessions()
+    public async Task LoginAsync_WithValidCredentials_KeepsExistingSessionsWhenUnderLimit()
     {
         // Arrange
         var user = CreateConfirmedUser();
@@ -124,11 +125,33 @@ public class AuthServiceTests
         _jwtMock.Setup(j => j.GenerateRefreshToken()).Returns("new_refresh");
 
         // Act
-        await CreateSut().LoginAsync("user@example.com", "password", "device", "ip");
+        await CreateSut().LoginAsync("user@example.com", "password", "device", "ip", _ct);
 
-        // Assert — old session revoked, new one added
-        var oldSession = user.RefreshTokens.FirstOrDefault(t => t.Token == "old_token");
-        oldSession!.IsActive.Should().BeFalse();
+        // Assert — under MaxActiveSessions, existing sessions stay active
+        user.RefreshTokens.Should().Contain(t => t.Token == "old_token" && t.IsActive);
+        user.RefreshTokens.Should().Contain(t => t.Token == "new_refresh" && t.IsActive);
+    }
+
+    [Fact]
+    public async Task LoginAsync_WithValidCredentials_RevokesOldestSessionWhenAtLimit()
+    {
+        // Arrange
+        var user = CreateConfirmedUser();
+        for (var i = 0; i < BusinessConstants.MaxActiveSessions; i++)
+            user.AddSession($"session_{i}", TimeSpan.FromDays(7), "device", "ip");
+
+        _userRepoMock.Setup(r => r.GetByEmail(It.IsAny<string>(), _ct)).ReturnsAsync(user);
+        _hasherMock.Setup(h => h.VerifyPassword(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+        _jwtMock.Setup(j => j.GenerateAccessToken(user)).Returns("access");
+        _jwtMock.Setup(j => j.GenerateRefreshToken()).Returns("new_refresh");
+
+        // Act
+        await CreateSut().LoginAsync("user@example.com", "password", "device", "ip", _ct);
+
+        // Assert — oldest session evicted, new one added; others remain active
+        user.RefreshTokens.First(t => t.Token == "session_0").IsActive.Should().BeFalse();
+        user.RefreshTokens.Count(t => t.IsActive).Should().Be(BusinessConstants.MaxActiveSessions);
+        user.RefreshTokens.Should().Contain(t => t.Token == "new_refresh" && t.IsActive);
     }
 
     [Fact]
