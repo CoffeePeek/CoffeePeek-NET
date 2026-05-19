@@ -56,11 +56,16 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
         
         if (request.MinRating.HasValue)
         {
-            query = query.Where(s => context.Reviews
-                .Where(r => r.CoffeeShopId == s.Id && !r.IsSoftDelete)
+            var minRating = request.MinRating.Value;
+            var ratingSubquery = context.Reviews
+                .Where(r => !r.IsSoftDelete)
                 .GroupBy(r => r.CoffeeShopId)
-                .Select(g => g.Average(r => r.Rating.AverageRating))
-                .FirstOrDefault() >= request.MinRating.Value);
+                .Select(g => new { CoffeeShopId = g.Key, Avg = g.Average(r => r.Rating.AverageRating) });
+            // INNER JOIN: shops with no reviews are excluded when MinRating filter is active — consistent with previous behavior
+            query = query
+                .Join(ratingSubquery, s => s.Id, r => r.CoffeeShopId, (s, r) => new { Shop = s, r.Avg })
+                .Where(x => x.Avg >= minRating)
+                .Select(x => x.Shop);
         }
         
         var totalCount = await query.CountAsync(ct);
