@@ -119,6 +119,12 @@ All 7 TD items resolved:
 - TD-06: Empty CoffeeShopRepository.cs deleted
 - TD-07: #if DEBUG → IsDevelopment() in WolverineModule, CorsModule, GlobalExceptionHandler
 
+## Quick Tasks Completed
+
+| Date       | Slug                               | Description                                               |
+|------------|------------------------------------|-----------------------------------------------------------|
+| 2026-05-19 | resend-email-confirmation-public   | POST /api/users/email-confirmation/resend — public endpoint, sends confirmation email by email address without auth |
+
 ## Session Continuity
 
 Last session: 2026-05-18T19:25:00.000Z
