@@ -40,9 +40,10 @@ public sealed class RefreshToken : Entity<Guid>
 
     public void Revoke()
     {
-        if (IsRevoked) 
+        if (IsRevoked)
             return;
-        
+
         IsRevoked = true;
+        UpdatedAtUtc = DateTime.UtcNow;
     }
 }

@@ -132,7 +132,8 @@ namespace CoffeePeek.Account.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("About")
-                        .HasColumnType("text");
+                        .HasMaxLength(600)
+                        .HasColumnType("character varying(600)");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");

@@ -48,7 +48,7 @@ public class CoffeeShopReviewsController(IMessageBus bus, IUserContext userConte
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteReview(Guid shopId, Guid reviewId)
     {
-        var command = new DeleteReviewFromCoffeeShopCommand(reviewId);
+        var command = new DeleteReviewFromCoffeeShopCommand(reviewId, userContext.GetUserIdOrThrow());
         var response = await bus.InvokeAsync<Response>(command);
 
         return response.IsSuccess ? NoContent() : NotFound(response);

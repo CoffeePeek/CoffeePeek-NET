@@ -131,7 +131,7 @@ public record CacheKey(
             Description: "All coffee beans list",
             Service: "ShopsService");
         
-        public static string ListPattern() => "bean:list:*";
+        public static string ListPattern() => "coffeebean:list:*";
     }
     
     public static class Roaster

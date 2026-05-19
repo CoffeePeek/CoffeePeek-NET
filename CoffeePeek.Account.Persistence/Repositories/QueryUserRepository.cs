@@ -23,7 +23,7 @@ public class QueryUserRepository(AccountDbContext dbContext) : IQueryUserReposit
         return _repository
             .AsNoTracking()
             .Include(x => x.Credentials)
-            .FirstOrDefaultAsync(x => x.Credentials.OAuthProvider == provider, cancellationToken: ct);
+            .FirstOrDefaultAsync(x => x.Credentials.OAuthProvider == provider && x.Credentials.ProviderId == providerId, cancellationToken: ct);
     }
 
     public Task<User?> GetByEmail(string email, CancellationToken ct)

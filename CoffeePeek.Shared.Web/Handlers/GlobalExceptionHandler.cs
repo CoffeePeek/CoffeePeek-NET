@@ -25,16 +25,17 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IWeb
 
         var statusCode = GetStatusCode(exception);
 
+        ErrorResponse errorResponse;
+
 #if DEBUG
-        var errorResponse = new ErrorResponse(GetSafeMessage(exception))
+        errorResponse = new ErrorResponse(GetSafeMessage(exception))
         {
             StackTrace = exception.StackTrace,
             InnerException = exception.InnerException?.Message
         };
 #else
-        var errorResponse = new ErrorResponse(GetSafeMessage(exception));
+        errorResponse = new ErrorResponse(GetSafeMessage(exception));
 #endif
-
         httpContext.Response.StatusCode = statusCode;
         
         await httpContext.Response.WriteAsJsonAsync(errorResponse, cancellationToken);

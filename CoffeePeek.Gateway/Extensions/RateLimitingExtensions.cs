@@ -46,10 +46,15 @@ public static class RateLimitingExtensions
                 limiterOptions.QueueLimit = 0;
             });
 
-            // Use client IP as the partition key for all policies
+            // Partition by real client IP — Railway proxy injects X-Forwarded-For with real client IP as first entry.
+            // Fallback: X-Real-IP → RemoteIpAddress → "unknown". Split on comma handles multi-proxy chains.
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
             {
-                var clientIp = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var clientIp =
+                    context.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',')[0].Trim()
+                    ?? context.Request.Headers["X-Real-IP"].FirstOrDefault()
+                    ?? context.Connection.RemoteIpAddress?.ToString()
+                    ?? "unknown";
                 return RateLimitPartition.GetSlidingWindowLimiter(clientIp, _ => new SlidingWindowRateLimiterOptions
                 {
                     Window = TimeSpan.FromMinutes(1),

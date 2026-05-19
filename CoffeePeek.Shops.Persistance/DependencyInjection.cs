@@ -24,27 +24,25 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
     {
-#if DEBUG
-        builder.AddNpgsqlDbContext<ShopsDbContext>(
-            connectionName: AppResources.ShopsDb,
-            configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
-            configureSettings: settings => { settings.DisableRetry = true; }
-        );
-    
-        services.AddScoped<IUnitOfWork, UnitOfWork<ShopsDbContext>>();
-#else
-        var connectionString = GetConnectionString(services);
-
-        services.AddDatabase<ShopsDbContext>(
-            connectionString,
-            opt => opt.AddInterceptors(new AuditInterceptor())
-        );
-        
-        static string GetConnectionString(IServiceCollection services)
+        if (builder.Environment.IsDevelopment())
         {
-            return services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+            builder.AddNpgsqlDbContext<ShopsDbContext>(
+                connectionName: AppResources.ShopsDb,
+                configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
+                configureSettings: settings => { settings.DisableRetry = true; }
+            );
         }
-#endif
+        else
+        {
+            var connectionString = services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+
+            services.AddDatabase<ShopsDbContext>(
+                connectionString,
+                opt => opt.AddInterceptors(new AuditInterceptor())
+            );
+        }
+
+        services.AddScoped<IUnitOfWork, UnitOfWork<ShopsDbContext>>();
         
         
         // Queries

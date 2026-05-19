@@ -32,20 +32,23 @@ services.AddAuthorizationBuilder()
     .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
     .AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
 
-#if DEBUG
-builder.AddNpgsqlDbContext<MediaDbContext>(
-    connectionName: AppResources.MediaDb,
-    configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
-    configureSettings: settings => { settings.DisableRetry = true; }
-);
-#else
-var connectionString = services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+if (builder.Environment.IsDevelopment())
+{
+    builder.AddNpgsqlDbContext<MediaDbContext>(
+        connectionName: AppResources.MediaDb,
+        configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
+        configureSettings: settings => { settings.DisableRetry = true; }
+    );
+}
+else
+{
+    var connectionString = services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
 
-services.AddDatabase<MediaDbContext>(
-    connectionString,
-    opt => opt.AddInterceptors(new AuditInterceptor())
-);
-#endif
+    services.AddDatabase<MediaDbContext>(
+        connectionString,
+        opt => opt.AddInterceptors(new AuditInterceptor())
+    );
+}
 
 services.AddScoped<IUnitOfWork, UnitOfWork<MediaDbContext>>();
 services.AddScoped<IPhotoRepository, PhotoRepository>();

@@ -19,6 +19,11 @@ public class DeleteReviewFromCoffeeShopHandler
             throw new NotFoundException($"{nameof(Review)} not found by id");
         }
 
+        if (review.UserId != request.RequestingUserId)
+        {
+            throw new ForbiddenException("You do not have permission to delete this review");
+        }
+
         review.SoftDelete();
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

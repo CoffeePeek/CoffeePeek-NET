@@ -21,44 +21,31 @@ public static class DependencyInjection
     
     public static IServiceCollection AddPersistence(this IServiceCollection services, WebApplicationBuilder builder)
     {
-#if DEBUG
-        builder.AddNpgsqlDbContext<AccountDbContext>(
-            connectionName: AppResources.AccountDb,
-            configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
-            configureSettings: settings => { settings.DisableRetry = true; }
-        );
-    
-        services.AddScoped<IUnitOfWork, UnitOfWork<AccountDbContext>>();
-#else
-        var connectionString = GetConnectionString(services);
-
-        services.AddDatabase<AccountDbContext>(
-            connectionString,
-            opt => opt.AddInterceptors(new AuditInterceptor())
-        );
-        
-        static string GetConnectionString(IServiceCollection services)
+        if (builder.Environment.IsDevelopment())
         {
-            return services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+            builder.AddNpgsqlDbContext<AccountDbContext>(
+                connectionName: AppResources.AccountDb,
+                configureDbContextOptions: opt => opt.AddInterceptors(new AuditInterceptor()),
+                configureSettings: settings => { settings.DisableRetry = true; }
+            );
         }
-#endif
+        else
+        {
+            var connectionString = services.AddValidateOptions<PostgresCpOptions>().ConnectionString;
+
+            services.AddDatabase<AccountDbContext>(
+                connectionString,
+                opt => opt.AddInterceptors(new AuditInterceptor())
+            );
+        }
+
+        services.AddScoped<IUnitOfWork, UnitOfWork<AccountDbContext>>();
         
         // 2. Repository Implementations
-        services.AddScoped<UserRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IQueryUserRepository, QueryUserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPhotoMetadataRepository, PhotoMetadataRepository>();
-        services.AddScoped<IQueryUserRepository, QueryUserRepository>();
-
-        // 3. Repository Decorators (после базовых репозиториев)
-        services.AddScoped<IUserRepository, UserRepository>();
-        //services.AddScoped<IUserRepository>(provider =>
-        //{
-        //    var baseRepo = provider.GetRequiredService<UserRepository>();
-        //    var redisService = provider.GetRequiredService<ICacheService>();
-        //    return new CachedUserRepository(baseRepo, redisService);
-        //});
-
-        services.AddCacheModule();
 
         return services;
     }

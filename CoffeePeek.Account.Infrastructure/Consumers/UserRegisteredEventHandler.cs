@@ -14,7 +14,8 @@ public class UserRegisteredEventHandler(
 {
     public async Task Handle(UserRegisteredInternalEvent @event)
     {
-        var confirmationUrl = $"{config["WebClientUrl"]}/confirm-email?token={@event.ConfirmationToken}";
+        // Token placed in URL fragment — not sent to web server in HTTP logs
+        var confirmationUrl = $"{config["WebClientUrl"]}/confirm-email#{@event.ConfirmationToken}";
 
         var message = new EmailMessage
         {

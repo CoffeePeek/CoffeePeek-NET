@@ -23,7 +23,7 @@ public class JWTTokenService(IOptions<JWTOptions> options) : IJWTTokenService
             new(JwtRegisteredClaimNames.Email, user.Credentials.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.PreferredUsername, user.Username),
-            new(JwtRegisteredClaimNames.EmailVerified, user.Credentials.Email),
+            new(JwtRegisteredClaimNames.EmailVerified, user.Credentials.EmailConfirmed.ToString().ToLower()),
         };
         claims.AddRange(user.Roles.Select(ur => new Claim(ClaimTypes.Role, ur.Name)));
 
@@ -45,7 +45,7 @@ public class JWTTokenService(IOptions<JWTOptions> options) : IJWTTokenService
             _options.Issuer,
             _options.Audience,
             claims,
-            expires: DateTime.UtcNow.AddHours(lifetimeMinutes),
+            expires: DateTime.UtcNow.AddMinutes(lifetimeMinutes),
             signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
         );
         return new JwtSecurityTokenHandler().WriteToken(token);

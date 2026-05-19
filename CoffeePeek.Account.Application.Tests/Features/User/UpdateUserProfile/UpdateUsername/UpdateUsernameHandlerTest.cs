@@ -15,6 +15,7 @@ namespace CoffeePeek.Account.Application.Tests.Features.User.UpdateUserProfile.U
 public class UpdateUsernameHandlerTest
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly CancellationToken _cancellationToken = CancellationToken.None;
 
     private static CoffeePeek.Account.Domain.Entities.UserAggregate.User CreateUserMock(Guid userId, string username)
@@ -47,8 +48,9 @@ public class UpdateUsernameHandlerTest
 
         // Act
         var (response, @event) = await UpdateUsernameHandler.Handle(
-            command, 
-            _userRepositoryMock.Object, 
+            command,
+            _userRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _cancellationToken);
 
         // Assert
@@ -76,8 +78,9 @@ public class UpdateUsernameHandlerTest
 
         // Act
         Func<Task> act = async () => await UpdateUsernameHandler.Handle(
-            command, 
-            _userRepositoryMock.Object, 
+            command,
+            _userRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _cancellationToken);
 
         // Assert
@@ -102,8 +105,9 @@ public class UpdateUsernameHandlerTest
 
         // Act
         Func<Task> act = async () => await UpdateUsernameHandler.Handle(
-            command, 
-            _userRepositoryMock.Object, 
+            command,
+            _userRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _cancellationToken);
 
         // Assert
@@ -127,8 +131,9 @@ public class UpdateUsernameHandlerTest
 
         // Act
         Func<Task> act = async () => await UpdateUsernameHandler.Handle(
-            command, 
-            _userRepositoryMock.Object, 
+            command,
+            _userRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _cancellationToken);
 
         // Assert
@@ -152,8 +157,9 @@ public class UpdateUsernameHandlerTest
 
         // Act
         Func<Task> act = async () => await UpdateUsernameHandler.Handle(
-            command, 
-            _userRepositoryMock.Object, 
+            command,
+            _userRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _cancellationToken);
 
         // Assert
@@ -177,8 +183,9 @@ public class UpdateUsernameHandlerTest
 
         // Act
         Func<Task> act = async () => await UpdateUsernameHandler.Handle(
-            command, 
-            _userRepositoryMock.Object, 
+            command,
+            _userRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _cancellationToken);
 
         // Assert
@@ -202,8 +209,9 @@ public class UpdateUsernameHandlerTest
 
         // Act
         var (response, @event) = await UpdateUsernameHandler.Handle(
-            command, 
-            _userRepositoryMock.Object, 
+            command,
+            _userRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _cancellationToken);
 
         // Assert
@@ -232,8 +240,9 @@ public class UpdateUsernameHandlerTest
 
         // Act
         var (response, @event) = await UpdateUsernameHandler.Handle(
-            command, 
-            _userRepositoryMock.Object, 
+            command,
+            _userRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _cancellationToken);
 
         // Assert
@@ -267,8 +276,9 @@ public class UpdateUsernameHandlerTest
 
         // Act
         var (response, @event) = await UpdateUsernameHandler.Handle(
-            command, 
-            _userRepositoryMock.Object, 
+            command,
+            _userRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _cancellationToken);
 
         // Assert
@@ -302,8 +312,9 @@ public class UpdateUsernameHandlerTest
 
         // Act
         Func<Task> act = async () => await UpdateUsernameHandler.Handle(
-            command, 
-            _userRepositoryMock.Object, 
+            command,
+            _userRepositoryMock.Object,
+            _unitOfWorkMock.Object,
             _cancellationToken);
 
         // Assert

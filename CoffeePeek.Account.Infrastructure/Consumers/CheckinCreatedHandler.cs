@@ -8,10 +8,10 @@ public class CheckinCreatedHandler(IUserRepository userRepository, IUnitOfWork u
 {
     public async Task Handle(CheckinCreatedEvent message)
     {
-        var user = await userRepository.GetById(message.UserId);
+        var user = await userRepository.GetById(message.UserId)
+            ?? throw new InvalidOperationException($"User {message.UserId} not found for check-in event");
 
-        user?.Statistics.IncrementCheckIn();
-
+        user.Statistics.IncrementCheckIn();
         await unitOfWork.SaveChangesAsync();
     }
 }

@@ -94,7 +94,7 @@ public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : 
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetCoffeeShop(Guid id)
     {
-        var query = new GetCoffeeShopQuery(id);
+        var query = new GetCoffeeShopQuery(id, userContext.GetUserId());
         var response = await bus.InvokeAsync<Response<GetCoffeeShopResponse>>(query);
         
         return Ok(response);

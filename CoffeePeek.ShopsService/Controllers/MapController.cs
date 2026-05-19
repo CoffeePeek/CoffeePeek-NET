@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 
@@ -11,6 +12,7 @@ namespace CoffeePeek.ShopsService.Controllers;
 [Tags("Map Services")]
 [Produces("application/json")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
+[AllowAnonymous] // This endpoint is intentionally public — authentication not required
 public class MapController(IMessageBus bus) : ControllerBase
 {
     /// <summary>

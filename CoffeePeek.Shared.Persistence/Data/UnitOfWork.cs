@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shared.Persistence.Data;
@@ -7,7 +8,16 @@ public class UnitOfWork<TDbContext>(TDbContext context) : IUnitOfWork
     where TDbContext : DbContext
 {
     public async Task<int> SaveChangesAsync(CancellationToken ct = default)
-        => await context.SaveChangesAsync(ct);
+    {
+        try
+        {
+            return await context.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new ConflictException("A database conflict occurred. The record may already exist.", ex);
+        }
+    }
 
     public async Task ExecuteAsync(Func<Task> operation, CancellationToken ct = default)
     {
