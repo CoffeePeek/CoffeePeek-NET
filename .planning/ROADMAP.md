@@ -63,7 +63,7 @@ Plans:
   2. Gateway rate limiting uses X-Forwarded-For, not RemoteIpAddress
   3. Yandex API key does not appear in request URLs (headers only)
   4. YARP active health checks enabled with ConsecutiveFailures policy on all clusters
-**Plans:** 4 plans
+**Plans:** 4/4 plans complete
 
 **Wave 1** *(all parallel — disjoint files)*
 - [x] 03-01-PLAN.md — Fix Sentry PII config: SendDefaultPii=false, MaxRequestBodySize=None in Account, Shops, Moderation appsettings.json (SEC-01)
@@ -101,7 +101,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Tech Debt Cleanup | 4/4 | Complete   | 2026-05-17 |
 | 2. Bug Fixes | 4/4 | Complete   | 2026-05-18 |
-| 3. Security Hardening | 4/4 | Complete    | 2026-05-18 |
+| 3. Security Hardening | 4/4 | Complete   | 2026-05-19 |
 | 4. Performance Optimization | 0/0 | Not started | - |
 | 5. Test Coverage | 0/0 | Not started | - |
 
