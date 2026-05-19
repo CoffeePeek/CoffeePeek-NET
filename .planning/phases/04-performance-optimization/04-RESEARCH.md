@@ -444,17 +444,15 @@ public class UserNameChangedHandler(ShopsDbContext dbContext)
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **PERF-01: Shops with no reviews**
+1. **PERF-01: Shops with no reviews** (RESOLVED)
    - What we know: `INNER JOIN` to the rating subquery will exclude shops with zero reviews from results when `MinRating` filter is active.
-   - What's unclear: Is excluding shops with no reviews the intended behavior, or should they be included (treated as rating 0)?
-   - Recommendation: Use `LEFT JOIN ... WHERE (avg IS NULL OR avg >= minRating)` to include no-review shops. The correlated subquery implicitly returned `0` via `FirstOrDefault()` for shops with no reviews, which would fail a `>= minRating` filter anyway. Either approach is defensible — document the choice in a code comment.
+   - Resolution: INNER JOIN chosen. The original `FirstOrDefault()` returned `0.0` for shops with no reviews, which would fail any `>= minRating` filter — INNER JOIN preserves identical semantics. Decision is documented in the Plan 04-01 Task 1 inline comment: `// INNER JOIN: shops with no reviews are excluded when MinRating filter is active — consistent with previous behavior`.
 
-2. **PERF-02: Owned entity index on Address**
+2. **PERF-02: Owned entity index on Address** (RESOLVED)
    - What we know: `Address` is part of the `Location` owned entity; `HasIndex` must be declared inside the `OwnsOne` builder closure.
-   - What's unclear: EF Core 10 owned entity index fluent API with `HasMethod`/`HasOperators` — may need `HasDatabaseName` to avoid collision with auto-generated index names.
-   - Recommendation: Validate index migration generation with `dotnet ef migrations add ... --dry-run` equivalent before `make up-shops`.
+   - Resolution: OwnsOne closure syntax confirmed. The index is declared on the `location` builder inside `OwnsOne(e => e.Location, location => { ... })` — not on the root `builder`. Correct compilation is enforced by the `dotnet build` gate in Plan 04-04 Task 1 before the migration checkpoint.
 
 ---
 
