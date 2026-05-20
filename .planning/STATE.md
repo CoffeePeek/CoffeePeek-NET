@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Tech Debt Resolution
 status: executing
-stopped_at: Completed 03-04-PLAN.md — Yandex API key moved from URL to DefaultRequestHeaders (Phase 3 complete)
-last_updated: "2026-05-20T05:10:00.561Z"
-last_activity: 2026-05-19
+stopped_at: Phase 5 planning complete — 5 PLAN.md files created and verified (PASS)
+last_updated: "2026-05-20T10:00:00.000Z"
+last_activity: 2026-05-20
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 16
-  completed_plans: 15
-  percent: 60
+  completed_phases: 4
+  total_plans: 21
+  completed_plans: 16
+  percent: 76
 ---
 
 # Project State
@@ -19,16 +19,16 @@ progress:
 **Project:** CoffeePeek Tech Debt Resolution
 **Milestone:** v1.0 — Tech Debt Resolution
 **Status:** Ready to execute
-**Last Activity:** 2026-05-19
+**Last Activity:** 2026-05-20
 
 ## Current Phase
 
-Phase 3: Security Hardening — COMPLETE (4/4 plans done)
+Phase 5: Test Coverage — PLANNED (0/5 plans executed)
 
 ## Next Up
 
-Phase 4: Performance Optimization
--> Run: /gsd:execute-phase 4
+Execute Phase 5:
+-> Run: /gsd:execute-phase 5
 
 ## Project Reference
 
@@ -43,8 +43,8 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 Phase 1 [##########] 100% COMPLETE
 Phase 2 [##########] 100% COMPLETE
 Phase 3 [##########] 100% COMPLETE
-Phase 4 [..........] 0%
-Phase 5 [..........] 0%
+Phase 4 [##########] 100% COMPLETE
+Phase 5 [##........] 20% PLANNED
 ```
 
 ## Performance Metrics
@@ -52,9 +52,9 @@ Phase 5 [..........] 0%
 | Metric | Value |
 |--------|-------|
 | Phases total | 5 |
-| Phases complete | 2 |
+| Phases complete | 4 |
 | Requirements total | 27 |
-| Requirements done | 12 |
+| Requirements done | 17 |
 | Phase 03-security-hardening P02 | 5m | 2 tasks | 2 files |
 | Phase 03-security-hardening P03 | 5m | 2 tasks | 2 files |
 | Phase 03-security-hardening P04 | 8m | 1 task | 2 files |
@@ -86,6 +86,16 @@ None
 - `DeleteReviewFromCoffeeShop` is CRITICAL — any authenticated user can delete any review (BUG-03, Phase 2)
 - `SendDefaultPii: true` is HIGH — passwords would be sent to Sentry if DSN is filled in (SEC-01, Phase 3)
 - Naming typos (CoffePeek, Persistance, CoffeeShop.Moderation.*) are accepted as-is per CLAUDE.md
+
+## Phase 4 — Completed 2026-05-20
+
+All 5 PERF items resolved:
+
+- PERF-01: MinRating filter rewritten as LINQ Join subquery; eliminates correlated subquery
+- PERF-02: EF.Functions.ILike + pg_trgm GIN indexes on Name and Location.Address
+- PERF-03: Redundant Include removed from GetUserFavoriteCoffeeShops
+- PERF-04: RedisService.RemoveByPattern uses SCAN (KeysAsync) instead of KEYS
+- PERF-05: UserNameChangedHandler uses ExecuteUpdateAsync (1 SQL UPDATE, no load)
 
 ## Phase 3 — Completed 2026-05-18
 
@@ -121,6 +131,6 @@ All 7 TD items resolved:
 
 ## Session Continuity
 
-Last session: 2026-05-20T05:10:00.556Z
-Stopped at: Completed 03-04-PLAN.md — Yandex API key moved from URL to DefaultRequestHeaders (Phase 3 complete)
-Resume: Begin Phase 4 — Performance Optimization.
+Last session: 2026-05-20T10:00:00.000Z
+Stopped at: Phase 5 PLAN.md files created (5 plans, 2 waves) — plan checker PASS
+Resume: Execute Phase 5 — /gsd:execute-phase 5
