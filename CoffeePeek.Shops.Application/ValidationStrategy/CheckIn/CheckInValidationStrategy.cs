@@ -50,13 +50,13 @@ public class CheckInValidationStrategy(
                 return ValidationResult.Invalid("Rating is required when checking in publicly");
             }
 
-            if (command.Rating.Coffee < 0 || command.Rating.Coffee > 5
-                                          || command.Rating.Place < 0
-                                          || command.Rating.Place > 5
-                                          || command.Rating.Service < 0
-                                          || command.Rating.Service > 5)
+            if (command.Rating.Coffee < BusinessConstants.MinReviewRate || command.Rating.Coffee > BusinessConstants.MaxReviewRate
+                                          || command.Rating.Place < BusinessConstants.MinReviewRate
+                                          || command.Rating.Place > BusinessConstants.MaxReviewRate
+                                          || command.Rating.Service < BusinessConstants.MinReviewRate
+                                          || command.Rating.Service > BusinessConstants.MaxReviewRate)
             {
-                return ValidationResult.Invalid("Rating must be between 0 and 5");
+                return ValidationResult.Invalid($"Rating must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}");
             }
 
             if (command.Note == null)

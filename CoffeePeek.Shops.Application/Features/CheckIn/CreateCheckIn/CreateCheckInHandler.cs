@@ -71,7 +71,10 @@ public static class CreateCheckInHandler
                     ReviewDto = mapper.Map<ReviewDto>(review)
                 });
             }
-            catch (DomainException) { /* ignore */ }
+            catch (DomainException)
+            {
+                throw;
+            }
         }
 
         await unitOfWork.SaveChangesAsync(ct);
