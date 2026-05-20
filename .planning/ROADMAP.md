@@ -80,12 +80,12 @@ Plans:
   2. Name/Address search uses an index (no full sequential scan)
   3. `RedisService.RemoveByPattern` uses SCAN instead of KEYS
   4. `UserNameChangedHandler` executes one UPDATE instead of loading records into memory
-**Plans:** 4 plans
+**Plans:** 3/4 plans executed
 
 **Wave 1** *(parallel — disjoint files)*
-- [ ] 04-01-PLAN.md — Rewrite MinRating filter as LINQ Join subquery; remove redundant Include from GetUserFavoriteCoffeeShops (PERF-01, PERF-03)
-- [ ] 04-02-PLAN.md — Replace GetByUserId loop with ExecuteUpdateAsync in UserNameChangedHandler (PERF-05)
-- [ ] 04-03-PLAN.md — Replace _server.Keys().ToArray() with KeysAsync + await foreach in RedisService (PERF-04)
+- [x] 04-01-PLAN.md — Rewrite MinRating filter as LINQ Join subquery; remove redundant Include from GetUserFavoriteCoffeeShops (PERF-01, PERF-03)
+- [x] 04-02-PLAN.md — Replace GetByUserId loop with ExecuteUpdateAsync in UserNameChangedHandler (PERF-05)
+- [x] 04-03-PLAN.md — Replace _server.Keys().ToArray() with KeysAsync + await foreach in RedisService (PERF-04)
 
 **Wave 2** *(depends on Wave 1 green)*
 - [ ] 04-04-PLAN.md — Replace ToLower().Contains() with EF.Functions.ILike; add pg_trgm extension + GIN indexes; run migration (PERF-02)
@@ -110,7 +110,7 @@ Plans:
 | 1. Tech Debt Cleanup | 4/4 | Complete   | 2026-05-17 |
 | 2. Bug Fixes | 4/4 | Complete   | 2026-05-18 |
 | 3. Security Hardening | 4/4 | Complete   | 2026-05-19 |
-| 4. Performance Optimization | 0/4 | Not started | - |
+| 4. Performance Optimization | 3/4 | In Progress|  |
 | 5. Test Coverage | 0/0 | Not started | - |
 
 ---
