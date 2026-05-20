@@ -8,7 +8,7 @@
 - [x] **Phase 2: Bug Fixes** - Fix all known functional bugs — cache invalidation, ownership checks, personalization (completed 2026-05-18)
 - [x] **Phase 3: Security Hardening** - Eliminate security vulnerabilities — Sentry PII, rate limiting, API key in URL, health checks (completed 2026-05-18)
 - [x] **Phase 4: Performance Optimization** - Eliminate performance bottlenecks — correlated subquery, Redis KEYS, N+1 (completed 2026-05-20)
-- [ ] **Phase 5: Test Coverage** - Close critical test gaps — Shops Application handlers, Shops Domain, regression tests
+- [x] **Phase 5: Test Coverage** - Close critical test gaps — Shops Application handlers, Shops Domain, regression tests (completed 2026-05-20)
 
 ---
 
@@ -99,16 +99,16 @@ Plans:
   2. `DeleteReviewFromCoffeeShop` regression test: non-owner receives 403
   3. `CreateCheckInHandler` test: invalid rating is not silently swallowed
   4. `dotnet test CoffeePeek.slnx` passes without errors
-**Plans:** 0/5 plans complete
+**Plans:** 5/5 plans complete
 
 **Wave 1** *(parallel)*
-- [ ] 05-01-PLAN.md — Shops Domain unit tests: Review.Create, Rating.Create, CheckIn.Create, CoffeeShop constructor (TEST-02)
-- [ ] 05-02-PLAN.md — UpdateEmailRequestHandler tests (TEST-05)
-- [ ] 05-03-PLAN.md — AddToFavoriteHandler + GetShopsInBoundsHandler tests (TEST-01 partial)
+- [x] 05-01-PLAN.md — Shops Domain unit tests: Review.Create, Rating.Create, CheckIn.Create, CoffeeShop constructor (TEST-02)
+- [x] 05-02-PLAN.md — UpdateEmailRequestHandler tests (TEST-05)
+- [x] 05-03-PLAN.md — AddToFavoriteHandler + GetShopsInBoundsHandler tests (TEST-01 partial)
 
 **Wave 2** *(parallel, depends on Wave 1)*
-- [ ] 05-04-PLAN.md — Fix CreateCheckInHandler catch block (catch→throw) + CreateCheckInHandler tests (TEST-01, TEST-04)
-- [ ] 05-05-PLAN.md — SearchCoffeeShopsHandler + GetCoffeeShopHandler tests with ICacheService mocking (TEST-01 final)
+- [x] 05-04-PLAN.md — Fix CreateCheckInHandler catch block (catch→throw) + CreateCheckInHandler tests (TEST-01, TEST-04)
+- [x] 05-05-PLAN.md — SearchCoffeeShopsHandler + GetCoffeeShopHandler tests with ICacheService mocking (TEST-01 final)
 
 ---
 
@@ -120,7 +120,7 @@ Plans:
 | 2. Bug Fixes | 4/4 | Complete   | 2026-05-18 |
 | 3. Security Hardening | 4/4 | Complete   | 2026-05-19 |
 | 4. Performance Optimization | 4/4 | Complete   | 2026-05-20 |
-| 5. Test Coverage | 0/0 | Not started | - |
+| 5. Test Coverage | 5/5 | Complete   | 2026-05-20 |
 
 ---
 

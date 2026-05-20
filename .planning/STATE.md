@@ -2,40 +2,39 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Tech Debt Resolution
-status: executing
-stopped_at: Phase 5 planning complete — 5 PLAN.md files created and verified (PASS)
-last_updated: "2026-05-20T10:00:00.000Z"
+status: complete
+stopped_at: Phase 5 complete — all 5 plans executed, 199 tests passing
+last_updated: "2026-05-20T14:00:00.000Z"
 last_activity: 2026-05-20
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 21
-  completed_plans: 16
-  percent: 76
+  completed_plans: 21
+  percent: 100
 ---
 
 # Project State
 
 **Project:** CoffeePeek Tech Debt Resolution
 **Milestone:** v1.0 — Tech Debt Resolution
-**Status:** Ready to execute
+**Status:** COMPLETE
 **Last Activity:** 2026-05-20
 
 ## Current Phase
 
-Phase 5: Test Coverage — PLANNED (0/5 plans executed)
+Phase 5: Test Coverage — COMPLETE (5/5 plans executed)
 
 ## Next Up
 
-Execute Phase 5:
--> Run: /gsd:execute-phase 5
+Milestone v1.0 complete. Run `/gsd:complete-milestone` to archive and prepare next version.
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-05-17)
 
 **Core value:** Every bug, vulnerability, and performance issue from CONCERNS.md is fixed and covered by a test.
-**Current focus:** Phase 03 — security-hardening
+**Current focus:** Phase 05 — test-coverage (COMPLETE)
 
 ## Progress Bar
 
@@ -44,7 +43,7 @@ Phase 1 [##########] 100% COMPLETE
 Phase 2 [##########] 100% COMPLETE
 Phase 3 [##########] 100% COMPLETE
 Phase 4 [##########] 100% COMPLETE
-Phase 5 [##........] 20% PLANNED
+Phase 5 [##########] 100% COMPLETE
 ```
 
 ## Performance Metrics
@@ -52,9 +51,9 @@ Phase 5 [##........] 20% PLANNED
 | Metric | Value |
 |--------|-------|
 | Phases total | 5 |
-| Phases complete | 4 |
+| Phases complete | 5 |
 | Requirements total | 27 |
-| Requirements done | 17 |
+| Requirements done | 27 |
 | Phase 03-security-hardening P02 | 5m | 2 tasks | 2 files |
 | Phase 03-security-hardening P03 | 5m | 2 tasks | 2 files |
 | Phase 03-security-hardening P04 | 8m | 1 task | 2 files |
@@ -86,6 +85,18 @@ None
 - `DeleteReviewFromCoffeeShop` is CRITICAL — any authenticated user can delete any review (BUG-03, Phase 2)
 - `SendDefaultPii: true` is HIGH — passwords would be sent to Sentry if DSN is filled in (SEC-01, Phase 3)
 - Naming typos (CoffePeek, Persistance, CoffeeShop.Moderation.*) are accepted as-is per CLAUDE.md
+
+## Phase 5 — Completed 2026-05-20
+
+All 5 TEST items resolved:
+
+- TEST-01: Shops Application handler tests — AddToFavorite, GetShopsInBounds, CreateCheckIn, SearchCoffeeShops, GetCoffeeShop (19 tests total)
+- TEST-02: Shops Domain unit tests — Review.Create (9), Rating.Create (7), CheckIn.Create (4), CoffeeShop (3) = 23 new tests
+- TEST-04: CreateCheckInHandler DomainException regression — catch block fixed (catch→throw), test confirms propagation
+- TEST-05: UpdateEmailRequestHandler — 4 tests covering success, NotFoundException, DomainException, idempotency
+- BUG FIX: CheckInValidationStrategy rating lower-bound aligned with MinReviewRate=1 (was 0)
+
+`dotnet test` totals: Shops.Application.Tests 19 | Account.Application.Tests 145 | Shops.Domain.Tests 35 = **199 tests, 0 failed**
 
 ## Phase 4 — Completed 2026-05-20
 
@@ -131,6 +142,6 @@ All 7 TD items resolved:
 
 ## Session Continuity
 
-Last session: 2026-05-20T10:00:00.000Z
-Stopped at: Phase 5 PLAN.md files created (5 plans, 2 waves) — plan checker PASS
-Resume: Execute Phase 5 — /gsd:execute-phase 5
+Last session: 2026-05-20T14:00:00.000Z
+Stopped at: Phase 5 COMPLETE — all 5 plans executed, 199 tests passing, milestone v1.0 done
+Resume: Run `/gsd:complete-milestone` to archive milestone and start next version
