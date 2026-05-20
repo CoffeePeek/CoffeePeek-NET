@@ -17,8 +17,8 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
         
         if (!string.IsNullOrWhiteSpace(request.Query))
         {
-            var term = request.Query.Trim().ToLower();
-            query = query.Where(s => s.Name.ToLower().Contains(term) || s.Location.Address.ToLower().Contains(term));
+            var term = $"%{request.Query.Trim()}%";
+            query = query.Where(s => EF.Functions.ILike(s.Name, term) || EF.Functions.ILike(s.Location.Address, term));
         }
 
         if (request.CityId.HasValue)

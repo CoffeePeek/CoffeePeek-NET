@@ -14,6 +14,11 @@ public class CoffeeShopConfiguration : IEntityTypeConfiguration<CoffeeShop>
         builder.Property(x => x.Name).HasMaxLength(BusinessConstants.MaxCoffeeShopNameLength);
         builder.Property(x => x.Description).HasMaxLength(BusinessConstants.MaxCoffeeShopDescriptionLength);
 
+        builder.HasIndex(s => s.Name)
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops")
+            .HasDatabaseName("IX_Shops_Name_GIN");
+
         var navigationPhotos = builder.Metadata.FindNavigation(nameof(CoffeeShop.ShopPhotos));
         navigationPhotos?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
@@ -48,6 +53,11 @@ public class CoffeeShopConfiguration : IEntityTypeConfiguration<CoffeeShop>
         builder.OwnsOne(e => e.Location, location =>
         {
             location.HasIndex(l => new { l.Latitude, l.Longitude });
+
+            location.HasIndex(l => l.Address)
+                .HasMethod("gin")
+                .HasOperators("gin_trgm_ops")
+                .HasDatabaseName("IX_Shops_Address_GIN");
 
             location
                 .Property(l => l.Address)
