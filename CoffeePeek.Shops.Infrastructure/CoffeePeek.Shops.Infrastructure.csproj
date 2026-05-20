@@ -8,10 +8,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Shops.Application\CoffeePeek.Shops.Application.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shops.Persistance\CoffeePeek.Shops.Persistance.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Bogus"  />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     </ItemGroup>
 
 </Project>
