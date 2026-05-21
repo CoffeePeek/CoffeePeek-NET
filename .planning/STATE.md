@@ -2,6 +2,7 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Tech Debt Resolution
+
 status: complete
 stopped_at: Phase 5 complete — all 5 plans executed, 199 tests passing
 last_updated: "2026-05-20T14:00:00.000Z"
@@ -18,6 +19,7 @@ progress:
 
 **Project:** CoffeePeek Tech Debt Resolution
 **Milestone:** v1.0 — Tech Debt Resolution
+
 **Status:** COMPLETE
 **Last Activity:** 2026-05-20
 
@@ -140,7 +142,14 @@ All 7 TD items resolved:
 - TD-06: Empty CoffeeShopRepository.cs deleted
 - TD-07: #if DEBUG → IsDevelopment() in WolverineModule, CorsModule, GlobalExceptionHandler
 
+## Quick Tasks Completed
+
+| Date       | Slug                               | Description                                               |
+|------------|------------------------------------|-----------------------------------------------------------|
+| 2026-05-19 | resend-email-confirmation-public   | POST /api/users/email-confirmation/resend — public endpoint, sends confirmation email by email address without auth |
+
 ## Session Continuity
+
 
 Last session: 2026-05-20T14:00:00.000Z
 Stopped at: Phase 5 COMPLETE — all 5 plans executed, 199 tests passing, milestone v1.0 done
