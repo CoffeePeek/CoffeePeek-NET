@@ -78,6 +78,6 @@ public class RatingTests
         rating.Place.Should().Be(3);
         rating.Service.Should().Be(4);
         rating.Coffee.Should().Be(5);
-        // NOTE: AverageRating = (Place + Place + Service) / 3m — known bug (Coffee ignored). Not asserting AverageRating here.
+        rating.AverageRating.Should().Be((3m + 4m + 5m) / 3m);
     }
 }

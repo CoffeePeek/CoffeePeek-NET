@@ -175,10 +175,12 @@ public class RedisService : ICacheService
         }
     }
 
-    public async Task RemoveByPattern(string pattern)
+    public async Task RemoveByPattern(string pattern, CancellationToken cancellationToken = default)
     {
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (_server is null)
             {
                 _logger.LogWarning("Redis RemoveByPattern skipped because no Redis endpoints are configured");
@@ -187,7 +189,7 @@ public class RedisService : ICacheService
 
             // SCAN: KeysAsync with pageSize forces Redis SCAN cursor (non-blocking) instead of KEYS command
             var keysToDelete = new List<RedisKey>();
-            await foreach (var key in _server.KeysAsync(pattern: pattern, pageSize: 250))
+            await foreach (var key in _server.KeysAsync(pattern: pattern, pageSize: 250).WithCancellation(cancellationToken))
             {
                 keysToDelete.Add(key);
             }

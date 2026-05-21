@@ -38,7 +38,7 @@ See: .planning/PROJECT.md (updated 2026-05-17)
 
 ## Progress Bar
 
-```
+```text
 Phase 1 [##########] 100% COMPLETE
 Phase 2 [##########] 100% COMPLETE
 Phase 3 [##########] 100% COMPLETE

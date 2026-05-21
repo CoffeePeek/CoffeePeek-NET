@@ -80,7 +80,7 @@ Plans:
   2. Name/Address search uses an index (no full sequential scan)
   3. `RedisService.RemoveByPattern` uses SCAN instead of KEYS
   4. `UserNameChangedHandler` executes one UPDATE instead of loading records into memory
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 
 **Wave 1** *(parallel — disjoint files)*
 - [x] 04-01-PLAN.md — Rewrite MinRating filter as LINQ Join subquery; remove redundant Include from GetUserFavoriteCoffeeShops (PERF-01, PERF-03)

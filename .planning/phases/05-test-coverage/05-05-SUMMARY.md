@@ -59,7 +59,7 @@ metrics:
 
 ## Test Results
 
-```
+```text
 Пройден! : не пройдено 0, пройдено 11, пропущено 0, всего 11
 ```
 
@@ -74,7 +74,9 @@ metrics:
 ## Key Technical Decisions
 
 ### ICacheService Factory Mock (Pitfall 1)
+
 Оба хэндлера вызывают `GetAsync(cacheKey, factory, TimeSpan?, ct)`. Решение:
+
 ```csharp
 _cacheMock
     .Setup(c => c.GetAsync(
@@ -84,10 +86,13 @@ _cacheMock
         It.IsAny<CancellationToken>()))
     .ReturnsAsync(expectedValue);
 ```
+
 `ReturnsAsync` возвращает готовый объект без вызова factory. Это обходит необходимость настраивать зависимости внутри factory (ICoffeeShopQueries, IQueryReviewRepository, IMapper).
 
 ### GetCoffeeShopResponse.ShopDto
+
 Имя свойства в ответе — `ShopDto`, не `Shop`. Верифицировано по исходному коду `GetCoffeeShopResponse.cs`:
+
 ```csharp
 public sealed class GetCoffeeShopResponse(CoffeeShopDetailsDto shopDto)
 {

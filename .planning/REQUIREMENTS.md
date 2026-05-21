@@ -33,19 +33,19 @@
 
 ### Performance (Phase 4)
 
-- [ ] **PERF-01**: `MinRating` фильтр в `CoffeeShopQueries.Search` не использует correlated subquery — заменён на JOIN к pre-aggregated CTE или денормализованному полю `AverageRating`
-- [ ] **PERF-02**: Полнотекстовый поиск по `Name`/`Address` использует `ILIKE` с trigram индексом (`pg_trgm`) или `tsvector` вместо `LOWER().Contains()`
-- [ ] **PERF-03**: Лишний `.Include(x => x.CoffeeShop)` удалён из `GetUserFavoriteCoffeeShops` — `ProjectToType<>` работает без него
-- [ ] **PERF-04**: `RedisService.RemoveByPattern` использует `SCAN` (через `pageSize` параметр) вместо блокирующего `KEYS`
-- [ ] **PERF-05**: `UserNameChangedHandler` обновляет отзывы одним `ExecuteUpdateAsync` вместо загрузки всех в память
+- [x] **PERF-01**: `MinRating` фильтр в `CoffeeShopQueries.Search` не использует correlated subquery — заменён на JOIN к pre-aggregated CTE или денормализованному полю `AverageRating`
+- [x] **PERF-02**: Полнотекстовый поиск по `Name`/`Address` использует `ILIKE` с trigram индексом (`pg_trgm`) или `tsvector` вместо `LOWER().Contains()`
+- [x] **PERF-03**: Лишний `.Include(x => x.CoffeeShop)` удалён из `GetUserFavoriteCoffeeShops` — `ProjectToType<>` работает без него
+- [x] **PERF-04**: `RedisService.RemoveByPattern` использует `SCAN` (через `pageSize` параметр) вместо блокирующего `KEYS`
+- [x] **PERF-05**: `UserNameChangedHandler` обновляет отзывы одним `ExecuteUpdateAsync` вместо загрузки всех в память
 
 ### Test Coverage (Phase 5)
 
-- [ ] **TEST-01**: Unit тесты для всех Shops Application handlers: `SearchCoffeeShopsHandler`, `GetCoffeeShopHandler`, `CreateCheckInHandler`, `AddToFavoriteHandler`, `DeleteReviewFromCoffeeShopHandler`, `GetShopsInBoundsHandler`
-- [ ] **TEST-02**: Unit тесты для Shops Domain: `CoffeeShop` aggregate, `Review.Create` validation, `CheckIn.Create` invariants
-- [ ] **TEST-03**: Тест подтверждает, что `DeleteReviewFromCoffeeShop` возвращает 403 при несоответствии владельца
-- [ ] **TEST-04**: Тест `CreateCheckInHandler` покрывает path с невалидным rating (DomainException не должен молча проглатываться)
-- [ ] **TEST-05**: Unit тест для `Account.Application.Features.User.UpdateUserProfile.UpdateEmail` handler
+- [x] **TEST-01**: Unit тесты для всех Shops Application handlers: `SearchCoffeeShopsHandler`, `GetCoffeeShopHandler`, `CreateCheckInHandler`, `AddToFavoriteHandler`, `DeleteReviewFromCoffeeShopHandler`, `GetShopsInBoundsHandler`
+- [x] **TEST-02**: Unit тесты для Shops Domain: `CoffeeShop` aggregate, `Review.Create` validation, `CheckIn.Create` invariants
+- [x] **TEST-03**: Тест подтверждает, что `DeleteReviewFromCoffeeShop` возвращает 403 при несоответствии владельца
+- [x] **TEST-04**: Тест `CreateCheckInHandler` покрывает path с невалидным rating (DomainException не должен молча проглатываться)
+- [x] **TEST-05**: Unit тест для `Account.Application.Features.User.UpdateUserProfile.UpdateEmail` handler
 
 ## v2 Requirements
 
@@ -80,27 +80,27 @@
 | TD-04 | Phase 1 | Complete |
 | TD-05 | Phase 1 | Complete |
 | TD-06 | Phase 1 | Complete |
-| TD-07 | Phase 1 | Pending |
+| TD-07 | Phase 1 | Complete |
 | BUG-01 | Phase 2 | Complete |
 | BUG-02 | Phase 2 | Complete |
-| BUG-03 | Phase 2 | Pending |
+| BUG-03 | Phase 2 | Complete |
 | BUG-04 | Phase 2 | Complete |
-| BUG-05 | Phase 2 | Pending |
+| BUG-05 | Phase 2 | Complete |
 | SEC-01 | Phase 3 | Complete |
 | SEC-02 | Phase 3 | Complete |
 | SEC-03 | Phase 3 | Complete |
 | SEC-04 | Phase 3 | Complete |
 | SEC-05 | Phase 3 | Complete |
-| PERF-01 | Phase 4 | Pending |
-| PERF-02 | Phase 4 | Pending |
-| PERF-03 | Phase 4 | Pending |
-| PERF-04 | Phase 4 | Pending |
-| PERF-05 | Phase 4 | Pending |
-| TEST-01 | Phase 5 | Pending |
-| TEST-02 | Phase 5 | Pending |
-| TEST-03 | Phase 5 | Pending |
-| TEST-04 | Phase 5 | Pending |
-| TEST-05 | Phase 5 | Pending |
+| PERF-01 | Phase 4 | Complete |
+| PERF-02 | Phase 4 | Complete |
+| PERF-03 | Phase 4 | Complete |
+| PERF-04 | Phase 4 | Complete |
+| PERF-05 | Phase 4 | Complete |
+| TEST-01 | Phase 5 | Complete |
+| TEST-02 | Phase 5 | Complete |
+| TEST-03 | Phase 5 | Complete |
+| TEST-04 | Phase 5 | Complete |
+| TEST-05 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 27 total

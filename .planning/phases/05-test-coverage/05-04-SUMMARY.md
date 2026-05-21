@@ -96,7 +96,7 @@ All 19 tests in `CoffeePeek.Shops.Application.Tests` pass (0 failed).
 
 ## Test Results
 
-```
+```text
 dotnet test CoffeePeek.Shops.Application.Tests
 Total tests: 19
 Passed:      19

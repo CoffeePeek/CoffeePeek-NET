@@ -115,7 +115,6 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
     public Task<CoffeeShopDetailsDto[]> GetUserFavoriteCoffeeShops(Guid userId, CancellationToken cancellationToken)
     {
         return context.UserFavorites.AsNoTracking()
-            .AsSplitQuery()
             .Where(x => x.UserId == userId)
             .Select(x => x.CoffeeShop)
             .ProjectToType<CoffeeShopDetailsDto>()

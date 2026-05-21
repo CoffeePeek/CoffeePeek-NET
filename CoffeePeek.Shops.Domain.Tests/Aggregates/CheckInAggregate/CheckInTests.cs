@@ -58,4 +58,17 @@ public class CheckInTests
         // Assert
         checkIn.Note.Should().Be("trim");
     }
+
+    [Fact]
+    public void UpdateNote_WithNull_SetsNoteToNull()
+    {
+        // Arrange
+        var checkIn = CheckIn.Create(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddHours(-1));
+
+        // Act
+        checkIn.UpdateNote(null);
+
+        // Assert
+        checkIn.Note.Should().BeNull();
+    }
 }
