@@ -193,6 +193,7 @@ public class UsersController(IMessageBus bus, IUserContext userContext) : Contro
     /// Resend email confirmation by email address (public, no auth required)
     /// </summary>
     [HttpPost("email-confirmation/resend")]
+    [AllowAnonymous]
     [ProducesResponseType<Response>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ResendEmailConfirmByEmail([FromBody] ResendEmailConfirmationByEmailCommand command,
