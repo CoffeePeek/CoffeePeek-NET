@@ -33,6 +33,7 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasPostgresExtension("pg_trgm");
         modelBuilder.ApplyConfiguration(new CoffeeShopConfiguration());
         
         modelBuilder.Entity<Review>(entity =>

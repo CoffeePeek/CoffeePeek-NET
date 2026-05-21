@@ -1,25 +1,16 @@
 using CoffeePeek.Contract.Events.Account;
-using CoffeePeek.Shared.Kernel;
-using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
+using CoffeePeek.Shops.Persistance.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
-public class UserNameChangedHandler(IReviewRepository reviewRepository, IUnitOfWork unitOfWork)
+public class UserNameChangedHandler(ShopsDbContext dbContext)
 {
     public async Task Handle(UserNameChangedEvent message, CancellationToken cancellationToken = default)
     {
-        var reviews = await reviewRepository.GetByUserId(message.UserId, cancellationToken);
-
-        if (reviews.Length == 0)
-        {
-            return;
-        }
-
-        foreach (var review in reviews)
-        {
-            review.UpdateUserName(message.NewUserName);
-        }
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        // ExecuteUpdateAsync bypasses EF Core change tracker (skips AuditInterceptor.UpdatedAtUtc). Acceptable: UserName on Review is a denormalized display field, not auditable content.
+        await dbContext.Reviews
+            .Where(r => r.UserId == message.UserId && r.UserName != message.NewUserName)
+            .ExecuteUpdateAsync(s => s.SetProperty(r => r.UserName, message.NewUserName), cancellationToken);
     }
 }

@@ -12,5 +12,5 @@ public interface ICacheService
     Task RemoveAsync(CacheKey cacheKey);
     Task<bool> ExistsAsync(CacheKey cacheKey);
     
-    Task RemoveByPattern(string pattern);
+    Task RemoveByPattern(string pattern, CancellationToken cancellationToken = default);
 }

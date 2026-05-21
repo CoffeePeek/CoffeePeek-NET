@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- Suppresses NETSDK1226: AspNetCore.App prune data unavailable in this SDK version.
+         Safe to suppress — does not affect runtime behavior or published output. -->
+    <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
+  </PropertyGroup>
+</Project>
