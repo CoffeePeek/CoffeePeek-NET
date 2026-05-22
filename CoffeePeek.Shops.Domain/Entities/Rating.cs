@@ -16,7 +16,7 @@ public record Rating
         Place = place;
         Service = service;
         Coffee = coffee;
-        AverageRating = (Place + Place + Service) / 3m;
+        AverageRating = (Place + Service + Coffee) / 3m;
     }
 
     public static Rating Create(int place, int service, int coffee)
@@ -41,6 +41,6 @@ public record Rating
         Coffee = coffee;
         Place = place;
         Service = service;
-        AverageRating = (Place + Place + Service) / 3m;
+        AverageRating = (Place + Service + Coffee) / 3m;
     }
 }

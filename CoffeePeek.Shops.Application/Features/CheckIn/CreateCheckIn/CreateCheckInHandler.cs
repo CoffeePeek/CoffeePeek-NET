@@ -71,7 +71,11 @@ public static class CreateCheckInHandler
                     ReviewDto = mapper.Map<ReviewDto>(review)
                 });
             }
-            catch (DomainException) { /* ignore */ }
+            // TEST-04: rethrow explicitly so DomainException is not swallowed by the outer try/catch
+            catch (DomainException)
+            {
+                throw;
+            }
         }
 
         await unitOfWork.SaveChangesAsync(ct);

@@ -1,6 +1,7 @@
 using CoffeePeek.Account.Application.Features.Auth.CheckUserExistsByEmail;
 using CoffeePeek.Account.Application.Features.Auth.Email.ConfirmEmail;
 using CoffeePeek.Account.Application.Features.Auth.Email.ResendEmailConfirmation;
+using CoffeePeek.Account.Application.Features.Auth.Email.ResendEmailConfirmationByEmail;
 using CoffeePeek.Account.Application.Features.Auth.RegisterUser;
 using CoffeePeek.Account.Application.Features.User.DeleteUser;
 using CoffeePeek.Account.Application.Features.User.GetProfile;
@@ -185,6 +186,20 @@ public class UsersController(IMessageBus bus, IUserContext userContext) : Contro
         var request = new DeleteUserCommand(userContext.GetUserIdOrThrow());
         var response = await bus.InvokeAsync<Response<bool>>(request, cancellationToken);
         
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Resend email confirmation by email address (public, no auth required)
+    /// </summary>
+    [HttpPost("email-confirmation/resend")]
+    [AllowAnonymous]
+    [ProducesResponseType<Response>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ResendEmailConfirmByEmail([FromBody] ResendEmailConfirmationByEmailCommand command,
+        CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<Response>(command, cancellationToken);
         return Ok(response);
     }
 

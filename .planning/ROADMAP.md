@@ -7,8 +7,8 @@
 - [x] **Phase 1: Tech Debt Cleanup** - Eliminate compile-time branching, hardcoded tokens, empty files, wrong exceptions, broken login flow (completed 2026-05-17)
 - [x] **Phase 2: Bug Fixes** - Fix all known functional bugs — cache invalidation, ownership checks, personalization (completed 2026-05-18)
 - [x] **Phase 3: Security Hardening** - Eliminate security vulnerabilities — Sentry PII, rate limiting, API key in URL, health checks (completed 2026-05-18)
-- [ ] **Phase 4: Performance Optimization** - Eliminate performance bottlenecks — correlated subquery, Redis KEYS, N+1
-- [ ] **Phase 5: Test Coverage** - Close critical test gaps — Shops Application handlers, Shops Domain, regression tests
+- [x] **Phase 4: Performance Optimization** - Eliminate performance bottlenecks — correlated subquery, Redis KEYS, N+1 (completed 2026-05-20)
+- [x] **Phase 5: Test Coverage** - Close critical test gaps — Shops Application handlers, Shops Domain, regression tests (completed 2026-05-20)
 
 ---
 
@@ -63,7 +63,7 @@ Plans:
   2. Gateway rate limiting uses X-Forwarded-For, not RemoteIpAddress
   3. Yandex API key does not appear in request URLs (headers only)
   4. YARP active health checks enabled with ConsecutiveFailures policy on all clusters
-**Plans:** 4 plans
+**Plans:** 4/4 plans complete
 
 **Wave 1** *(all parallel — disjoint files)*
 - [x] 03-01-PLAN.md — Fix Sentry PII config: SendDefaultPii=false, MaxRequestBodySize=None in Account, Shops, Moderation appsettings.json (SEC-01)
@@ -80,7 +80,15 @@ Plans:
   2. Name/Address search uses an index (no full sequential scan)
   3. `RedisService.RemoveByPattern` uses SCAN instead of KEYS
   4. `UserNameChangedHandler` executes one UPDATE instead of loading records into memory
-**Plans**: TBD
+**Plans:** 4/4 plans complete
+
+**Wave 1** *(parallel — disjoint files)*
+- [x] 04-01-PLAN.md — Rewrite MinRating filter as LINQ Join subquery; remove redundant Include from GetUserFavoriteCoffeeShops (PERF-01, PERF-03)
+- [x] 04-02-PLAN.md — Replace GetByUserId loop with ExecuteUpdateAsync in UserNameChangedHandler (PERF-05)
+- [x] 04-03-PLAN.md — Replace _server.Keys().ToArray() with KeysAsync + await foreach in RedisService (PERF-04)
+
+**Wave 2** *(depends on Wave 1 green)*
+- [x] 04-04-PLAN.md — Replace ToLower().Contains() with EF.Functions.ILike; add pg_trgm extension + GIN indexes; run migration (PERF-02)
 
 ### Phase 5: Test Coverage
 **Goal:** Close critical test gaps — Shops Application handlers, Shops Domain, regression tests
@@ -91,7 +99,16 @@ Plans:
   2. `DeleteReviewFromCoffeeShop` regression test: non-owner receives 403
   3. `CreateCheckInHandler` test: invalid rating is not silently swallowed
   4. `dotnet test CoffeePeek.slnx` passes without errors
-**Plans**: TBD
+**Plans:** 5/5 plans complete
+
+**Wave 1** *(parallel)*
+- [x] 05-01-PLAN.md — Shops Domain unit tests: Review.Create, Rating.Create, CheckIn.Create, CoffeeShop constructor (TEST-02)
+- [x] 05-02-PLAN.md — UpdateEmailRequestHandler tests (TEST-05)
+- [x] 05-03-PLAN.md — AddToFavoriteHandler + GetShopsInBoundsHandler tests (TEST-01 partial)
+
+**Wave 2** *(parallel, depends on Wave 1)*
+- [x] 05-04-PLAN.md — Fix CreateCheckInHandler catch block (catch→throw) + CreateCheckInHandler tests (TEST-01, TEST-04)
+- [x] 05-05-PLAN.md — SearchCoffeeShopsHandler + GetCoffeeShopHandler tests with ICacheService mocking (TEST-01 final)
 
 ---
 
@@ -101,9 +118,9 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Tech Debt Cleanup | 4/4 | Complete   | 2026-05-17 |
 | 2. Bug Fixes | 4/4 | Complete   | 2026-05-18 |
-| 3. Security Hardening | 4/4 | Complete    | 2026-05-18 |
-| 4. Performance Optimization | 0/0 | Not started | - |
-| 5. Test Coverage | 0/0 | Not started | - |
+| 3. Security Hardening | 4/4 | Complete   | 2026-05-19 |
+| 4. Performance Optimization | 4/4 | Complete   | 2026-05-20 |
+| 5. Test Coverage | 5/5 | Complete   | 2026-05-20 |
 
 ---
 
