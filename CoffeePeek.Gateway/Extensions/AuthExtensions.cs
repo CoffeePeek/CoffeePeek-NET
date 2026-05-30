@@ -55,6 +55,7 @@ public static class AuthExtensions
         });
 
         services.AddAuthorizationBuilder()
+            .AddPolicy("Authenticated",       policy => policy.RequireAuthenticatedUser())
             .AddPolicy(RoleConsts.Admin,      policy => policy.RequireRole(RoleConsts.Admin))
             .AddPolicy(RoleConsts.Owner,      policy => policy.RequireRole(RoleConsts.Owner))
             .AddPolicy(RoleConsts.User,       policy => policy.RequireRole(RoleConsts.User))
