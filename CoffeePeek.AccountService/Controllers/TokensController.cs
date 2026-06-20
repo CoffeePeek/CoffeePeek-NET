@@ -79,11 +79,13 @@ public class TokensController(IMessageBus bus, IUserContext userContext) : Contr
     }
 
     /// <summary>
-    /// Refresh token from cookies
+    /// Refresh token from cookies. Does not require a valid access token —
+    /// the user is resolved from the refresh token value itself.
     /// </summary>
     [HttpPut]
-    [Authorize]
+    [AllowAnonymous]
     [ProducesResponseType<Response<RefreshTokenResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Refresh()
@@ -96,9 +98,21 @@ public class TokensController(IMessageBus bus, IUserContext userContext) : Contr
         var deviceName = Request.Headers.UserAgent.ToString();
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-        var command = new RefreshTokenCommand(userContext.GetUserIdOrThrow(), refreshToken, deviceName, ipAddress);
+        var command = new RefreshTokenCommand(refreshToken, deviceName, ipAddress);
 
         var response = await bus.InvokeAsync<Response<RefreshTokenResponse>>(command);
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddDays(7)
+            };
+            Response.Cookies.Append("refreshToken", response.Data.RefreshToken, cookieOptions);
+        }
 
         return Ok(response);
     }

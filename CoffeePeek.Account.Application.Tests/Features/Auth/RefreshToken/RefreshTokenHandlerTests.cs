@@ -43,11 +43,11 @@ public class RefreshTokenHandlerTests
     public async Task Handle_WithValidToken_ReturnsNewTokenPair()
     {
         var user = CreateUserWithSession("valid_refresh");
-        _userRepoMock.Setup(r => r.GetById(user.Id, _ct)).ReturnsAsync(user);
+        _userRepoMock.Setup(r => r.GetByRefreshToken("valid_refresh", _ct)).ReturnsAsync(user);
         _jwtMock.Setup(j => j.GenerateRefreshToken()).Returns("new_refresh");
         _jwtMock.Setup(j => j.GenerateAccessToken(user)).Returns("new_access");
 
-        var response = await RefreshTokenHandler.Handle(new RefreshTokenCommand(user.Id, "valid_refresh"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
+        var response = await RefreshTokenHandler.Handle(new RefreshTokenCommand("valid_refresh"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
 
         response.IsSuccess.Should().BeTrue();
         response.Data!.AccessToken.Should().Be("new_access");
@@ -58,11 +58,11 @@ public class RefreshTokenHandlerTests
     public async Task Handle_WithValidToken_RevokesOldToken()
     {
         var user = CreateUserWithSession("old_refresh");
-        _userRepoMock.Setup(r => r.GetById(user.Id, _ct)).ReturnsAsync(user);
+        _userRepoMock.Setup(r => r.GetByRefreshToken("old_refresh", _ct)).ReturnsAsync(user);
         _jwtMock.Setup(j => j.GenerateRefreshToken()).Returns("new");
         _jwtMock.Setup(j => j.GenerateAccessToken(It.IsAny<DomainUser>())).Returns("access");
 
-        await RefreshTokenHandler.Handle(new RefreshTokenCommand(user.Id, "old_refresh"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
+        await RefreshTokenHandler.Handle(new RefreshTokenCommand("old_refresh"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
 
         user.RefreshTokens.Single(t => t.Token == "old_refresh").IsActive.Should().BeFalse();
     }
@@ -71,23 +71,23 @@ public class RefreshTokenHandlerTests
     public async Task Handle_WithValidToken_CallsSaveChanges()
     {
         var user = CreateUserWithSession("token");
-        _userRepoMock.Setup(r => r.GetById(user.Id, _ct)).ReturnsAsync(user);
+        _userRepoMock.Setup(r => r.GetByRefreshToken("token", _ct)).ReturnsAsync(user);
         _jwtMock.Setup(j => j.GenerateRefreshToken()).Returns("new");
         _jwtMock.Setup(j => j.GenerateAccessToken(It.IsAny<DomainUser>())).Returns("access");
 
-        await RefreshTokenHandler.Handle(new RefreshTokenCommand(user.Id, "token"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
+        await RefreshTokenHandler.Handle(new RefreshTokenCommand("token"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
 
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(_ct), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WhenUserNotFound_ThrowsNotFoundException()
+    public async Task Handle_WhenRefreshTokenNotFound_ThrowsUnauthorizedException()
     {
-        _userRepoMock.Setup(r => r.GetById(It.IsAny<Guid>(), _ct)).ReturnsAsync((DomainUser?)null);
+        _userRepoMock.Setup(r => r.GetByRefreshToken(It.IsAny<string>(), _ct)).ReturnsAsync((DomainUser?)null);
 
-        Func<Task> act = () => RefreshTokenHandler.Handle(new RefreshTokenCommand(Guid.NewGuid(), "token"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
+        Func<Task> act = () => RefreshTokenHandler.Handle(new RefreshTokenCommand("unknown_token"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
 
-        await act.Should().ThrowAsync<NotFoundException>().WithMessage("User not found");
+        await act.Should().ThrowAsync<UnauthorizedException>().WithMessage("Invalid refresh token");
     }
 
     [Fact]
@@ -96,9 +96,9 @@ public class RefreshTokenHandlerTests
         var user = CreateUserWithSession("active_token");
         user.RefreshTokens.First().Revoke();
         user.AddSession("another_active", TimeSpan.FromDays(7), "mobile", "10.0.0.1");
-        _userRepoMock.Setup(r => r.GetById(user.Id, _ct)).ReturnsAsync(user);
+        _userRepoMock.Setup(r => r.GetByRefreshToken("active_token", _ct)).ReturnsAsync(user);
 
-        Func<Task> act = () => RefreshTokenHandler.Handle(new RefreshTokenCommand(user.Id, "active_token"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
+        Func<Task> act = () => RefreshTokenHandler.Handle(new RefreshTokenCommand("active_token"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
 
         await act.Should().ThrowAsync<DomainException>().WithMessage("*Security breach*");
         user.RefreshTokens.All(t => !t.IsActive).Should().BeTrue();
@@ -111,9 +111,9 @@ public class RefreshTokenHandlerTests
         var user = DomainUser.Register("user@example.com", "testuser", "hash", role);
         user.AddSession("expired_token", TimeSpan.FromMilliseconds(1), "Chrome", "127.0.0.1");
         await Task.Delay(10);
-        _userRepoMock.Setup(r => r.GetById(user.Id, _ct)).ReturnsAsync(user);
+        _userRepoMock.Setup(r => r.GetByRefreshToken("expired_token", _ct)).ReturnsAsync(user);
 
-        Func<Task> act = () => RefreshTokenHandler.Handle(new RefreshTokenCommand(user.Id, "expired_token"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
+        Func<Task> act = () => RefreshTokenHandler.Handle(new RefreshTokenCommand("expired_token"), _userRepoMock.Object, _jwtMock.Object, _jwtOptions, _unitOfWorkMock.Object, _ct);
 
         await act.Should().ThrowAsync<DomainException>().WithMessage("*Security breach*");
     }

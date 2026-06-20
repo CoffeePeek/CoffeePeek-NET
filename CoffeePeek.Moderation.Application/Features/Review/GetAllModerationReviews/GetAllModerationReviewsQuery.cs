@@ -1,3 +1,10 @@
-﻿namespace CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
+﻿using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Contract.Enums;
 
-public record GetAllModerationReviewsQuery;
+namespace CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
+
+public record GetAllModerationReviewsQuery(
+    [Range(1, int.MaxValue)] int Page = 1,
+    [Range(1, 100)] int PageSize = 20,
+    ModerationStatus? Status = null,
+    string? Search = null);

@@ -23,11 +23,12 @@ public static class DependencyInjection
         services.AddControllersModule();
 
         // JWT validation happens in the Gateway — downstream services authenticate
-        // via X-User-Id / X-User-Roles headers injected by the Gateway.
+        // via X-User-Id / X-User-Role headers injected by the Gateway.
         services.AddHeaderUserContext();
 
         services.AddAuthorizationBuilder()
             .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))
+            .AddPolicy(RoleConsts.Moderator, policy => policy.RequireRole(RoleConsts.Moderator, RoleConsts.Admin))
             .AddPolicy(RoleConsts.User, policy => policy.RequireRole(RoleConsts.User));
 
         services.AddExceptionHandler<GlobalExceptionHandler>();

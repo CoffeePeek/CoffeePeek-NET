@@ -1,4 +1,6 @@
-﻿using CoffeePeek.Account.Application.Common.Interfaces;
+﻿using CoffeePeek.Account.Application.Features.Admin.Stats;
+using CoffeePeek.Account.Infrastructure.Admin;
+using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Account.Infrastructure.Consumers;
 using CoffeePeek.Account.Infrastructure.Identity;
@@ -37,6 +39,9 @@ public static class DependencyInjection
         // 4. OAuth
         services.AddValidateOptions<OAuthGoogleOptions>();
         services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+
+        services.AddHttpClient("admin-stats");
+        services.AddScoped<IAdminStatsClient, AdminStatsClient>();
 
         return services;
     }

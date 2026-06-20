@@ -36,7 +36,7 @@ public static class ChangeStatusModerationReviewHandler
                 break;
 
             case ModerationStatus.Rejected:
-                review.Reject(command.RejectReason!, command.UserId);
+                review.Reject(command.Comment ?? command.RejectReason!, command.UserId);
                 break;
 
             case ModerationStatus.Pending:

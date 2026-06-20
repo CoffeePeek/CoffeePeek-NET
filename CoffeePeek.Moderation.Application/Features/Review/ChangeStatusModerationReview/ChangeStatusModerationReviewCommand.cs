@@ -7,4 +7,5 @@ public record ChangeStatusModerationReviewCommand(
     [property: JsonIgnore] Guid UserId,
     Guid ModerationReviewId,
     ModerationStatus ModerationStatus,
+    string? Comment,
     string? RejectReason);

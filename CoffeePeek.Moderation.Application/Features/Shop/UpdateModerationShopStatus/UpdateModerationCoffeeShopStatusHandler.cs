@@ -33,7 +33,7 @@ public static class UpdateModerationCoffeeShopStatusHandler
         }
         else if (command.ModerationStatus == ModerationStatus.Rejected)
         {
-            shop.Reject("Rejected by moderator");
+            shop.Reject(command.Comment ?? "Rejected by moderator");
         }
 
         return (Response.Success(), outboundEvent);

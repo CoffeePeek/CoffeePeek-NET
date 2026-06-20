@@ -8,15 +8,30 @@ namespace CoffeePeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 public class GetAllModerationShopsHandler
 {
     public async Task<Response<GetAllModerationShopsResponse>> Handle(
-        GetAllModerationShopsQuery _, 
-        IQueryModerationShopRepository repository, 
+        GetAllModerationShopsQuery query,
+        IQueryModerationShopRepository repository,
         IMapper mapper,
         CancellationToken cancellationToken)
     {
-        var moderationShops = await repository.GetAllForReviewAsync(cancellationToken);
-        
-        var dtos = mapper.Map<ModerationShopDto[]>(moderationShops);
+        var domainStatus = query.Status.HasValue
+            ? (Domain.Aggregates.ModerationReviewAggregate.Enums.ModerationStatus?)query.Status.Value
+            : null;
 
-        return Response<GetAllModerationShopsResponse>.Success(new GetAllModerationShopsResponse(dtos));
+        var (items, totalCount) = await repository.GetPagedForReviewAsync(
+            query.Page,
+            query.PageSize,
+            domainStatus,
+            query.Search,
+            cancellationToken);
+
+        var dtos = mapper.Map<ModerationShopDto[]>(items);
+        var totalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize);
+
+        return Response<GetAllModerationShopsResponse>.Success(new GetAllModerationShopsResponse(
+            dtos,
+            totalCount,
+            totalPages,
+            query.Page,
+            query.PageSize));
     }
 }

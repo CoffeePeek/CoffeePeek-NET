@@ -1,6 +1,8 @@
-﻿using CoffeePeek.Contract.Enums;
+﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Enums;
 using CoffeePeek.Moderation.Application.Features.Review.ChangeStatusModerationReview;
 using CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
+using CoffeePeek.Moderation.Application.Features.Review.GetModerationReviewById;
 using CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
 using CoffeePeek.Moderation.Application.Features.Review.UpdateCoffeeShopReview;
 using CoffeePeek.Shared.Auth;
@@ -22,10 +24,29 @@ public class ModerationReviewsController(IMessageBus bus, IUserContext userConte
     [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    public async Task<IActionResult> GetAllModerationReviews()
+    public async Task<IActionResult> GetAllModerationReviews([FromQuery] GetAllModerationReviewsQuery query)
     {
-        var response = await bus.InvokeAsync<Response<GetAllModerationReviewsResponse>>(new GetAllModerationReviewsQuery());
+        var response = await bus.InvokeAsync<Response<GetAllModerationReviewsResponse>>(query);
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            Response.Headers.TryAdd("X-Total-Count", response.Data.TotalItems.ToString());
+            Response.Headers.TryAdd("X-Total-Pages", response.Data.TotalPages.ToString());
+            Response.Headers.TryAdd("X-Current-Page", response.Data.CurrentPage.ToString());
+            Response.Headers.TryAdd("X-Page-Size", response.Data.PageSize.ToString());
+        }
+
         return Ok(response);
+    }
+
+    [HttpGet("{id:guid}")]
+    [Authorize(Policy = RoleConsts.Moderator)]
+    [ProducesResponseType<Response<ModerationReviewDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetModerationReviewById(Guid id, CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<ModerationReviewDto>>(new GetModerationReviewByIdQuery(id), ct);
+        return response.IsSuccess ? Ok(response) : NotFound(response);
     }
 
     [HttpPost]

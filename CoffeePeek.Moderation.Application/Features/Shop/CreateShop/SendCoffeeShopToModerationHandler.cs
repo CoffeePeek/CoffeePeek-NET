@@ -1,7 +1,9 @@
 using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Application.Common.Models;
+using CoffeePeek.Moderation.Application.ErrorCodes;
 using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.Extensions.Logging;
 using Wolverine.Attributes;
@@ -27,8 +29,9 @@ public static class SendCoffeeShopToModerationHandler
             logger.LogWarning("Duplicate shop detected: {Name} at {Address}",
                 command.Name, command.Address);
 
-            return Response<SendCoffeeShopToModerationResponse>.Error(
-                "A coffee shop with that name and address is already located on the edge.");
+            throw new ConflictException(
+                "A coffee shop with that name and address is already pending moderation or has been approved.",
+                ShopModerationErrorCodes.DuplicateShop);
         }
 
         var geocodingResult = await TryGeocodeAsync(command.Address, geocodingService, logger, ct);

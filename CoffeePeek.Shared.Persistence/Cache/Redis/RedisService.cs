@@ -187,12 +187,7 @@ public class RedisService : ICacheService
                 return;
             }
 
-            // SCAN: KeysAsync with pageSize forces Redis SCAN cursor (non-blocking) instead of KEYS command
-            var keysToDelete = new List<RedisKey>();
-            await foreach (var key in _server.KeysAsync(pattern: pattern, pageSize: 250).WithCancellation(cancellationToken))
-            {
-                keysToDelete.Add(key);
-            }
+            var keysToDelete = await CollectKeysByPatternAsync(pattern, int.MaxValue, cancellationToken);
             if (keysToDelete.Count > 0)
             {
                 await _db.KeyDeleteAsync(keysToDelete.ToArray());
@@ -206,5 +201,51 @@ public class RedisService : ICacheService
         {
             _logger.LogError(ex, "Redis RemoveByPattern failed for pattern {Pattern}", pattern);
         }
+    }
+
+    public async Task<IReadOnlyList<string>> GetKeysByPatternAsync(
+        string pattern,
+        int limit,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (_server is null)
+            {
+                _logger.LogWarning("Redis GetKeysByPatternAsync skipped because no Redis endpoints are configured");
+                return [];
+            }
+
+            var keys = await CollectKeysByPatternAsync(pattern, limit, cancellationToken);
+            return keys.Select(k => k.ToString()).ToArray();
+        }
+        catch (RedisConnectionException ex)
+        {
+            _logger.LogWarning(ex, "Redis GetKeysByPatternAsync unavailable for pattern {Pattern}", pattern);
+            return [];
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Redis GetKeysByPatternAsync failed for pattern {Pattern}", pattern);
+            return [];
+        }
+    }
+
+    private async Task<List<RedisKey>> CollectKeysByPatternAsync(
+        string pattern,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        var keys = new List<RedisKey>();
+        await foreach (var key in _server!.KeysAsync(pattern: pattern, pageSize: 250).WithCancellation(cancellationToken))
+        {
+            keys.Add(key);
+            if (keys.Count >= limit)
+                break;
+        }
+
+        return keys;
     }
 }
