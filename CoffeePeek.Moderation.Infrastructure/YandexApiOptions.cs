@@ -5,6 +5,7 @@ namespace CoffeePeek.Moderation.Infrastructure;
 public class YandexApiOptions
 {
     [Required] public string ApiKey { get; set; } = string.Empty;
-    [Required] public string BaseUrl { get; set; } = "https://geocode-maps.yandex.ru/1.x/";
+    [Required] public string BaseUrl { get; set; } = "https://geocode-maps.yandex.ru/v1/";
+    [Required] public string Lang { get; set; } = "ru_RU";
     [Range(1, 300)] public int TimeoutSeconds { get; set; } = 30;
 }

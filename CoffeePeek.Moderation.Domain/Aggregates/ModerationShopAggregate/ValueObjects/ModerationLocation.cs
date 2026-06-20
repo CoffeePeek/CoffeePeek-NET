@@ -16,6 +16,12 @@ public record ModerationLocation
     {
     }
     
+    public ModerationLocation(string address)
+    {
+        Address = address;
+        IsAddressValidated = false;
+    }
+
     public ModerationLocation(string validatedAddress, decimal lat, decimal lon)
     {
         Latitude = lat;
