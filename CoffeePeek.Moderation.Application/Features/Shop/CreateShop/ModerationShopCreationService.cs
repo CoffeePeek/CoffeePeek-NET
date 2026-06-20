@@ -21,12 +21,10 @@ public class ModerationShopCreationService(IModerationShopRepository shopReposit
             command.Description
         );
 
-        if (geocodingResult != null)
-        {
-            var location = new ModerationLocation(command.Address, lat: geocodingResult.Latitude,
-                lon: geocodingResult.Longitude);
-            shop.SetLocation(location);
-        }
+        var location = geocodingResult != null
+            ? new ModerationLocation(command.Address, geocodingResult.Latitude, geocodingResult.Longitude)
+            : new ModerationLocation(command.Address);
+        shop.SetLocation(location);
 
         if (command.PriceRange != null)
         {

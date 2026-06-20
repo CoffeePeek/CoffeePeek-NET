@@ -32,16 +32,26 @@ public static class SendCoffeeShopToModerationHandler
         }
 
         var geocodingResult = await TryGeocodeAsync(command.Address, geocodingService, logger, ct);
+        var isAddressValidated = geocodingResult != null;
+
+        if (!isAddressValidated)
+        {
+            logger.LogWarning(
+                "Geocoding failed for address: {Address}. Shop will be saved with unvalidated address.",
+                command.Address);
+        }
 
         var shopId = await creationService.Create(command, geocodingResult, ct);
 
-        var responseData = new SendCoffeeShopToModerationResponse(shopId, "Pending");
+        var responseData = new SendCoffeeShopToModerationResponse(shopId, "Pending", isAddressValidated);
 
         logger.LogInformation("Shop {ShopId} successfully sent to moderation", shopId);
 
-        return Response<SendCoffeeShopToModerationResponse>.Success(
-            responseData,
-            "The application has been accepted and will be reviewed by the moderator.");
+        var message = isAddressValidated
+            ? "The application has been accepted and will be reviewed by the moderator."
+            : "The application has been accepted. Address coordinates could not be verified automatically and will be checked by a moderator.";
+
+        return Response<SendCoffeeShopToModerationResponse>.Success(responseData, message);
     }
 
     private static async Task<GeocodingResult?> TryGeocodeAsync(

@@ -17,7 +17,20 @@
       "Bash(dotnet test *)",
       "Bash(git rm *)",
       "Bash(dotnet ef migrations *)",
-      "Bash(dotnet tool *)"
+      "Bash(dotnet tool *)",
+      "WebSearch",
+      "Bash(git -C /home/arseny/RiderProjects/CoffeePeek-NET log --oneline --all --grep=\"04-01\" --since=\"1 hour ago\")",
+      "Bash(git -C /home/arseny/RiderProjects/CoffeePeek-NET log --oneline --all --grep=\"04-02\" --since=\"1 hour ago\")",
+      "Bash(git -C /home/arseny/RiderProjects/CoffeePeek-NET log --oneline --all --grep=\"04-03\" --since=\"1 hour ago\")",
+      "Bash(git worktree *)",
+      "Bash(git branch *)",
+      "Bash(grep -v \"^$\")",
+      "Bash(grep -E \"error CS|Ошибок|Предупреждений|dll$\")",
+      "Bash(grep -E \"Ошибок|Предупреждений|\\\\.dll$|^Сборка\")",
+      "Bash(gh pr *)",
+      "Bash(gh auth *)",
+      "Bash(git checkout *)",
+      "Bash(git push *)"
     ]
   }
 }
