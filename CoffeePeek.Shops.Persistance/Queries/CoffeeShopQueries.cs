@@ -2,6 +2,7 @@
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Persistance.Configuration;
 using Mapster;
 using MapsterMapper;
@@ -13,7 +14,8 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
 {
     public async Task<(ShortShopDto[] Items, int TotalCount)> Search(SearchCoffeeShopsQuery request, CancellationToken ct)
     {
-        var query = context.Shops.AsNoTracking();
+        var query = context.Shops.AsNoTracking()
+            .Where(s => s.Status == CoffeeShopStatus.Active);
         
         if (!string.IsNullOrWhiteSpace(request.Query))
         {
@@ -94,7 +96,7 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
     public Task<MapShopDto[]> GetShopsInBounds(GetShopsInBoundsQuery query, CancellationToken ct = default)
     {
         return context.Shops.AsNoTracking()
-            .Where(s => 
+            .Where(s => s.Status == CoffeeShopStatus.Active &&
                         s.Location.Latitude.HasValue &&
                         s.Location.Longitude.HasValue &&
                         s.Location.Latitude >= query.MinLat &&

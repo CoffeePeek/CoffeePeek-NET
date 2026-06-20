@@ -44,6 +44,7 @@ public static class DependencyInjection
         services.AddScoped<IModerationShopRepository, ModerationShopRepository>();
         services.AddScoped<IModerationReviewRepository, ModerationReviewRepository>();
         services.AddScoped<IAdminModerationStatsQueryRepository, AdminModerationStatsQueryRepository>();
+        services.AddScoped<IModerationAuditLogRepository, ModerationAuditLogRepository>();
 
         return services;
     }

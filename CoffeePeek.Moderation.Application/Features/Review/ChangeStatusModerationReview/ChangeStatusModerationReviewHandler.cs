@@ -1,7 +1,10 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
+using CoffeePeek.Moderation.Application.Features.Admin.Audit;
+using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
+using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
@@ -14,6 +17,7 @@ public static class ChangeStatusModerationReviewHandler
     public static async Task<(UpdateEntityResponse<ModerationStatus>, ModerationReviewApprovedEvent?)> Handle(
         ChangeStatusModerationReviewCommand command,
         IModerationReviewRepository repository,
+        IModerationAuditLogRepository auditLogRepository,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         CancellationToken ct)
@@ -26,26 +30,55 @@ public static class ChangeStatusModerationReviewHandler
         ModerationReviewApprovedEvent? approvedEvent = null;
 
         var oldStatus = review.ModerationStatus;
+        string? auditComment = null;
+
         switch (command.ModerationStatus)
         {
             case ModerationStatus.Approved:
                 review.Approve(command.UserId);
-                // Маппим в DTO и готовим событие к отправке
                 var dto = mapper.Map<ModerationReviewDto>(review);
                 approvedEvent = new ModerationReviewApprovedEvent(dto);
+                await ModerationAuditWriter.WriteAsync(
+                    auditLogRepository,
+                    ModerationAuditEntityType.Review,
+                    review.Id,
+                    review.Header,
+                    ModerationAuditAction.Approved,
+                    command.UserId,
+                    null,
+                    ct);
                 break;
 
             case ModerationStatus.Rejected:
             {
                 var reason = !string.IsNullOrWhiteSpace(command.Comment)
-                    ? command.Comment
+                    ? command.Comment.Trim()
                     : command.RejectReason;
                 review.Reject(reason!, command.UserId);
+                auditComment = reason;
+                await ModerationAuditWriter.WriteAsync(
+                    auditLogRepository,
+                    ModerationAuditEntityType.Review,
+                    review.Id,
+                    review.Header,
+                    ModerationAuditAction.Rejected,
+                    command.UserId,
+                    auditComment,
+                    ct);
                 break;
             }
 
             case ModerationStatus.Pending:
                 review.MoveToPending(command.UserId);
+                await ModerationAuditWriter.WriteAsync(
+                    auditLogRepository,
+                    ModerationAuditEntityType.Review,
+                    review.Id,
+                    review.Header,
+                    ModerationAuditAction.Pending,
+                    command.UserId,
+                    null,
+                    ct);
                 break;
         }
 

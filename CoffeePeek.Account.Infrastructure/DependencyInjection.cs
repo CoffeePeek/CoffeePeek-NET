@@ -45,6 +45,9 @@ public static class DependencyInjection
         services.AddValidateOptions<OAuthGoogleOptions>();
         services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
+        services.AddOptions<AdminStatsOptions>()
+            .BindConfiguration(nameof(AdminStatsOptions));
+
         services.AddHttpClient("admin-stats");
         services.AddScoped<IAdminStatsClient, AdminStatsClient>();
 

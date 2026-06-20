@@ -22,11 +22,6 @@ var mediaDb = postgres.AddDatabase(AppResources.MediaDb);
 //     )
 //     .WithExternalHttpEndpoints();
 
-var accountService = builder
-    .AddProject<Projects.CoffeePeek_AccountService>(AppResources.AccountService)
-    .WithReference(accountDb)
-    .WithEnvironment("DOTNET_ASPIRE", "true");
-
 var shopsService = builder
     .AddProject<Projects.CoffeePeek_ShopsService>(AppResources.ShopsService)
     .WithReference(shopsDb)
@@ -35,6 +30,13 @@ var shopsService = builder
 var moderationService = builder
     .AddProject<Projects.CoffeePeek_ModerationService>(AppResources.ModerationService)
     .WithReference(moderationDb)
+    .WithEnvironment("DOTNET_ASPIRE", "true");
+
+var accountService = builder
+    .AddProject<Projects.CoffeePeek_AccountService>(AppResources.AccountService)
+    .WithReference(accountDb)
+    .WithReference(shopsService)
+    .WithReference(moderationService)
     .WithEnvironment("DOTNET_ASPIRE", "true");
 
 var mediaService = builder

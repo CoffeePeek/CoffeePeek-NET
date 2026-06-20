@@ -33,6 +33,8 @@ public class AuthService(
             throw new UnauthorizedException("Email is not confirmed");
         }
 
+        user.EnsureCanAuthenticate();
+
         var accessToken = jwtTokenService.GenerateAccessToken(user);
         var refreshToken = jwtTokenService.GenerateRefreshToken();
 

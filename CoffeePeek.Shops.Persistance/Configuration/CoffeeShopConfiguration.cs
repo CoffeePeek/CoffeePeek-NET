@@ -13,6 +13,7 @@ public class CoffeeShopConfiguration : IEntityTypeConfiguration<CoffeeShop>
         builder.HasKey(s => s.Id);
         builder.Property(x => x.Name).HasMaxLength(BusinessConstants.MaxCoffeeShopNameLength);
         builder.Property(x => x.Description).HasMaxLength(BusinessConstants.MaxCoffeeShopDescriptionLength);
+        builder.HasIndex(s => s.OwnerUserId);
 
         builder.HasIndex(s => s.Name)
             .HasMethod("gin")
