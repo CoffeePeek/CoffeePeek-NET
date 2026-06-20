@@ -64,6 +64,9 @@ public class ModerationShopsController(IMessageBus bus, IUserContext userContext
 
         var response = await bus.InvokeAsync<Response<SendCoffeeShopToModerationResponse>>(commandWithUser, ct);
 
+        if (!response.IsSuccess)
+            return BadRequest(response);
+
         return StatusCode(StatusCodes.Status201Created, response);
     }
 

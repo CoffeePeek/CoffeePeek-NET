@@ -36,7 +36,7 @@ public class AdminUserQueryRepository(AccountDbContext dbContext) : IAdminUserQu
 
         var items = await query
             .OrderByDescending(u => u.CreatedAtUtc)
-            .Skip((page - 1) * pageSize)
+            .Skip((int)Math.Min((long)(page - 1) * pageSize, int.MaxValue))
             .Take(pageSize)
             .ToListAsync(ct);
 

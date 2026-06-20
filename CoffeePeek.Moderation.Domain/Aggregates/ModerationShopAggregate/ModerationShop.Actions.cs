@@ -1,5 +1,5 @@
 using CoffeePeek.Moderation.Domain.Aggregates.Enums;
-using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate.Enums;
+using CoffeePeek.Moderation.Domain.Common.Enums;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Shared.Kernel.Exceptions;
 

@@ -24,9 +24,11 @@ public class ModerationReviewsController(IMessageBus bus, IUserContext userConte
     [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    public async Task<IActionResult> GetAllModerationReviews([FromQuery] GetAllModerationReviewsQuery query)
+    public async Task<IActionResult> GetAllModerationReviews(
+        [FromQuery] GetAllModerationReviewsQuery query,
+        CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeAsync<Response<GetAllModerationReviewsResponse>>(query);
+        var response = await bus.InvokeAsync<Response<GetAllModerationReviewsResponse>>(query, cancellationToken);
 
         if (response.IsSuccess && response.Data is not null)
         {

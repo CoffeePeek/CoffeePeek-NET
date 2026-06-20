@@ -14,10 +14,10 @@ public class AdminStatsClient(
     IHttpContextAccessor httpContextAccessor,
     ILogger<AdminStatsClient> logger) : IAdminStatsClient
 {
-    public async Task<AdminServiceStatsDto> GetPlatformStatsAsync(CancellationToken ct = default)
+    public async Task<AdminServiceStatsDto> GetPlatformStatsAsync(CancellationToken cancellationToken = default)
     {
-        var shopsStats = await FetchStatsAsync(AppResources.ShopsService, ct);
-        var moderationStats = await FetchStatsAsync(AppResources.ModerationService, ct);
+        var shopsStats = await FetchStatsAsync(AppResources.ShopsService, cancellationToken);
+        var moderationStats = await FetchStatsAsync(AppResources.ModerationService, cancellationToken);
 
         return new AdminServiceStatsDto(
             TotalCoffeeShops: shopsStats.TotalCoffeeShops,
@@ -28,29 +28,24 @@ public class AdminStatsClient(
             PendingModerationReviews: moderationStats.PendingModerationReviews);
     }
 
-    private async Task<AdminServiceStatsDto> FetchStatsAsync(string serviceName, CancellationToken ct)
+    private async Task<AdminServiceStatsDto> FetchStatsAsync(string serviceName, CancellationToken cancellationToken)
     {
-        try
-        {
-            var client = httpClientFactory.CreateClient("admin-stats");
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"http://{serviceName}/api/admin/stats/summary");
-            ForwardAuthHeaders(request);
+        var client = httpClientFactory.CreateClient("admin-stats");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"http://{serviceName}/api/admin/stats/summary");
+        ForwardAuthHeaders(request);
 
-            using var response = await client.SendAsync(request, ct);
-            if (!response.IsSuccessStatusCode)
-            {
-                logger.LogWarning("Admin stats request to {Service} failed with {StatusCode}", serviceName, response.StatusCode);
-                return new AdminServiceStatsDto();
-            }
-
-            var payload = await response.Content.ReadFromJsonAsync<Response<AdminServiceStatsDto>>(cancellationToken: ct);
-            return payload?.Data ?? new AdminServiceStatsDto();
-        }
-        catch (Exception ex)
+        using var response = await client.SendAsync(request, cancellationToken);
+        if (!response.IsSuccessStatusCode)
         {
-            logger.LogWarning(ex, "Admin stats request to {Service} failed", serviceName);
-            return new AdminServiceStatsDto();
+            logger.LogWarning("Admin stats request to {Service} failed with {StatusCode}", serviceName, response.StatusCode);
+            throw new HttpRequestException($"Admin stats request to {serviceName} failed with {response.StatusCode}");
         }
+
+        var payload = await response.Content.ReadFromJsonAsync<Response<AdminServiceStatsDto>>(cancellationToken: cancellationToken);
+        if (payload is not { IsSuccess: true, Data: not null })
+            throw new InvalidOperationException($"Admin stats request to {serviceName} returned an invalid payload.");
+
+        return payload.Data;
     }
 
     private void ForwardAuthHeaders(HttpRequestMessage request)

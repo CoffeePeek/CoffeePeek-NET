@@ -7,13 +7,3 @@ public record AdminServiceStatsDto(
     int NewReviewsToday = 0,
     int PendingModerationShops = 0,
     int PendingModerationReviews = 0);
-
-public record AdminOverviewStatsDto(
-    int TotalUsers,
-    int UsersRegisteredToday,
-    int TotalCoffeeShops,
-    int TotalReviews,
-    int PendingModerationShops,
-    int PendingModerationReviews,
-    int NewCoffeeShopsToday,
-    int NewReviewsToday);

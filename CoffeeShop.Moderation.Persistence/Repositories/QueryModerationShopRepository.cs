@@ -1,5 +1,5 @@
 ﻿using CoffeePeek.Moderation.Domain.Aggregates;
-using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate.Enums;
+using CoffeePeek.Moderation.Domain.Common.Enums;
 using CoffeeShop.Moderation.Persistence.Configuration;
 using Microsoft.EntityFrameworkCore;
 

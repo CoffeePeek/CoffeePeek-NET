@@ -1,7 +1,12 @@
 namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
+public record AdminShopsStats(
+    int TotalCoffeeShops,
+    int NewCoffeeShopsToday,
+    int TotalReviews,
+    int NewReviewsToday);
+
 public interface IAdminStatsQueryRepository
 {
-    Task<(int TotalCoffeeShops, int NewToday, int TotalReviews, int NewReviewsToday)> GetStatsAsync(
-        CancellationToken ct = default);
+    Task<AdminShopsStats> GetStatsAsync(CancellationToken cancellationToken = default);
 }

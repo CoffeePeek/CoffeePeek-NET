@@ -7,16 +7,15 @@ namespace CoffeePeek.Shops.Persistance.Repositories;
 
 public class AdminStatsQueryRepository(ShopsDbContext dbContext) : IAdminStatsQueryRepository
 {
-    public async Task<(int TotalCoffeeShops, int NewToday, int TotalReviews, int NewReviewsToday)> GetStatsAsync(
-        CancellationToken ct = default)
+    public async Task<AdminShopsStats> GetStatsAsync(CancellationToken cancellationToken = default)
     {
         var today = DateTime.UtcNow.Date;
 
-        var totalCoffeeShops = await dbContext.Shops.CountAsync(ct);
-        var newCoffeeShopsToday = await dbContext.Shops.CountAsync(s => s.CreatedAtUtc >= today, ct);
-        var totalReviews = await dbContext.Set<Review>().CountAsync(ct);
-        var newReviewsToday = await dbContext.Set<Review>().CountAsync(r => r.CreatedAtUtc >= today, ct);
+        var totalCoffeeShops = await dbContext.Shops.CountAsync(cancellationToken);
+        var newCoffeeShopsToday = await dbContext.Shops.CountAsync(s => s.CreatedAtUtc >= today, cancellationToken);
+        var totalReviews = await dbContext.Set<Review>().CountAsync(cancellationToken);
+        var newReviewsToday = await dbContext.Set<Review>().CountAsync(r => r.CreatedAtUtc >= today, cancellationToken);
 
-        return (totalCoffeeShops, newCoffeeShopsToday, totalReviews, newReviewsToday);
+        return new AdminShopsStats(totalCoffeeShops, newCoffeeShopsToday, totalReviews, newReviewsToday);
     }
 }

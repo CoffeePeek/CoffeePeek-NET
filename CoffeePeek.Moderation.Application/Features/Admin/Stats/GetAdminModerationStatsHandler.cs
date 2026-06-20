@@ -4,8 +4,6 @@ using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.Moderation.Application.Features.Admin.Stats;
 
-public record GetAdminModerationStatsQuery;
-
 public static class GetAdminModerationStatsHandler
 {
     public static async Task<Response<AdminServiceStatsDto>> Handle(

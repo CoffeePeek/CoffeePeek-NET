@@ -28,6 +28,10 @@ public class RedisService : ICacheService
             string? value = await _db.StringGetAsync(cacheKey.Key);
             return string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value);
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (RedisConnectionException ex)
         {
             _logger.LogWarning(ex, "Redis GetAsync unavailable for key {CacheKey}", cacheKey.Key);
@@ -175,7 +179,7 @@ public class RedisService : ICacheService
         }
     }
 
-    public async Task RemoveByPattern(string pattern, CancellationToken cancellationToken = default)
+    public async Task<int> RemoveByPattern(string pattern, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -184,22 +188,28 @@ public class RedisService : ICacheService
             if (_server is null)
             {
                 _logger.LogWarning("Redis RemoveByPattern skipped because no Redis endpoints are configured");
-                return;
+                return 0;
             }
 
             var keysToDelete = await CollectKeysByPatternAsync(pattern, int.MaxValue, cancellationToken);
             if (keysToDelete.Count > 0)
-            {
                 await _db.KeyDeleteAsync(keysToDelete.ToArray());
-            }
+
+            return keysToDelete.Count;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (RedisConnectionException ex)
         {
             _logger.LogWarning(ex, "Redis RemoveByPattern unavailable for pattern {Pattern}", pattern);
+            return 0;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Redis RemoveByPattern failed for pattern {Pattern}", pattern);
+            return 0;
         }
     }
 
@@ -220,6 +230,10 @@ public class RedisService : ICacheService
 
             var keys = await CollectKeysByPatternAsync(pattern, limit, cancellationToken);
             return keys.Select(k => k.ToString()).ToArray();
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (RedisConnectionException ex)
         {

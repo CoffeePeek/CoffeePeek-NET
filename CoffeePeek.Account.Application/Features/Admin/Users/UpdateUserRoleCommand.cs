@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Text.Json.Serialization;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
@@ -14,7 +15,7 @@ public record UpdateUserRoleCommand(
 
 public static class UpdateUserRoleHandler
 {
-    public static async Task<Response<AdminUserResponse>> Handle(
+    public static async Task<Response<Guid>> Handle(
         UpdateUserRoleCommand command,
         IUserRepository userRepository,
         IRoleRepository roleRepository,
@@ -23,17 +24,17 @@ public static class UpdateUserRoleHandler
     {
         var user = await userRepository.GetById(command.TargetUserId, ct);
         if (user is null)
-            return Response<AdminUserResponse>.Error("User not found.");
+            return Response<Guid>.Error(HttpStatusCode.NotFound, "User not found.");
 
         var role = await roleRepository.GetRoleAsync(command.Role);
         if (role is null)
-            return Response<AdminUserResponse>.Error($"Role '{command.Role}' not found.");
+            return Response<Guid>.Error(HttpStatusCode.BadRequest, $"Role '{command.Role}' not found.");
 
         user.ReplaceRoles(role);
 
         await userRepository.Update(user, ct);
         await unitOfWork.SaveChangesAsync(ct);
 
-        return Response<AdminUserResponse>.Success(GetAdminUsersHandler.MapUser(user));
+        return Response<Guid>.Success(user.Id);
     }
 }

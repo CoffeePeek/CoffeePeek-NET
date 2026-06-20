@@ -5,8 +5,6 @@ using CoffeePeek.Shared.Kernel.Response;
 
 namespace CoffeePeek.Account.Application.Features.Admin.Stats;
 
-public record GetAdminOverviewStatsQuery;
-
 public static class GetAdminOverviewStatsHandler
 {
     public static async Task<Response<AdminOverviewStatsDto>> Handle(
@@ -16,7 +14,18 @@ public static class GetAdminOverviewStatsHandler
         CancellationToken ct)
     {
         var userStats = await userRepository.GetStatsAsync(ct);
-        var platformStats = await statsClient.GetPlatformStatsAsync(ct);
+
+        AdminServiceStatsDto platformStats;
+        try
+        {
+            platformStats = await statsClient.GetPlatformStatsAsync(ct);
+        }
+        catch (Exception)
+        {
+            return Response<AdminOverviewStatsDto>.Error(
+                System.Net.HttpStatusCode.ServiceUnavailable,
+                "Failed to load platform statistics.");
+        }
 
         return Response<AdminOverviewStatsDto>.Success(new AdminOverviewStatsDto(
             TotalUsers: userStats.TotalUsers,

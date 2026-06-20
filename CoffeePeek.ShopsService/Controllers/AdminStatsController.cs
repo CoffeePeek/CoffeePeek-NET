@@ -8,6 +8,7 @@ using Wolverine;
 
 namespace CoffeePeek.ShopsService.Controllers;
 
+/// <summary>Internal admin statistics for the Shops service.</summary>
 [ApiController]
 [Route("api/admin/stats")]
 [Authorize(Policy = RoleConsts.Admin)]
@@ -15,11 +16,13 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class AdminStatsController(IMessageBus bus) : ControllerBase
 {
+    /// <summary>Returns coffee shop and review counts for the admin dashboard.</summary>
     [HttpGet("summary")]
     [ProducesResponseType<Response<AdminServiceStatsDto>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetSummary(CancellationToken ct)
+    public async Task<IActionResult> GetSummary(CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeAsync<Response<AdminServiceStatsDto>>(new GetAdminShopsStatsQuery(), ct);
+        var response = await bus.InvokeAsync<Response<AdminServiceStatsDto>>(
+            new GetAdminShopsStatsQuery(), cancellationToken);
         return Ok(response);
     }
 }

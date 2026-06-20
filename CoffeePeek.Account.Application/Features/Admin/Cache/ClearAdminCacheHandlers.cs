@@ -1,3 +1,4 @@
+using CoffeePeek.Account.Application.Features.Admin.Cache;
 using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel.Response;
@@ -18,10 +19,9 @@ public static class ClearAdminCacheByPatternHandler
         if (!AdminCachePatternValidator.IsAllowed(command.Pattern))
             return Response<ClearAdminCacheResponse>.Error("Pattern is not allowed. FLUSHALL and wildcard-only patterns are forbidden.");
 
-        var keys = await cacheService.GetKeysByPatternAsync(command.Pattern, 10_000, ct);
-        await cacheService.RemoveByPattern(command.Pattern, ct);
+        var clearedCount = await cacheService.RemoveByPattern(command.Pattern, ct);
 
-        return Response<ClearAdminCacheResponse>.Success(new ClearAdminCacheResponse(keys.Count, command.Pattern));
+        return Response<ClearAdminCacheResponse>.Success(new ClearAdminCacheResponse(clearedCount, command.Pattern));
     }
 }
 

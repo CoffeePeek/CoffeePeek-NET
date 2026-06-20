@@ -1,20 +1,21 @@
 ﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
+using CoffeePeek.Moderation.Domain.Common.Enums;
 using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.GetAllModerationReviews;
 
-public class GetAllModerationReviewsHandler
+public static class GetAllModerationReviewsHandler
 {
-    public async Task<Response<GetAllModerationReviewsResponse>> Handle(
+    public static async Task<Response<GetAllModerationReviewsResponse>> Handle(
         GetAllModerationReviewsQuery query,
         IQueryModerationReviewRepository reviewRepository,
         IMapper mapper,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
-        var domainStatus = query.Status.HasValue
-            ? (Domain.Aggregates.ModerationReviewAggregate.Enums.ModerationStatus?)query.Status.Value
+        ModerationStatus? domainStatus = query.Status.HasValue
+            ? (ModerationStatus?)query.Status.Value
             : null;
 
         var (items, totalCount) = await reviewRepository.GetPagedAsync(
@@ -22,7 +23,7 @@ public class GetAllModerationReviewsHandler
             query.PageSize,
             domainStatus,
             query.Search,
-            cancellationToken);
+            ct);
 
         var moderationReviewDtos = mapper.Map<ModerationReviewDto[]>(items);
         var totalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize);

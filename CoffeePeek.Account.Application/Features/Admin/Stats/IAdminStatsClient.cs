@@ -4,5 +4,5 @@ namespace CoffeePeek.Account.Application.Features.Admin.Stats;
 
 public interface IAdminStatsClient
 {
-    Task<AdminServiceStatsDto> GetPlatformStatsAsync(CancellationToken ct = default);
+    Task<AdminServiceStatsDto> GetPlatformStatsAsync(CancellationToken cancellationToken = default);
 }

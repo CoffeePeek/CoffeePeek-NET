@@ -1,6 +1,4 @@
-using CoffeePeek.Account.Application.Features.Admin.Cache;
 using CoffeePeek.Account.Application.Features.Admin.Stats;
-using CoffeePeek.Account.Application.Features.Admin.Users;
 using CoffeePeek.Contract.Dtos.Admin;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Kernel.Response;
@@ -10,6 +8,7 @@ using Wolverine;
 
 namespace CoffeePeek.AccountService.Controllers;
 
+/// <summary>Admin dashboard statistics endpoints.</summary>
 [ApiController]
 [Route("api/admin/stats")]
 [Authorize(Policy = RoleConsts.Admin)]
@@ -17,11 +16,18 @@ namespace CoffeePeek.AccountService.Controllers;
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class AdminStatsController(IMessageBus bus) : ControllerBase
 {
+    /// <summary>Returns platform-wide overview statistics aggregated from all services.</summary>
     [HttpGet("overview")]
     [ProducesResponseType<Response<AdminOverviewStatsDto>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetOverview(CancellationToken ct)
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<IActionResult> GetOverview(CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeAsync<Response<AdminOverviewStatsDto>>(new GetAdminOverviewStatsQuery(), ct);
+        var response = await bus.InvokeAsync<Response<AdminOverviewStatsDto>>(
+            new GetAdminOverviewStatsQuery(), cancellationToken);
+
+        if (!response.IsSuccess && response.StatusCode == StatusCodes.Status503ServiceUnavailable)
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, response);
+
         return Ok(response);
     }
 }
