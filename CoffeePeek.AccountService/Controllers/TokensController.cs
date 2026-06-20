@@ -3,9 +3,11 @@ using CoffeePeek.Account.Application.Features.Auth.Logout;
 using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 using CoffeePeek.Account.Application.Features.Auth.RefreshToken;
 using CoffeePeek.Shared.Auth;
+using CoffeePeek.Shared.Auth.Options;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Wolverine;
 
 namespace CoffeePeek.AccountService.Controllers;
@@ -14,7 +16,10 @@ namespace CoffeePeek.AccountService.Controllers;
 [Route("api/[controller]")]
 [Tags("Tokens management")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class TokensController(IMessageBus bus, IUserContext userContext) : ControllerBase
+public class TokensController(
+    IMessageBus bus,
+    IUserContext userContext,
+    IOptions<JWTOptions> jwtOptions) : ControllerBase
 {
     /// <summary>
     /// Login user and get token
@@ -33,16 +38,8 @@ public class TokensController(IMessageBus bus, IUserContext userContext) : Contr
 
         var response = await bus.InvokeAsync<Response<LoginResponse>>(command);
 
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,  
-            Secure = true,    
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddDays(7)
-        };
-        
-        Response.Cookies.Append("refreshToken", response.Data.RefreshToken, cookieOptions);
-        
+        Response.Cookies.Append("refreshToken", response.Data.RefreshToken, CreateRefreshTokenCookieOptions());
+
         return Ok(response);
     }
 
@@ -64,41 +61,35 @@ public class TokensController(IMessageBus bus, IUserContext userContext) : Contr
         var response = await bus.InvokeAsync<Response<GoogleLoginResponse>>(command);
 
         if (response.IsSuccess && response.Data is not null)
-        {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddDays(7)
-            };
-            Response.Cookies.Append("refreshToken", response.Data.RefreshToken, cookieOptions);
-        }
+            Response.Cookies.Append("refreshToken", response.Data.RefreshToken, CreateRefreshTokenCookieOptions());
 
         return Ok(response);
     }
 
     /// <summary>
-    /// Refresh token from cookies
+    /// Refresh token from cookies. Does not require a valid access token —
+    /// the user is resolved from the refresh token value itself.
     /// </summary>
     [HttpPut]
-    [Authorize]
+    [AllowAnonymous]
     [ProducesResponseType<Response<RefreshTokenResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Refresh()
     {
         if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
-        {
             return BadRequest(new { message = "Refresh token is required" });
-        }
-        
+
         var deviceName = Request.Headers.UserAgent.ToString();
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-        var command = new RefreshTokenCommand(userContext.GetUserIdOrThrow(), refreshToken, deviceName, ipAddress);
+        var command = new RefreshTokenCommand(refreshToken, deviceName, ipAddress);
 
         var response = await bus.InvokeAsync<Response<RefreshTokenResponse>>(command);
+
+        if (response.IsSuccess && response.Data is not null)
+            Response.Cookies.Append("refreshToken", response.Data.RefreshToken, CreateRefreshTokenCookieOptions());
 
         return Ok(response);
     }
@@ -115,9 +106,7 @@ public class TokensController(IMessageBus bus, IUserContext userContext) : Contr
     public async Task<IActionResult> Delete()
     {
         if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
-        {
             return BadRequest(new { message = "Refresh token is required" });
-        }
 
         var request = new LogoutCommand(userContext.GetUserIdOrThrow(), refreshToken);
 
@@ -125,4 +114,12 @@ public class TokensController(IMessageBus bus, IUserContext userContext) : Contr
 
         return NoContent();
     }
+
+    private CookieOptions CreateRefreshTokenCookieOptions() => new()
+    {
+        HttpOnly = true,
+        Secure = true,
+        SameSite = SameSiteMode.Strict,
+        Expires = DateTimeOffset.UtcNow.AddDays(jwtOptions.Value.RefreshTokenLifetimeDays)
+    };
 }

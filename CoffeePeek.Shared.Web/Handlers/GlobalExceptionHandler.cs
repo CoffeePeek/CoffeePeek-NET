@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Shared.Kernel.Exceptions;
+﻿using CoffeePeek.Shared.Kernel.ErrorCodes;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -24,17 +25,19 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IWeb
             exception.Message, traceId);
 
         var statusCode = GetStatusCode(exception);
+        var errorCode = GetErrorCode(exception);
+        var fieldErrors = (exception as ValidationException)?.Errors;
 
         ErrorResponse errorResponse;
 
 #if DEBUG
-        errorResponse = new ErrorResponse(GetSafeMessage(exception))
+        errorResponse = new ErrorResponse(GetSafeMessage(exception), errorCode, fieldErrors)
         {
             StackTrace = exception.StackTrace,
             InnerException = exception.InnerException?.Message
         };
 #else
-        errorResponse = new ErrorResponse(GetSafeMessage(exception));
+        errorResponse = new ErrorResponse(GetSafeMessage(exception), errorCode, fieldErrors);
 #endif
         httpContext.Response.StatusCode = statusCode;
         
@@ -53,6 +56,18 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IWeb
         DatabaseException => StatusCodes.Status503ServiceUnavailable,
         _ => StatusCodes.Status500InternalServerError
     };
+
+    private static string GetErrorCode(Exception exception) =>
+        (exception as BaseException)?.ErrorCode ?? exception switch
+        {
+            NotFoundException => CommonErrorCodes.NotFound,
+            UnauthorizedException or UnauthorizedAccessException => CommonErrorCodes.Unauthorized,
+            ValidationException => CommonErrorCodes.ValidationFailed,
+            DomainException => CommonErrorCodes.ValidationFailed,
+            ConflictException => CommonErrorCodes.Conflict,
+            DatabaseException => CommonErrorCodes.ServiceUnavailable,
+            _ => CommonErrorCodes.InternalError
+        };
 
     private string GetSafeMessage(Exception exception) => exception switch
     {

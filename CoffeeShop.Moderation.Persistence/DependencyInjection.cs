@@ -43,7 +43,8 @@ public static class DependencyInjection
         services.AddScoped<IQueryModerationShopRepository, QueryModerationShopRepository>();
         services.AddScoped<IModerationShopRepository, ModerationShopRepository>();
         services.AddScoped<IModerationReviewRepository, ModerationReviewRepository>();
-        
+        services.AddScoped<IAdminModerationStatsQueryRepository, AdminModerationStatsQueryRepository>();
+
         return services;
     }
 }

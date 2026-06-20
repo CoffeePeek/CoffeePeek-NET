@@ -127,6 +127,12 @@ public class User : AggregateRoot<Guid>
         _roles.Add(role);
     }
 
+    public void ReplaceRoles(Role role)
+    {
+        _roles.Clear();
+        _roles.Add(role);
+    }
+
     public void UpdateAbout(string about)
     {
         if (about != About)

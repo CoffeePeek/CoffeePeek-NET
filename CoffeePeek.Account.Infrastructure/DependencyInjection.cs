@@ -1,4 +1,8 @@
 ﻿using CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Application.Features.Admin.Stats;
+using CoffeePeek.Account.Infrastructure.Admin;
+using CoffeePeek.Account.Infrastructure.Media;
+using CoffeePeek.Account.Infrastructure.Options;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Account.Infrastructure.Consumers;
 using CoffeePeek.Account.Infrastructure.Identity;
@@ -14,6 +18,9 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddValidateOptions<JWTOptions>();
+        services.AddValidateOptions<MinIOOptions>();
+
+        services.AddScoped<IMediaUrlProvider, MediaUrlProvider>();
             
         // 1. Domain Services (реализации интерфейсов из Domain)
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();
@@ -37,6 +44,9 @@ public static class DependencyInjection
         // 4. OAuth
         services.AddValidateOptions<OAuthGoogleOptions>();
         services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+
+        services.AddHttpClient("admin-stats");
+        services.AddScoped<IAdminStatsClient, AdminStatsClient>();
 
         return services;
     }

@@ -18,8 +18,8 @@ public class RefreshTokenHandler
         IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
-        var user = await repository.GetById(request.UserId, ct)
-                   ?? throw new NotFoundException("User not found");
+        var user = await repository.GetByRefreshToken(request.RefreshToken, ct)
+                   ?? throw new UnauthorizedException("Invalid refresh token");
 
         var newRefreshTokenValue = tokenService.GenerateRefreshToken();
         var newAccessToken = tokenService.GenerateAccessToken(user);

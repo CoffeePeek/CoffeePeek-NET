@@ -28,6 +28,10 @@ public class RedisService : ICacheService
             string? value = await _db.StringGetAsync(cacheKey.Key);
             return string.IsNullOrEmpty(value) ? default : JsonSerializer.Deserialize<T>(value);
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (RedisConnectionException ex)
         {
             _logger.LogWarning(ex, "Redis GetAsync unavailable for key {CacheKey}", cacheKey.Key);
@@ -175,7 +179,7 @@ public class RedisService : ICacheService
         }
     }
 
-    public async Task RemoveByPattern(string pattern, CancellationToken cancellationToken = default)
+    public async Task<int> RemoveByPattern(string pattern, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -184,27 +188,78 @@ public class RedisService : ICacheService
             if (_server is null)
             {
                 _logger.LogWarning("Redis RemoveByPattern skipped because no Redis endpoints are configured");
-                return;
+                return 0;
             }
 
-            // SCAN: KeysAsync with pageSize forces Redis SCAN cursor (non-blocking) instead of KEYS command
-            var keysToDelete = new List<RedisKey>();
-            await foreach (var key in _server.KeysAsync(pattern: pattern, pageSize: 250).WithCancellation(cancellationToken))
-            {
-                keysToDelete.Add(key);
-            }
+            var keysToDelete = await CollectKeysByPatternAsync(pattern, int.MaxValue, cancellationToken);
             if (keysToDelete.Count > 0)
-            {
                 await _db.KeyDeleteAsync(keysToDelete.ToArray());
-            }
+
+            return keysToDelete.Count;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (RedisConnectionException ex)
         {
             _logger.LogWarning(ex, "Redis RemoveByPattern unavailable for pattern {Pattern}", pattern);
+            return 0;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Redis RemoveByPattern failed for pattern {Pattern}", pattern);
+            return 0;
         }
+    }
+
+    public async Task<IReadOnlyList<string>> GetKeysByPatternAsync(
+        string pattern,
+        int limit,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (_server is null)
+            {
+                _logger.LogWarning("Redis GetKeysByPatternAsync skipped because no Redis endpoints are configured");
+                return [];
+            }
+
+            var keys = await CollectKeysByPatternAsync(pattern, limit, cancellationToken);
+            return keys.Select(k => k.ToString()).ToArray();
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (RedisConnectionException ex)
+        {
+            _logger.LogWarning(ex, "Redis GetKeysByPatternAsync unavailable for pattern {Pattern}", pattern);
+            return [];
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Redis GetKeysByPatternAsync failed for pattern {Pattern}", pattern);
+            return [];
+        }
+    }
+
+    private async Task<List<RedisKey>> CollectKeysByPatternAsync(
+        string pattern,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        var keys = new List<RedisKey>();
+        await foreach (var key in _server!.KeysAsync(pattern: pattern, pageSize: 250).WithCancellation(cancellationToken))
+        {
+            keys.Add(key);
+            if (keys.Count >= limit)
+                break;
+        }
+
+        return keys;
     }
 }

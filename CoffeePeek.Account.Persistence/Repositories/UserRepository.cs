@@ -41,4 +41,12 @@ public class UserRepository(AccountDbContext dbContext) : IUserRepository
         return _repository.FirstOrDefaultAsync(c => c.Credentials.EmailConfirmationToken == requestToken,
             cancellationToken);
     }
+
+    public Task<User?> GetByRefreshToken(string refreshToken, CancellationToken ct = default)
+    {
+        return _repository
+            .Include(x => x.RefreshTokens)
+            .Include(x => x.Roles)
+            .FirstOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == refreshToken), ct);
+    }
 }

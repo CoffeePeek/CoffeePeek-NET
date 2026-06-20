@@ -24,7 +24,7 @@ public static class UpdateModerationCoffeeShopHandler
         var moderationShopDto = command.ModerationShopDto;
         var shop = await repository.GetByIdWithOutDetails(command.ModerationShopDto.Id, ct);
 
-        if (shop == null || shop.UserId != command.UserId)
+        if (shop == null || (!command.IsPrivilegedModerator && shop.UserId != command.UserId))
         {
             return UpdateEntityResponse<ModerationShopDto>.Error("Shop not found or access denied");
         }

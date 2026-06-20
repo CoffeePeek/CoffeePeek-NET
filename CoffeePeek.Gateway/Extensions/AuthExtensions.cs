@@ -59,7 +59,7 @@ public static class AuthExtensions
             .AddPolicy(RoleConsts.Admin,      policy => policy.RequireRole(RoleConsts.Admin))
             .AddPolicy(RoleConsts.Owner,      policy => policy.RequireRole(RoleConsts.Owner))
             .AddPolicy(RoleConsts.User,       policy => policy.RequireRole(RoleConsts.User))
-            .AddPolicy(RoleConsts.Moderator,  policy => policy.RequireRole(RoleConsts.Moderator))
+            .AddPolicy(RoleConsts.Moderator,  policy => policy.RequireRole(RoleConsts.Moderator, RoleConsts.Admin))
             .AddPolicy(RoleConsts.Employee,   policy => policy.RequireRole(RoleConsts.Employee))
             .AddPolicy(RoleConsts.Roaster,    policy => policy.RequireRole(RoleConsts.Roaster));
 

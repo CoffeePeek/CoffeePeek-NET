@@ -23,5 +23,8 @@ public class CachedUserRepository(
     public Task<User?> GetByEmailConfirmToken(string requestToken, CancellationToken cancellationToken)
         => decorated.GetByEmailConfirmToken(requestToken, cancellationToken);
 
+    public Task<User?> GetByRefreshToken(string refreshToken, CancellationToken ct = default)
+        => decorated.GetByRefreshToken(refreshToken, ct);
+
     Task<User?> IUserRepository.GetById(Guid userId, CancellationToken ct) => decorated.GetById(userId, ct);
 }

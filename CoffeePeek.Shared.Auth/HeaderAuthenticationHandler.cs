@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text.Encodings.Web;
+using CoffeePeek.Shared.Auth.Constants;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,7 +15,8 @@ public class HeaderAuthenticationHandler(
 {
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var roles = Context.Request.Headers["X-User-Roles"].ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        var roles = Context.Request.Headers[GatewayHeaderConsts.XUserRole].ToString()
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var userId = Context.Request.Headers["X-User-Id"].ToString();
 
         if (string.IsNullOrEmpty(userId))
