@@ -29,6 +29,8 @@ public static class GoogleLoginHandler
             providerId: payload.Subject,
             ct);
 
+        user.EnsureCanAuthenticate();
+
         var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken();
 

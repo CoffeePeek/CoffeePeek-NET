@@ -48,7 +48,7 @@ public class AdminUserQueryRepository(AccountDbContext dbContext) : IAdminUserQu
         var today = DateTime.UtcNow.Date;
 
         var totalUsers = await dbContext.Users.CountAsync(ct);
-        var blockedUsers = await dbContext.Users.CountAsync(u => u.IsSoftDelete, ct);
+        var blockedUsers = await dbContext.Users.CountAsync(u => u.IsBlocked || u.IsSoftDelete, ct);
         var registeredToday = await dbContext.Users.CountAsync(u => u.CreatedAtUtc >= today, ct);
 
         var usersByRole = await dbContext.Users

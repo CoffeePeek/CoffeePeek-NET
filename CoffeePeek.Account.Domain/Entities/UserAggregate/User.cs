@@ -18,6 +18,7 @@ public class User : AggregateRoot<Guid>
     public Guid? PhotoMetadataId { get; private set; }
     public PhotoMetadata? PhotoMetadata { get; private set; }
     public bool IsSoftDelete { get; private set; }
+    public bool IsBlocked { get; private set; }
 
     private readonly List<RefreshToken> _refreshTokens = [];
     public ICollection<RefreshToken> RefreshTokens => _refreshTokens;
@@ -144,6 +145,19 @@ public class User : AggregateRoot<Guid>
     public void SetSoftDelete()
     {
         IsSoftDelete = true;
+    }
+
+    public void SetBlocked(bool blocked)
+    {
+        IsBlocked = blocked;
+        if (blocked)
+            RevokeAllSessions();
+    }
+
+    public void EnsureCanAuthenticate()
+    {
+        if (IsSoftDelete || IsBlocked)
+            throw new DomainException("Account is disabled.");
     }
 
     public void UpdateAvatar(PhotoMetadata photoMetadata)

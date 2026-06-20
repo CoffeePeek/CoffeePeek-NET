@@ -12,6 +12,7 @@ public sealed class CoffeeShop : Entity<Guid>
     public CoffeeShopStatus Status { get; private set; } = CoffeeShopStatus.Active;
 
     public Guid CreatorId { get; private set; }
+    public Guid? OwnerUserId { get; private set; }
     public Guid? ModerationId {get; private set; }
 
     public ShopContact Contact { get; private set; }
@@ -89,6 +90,21 @@ public sealed class CoffeeShop : Entity<Guid>
         Name = name;
         Description = description;
         PriceRange = priceRange;
+    }
+
+    public void SetStatus(CoffeeShopStatus status)
+    {
+        Status = status;
+    }
+
+    public void SetHidden(bool hidden)
+    {
+        Status = hidden ? CoffeeShopStatus.TemporarilyClosed : CoffeeShopStatus.Active;
+    }
+
+    public void AssignOwner(Guid? ownerUserId)
+    {
+        OwnerUserId = ownerUserId == Guid.Empty ? null : ownerUserId;
     }
 
     public void SetLocation(Guid cityId, string address, decimal latitude, decimal longitude)

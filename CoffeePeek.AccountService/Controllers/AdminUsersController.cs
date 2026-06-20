@@ -69,6 +69,29 @@ public class AdminUsersController(IMessageBus bus) : ControllerBase
         };
     }
 
+    /// <summary>Blocks or unblocks a user. Blocking revokes all active sessions.</summary>
+    [HttpPatch("{id:guid}/block")]
+    [ProducesResponseType<Response<bool>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> BlockUser(
+        Guid id,
+        [FromBody] BlockUserRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<Response<bool>>(
+            new BlockUserCommand(id, request.Blocked), cancellationToken);
+
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return response.StatusCode switch
+        {
+            StatusCodes.Status404NotFound => NotFound(response),
+            _ => BadRequest(response)
+        };
+    }
+
     /// <summary>Soft-deletes a user and revokes all active sessions.</summary>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType<Response<bool>>(StatusCodes.Status200OK)]

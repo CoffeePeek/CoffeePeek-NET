@@ -21,6 +21,8 @@ public class RefreshTokenHandler
         var user = await repository.GetByRefreshToken(request.RefreshToken, ct)
                    ?? throw new UnauthorizedException("Invalid refresh token");
 
+        user.EnsureCanAuthenticate();
+
         var newRefreshTokenValue = tokenService.GenerateRefreshToken();
         var newAccessToken = tokenService.GenerateAccessToken(user);
 

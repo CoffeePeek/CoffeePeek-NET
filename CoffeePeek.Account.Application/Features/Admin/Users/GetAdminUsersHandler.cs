@@ -40,5 +40,5 @@ public static class GetAdminUsersHandler
         user.Statistics.CheckInCount,
         user.Statistics.AddedShopsCount,
         user.Roles.Select(r => r.Name).ToArray(),
-        user.IsSoftDelete);
+        user.IsBlocked || user.IsSoftDelete);
 }
