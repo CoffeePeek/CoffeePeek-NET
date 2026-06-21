@@ -1,0 +1,17 @@
+{
+  "solution": {
+    "path": "CoffeePeek.slnx",
+    "projects": [
+      "CoffeePeek.AccountService\\CoffeePeek.AccountService.csproj",
+      "CoffeePeek.ShopsService\\CoffeePeek.ShopsService.csproj",
+      "CoffeePeek.ModerationService\\CoffeePeek.ModerationService.csproj",
+      "CoffeePeek.MediaService\\CoffeePeek.MediaService.csproj",
+      "CoffeePeek.Gateway\\CoffeePeek.Gateway.csproj",
+      "CoffeePeek.Account.Application.Tests\\CoffeePeek.Account.Application.Tests.csproj",
+      "CoffeePeek.Account.Domain.Tests\\CoffeePeek.Account.Domain.Tests.csproj",
+      "CoffeePeek.Account.Infrastructure.Tests\\CoffeePeek.Account.Infrastructure.Tests.csproj",
+      "CoffeePeek.Shops.Application.Tests\\CoffeePeek.Shops.Application.Tests.csproj",
+      "CoffeePeek.Shops.Domain.Tests\\CoffeePeek.Shops.Domain.Tests.csproj"
+    ]
+  }
+}
