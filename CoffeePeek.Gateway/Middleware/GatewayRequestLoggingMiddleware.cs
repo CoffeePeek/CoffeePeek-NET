@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using CoffeePeek.Gateway.Extensions;
+using CoffeePeek.Shared.Web.Logging;
 using Yarp.ReverseProxy.Model;
 
 namespace CoffeePeek.Gateway.Middleware;
@@ -16,6 +17,12 @@ public class GatewayRequestLoggingMiddleware(RequestDelegate next, ILogger<Gatew
 {
     public async Task InvokeAsync(HttpContext context)
     {
+        if (RequestLoggingExtensions.IsHealthCheckPath(context.Request.Path))
+        {
+            await next(context);
+            return;
+        }
+
         var stopwatch = Stopwatch.StartNew();
 
         await next(context);
