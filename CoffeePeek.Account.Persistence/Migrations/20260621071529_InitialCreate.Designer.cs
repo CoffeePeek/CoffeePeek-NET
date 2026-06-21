@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoffeePeek.Account.Persistence.Migrations
 {
     [DbContext(typeof(AccountDbContext))]
-    [Migration("20260509141428_RemoveMassTransitEfOutbox")]
-    partial class RemoveMassTransitEfOutbox
+    [Migration("20260621071529_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,6 +101,8 @@ namespace CoffeePeek.Account.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Token");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
@@ -135,10 +137,14 @@ namespace CoffeePeek.Account.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("About")
-                        .HasColumnType("text");
+                        .HasMaxLength(600)
+                        .HasColumnType("character varying(600)");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsBlocked")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsSoftDelete")
                         .HasColumnType("boolean");
