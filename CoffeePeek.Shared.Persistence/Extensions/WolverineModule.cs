@@ -8,6 +8,7 @@ using Wolverine;
 using Wolverine.EntityFrameworkCore;
 using Wolverine.Postgresql;
 using Wolverine.RabbitMQ;
+using Wolverine.Transports;
 
 namespace CoffeePeek.Shared.Persistence.Extensions;
 
@@ -35,8 +36,8 @@ public static class WolverineModule
                         o.Port = rabbitMqOptions.Port;
                     })
                     .AutoProvision()
-                    // Required for cross-service events (e.g. Moderation -> Shops).
-                    .UseConventionalRouting();
+                    // Each handler gets its own queue (Account + Shops both listen to ModerationShopApprovedEvent).
+                    .UseConventionalRouting(NamingSource.FromHandlerType);
 
                 opts.PersistMessagesWithPostgresql(postgresCpOptions.ConnectionString);
                 opts.UseEntityFrameworkCoreTransactions();

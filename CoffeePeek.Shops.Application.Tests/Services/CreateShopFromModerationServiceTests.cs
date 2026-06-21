@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
@@ -19,6 +20,7 @@ public class CreateShopFromModerationServiceTests
     private readonly Mock<IQueryRoasterRepository> _roasterRepoMock = new();
     private readonly Mock<IQueryBrewMethodRepository> _brewMethodRepoMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<ICacheService> _cacheServiceMock = new();
     private readonly Mock<ILogger<CreateShopFromModerationService>> _loggerMock = new();
     private readonly CancellationToken _ct = CancellationToken.None;
 
@@ -30,6 +32,7 @@ public class CreateShopFromModerationServiceTests
             _roasterRepoMock.Object,
             _brewMethodRepoMock.Object,
             _unitOfWorkMock.Object,
+            _cacheServiceMock.Object,
             _loggerMock.Object);
 
     private static ShopDto CreateMinimalShopDto() =>
