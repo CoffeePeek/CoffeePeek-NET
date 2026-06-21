@@ -10,7 +10,23 @@ public class QueryCoffeeShopRepository(ShopsDbContext dbContext) : IQueryCoffeeS
     
     public void Add(CoffeeShop shop)
     {
+        AttachCatalogReferencesAsUnchanged(shop);
         _repository.Add(shop);
+    }
+
+    private void AttachCatalogReferencesAsUnchanged(CoffeeShop shop)
+    {
+        foreach (var brewMethod in shop.BrewMethods)
+            dbContext.Entry(brewMethod).State = EntityState.Unchanged;
+
+        foreach (var roaster in shop.Roasters)
+            dbContext.Entry(roaster).State = EntityState.Unchanged;
+
+        foreach (var coffeeBean in shop.CoffeeBeans)
+            dbContext.Entry(coffeeBean).State = EntityState.Unchanged;
+
+        foreach (var equipment in shop.Equipments)
+            dbContext.Entry(equipment).State = EntityState.Unchanged;
     }
 
     public Task<bool> Exists(Guid id, CancellationToken ct = default)
