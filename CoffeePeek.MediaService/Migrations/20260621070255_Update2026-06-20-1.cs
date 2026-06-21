@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace CoffeePeek.Account.Persistence.Migrations
+namespace CoffeePeek.MediaService.Migrations
 {
     /// <inheritdoc />
-    public partial class Update2025 : Migration
+    public partial class Update202606201 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

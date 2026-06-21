@@ -61,9 +61,10 @@ namespace CoffeePeek.Account.Persistence.Migrations
                     ReviewCount = table.Column<int>(type: "integer", nullable: false),
                     AddedShopsCount = table.Column<int>(type: "integer", nullable: false),
                     StatisticUpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    About = table.Column<string>(type: "text", nullable: true),
+                    About = table.Column<string>(type: "character varying(600)", maxLength: 600, nullable: true),
                     PhotoMetadataId = table.Column<Guid>(type: "uuid", nullable: true),
                     IsSoftDelete = table.Column<bool>(type: "boolean", nullable: false),
+                    IsBlocked = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -125,6 +126,11 @@ namespace CoffeePeek.Account.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_Token",
+                table: "RefreshTokens",
+                column: "Token");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",

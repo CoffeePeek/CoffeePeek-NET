@@ -14,7 +14,7 @@ MEDIA_INFRA      := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
 MEDIA_STARTUP    := CoffeePeek.MediaService/CoffeePeek.MediaService.csproj
 MEDIA_CONTEXT    := CoffeePeek.MediaService.Data.MediaDbContext
 
-n := Update2026-06-20
+n := InitialCreate
 
 define add_migration
 	dotnet ef migrations add $(4) \
@@ -50,12 +50,6 @@ mig-mod:
 up-mod:
 	$(call update_db,$(MODERATION_INFRA),$(MODERATION_STARTUP),$(MODERATION_CONTEXT))
 
-# Jobs
-mig-jobs:
-	$(call add_migration,$(JOBS_INFRA),$(JOBS_STARTUP),$(JOBS_CONTEXT),$(n))
-up-jobs:
-	$(call update_db,$(JOBS_INFRA),$(JOBS_STARTUP),$(JOBS_CONTEXT))
-	
 # Media
 mig-media:
 	$(call add_migration,$(MEDIA_INFRA),$(MEDIA_STARTUP),$(MEDIA_CONTEXT),$(n))
