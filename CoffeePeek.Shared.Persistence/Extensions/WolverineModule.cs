@@ -30,13 +30,17 @@ public static class WolverineModule
 
                 opts.UseRabbitMq(o =>
                     {
-                        o.VirtualHost = rabbitMqOptions.VirtualHost;
+                        o.VirtualHost = string.IsNullOrWhiteSpace(rabbitMqOptions.VirtualHost)
+                            ? "/"
+                            : rabbitMqOptions.VirtualHost;
                         o.Password = rabbitMqOptions.Password;
                         o.UserName = rabbitMqOptions.Username;
                         o.HostName = rabbitMqOptions.HostName;
                         o.Port = rabbitMqOptions.Port;
                     })
-                    .AutoProvision();
+                    .AutoProvision()
+                    // Required for cross-service events (e.g. Moderation -> Shops).
+                    .UseConventionalRouting();
 
                 opts.PersistMessagesWithPostgresql(postgresCpOptions.ConnectionString);
                 opts.UseEntityFrameworkCoreTransactions();

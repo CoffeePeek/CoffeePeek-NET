@@ -1,15 +1,16 @@
 ﻿using CoffeePeek.Contract.Responses;
 using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Shared.Kernel;
-using MassTransit;
 
 namespace CoffeePeek.Moderation.Infrastructure.Consumers;
 
-public class ModerationShopApproveCompleteConsumer(
-    IModerationShopRepository repository,
-    IUnitOfWork unitOfWork) 
+public static class ModerationShopApproveCompleteHandler
 {
-    public async Task Consume(ModerationShopApproveCompleteResponse message)
+    public static async Task Handle(
+        ModerationShopApproveCompleteResponse message,
+        IModerationShopRepository repository,
+        IUnitOfWork unitOfWork,
+        CancellationToken ct)
     {
         var moderationShop = await repository.GetByIdWithOutDetails(message.ModerationShopId);
 
@@ -18,6 +19,6 @@ public class ModerationShopApproveCompleteConsumer(
 
         moderationShop.AddShopId(message.ShopId);
 
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }
