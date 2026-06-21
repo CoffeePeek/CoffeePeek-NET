@@ -21,6 +21,8 @@ public static class SerilogExtensions
             .ReadFrom.Configuration(builder.Configuration)
             .Enrich.FromLogContext()
             .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+            .MinimumLevel.Override("Yarp.ReverseProxy.Health", LogEventLevel.Warning)
             .WriteTo.Console(outputTemplate: DefaultTemplate, theme: theme)
             .CreateLogger();
 
@@ -38,6 +40,8 @@ public static class SerilogExtensions
             .ReadFrom.Configuration(builder.Configuration)
             .Enrich.FromLogContext()
             .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+            .MinimumLevel.Override("Yarp.ReverseProxy.Health", LogEventLevel.Warning)
             .WriteTo.Console(outputTemplate: DefaultTemplate, theme: theme)
             .CreateLogger();
 

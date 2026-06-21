@@ -34,7 +34,7 @@ public static class InfrastructureExtensions
 
     public static void UseApplication(this WebApplication app)
     {
-        app.UseSerilogRequestLogging();
+        app.UseCoffeePeekRequestLogging();
 
         app.UseExceptionHandler();
 
