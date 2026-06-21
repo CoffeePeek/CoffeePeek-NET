@@ -10,9 +10,11 @@ public static class ModerationShopApproveHandler
     public static async Task<ModerationShopApproveCompleteResponse> Handle(
         ModerationShopApprovedEvent message,
         ICreateShopFromModerationService createShopService,
-        ILogger<ModerationShopApproveHandler> logger,
+        ILoggerFactory loggerFactory,
         CancellationToken ct)
     {
+        var logger = loggerFactory.CreateLogger(nameof(ModerationShopApproveHandler));
+
         logger.LogInformation(
             "Received ModerationShopApprovedEvent for moderation shop {ModerationShopId} ({ShopName})",
             message.Shop.Id,
