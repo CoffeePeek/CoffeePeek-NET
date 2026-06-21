@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Shared.Kernel.Response;
@@ -6,10 +7,10 @@ namespace CoffeePeek.Moderation.Application.Features.Admin.Audit;
 
 public record ModerationAuditLogDto(
     Guid Id,
-    ModerationAuditEntityType EntityType,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] ModerationAuditEntityType EntityType,
     Guid EntityId,
     string EntityName,
-    ModerationAuditAction Action,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] ModerationAuditAction Action,
     Guid ModeratorUserId,
     string? Comment,
     DateTime CreatedAtUtc);
@@ -24,8 +25,8 @@ public record GetModerationAuditLogResponse(
 public record GetModerationAuditLogQuery(
     int Page = 1,
     int PageSize = 20,
-    ModerationAuditEntityType? EntityType = null,
-    ModerationAuditAction? Action = null);
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] ModerationAuditEntityType? EntityType = null,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] ModerationAuditAction? Action = null);
 
 public static class GetModerationAuditLogHandler
 {

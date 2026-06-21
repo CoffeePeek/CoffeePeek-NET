@@ -8,9 +8,9 @@ public enum ModerationAuditEntityType
 
 public enum ModerationAuditAction
 {
+    Pending = 0,
     Approved = 1,
-    Rejected = 2,
-    Pending = 0
+    Rejected = 2
 }
 
 public class ModerationAuditLog
