@@ -14,8 +14,9 @@ public class UserRegisteredEventHandler(
 {
     public async Task Handle(UserRegisteredInternalEvent @event)
     {
-        // Token placed in URL fragment — not sent to web server in HTTP logs
-        var confirmationUrl = $"{config["WebClientUrl"]}/confirm-email#{@event.ConfirmationToken}";
+        // Query param is read by the SPA; hash-only links remain supported on the frontend.
+        var confirmationUrl =
+            $"{config["WebClientUrl"]}/confirm-email?token={Uri.EscapeDataString(@event.ConfirmationToken)}";
 
         var message = new EmailMessage
         {
