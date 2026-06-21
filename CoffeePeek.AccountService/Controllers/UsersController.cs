@@ -222,6 +222,7 @@ public class UsersController(IMessageBus bus, IUserContext userContext) : Contro
     /// Confirm email
     /// </summary>
     [HttpPut("me/email-confirmation")]
+    [AllowAnonymous]
     [ProducesResponseType<Response>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ConfirmEmail([FromQuery] string token)
