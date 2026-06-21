@@ -5,16 +5,14 @@ using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
 
-public static class ModerationShopApproveHandler
+public class ModerationShopApproveHandler(
+    ICreateShopFromModerationService createShopService,
+    ILogger<ModerationShopApproveHandler> logger)
 {
-    public static async Task<ModerationShopApproveCompleteResponse> Handle(
+    public async Task<ModerationShopApproveCompleteResponse> Handle(
         ModerationShopApprovedEvent message,
-        ICreateShopFromModerationService createShopService,
-        ILoggerFactory loggerFactory,
         CancellationToken ct)
     {
-        var logger = loggerFactory.CreateLogger(nameof(ModerationShopApproveHandler));
-
         logger.LogInformation(
             "Received ModerationShopApprovedEvent for moderation shop {ModerationShopId} ({ShopName})",
             message.Shop.Id,

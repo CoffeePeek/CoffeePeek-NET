@@ -22,11 +22,7 @@ public static class WolverineModule
             
             builder.Host.UseWolverine(opts =>
             {
-                if (builder.Environment.IsDevelopment())
-                {
-                    opts.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto;
-                }
-
+                opts.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto;
 
                 opts.UseRabbitMq(o =>
                     {
