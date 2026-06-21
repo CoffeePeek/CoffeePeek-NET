@@ -212,56 +212,62 @@ jobs:
         run: dotnet tool install --global dotnet-ef
   
       - name: Apply Migrations
-        env:
-          PostgresCpOptions__ConnectionString: ${{ secrets.DB_CONNECTION_ACCOUNT }}
-          
         run: |
-          projects=(
-            "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj"
-            "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj"
-            "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj"
-            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj"
-          )
+          set -euo pipefail
 
-          for project in "${projects[@]}"; do
-            dotnet build "$project" --configuration Release --no-restore -p:AllowMissingPrunePackageData=true
-          done
-          
-          echo "--- Applying AccountService migrations ---"
-          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_ACCOUNT }}"
-          dotnet ef database update \
-            --context AccountDbContext \
-            --project CoffeePeek.Account.Persistence/CoffeePeek.Account.Persistence.csproj \
-            --startup-project CoffeePeek.AccountService/CoffeePeek.AccountService.csproj \
-            --connection "${{ secrets.DB_CONNECTION_ACCOUNT }}" \
-            --configuration Release \
-            --no-build
+          apply_migration() {
+            local name="$1"
+            local context="$2"
+            local project="$3"
+            local startup="$4"
+            local connection="$5"
+            local attempt=1
+            local max_attempts=3
 
-          echo "--- Applying ShopsService migrations ---"
-          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_SHOPS }}"
-          dotnet ef database update \
-            --context ShopsDbContext \
-            --project CoffeePeek.Shops.Persistance/CoffeePeek.Shops.Persistance.csproj \
-            --startup-project CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj \
-            --connection "${{ secrets.DB_CONNECTION_SHOPS }}" \
-            --configuration Release \
-            --no-build
+            echo "--- Applying ${name} migrations ---"
+            export PostgresCpOptions__ConnectionString="${connection}"
+            export ASPNETCORE_ENVIRONMENT=Production
 
-          echo "--- Applying ModerationService migrations ---"
-          export PostgresCpOptions__ConnectionString="${{ secrets.DB_CONNECTION_MODERATION }}"
-          dotnet ef database update \
-            --context ModerationDbContext \
-            --project CoffeeShop.Moderation.Persistence/CoffeeShop.Moderation.Persistence.csproj \
-            --startup-project CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj \
-            --connection "${{ secrets.DB_CONNECTION_MODERATION }}" \
-            --configuration Release \
-            --no-build
+            dotnet build "${startup}" --configuration Release -p:AllowMissingPrunePackageData=true
 
-          echo "--- Applying MediaService migrations ---"
-          dotnet ef database update \
-            --context MediaDbContext \
-            --project CoffeePeek.MediaService/CoffeePeek.MediaService.csproj \
-            --startup-project CoffeePeek.MediaService/CoffeePeek.MediaService.csproj \
-            --connection "${{ secrets.DB_CONNECTION_MEDIA }}" \
-            --configuration Release \
-            --no-build
+            while [ "${attempt}" -le "${max_attempts}" ]; do
+              if dotnet ef database update \
+                --context "${context}" \
+                --project "${project}" \
+                --startup-project "${startup}" \
+                --connection "${connection}" \
+                --configuration Release; then
+                echo "${name} migrations applied."
+                return 0
+              fi
+
+              if [ "${attempt}" -eq "${max_attempts}" ]; then
+                echo "${name} migrations failed after ${max_attempts} attempts."
+                return 1
+              fi
+
+              echo "${name} migration attempt ${attempt} failed (transient DB error). Retrying in 15s..."
+              sleep 15
+              attempt=$((attempt + 1))
+            done
+          }
+
+          apply_migration "AccountService" "AccountDbContext" \
+            "CoffeePeek.Account.Persistence/CoffeePeek.Account.Persistence.csproj" \
+            "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj" \
+            "${{ secrets.DB_CONNECTION_ACCOUNT }}"
+
+          apply_migration "ShopsService" "ShopsDbContext" \
+            "CoffeePeek.Shops.Persistance/CoffeePeek.Shops.Persistance.csproj" \
+            "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj" \
+            "${{ secrets.DB_CONNECTION_SHOPS }}"
+
+          apply_migration "ModerationService" "ModerationDbContext" \
+            "CoffeeShop.Moderation.Persistence/CoffeeShop.Moderation.Persistence.csproj" \
+            "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj" \
+            "${{ secrets.DB_CONNECTION_MODERATION }}"
+
+          apply_migration "MediaService" "MediaDbContext" \
+            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj" \
+            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj" \
+            "${{ secrets.DB_CONNECTION_MEDIA }}"
