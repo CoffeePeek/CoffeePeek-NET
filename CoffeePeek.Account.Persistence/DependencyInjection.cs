@@ -1,10 +1,8 @@
-﻿using System.Reflection;
-using CoffeePeek.Account.Domain.Entities.PhotoMetadataAggregate;
+﻿using CoffeePeek.Account.Domain.Entities.PhotoMetadataAggregate;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Persistence.Configuration;
 using CoffeePeek.Account.Persistence.Repositories;
-using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Extentions;
 using CoffeePeek.Shared.Persistence;
@@ -47,6 +45,7 @@ public static class DependencyInjection
         services.AddScoped<IAdminUserQueryRepository, AdminUserQueryRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPhotoMetadataRepository, PhotoMetadataRepository>();
+        services.AddCacheModule();
 
         return services;
     }
