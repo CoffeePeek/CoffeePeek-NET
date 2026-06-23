@@ -16,11 +16,13 @@ if [[ "${USE_HTTPS:-1}" == "1" ]]; then
   COMPOSE+=(--profile https)
 fi
 
-echo "==> Pulling latest images..."
-"${COMPOSE[@]}" pull account shops moderation media gateway
+if [[ -n "${DOCKER_HUB_USERNAME:-}" && -n "${DOCKER_HUB_PASSWORD:-}" ]]; then
+  echo "==> Logging in to Docker Hub..."
+  echo "${DOCKER_HUB_PASSWORD}" | docker login -u "${DOCKER_HUB_USERNAME}" --password-stdin
+fi
 
-echo "==> Restarting application services..."
-"${COMPOSE[@]}" up -d account shops moderation media gateway caddy
+echo "==> Building and restarting application services..."
+"${COMPOSE[@]}" up -d --build account shops moderation media gateway caddy
 
 echo "==> Health check..."
 sleep 5
