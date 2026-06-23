@@ -21,12 +21,37 @@ if [[ -n "${DOCKER_HUB_USERNAME:-}" && -n "${DOCKER_HUB_PASSWORD:-}" ]]; then
   echo "${DOCKER_HUB_PASSWORD}" | docker login -u "${DOCKER_HUB_USERNAME}" --password-stdin
 fi
 
-echo "==> Building and restarting application services..."
-"${COMPOSE[@]}" up -d --build account shops moderation media gateway caddy
+wait_for_backend() {
+  local service="$1"
+  local path="${2:-/health}"
+  local attempts="${3:-40}"
+
+  echo "==> Waiting for ${service} (${path})..."
+  for ((i = 1; i <= attempts; i++)); do
+    if docker run --rm --network coffeepeek_default curlimages/curl:8.10.1 \
+      -sf "http://${service}${path}" >/dev/null 2>&1; then
+      echo "${service} is ready"
+      return 0
+    fi
+    sleep 3
+  done
+
+  echo "${service} did not become ready in time"
+  return 1
+}
+
+echo "==> Building backend services..."
+"${COMPOSE[@]}" up -d --build account shops moderation media
+
+wait_for_backend shops /api/Catalogs/cities
+wait_for_backend account /health
+
+echo "==> Starting gateway and caddy..."
+"${COMPOSE[@]}" up -d --build gateway caddy
 
 echo "==> Health check..."
-sleep 5
-curl -sf "http://localhost:${GATEWAY_PORT:-8080}/health" >/dev/null
-echo "OK — gateway healthy"
+sleep 3
+curl -sf "http://localhost:${GATEWAY_PORT:-8080}/api/Catalogs/cities" >/dev/null
+echo "OK — gateway can reach shops"
 
 "${COMPOSE[@]}" ps account shops moderation media gateway caddy
