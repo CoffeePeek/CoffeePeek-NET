@@ -17,57 +17,40 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use user-local .NET install (workloads + cache)
-        run: echo "DOTNET_INSTALL_DIR=$HOME/.dotnet" >> "$GITHUB_ENV"
-
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+          cache: true
+          cache-dependency-path: |
+            **/*.csproj
+            Directory.Packages.props
+            global.json
+            CoffeePeek.Backend.ci.slnf
 
-      - name: Setup Java SDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'global.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Cache .NET workloads
-        uses: actions/cache@v4
-        with:
-          path: ~/.dotnet
-          key: ${{ runner.os }}-dotnet-wl-v3-${{ hashFiles('global.json') }}
-          restore-keys: |
-            ${{ runner.os }}-dotnet-wl-v3-
-
-      - name: Restore .NET workloads
-        run: dotnet workload restore "CoffeePeek.slnx"
-
-      - name: Restore NuGet packages
-        run: dotnet restore "CoffeePeek.slnx" -p:AllowMissingPrunePackageData=true
+      - name: Restore backend solution
+        run: dotnet restore "CoffeePeek.Backend.ci.slnf" -p:AllowMissingPrunePackageData=true
 
       - name: Audit dependencies
         continue-on-error: true
         run: |
           set -uo pipefail
           set +e
-          report="$(dotnet list "CoffeePeek.slnx" package --vulnerable --include-transitive 2>&1)"
+          report="$(dotnet list "CoffeePeek.Backend.ci.slnf" package --vulnerable --include-transitive 2>&1)"
           set -e
           echo "$report"
           {
@@ -80,38 +63,37 @@ jobs:
             echo "::warning::Vulnerable NuGet packages reported by dotnet list; see the step log and job summary"
           fi
 
-      - name: Build solution
-        run: |
-          projects=(
-            "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj"
-            "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj"
-            "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj"
-            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj"
-            "CoffeePeek.Gateway/CoffeePeek.Gateway.csproj"
-          )
-
-          for project in "${projects[@]}"; do
-            dotnet build "$project" --configuration Release --no-restore -p:AllowMissingPrunePackageData=true
-          done
+      - name: Build backend solution
+        run: dotnet build "CoffeePeek.Backend.ci.slnf" --configuration Release --no-restore -m -p:AllowMissingPrunePackageData=true
 
       - name: Run tests
-        run: |
-          projects=(
-            "CoffeePeek.Account.Application.Tests/CoffeePeek.Account.Application.Tests.csproj"
-            "CoffeePeek.Account.Domain.Tests/CoffeePeek.Account.Domain.Tests.csproj"
-            "CoffeePeek.Account.Infrastructure.Tests/CoffeePeek.Account.Infrastructure.Tests.csproj"
-            "CoffeePeek.Shops.Domain.Tests/CoffeePeek.Shops.Domain.Tests.csproj"
-          )
-
-          for project in "${projects[@]}"; do
-            dotnet test "$project" --configuration Release --no-restore -p:AllowMissingPrunePackageData=true
-          done
+        run: dotnet test "CoffeePeek.Backend.ci.slnf" --configuration Release --no-build -m -p:AllowMissingPrunePackageData=true --verbosity normal
 
   build_and_push_images:
     needs: build_and_test
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 25
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: accountservice
+            dockerfile: CoffeePeek.AccountService/AccountService.Dockerfile
+            image: coffeepeek.accountservice
+          - service: shopsservice
+            dockerfile: CoffeePeek.ShopsService/ShopsService.Dockerfile
+            image: coffeepeek.shopsservice
+          - service: moderationservice
+            dockerfile: CoffeePeek.ModerationService/ModerationService.Dockerfile
+            image: coffeepeek.moderationservice
+          - service: mediaservice
+            dockerfile: CoffeePeek.MediaService/MediaService.Dockerfile
+            image: coffeepeek.mediaservice
+          - service: gateway
+            dockerfile: CoffeePeek.Gateway/Gateway.Dockerfile
+            image: gateway
 
     env:
       REGISTRY: docker.io
@@ -120,6 +102,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -127,91 +112,74 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-      - name: Set image tag
-        id: vars
-        run: echo "TAG=dev" >> "$GITHUB_OUTPUT"
-
-      - name: Build and push AccountService image
+      - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: CoffeePeek.AccountService/AccountService.Dockerfile
+          file: ${{ matrix.dockerfile }}
           push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.accountservice:dev
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.accountservice:${{ steps.vars.outputs.TAG }}
-
-      - name: Build and push ShopsService image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: CoffeePeek.ShopsService/ShopsService.Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.shopsservice:dev
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.shopsservice:${{ steps.vars.outputs.TAG }}
-
-      - name: Build and push ModerationService image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: CoffeePeek.ModerationService/ModerationService.Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.moderationservice:dev
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.moderationservice:${{ steps.vars.outputs.TAG }}
-
-      - name: Build and push MediaService image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: CoffeePeek.MediaService/MediaService.Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.mediaservice:dev
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/coffeepeek.mediaservice:${{ steps.vars.outputs.TAG }}
-            
-      - name: Build and push Gateway image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: CoffeePeek.Gateway/Gateway.Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:dev
-            ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/gateway:${{ steps.vars.outputs.TAG }}  
+          tags: ${{ env.REGISTRY }}/${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.image }}:dev
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
 
   apply_migrations:
     needs: build_and_push_images
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    timeout-minutes: 25
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-  
+
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          
-      - name: Restore dependencies
-        run: |
-          set -euo pipefail
-          projects=(
-            "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj"
-            "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj"
-            "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj"
-            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj"
-          )
-          for project in "${projects[@]}"; do
-            dotnet restore "$project" -p:AllowMissingPrunePackageData=true
-          done
-  
+          cache: true
+          cache-dependency-path: |
+            **/*.csproj
+            Directory.Packages.props
+            global.json
+            CoffeePeek.Backend.ci.slnf
+
+      - name: Cache dotnet-ef tool
+        uses: actions/cache@v4
+        with:
+          path: ~/.dotnet/tools
+          key: ${{ runner.os }}-dotnet-ef-10
+
       - name: Install dotnet-ef tool
-        run: dotnet tool install --global dotnet-ef
-  
-      - name: Apply Migrations
+        run: |
+          if ! command -v dotnet-ef >/dev/null 2>&1; then
+            dotnet tool install --global dotnet-ef
+          fi
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
+      - name: Restore and build migration hosts
+        run: |
+          dotnet restore "CoffeePeek.Backend.ci.slnf" -p:AllowMissingPrunePackageData=true
+          dotnet build "CoffeePeek.Backend.ci.slnf" --configuration Release --no-restore -m -p:AllowMissingPrunePackageData=true
+
+      - name: Configure SSH for VPS PostgreSQL tunnel
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/vps_key
+          chmod 600 ~/.ssh/vps_key
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Open SSH tunnel to VPS PostgreSQL
+        run: |
+          ssh -f -N \
+            -o IdentityFile=~/.ssh/vps_key \
+            -o ExitOnForwardFailure=yes \
+            -L 15432:127.0.0.1:5432 \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
+          sleep 2
+
+      - name: Apply migrations
+        env:
+          VPS_PG: "Host=127.0.0.1;Port=15432;Username=postgres;Password=${{ secrets.VPS_POSTGRES_PASSWORD }};SslMode=Disable"
         run: |
           set -euo pipefail
 
@@ -220,7 +188,8 @@ jobs:
             local context="$2"
             local project="$3"
             local startup="$4"
-            local connection="$5"
+            local database="$5"
+            local connection="${VPS_PG};Database=${database}"
             local attempt=1
             local max_attempts=3
 
@@ -228,15 +197,14 @@ jobs:
             export PostgresCpOptions__ConnectionString="${connection}"
             export ASPNETCORE_ENVIRONMENT=Production
 
-            dotnet build "${startup}" --configuration Release -p:AllowMissingPrunePackageData=true
-
             while [ "${attempt}" -le "${max_attempts}" ]; do
               if dotnet ef database update \
                 --context "${context}" \
                 --project "${project}" \
                 --startup-project "${startup}" \
                 --connection "${connection}" \
-                --configuration Release; then
+                --configuration Release \
+                --no-build; then
                 echo "${name} migrations applied."
                 return 0
               fi
@@ -252,22 +220,43 @@ jobs:
             done
           }
 
+          failed=0
           apply_migration "AccountService" "AccountDbContext" \
             "CoffeePeek.Account.Persistence/CoffeePeek.Account.Persistence.csproj" \
             "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj" \
-            "${{ secrets.DB_CONNECTION_ACCOUNT }}"
-
+            "cpaccountdb" &
           apply_migration "ShopsService" "ShopsDbContext" \
             "CoffeePeek.Shops.Persistance/CoffeePeek.Shops.Persistance.csproj" \
             "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj" \
-            "${{ secrets.DB_CONNECTION_SHOPS }}"
-
+            "cpshopsdb" &
           apply_migration "ModerationService" "ModerationDbContext" \
             "CoffeeShop.Moderation.Persistence/CoffeeShop.Moderation.Persistence.csproj" \
             "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj" \
-            "${{ secrets.DB_CONNECTION_MODERATION }}"
-
+            "cpmoderationdb" &
           apply_migration "MediaService" "MediaDbContext" \
             "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj" \
             "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj" \
-            "${{ secrets.DB_CONNECTION_MEDIA }}"
+            "cpmediadb" &
+          for job in $(jobs -p); do
+            wait "${job}" || failed=1
+          done
+          exit "${failed}"
+
+  deploy_vps:
+    needs: apply_migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd /opt/coffeepeek/deploy
+            bash scripts/update.sh

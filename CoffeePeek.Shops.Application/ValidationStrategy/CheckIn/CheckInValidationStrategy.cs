@@ -32,7 +32,9 @@ public class CheckInValidationStrategy(
             return ValidationResult.Invalid("ShopId is required");
         }
 
-        if (command.VisitedAt > DateTime.UtcNow)
+        var visitedAtUtc = NormalizeToUtc(command.VisitedAt);
+        var latestAllowedUtc = DateTime.UtcNow.AddMinutes(BusinessConstants.MaxVisitedAtClockSkewMinutes);
+        if (visitedAtUtc > latestAllowedUtc)
         {
             return ValidationResult.Invalid("VisitedAt cannot be in the future");
         }
@@ -74,4 +76,11 @@ public class CheckInValidationStrategy(
 
         return ValidationResult.Valid;
     }
+
+    private static DateTime NormalizeToUtc(DateTime value) => value.Kind switch
+    {
+        DateTimeKind.Utc => value,
+        DateTimeKind.Local => value.ToUniversalTime(),
+        _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+    };
 }
