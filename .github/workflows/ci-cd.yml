@@ -125,7 +125,7 @@ jobs:
   deploy_vps:
     needs: build_and_push_images
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
@@ -156,5 +156,11 @@ jobs:
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
         run: |
-          ssh "${VPS_USER}@${VPS_HOST}" 'set -euo pipefail; cd /opt/coffeepeek/deploy && chmod +x scripts/*.sh && bash scripts/ci-deploy.sh'
+          ssh "${VPS_USER}@${VPS_HOST}" \
+            "export DOCKER_HUB_USERNAME='${DOCKER_HUB_USERNAME}'; \
+             export DOCKER_HUB_PASSWORD='${DOCKER_HUB_PASSWORD}'; \
+             set -euo pipefail; \
+             cd /opt/coffeepeek/deploy && chmod +x scripts/*.sh && bash scripts/ci-deploy.sh"
