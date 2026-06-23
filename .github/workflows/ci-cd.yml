@@ -122,141 +122,39 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,mode=max,scope=${{ matrix.service }}
 
-  apply_migrations:
+  deploy_vps:
     needs: build_and_push_images
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          dotnet-version: '10.0.x'
-          cache: true
-          cache-dependency-path: |
-            **/*.csproj
-            Directory.Packages.props
-            global.json
-            CoffeePeek.Backend.ci.slnf
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-      - name: Cache dotnet-ef tool
-        uses: actions/cache@v4
-        with:
-          path: ~/.dotnet/tools
-          key: ${{ runner.os }}-dotnet-ef-10
+      - name: Add VPS to known hosts
+        run: ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Install dotnet-ef tool
-        run: |
-          if ! command -v dotnet-ef >/dev/null 2>&1; then
-            dotnet tool install --global dotnet-ef
-          fi
-          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
-
-      - name: Restore and build migration hosts
-        run: |
-          dotnet restore "CoffeePeek.Backend.ci.slnf" -p:AllowMissingPrunePackageData=true
-          dotnet build "CoffeePeek.Backend.ci.slnf" --configuration Release --no-restore -m -p:AllowMissingPrunePackageData=true
-
-      - name: Configure SSH for VPS PostgreSQL tunnel
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/vps_key
-          chmod 600 ~/.ssh/vps_key
-          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
-
-      - name: Open SSH tunnel to VPS PostgreSQL
-        run: |
-          ssh -f -N \
-            -o IdentityFile=~/.ssh/vps_key \
-            -o ExitOnForwardFailure=yes \
-            -L 15432:127.0.0.1:5432 \
-            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
-          sleep 2
-
-      - name: Apply migrations
+      - name: Sync repository to VPS
         env:
-          VPS_PG: "Host=127.0.0.1;Port=15432;Username=postgres;Password=${{ secrets.VPS_POSTGRES_PASSWORD }};SslMode=Disable"
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
         run: |
-          set -euo pipefail
+          rsync -az --delete \
+            --exclude '.git' \
+            --exclude '**/bin' \
+            --exclude '**/obj' \
+            --exclude 'deploy/.env' \
+            ./ "${VPS_USER}@${VPS_HOST}:/opt/coffeepeek/"
 
-          apply_migration() {
-            local name="$1"
-            local context="$2"
-            local project="$3"
-            local startup="$4"
-            local database="$5"
-            local connection="${VPS_PG};Database=${database}"
-            local attempt=1
-            local max_attempts=3
-
-            echo "--- Applying ${name} migrations ---"
-            export PostgresCpOptions__ConnectionString="${connection}"
-            export ASPNETCORE_ENVIRONMENT=Production
-
-            while [ "${attempt}" -le "${max_attempts}" ]; do
-              if dotnet ef database update \
-                --context "${context}" \
-                --project "${project}" \
-                --startup-project "${startup}" \
-                --connection "${connection}" \
-                --configuration Release \
-                --no-build; then
-                echo "${name} migrations applied."
-                return 0
-              fi
-
-              if [ "${attempt}" -eq "${max_attempts}" ]; then
-                echo "${name} migrations failed after ${max_attempts} attempts."
-                return 1
-              fi
-
-              echo "${name} migration attempt ${attempt} failed (transient DB error). Retrying in 15s..."
-              sleep 15
-              attempt=$((attempt + 1))
-            done
-          }
-
-          failed=0
-          apply_migration "AccountService" "AccountDbContext" \
-            "CoffeePeek.Account.Persistence/CoffeePeek.Account.Persistence.csproj" \
-            "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj" \
-            "cpaccountdb" &
-          apply_migration "ShopsService" "ShopsDbContext" \
-            "CoffeePeek.Shops.Persistance/CoffeePeek.Shops.Persistance.csproj" \
-            "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj" \
-            "cpshopsdb" &
-          apply_migration "ModerationService" "ModerationDbContext" \
-            "CoffeeShop.Moderation.Persistence/CoffeeShop.Moderation.Persistence.csproj" \
-            "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj" \
-            "cpmoderationdb" &
-          apply_migration "MediaService" "MediaDbContext" \
-            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj" \
-            "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj" \
-            "cpmediadb" &
-          for job in $(jobs -p); do
-            wait "${job}" || failed=1
-          done
-          exit "${failed}"
-
-  deploy_vps:
-    needs: apply_migrations
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script_stop: true
-          script: |
-            set -euo pipefail
-            cd /opt/coffeepeek/deploy
-            bash scripts/update.sh
+      - name: Deploy on VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh "${VPS_USER}@${VPS_HOST}" 'set -euo pipefail; cd /opt/coffeepeek/deploy && chmod +x scripts/*.sh && bash scripts/ci-deploy.sh'
