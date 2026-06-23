@@ -155,10 +155,8 @@ services:
       AdminStatsOptions__ShopsServiceUrl: http://shops
       AdminStatsOptions__ModerationServiceUrl: http://moderation
       Sentry__Dsn: ${SENTRY_DSN_ACCOUNT:-}
-    deploy:
-      resources:
-        limits:
-          memory: 768M
+    mem_limit: 768m
+    memswap_limit: 768m
 
   shops:
     image: ${DOCKER_IMAGE_PREFIX}/coffeepeek.shopsservice:${IMAGE_TAG}
@@ -178,10 +176,8 @@ services:
       <<: [*dotnet-common, *rabbitmq-env, *redis-env]
       PostgresCpOptions__ConnectionString: Host=postgres;Port=5432;Database=cpshopsdb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};SslMode=Disable;GSS Encryption Mode=Disable
       Sentry__Dsn: ${SENTRY_DSN_SHOPS:-}
-    deploy:
-      resources:
-        limits:
-          memory: 512M
+    mem_limit: 1024m
+    memswap_limit: 1024m
 
   moderation:
     image: ${DOCKER_IMAGE_PREFIX}/coffeepeek.moderationservice:${IMAGE_TAG}
@@ -206,10 +202,8 @@ services:
       MinIOOptions__BucketName: coffeepeek.shops
       YandexApiOptions__ApiKey: ${YANDEX_GEOCODER_API_KEY:-}
       Sentry__Dsn: ${SENTRY_DSN_MODERATION:-}
-    deploy:
-      resources:
-        limits:
-          memory: 512M
+    mem_limit: 512m
+    memswap_limit: 512m
 
   media:
     image: ${DOCKER_IMAGE_PREFIX}/coffeepeek.mediaservice:${IMAGE_TAG}
@@ -234,10 +228,8 @@ services:
       MinIOOptions__ShopBucketName: coffeepeek.shops
       MinIOOptions__UserBucketName: coffeepeek.avatars
       Sentry__Dsn: ${SENTRY_DSN_MEDIA:-}
-    deploy:
-      resources:
-        limits:
-          memory: 768M
+    mem_limit: 512m
+    memswap_limit: 512m
 
   gateway:
     image: ${DOCKER_IMAGE_PREFIX}/gateway:${IMAGE_TAG}
@@ -261,10 +253,8 @@ services:
       ReverseProxy__Clusters__media-cluster__Destinations__destination1__Address: http://media
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
       Sentry__Dsn: ${SENTRY_DSN_GATEWAY:-}
-    deploy:
-      resources:
-        limits:
-          memory: 512M
+    mem_limit: 512m
+    memswap_limit: 512m
 
   caddy:
     profiles: [https]
