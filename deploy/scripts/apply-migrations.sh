@@ -18,11 +18,11 @@ source "${DEPLOY_DIR}/.env"
 set +a
 
 if ! command -v dotnet >/dev/null 2>&1; then
-  echo "dotnet SDK not found. Install .NET 10 SDK or run migrations from CI/local machine."
+  echo "dotnet SDK not found."
   exit 1
 fi
 
-if ! command -v dotnet-ef >/dev/null 2>&1; then
+if ! dotnet ef --version >/dev/null 2>&1; then
   dotnet tool install --global dotnet-ef
   export PATH="${PATH}:${HOME}/.dotnet/tools"
 fi
