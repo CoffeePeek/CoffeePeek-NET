@@ -126,7 +126,7 @@ jobs:
     needs: build_and_push_images
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
       - name: Checkout repository
@@ -161,7 +161,25 @@ jobs:
           dotnet restore "CoffeePeek.Backend.ci.slnf" -p:AllowMissingPrunePackageData=true
           dotnet build "CoffeePeek.Backend.ci.slnf" --configuration Release --no-restore -m -p:AllowMissingPrunePackageData=true
 
+      - name: Configure SSH for VPS PostgreSQL tunnel
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/vps_key
+          chmod 600 ~/.ssh/vps_key
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Open SSH tunnel to VPS PostgreSQL
+        run: |
+          ssh -f -N \
+            -o IdentityFile=~/.ssh/vps_key \
+            -o ExitOnForwardFailure=yes \
+            -L 15432:127.0.0.1:5432 \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
+          sleep 2
+
       - name: Apply migrations
+        env:
+          VPS_PG: "Host=127.0.0.1;Port=15432;Username=postgres;Password=${{ secrets.VPS_POSTGRES_PASSWORD }};SslMode=Disable"
         run: |
           set -euo pipefail
 
@@ -170,7 +188,8 @@ jobs:
             local context="$2"
             local project="$3"
             local startup="$4"
-            local connection="$5"
+            local database="$5"
+            local connection="${VPS_PG};Database=${database}"
             local attempt=1
             local max_attempts=3
 
@@ -205,20 +224,39 @@ jobs:
           apply_migration "AccountService" "AccountDbContext" \
             "CoffeePeek.Account.Persistence/CoffeePeek.Account.Persistence.csproj" \
             "CoffeePeek.AccountService/CoffeePeek.AccountService.csproj" \
-            "${{ secrets.DB_CONNECTION_ACCOUNT }}" &
+            "cpaccountdb" &
           apply_migration "ShopsService" "ShopsDbContext" \
             "CoffeePeek.Shops.Persistance/CoffeePeek.Shops.Persistance.csproj" \
             "CoffeePeek.ShopsService/CoffeePeek.ShopsService.csproj" \
-            "${{ secrets.DB_CONNECTION_SHOPS }}" &
+            "cpshopsdb" &
           apply_migration "ModerationService" "ModerationDbContext" \
             "CoffeeShop.Moderation.Persistence/CoffeeShop.Moderation.Persistence.csproj" \
             "CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj" \
-            "${{ secrets.DB_CONNECTION_MODERATION }}" &
+            "cpmoderationdb" &
           apply_migration "MediaService" "MediaDbContext" \
             "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj" \
             "CoffeePeek.MediaService/CoffeePeek.MediaService.csproj" \
-            "${{ secrets.DB_CONNECTION_MEDIA }}" &
+            "cpmediadb" &
           for job in $(jobs -p); do
             wait "${job}" || failed=1
           done
           exit "${failed}"
+
+  deploy_vps:
+    needs: apply_migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd /opt/coffeepeek/deploy
+            bash scripts/update.sh
