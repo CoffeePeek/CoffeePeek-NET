@@ -18,6 +18,7 @@
     <ItemGroup>
       <ProjectReference Include="..\CoffeePeek.Account.Domain\CoffeePeek.Account.Domain.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shared.Auth\CoffeePeek.Shared.Auth.csproj" />
+      <ProjectReference Include="..\CoffeePeek.Shared.Kernel\CoffeePeek.Shared.Kernel.csproj" />
     </ItemGroup>
 
 </Project>

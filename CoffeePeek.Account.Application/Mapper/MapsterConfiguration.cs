@@ -1,5 +1,7 @@
 ﻿using CoffeePeek.Account.Application.Features.User.GetProfile;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Options;
 using Mapster;
 using MapsterMapper;
 
@@ -7,13 +9,13 @@ namespace CoffeePeek.Account.Application.Mapper;
 
 public static class MapsterConfiguration
 {
-    public static IMapper CreateMapper()
+    public static IMapper CreateMapper(MediaPublicUrlOptions mediaOptions)
     {
-        var config = Configure();
+        var config = Configure(mediaOptions);
         return new MapsterMapper.Mapper(config);
     }
 
-    private static TypeAdapterConfig Configure()
+    private static TypeAdapterConfig Configure(MediaPublicUrlOptions mediaOptions)
     {
         var config = new TypeAdapterConfig();
 
@@ -23,8 +25,13 @@ public static class MapsterConfiguration
             .Map(dest => dest.ReviewCount, src => src.Statistics.ReviewCount)
             .Map(dest => dest.CheckInCount, src => src.Statistics.CheckInCount)
             .Map(dest => dest.AddedShopsCount, src => src.Statistics.AddedShopsCount)
-            .Map(dest => dest.AvatarUrl, src => src.PhotoMetadata != null ? $"https://bucket-dev-771f.up.railway.app/coffee.avatars/{src.PhotoMetadata!.StorageKey}" : null);
-        
+            .Map(dest => dest.AvatarUrl, src => src.PhotoMetadata != null
+                ? MediaStorageUrlBuilder.BuildPublicUrl(
+                    mediaOptions.PublicEndpoint,
+                    mediaOptions.AvatarBucketName,
+                    src.PhotoMetadata!.StorageKey)
+                : null);
+
         return config;
     }
 }

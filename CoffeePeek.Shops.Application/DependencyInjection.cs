@@ -2,8 +2,10 @@ using CoffeePeek.Shops.Application.Extensions;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
-using Mapster;
+using CoffeePeek.Shared.Kernel.Options;
+using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.Shops.Application;
 
@@ -11,12 +13,13 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        // Mapster
-        var config = TypeAdapterConfig.GlobalSettings;
-        config.Scan(typeof(MapsterConfiguration).Assembly);
+        services.AddOptions<MediaPublicUrlOptions>()
+            .BindConfiguration(nameof(MediaPublicUrlOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
-        services.AddSingleton(config);
-        services.AddMapster();
+        services.AddSingleton<IMapper>(sp =>
+            MapsterConfiguration.CreateMapper(sp.GetRequiredService<IOptions<MediaPublicUrlOptions>>().Value));
 
         // Validation
         services.AddValidators();
@@ -28,4 +31,3 @@ public static class DependencyInjection
         return services;
     }
 }
-
