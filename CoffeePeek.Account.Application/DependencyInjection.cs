@@ -4,8 +4,11 @@ using CoffeePeek.Account.Application.Features.Auth.Login;
 using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 using CoffeePeek.Account.Application.Mapper;
 using CoffeePeek.Account.Domain.Services;
+using CoffeePeek.Shared.Kernel.Options;
+using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.Account.Application;
 
@@ -13,8 +16,13 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        // Mapster
-        services.AddSingleton(MapsterConfiguration.CreateMapper());
+        services.AddOptions<MediaPublicUrlOptions>()
+            .BindConfiguration(nameof(MediaPublicUrlOptions))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddSingleton<IMapper>(sp =>
+            MapsterConfiguration.CreateMapper(sp.GetRequiredService<IOptions<MediaPublicUrlOptions>>().Value));
         
         services.AddScoped<IAuthService, AuthService>();
 

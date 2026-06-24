@@ -1,5 +1,7 @@
 ﻿using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Options;
 using Mapster;
 using MapsterMapper;
 
@@ -7,25 +9,33 @@ namespace CoffeePeek.Moderation.Application.Mapper;
 
 public partial class MapsterConfiguration
 {
-    public static IMapper CreateMapper()
+    public static IMapper CreateMapper(MediaPublicUrlOptions mediaOptions)
     {
-        var config = Configure();
+        var config = Configure(mediaOptions);
         return new MapsterMapper.Mapper(config);
     }
 
-    private static TypeAdapterConfig Configure()
-    {   
+    private static TypeAdapterConfig Configure(MediaPublicUrlOptions mediaOptions)
+    {
         var config = new TypeAdapterConfig();
 
         ConfigureModerationReview(config);
         ConfigureModerationShop(config);
-        
+
         config.NewConfig<PhotoMetadata, ShortPhotoMetadataDto>()
-            .Map(d => d.FullUrl, s => $"https://bucket-dev-771f.up.railway.app/coffee.shops/{s.StorageKey}");
-        
+            .Map(d => d.FullUrl, s =>
+                MediaStorageUrlBuilder.BuildPublicUrl(
+                    mediaOptions.PublicEndpoint,
+                    mediaOptions.ShopBucketName,
+                    s.StorageKey) ?? string.Empty);
+
         config.NewConfig<PhotoMetadata, PhotoMetadataDto>()
-            .Map(d => d.FullUrl, s => $"https://bucket-dev-771f.up.railway.app/coffee.shops/{s.StorageKey}");
-        
+            .Map(d => d.FullUrl, s =>
+                MediaStorageUrlBuilder.BuildPublicUrl(
+                    mediaOptions.PublicEndpoint,
+                    mediaOptions.ShopBucketName,
+                    s.StorageKey));
+
         return config;
     }
 }

@@ -5,3 +5,7 @@
 {$DOMAIN} {
 	reverse_proxy gateway:80
 }
+
+{$MEDIA_DOMAIN} {
+	reverse_proxy minio:9000
+}

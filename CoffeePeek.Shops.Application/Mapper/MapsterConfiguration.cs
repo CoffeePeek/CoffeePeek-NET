@@ -2,18 +2,29 @@ using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Contract.Enums;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Options;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using Mapster;
+using MapsterMapper;
 using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Application.Mapper;
 
-public class MapsterConfiguration : IRegister
+public static class MapsterConfiguration
 {
-    public void Register(TypeAdapterConfig config)
+    public static IMapper CreateMapper(MediaPublicUrlOptions mediaOptions)
     {
+        var config = Configure(mediaOptions);
+        return new MapsterMapper.Mapper(config);
+    }
+
+    private static TypeAdapterConfig Configure(MediaPublicUrlOptions mediaOptions)
+    {
+        var config = new TypeAdapterConfig();
+
         config.NewConfig<CoffeeShop, ShortShopDto>()
             .Map(dest => dest.CityId, src => src.Location.CityId)
             .Map(dest => dest.Photos, src => src.ShopPhotos)
@@ -28,8 +39,11 @@ public class MapsterConfiguration : IRegister
             .Ignore(dest => dest.IsVisited);
 
         config.NewConfig<ShopPhoto, ShortPhotoMetadataDto>()
-            .Map(dest => dest.FullUrl,
-                src => $"https://bucket-dev-771f.up.railway.app/coffee.shops/{src.StorageKey}");
+            .Map(dest => dest.FullUrl, src =>
+                MediaStorageUrlBuilder.BuildPublicUrl(
+                    mediaOptions.PublicEndpoint,
+                    mediaOptions.ShopBucketName,
+                    src.StorageKey) ?? string.Empty);
 
         config.NewConfig<CoffeeShop, ShopDto>()
             .Map(d => d.Photos, s => s.ShopPhotos)
@@ -51,14 +65,15 @@ public class MapsterConfiguration : IRegister
             .Ignore(dest => dest.Rating)
             .Ignore(dest => dest.ReviewCount)
             .Ignore(dest => dest.Reviews);
-        
+
         config.NewConfig<CheckIn, CheckInDto>()
             // ShopName is set manually in handlers via repository
             .Ignore(dest => dest.ShopName);
-        
+
         config.NewConfig<Equipment, EquipmentDto>()
             .Map(dest => dest.Model, src => src.ModelName)
             .Map(dest => dest.Category, src => (EquipmentCategoryEnum)src.CategoryId);
+
+        return config;
     }
 }
-

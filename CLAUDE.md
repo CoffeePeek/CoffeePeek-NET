@@ -291,7 +291,7 @@ CoffeePeek — это .NET 10 микросервисная платформа д
 - .NET 10 SDK (10.0.100+)
 - Docker Desktop (for Aspire-managed PostgreSQL 17, RabbitMQ, Redis containers)
 - `dotnet workload restore CoffeePeek.slnx` required before first build (Aspire + Android workloads)
-- Deployment target: Railway (service internal hostnames `*.railway.internal` in `CoffeePeek.Gateway/appsettings.json`)
+- Deployment target: VPS via Docker Compose (`deploy/docker-compose.yml`); Gateway clusters default to Aspire service discovery names
 - Container images pushed to Docker Hub via GitHub Actions (`docker.io/<DOCKER_HUB_USERNAME>/coffeepeek.*`)
 - Target OS: Linux (`DockerDefaultTargetOS=Linux` in all service `.csproj` files)
 - PostgreSQL 17 (four separate databases: `account`, `shops`, `moderation`, `media`)

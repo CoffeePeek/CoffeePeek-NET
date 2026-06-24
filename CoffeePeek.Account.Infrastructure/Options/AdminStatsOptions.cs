@@ -4,13 +4,13 @@ namespace CoffeePeek.Account.Infrastructure.Options;
 public class AdminStatsOptions
 {
     /// <summary>
-    /// Shops service base URL (e.g. http://coffeepeekshopsservice.railway.internal).
+    /// Shops service base URL (e.g. http://shops in Docker Compose).
     /// When empty, falls back to Aspire service discovery name for local dev.
     /// </summary>
     public string? ShopsServiceUrl { get; init; }
 
     /// <summary>
-    /// Moderation service base URL (e.g. http://coffeepeekmoderationservice.railway.internal).
+    /// Moderation service base URL (e.g. http://moderation in Docker Compose).
     /// When empty, falls back to Aspire service discovery name for local dev.
     /// </summary>
     public string? ModerationServiceUrl { get; init; }
