@@ -1,5 +1,6 @@
 using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Dtos.Public;
 using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Kernel;
@@ -69,6 +70,24 @@ public static class MapsterConfiguration
         config.NewConfig<CheckIn, CheckInDto>()
             // ShopName is set manually in handlers via repository
             .Ignore(dest => dest.ShopName);
+
+        config.NewConfig<Review, CommunityFeedItemDto>()
+            .Map(dest => dest.Type, _ => CommunityFeedItemType.Review)
+            .Map(dest => dest.Username, src => src.UserName)
+            .Map(dest => dest.ShopId, src => src.CoffeeShopId)
+            .Map(dest => dest.Photos, src => src.Photos)
+            .Ignore(dest => dest.ShopName)
+            .Ignore(dest => dest.Note)
+            .Ignore(dest => dest.LinkedReviewId);
+
+        config.NewConfig<CheckIn, CommunityFeedItemDto>()
+            .Map(dest => dest.Type, _ => CommunityFeedItemType.CheckIn)
+            .Map(dest => dest.Username, _ => string.Empty)
+            .Map(dest => dest.Photos, src => src.ShopPhotos)
+            .Map(dest => dest.LinkedReviewId, src => src.ReviewId)
+            .Ignore(dest => dest.ShopName)
+            .Ignore(dest => dest.Header)
+            .Ignore(dest => dest.Comment);
 
         config.NewConfig<Equipment, EquipmentDto>()
             .Map(dest => dest.Model, src => src.ModelName)

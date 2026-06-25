@@ -1,6 +1,8 @@
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Contract.Events.Shops;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shops.Application.Features.Public.Feed;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 
 namespace CoffeePeek.Shops.Infrastructure.Consumers;
@@ -11,6 +13,7 @@ public static class ModerationReviewApprovedHandler
         ModerationReviewApprovedEvent @event,
         IReviewRepository reviewRepository,
         IUnitOfWork unitOfWork,
+        ICacheService cacheService,
         CancellationToken ct)
     {
         var reviewDto = @event.Review;
@@ -33,6 +36,7 @@ public static class ModerationReviewApprovedHandler
         reviewRepository.Add(review);
 
         await unitOfWork.SaveChangesAsync(ct);
+        await CommunityFeedCacheInvalidator.InvalidateAsync(cacheService, ct);
         
         return new ReviewAddedEvent(reviewDto.UserId, reviewDto.ShopId, review.Id);
     }
