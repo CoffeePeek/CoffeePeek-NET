@@ -8,12 +8,12 @@ using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Extensions;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Extentions;
+using CoffeePeek.Shared.Kernel.Options;
 using CoffeePeek.Shared.Persistence;
 using CoffeePeek.Shared.Persistence.Data;
 using CoffeePeek.Shared.Persistence.Extensions;
 using CoffeePeek.Shared.Web;
 using CoffeePeek.Shared.Web.Handlers;
-using Minio;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -53,14 +53,12 @@ else
 services.AddScoped<IUnitOfWork, UnitOfWork<MediaDbContext>>();
 services.AddScoped<IPhotoRepository, PhotoRepository>();
 
-var minIoOptions = services.AddValidateOptions<MinIOOptions>();
+services.AddOptions<MediaPublicUrlOptions>()
+    .BindConfiguration(nameof(MediaPublicUrlOptions));
+
+services.AddValidateOptions<MinIOOptions>();
 
 services.AddScoped<IStorageService, MinIOStorageService>();
-services.AddMinio(client => client
-    .WithEndpoint(new Uri(minIoOptions.Endpoint))
-    .WithCredentials(minIoOptions.AccessKey, minIoOptions.SecretKey)
-    .Build()
-);
 
 
 var handlersAssembly = typeof(ConfirmPhotoHandler).Assembly;

@@ -15,11 +15,10 @@ namespace CoffeePeek.Shops.Application.Mapper;
 
 public static class MapsterConfiguration
 {
-    public static IMapper CreateMapper(MediaPublicUrlOptions mediaOptions)
-    {
-        var config = Configure(mediaOptions);
-        return new MapsterMapper.Mapper(config);
-    }
+    public static TypeAdapterConfig CreateConfig(MediaPublicUrlOptions mediaOptions) => Configure(mediaOptions);
+
+    public static IMapper CreateMapper(MediaPublicUrlOptions mediaOptions) =>
+        new MapsterMapper.Mapper(Configure(mediaOptions));
 
     private static TypeAdapterConfig Configure(MediaPublicUrlOptions mediaOptions)
     {
@@ -69,6 +68,9 @@ public static class MapsterConfiguration
         config.NewConfig<CheckIn, CheckInDto>()
             // ShopName is set manually in handlers via repository
             .Ignore(dest => dest.ShopName);
+
+        config.NewConfig<EquipmentCategory, EquipmentCategoryEnum>()
+            .MapWith(category => (EquipmentCategoryEnum)category.Id);
 
         config.NewConfig<Equipment, EquipmentDto>()
             .Map(dest => dest.Model, src => src.ModelName)

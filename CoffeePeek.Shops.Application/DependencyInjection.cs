@@ -3,6 +3,7 @@ using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shared.Kernel.Options;
+using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -18,8 +19,10 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        services.AddSingleton<IMapper>(sp =>
-            MapsterConfiguration.CreateMapper(sp.GetRequiredService<IOptions<MediaPublicUrlOptions>>().Value));
+        services.AddSingleton<TypeAdapterConfig>(sp =>
+            MapsterConfiguration.CreateConfig(sp.GetRequiredService<IOptions<MediaPublicUrlOptions>>().Value));
+
+        services.AddSingleton<IMapper>(sp => new MapsterMapper.Mapper(sp.GetRequiredService<TypeAdapterConfig>()));
 
         // Validation
         services.AddValidators();

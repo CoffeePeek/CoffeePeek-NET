@@ -16,6 +16,7 @@ public static class DependencyInjection
         });
         
         services.AddControllersModule();
+        services.AddResponseCaching();
         services.AddHeaderUserContext();
 
         // Authorization policies (JWT validation happens in Gateway)

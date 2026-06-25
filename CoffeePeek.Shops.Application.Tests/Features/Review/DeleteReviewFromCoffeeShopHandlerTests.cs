@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shops.Application.Features.Review.DeleteReviewFromCoffeeShop;
@@ -14,6 +15,7 @@ public class DeleteReviewFromCoffeeShopHandlerTests
 {
     private readonly Mock<IReviewRepository> _reviewRepoMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<ICacheService> _cacheMock = new();
     private readonly CancellationToken _ct = CancellationToken.None;
 
     private static Domain.Aggregates.ReviewAggregate.Review CreateReview(Guid? ownerId = null)
@@ -39,6 +41,7 @@ public class DeleteReviewFromCoffeeShopHandlerTests
             new DeleteReviewFromCoffeeShopCommand(review.Id, ownerId),
             _reviewRepoMock.Object,
             _unitOfWorkMock.Object,
+            _cacheMock.Object,
             _ct);
 
         result.IsSuccess.Should().BeTrue();
@@ -59,6 +62,7 @@ public class DeleteReviewFromCoffeeShopHandlerTests
             new DeleteReviewFromCoffeeShopCommand(review.Id, differentUserId),
             _reviewRepoMock.Object,
             _unitOfWorkMock.Object,
+            _cacheMock.Object,
             _ct);
 
         await act.Should().ThrowAsync<ForbiddenException>();
@@ -78,6 +82,7 @@ public class DeleteReviewFromCoffeeShopHandlerTests
             new DeleteReviewFromCoffeeShopCommand(reviewId, Guid.NewGuid()),
             _reviewRepoMock.Object,
             _unitOfWorkMock.Object,
+            _cacheMock.Object,
             _ct);
 
         await act.Should().ThrowAsync<NotFoundException>();

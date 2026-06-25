@@ -98,6 +98,12 @@ public record CacheKey(
             Description: "Shop search results",
             Service: "ShopsService");
         
+        public static CacheKey PublicPlatformStats() => new(
+            Key: "shop:public:platform-stats",
+            DefaultTtl: TimeSpan.FromMinutes(5),
+            Description: "Public landing page platform statistics",
+            Service: "ShopsService");
+        
         public static string SearchPattern() => "shop:search:*";
     }
     

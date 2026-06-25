@@ -67,6 +67,7 @@ public static class DependencyInjection
         services.AddScoped<IQueryCoffeeBeanRepository, QueryCoffeeBeanRepository>();
         services.AddScoped<IQueryBrewMethodRepository, QueryBrewMethodRepository>();
         services.AddScoped<IAdminStatsQueryRepository, AdminStatsQueryRepository>();
+        services.AddScoped<IPublicStatsQueryRepository, PublicStatsQueryRepository>();
         services.AddCacheModule();
 
         return services;
