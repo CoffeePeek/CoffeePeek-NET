@@ -144,8 +144,10 @@ jobs:
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
+          SSH_OPTS: "-o ServerAliveInterval=30 -o ServerAliveCountMax=120 -o ConnectTimeout=30"
         run: |
           rsync -az --delete \
+            -e "ssh ${SSH_OPTS}" \
             --exclude '.git' \
             --exclude '**/bin' \
             --exclude '**/obj' \
@@ -158,8 +160,9 @@ jobs:
           VPS_USER: ${{ secrets.VPS_USER }}
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          SSH_OPTS: "-o ServerAliveInterval=30 -o ServerAliveCountMax=120 -o ConnectTimeout=30"
         run: |
-          ssh "${VPS_USER}@${VPS_HOST}" \
+          ssh ${SSH_OPTS} "${VPS_USER}@${VPS_HOST}" \
             "export DOCKER_HUB_USERNAME='${DOCKER_HUB_USERNAME}'; \
              export DOCKER_HUB_PASSWORD='${DOCKER_HUB_PASSWORD}'; \
              set -euo pipefail; \
