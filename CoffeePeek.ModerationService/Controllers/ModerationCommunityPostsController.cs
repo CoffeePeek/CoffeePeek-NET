@@ -15,6 +15,7 @@ namespace CoffeePeek.ModerationService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Route("api/community/posts")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class ModerationCommunityPostsController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {

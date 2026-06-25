@@ -1,4 +1,5 @@
 using CoffeePeek.Shared.Domain.Entities;
+using CoffeePeek.Shared.Kernel.Exceptions;
 
 namespace CoffeePeek.Shops.Domain.Aggregates.CommunityReactionAggregate;
 
@@ -26,8 +27,25 @@ public sealed class CommunityReaction : Entity<Guid>
         Guid userId,
         ReactionTargetType targetType,
         Guid targetId,
-        CommunityReactionType reactionType) =>
-        new(userId, targetType, targetId, reactionType);
+        CommunityReactionType reactionType)
+    {
+        if (userId == Guid.Empty)
+            throw new DomainException("UserId cannot be empty.");
 
-    public void ChangeType(CommunityReactionType reactionType) => ReactionType = reactionType;
+        if (targetId == Guid.Empty)
+            throw new DomainException("TargetId cannot be empty.");
+
+        if (!Enum.IsDefined(reactionType))
+            throw new DomainException("Reaction type is invalid.");
+
+        return new CommunityReaction(userId, targetType, targetId, reactionType);
+    }
+
+    public void ChangeType(CommunityReactionType reactionType)
+    {
+        if (!Enum.IsDefined(reactionType))
+            throw new DomainException("Reaction type is invalid.");
+
+        ReactionType = reactionType;
+    }
 }

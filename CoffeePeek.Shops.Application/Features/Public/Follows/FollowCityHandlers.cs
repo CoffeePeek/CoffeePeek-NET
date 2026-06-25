@@ -1,4 +1,5 @@
 using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
@@ -27,7 +28,7 @@ public static class FollowCityHandler
         {
             await unitOfWork.SaveChangesAsync(ct);
         }
-        catch (Exception)
+        catch (Exception ex) when (DatabaseExceptionHelper.IsUniqueConstraintViolation(ex))
         {
             if (await followRepository.GetAsync(command.UserId, command.CityId, ct) is not null)
                 return Response.Success("Already following this city.");

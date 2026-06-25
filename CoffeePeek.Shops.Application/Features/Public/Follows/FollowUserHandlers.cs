@@ -29,7 +29,7 @@ public static class FollowUserHandler
         {
             await unitOfWork.SaveChangesAsync(ct);
         }
-        catch (Exception)
+        catch (Exception ex) when (DatabaseExceptionHelper.IsUniqueConstraintViolation(ex))
         {
             if (await followRepository.GetAsync(command.FollowerId, command.FollowingUserId, ct) is not null)
                 return (Response.Success("Already following this user."), null);

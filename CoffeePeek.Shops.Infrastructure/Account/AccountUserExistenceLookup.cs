@@ -1,13 +1,17 @@
 using System.Net.Http.Json;
+using CoffeePeek.Shared.Auth;
+using CoffeePeek.Shared.Auth.Options;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Abstractions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.Shops.Infrastructure.Account;
 
 public class AccountUserExistenceLookup(
     IHttpClientFactory httpClientFactory,
+    IOptions<GatewayAuthOptions> gatewayAuthOptions,
     ILogger<AccountUserExistenceLookup> logger) : IUserExistenceLookup
 {
     public async Task<bool> ExistsAsync(Guid userId, CancellationToken ct = default)
@@ -16,11 +20,12 @@ public class AccountUserExistenceLookup(
             return false;
 
         var client = httpClientFactory.CreateClient("account-user-lookup");
-        var requestUri = $"/api/Users/{userId}";
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Users/{userId}");
+        request.AddGatewayAuthHeader(gatewayAuthOptions.Value.SecretKey);
 
         try
         {
-            using var response = await client.GetAsync(requestUri, ct);
+            using var response = await client.SendAsync(request, ct);
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return false;
 

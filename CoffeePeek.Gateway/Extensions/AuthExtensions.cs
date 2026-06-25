@@ -1,9 +1,10 @@
 using System.Text;
-using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Options;
+using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Kernel.Extentions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
@@ -26,8 +27,14 @@ public static class AuthExtensions
     /// </param>
     public static IServiceCollection AddGatewayAuth(
         this IServiceCollection services,
-        IWebHostEnvironment environment)
+        IWebHostEnvironment environment,
+        IConfiguration configuration)
     {
+        services.AddOptions<GatewayAuthOptions>()
+            .Bind(configuration.GetSection(GatewayAuthOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         var authOptions = services.AddValidateOptions<JWTOptions>();
 
         services.AddAuthentication(options =>

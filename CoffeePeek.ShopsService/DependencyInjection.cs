@@ -8,7 +8,7 @@ namespace CoffeePeek.ShopsService;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPresentation(this IServiceCollection services)
+    public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOpenApi(options =>
         {
@@ -16,7 +16,7 @@ public static class DependencyInjection
         });
         
         services.AddControllersModule();
-        services.AddHeaderUserContext();
+        services.AddHeaderUserContext(configuration);
 
         // Authorization policies (JWT validation happens in Gateway)
         services.AddAuthorizationBuilder()

@@ -18,4 +18,7 @@ public static class GatewayHeaderConsts
 
     /// <summary>The authenticated user's email address.</summary>
     public const string XUserEmail = "X-User-Email";
+
+    /// <summary>Shared secret proving the request was forwarded by the API Gateway.</summary>
+    public const string XGatewayAuth = "X-Gateway-Auth";
 }

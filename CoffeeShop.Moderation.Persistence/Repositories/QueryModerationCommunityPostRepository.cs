@@ -42,4 +42,9 @@ public class QueryModerationCommunityPostRepository(ModerationDbContext dbContex
 
         return (items, totalCount);
     }
+
+    public Task<int> CountByUserSinceAsync(Guid userId, DateTime sinceUtc, CancellationToken ct = default) =>
+        dbContext.ModerationCommunityPosts
+            .AsNoTracking()
+            .CountAsync(p => p.UserId == userId && p.CreatedAtUtc >= sinceUtc, ct);
 }

@@ -143,7 +143,12 @@ public class PublicFeedQueryRepository(
         });
 
         var timeline = reviewTimeline.Concat(checkInTimeline).Concat(postTimeline);
-        var totalCount = await timeline.CountAsync(ct);
+
+        var reviewCountTask = reviewQuery.CountAsync(ct);
+        var checkInCountTask = checkInQuery.CountAsync(ct);
+        var postCountTask = postQuery.CountAsync(ct);
+        await Task.WhenAll(reviewCountTask, checkInCountTask, postCountTask);
+        var totalCount = reviewCountTask.Result + checkInCountTask.Result + postCountTask.Result;
 
         if (totalCount == 0)
             return ([], 0);

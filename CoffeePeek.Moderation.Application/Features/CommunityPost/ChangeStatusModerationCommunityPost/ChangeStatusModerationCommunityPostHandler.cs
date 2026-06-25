@@ -21,6 +21,7 @@ public static class ChangeStatusModerationCommunityPostHandler
     public static async Task<(UpdateEntityResponse<ContractModerationStatus>, ModerationCommunityPostApprovedEvent?)> Handle(
         ChangeStatusModerationCommunityPostCommand command,
         IModerationCommunityPostRepository repository,
+        IQueryModerationShopRepository moderationShopRepository,
         IModerationAuditLogRepository auditLogRepository,
         IMapper mapper,
         OutgoingMessages outgoingMessages,
@@ -40,6 +41,14 @@ public static class ChangeStatusModerationCommunityPostHandler
         switch (command.ModerationStatus)
         {
             case ContractModerationStatus.Approved:
+            {
+                if (post.LinkedShopId is { } linkedShopId)
+                {
+                    var moderationShop = await moderationShopRepository.GetByPublishedShopId(linkedShopId, ct);
+                    if (moderationShop is null)
+                        throw new ValidationException("Linked coffee shop no longer exists. Reject the post or remove the shop link before approval.");
+                }
+
                 post.Approve(command.UserId);
                 approvedEvent = new ModerationCommunityPostApprovedEvent(mapper.Map<ModerationCommunityPostDto>(post));
                 await ModerationAuditWriter.WriteAsync(
@@ -52,6 +61,7 @@ public static class ChangeStatusModerationCommunityPostHandler
                     null,
                     ct);
                 break;
+            }
 
             case ContractModerationStatus.Rejected:
             {

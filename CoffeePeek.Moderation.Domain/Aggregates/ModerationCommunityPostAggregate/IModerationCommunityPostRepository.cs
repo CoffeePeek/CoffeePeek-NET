@@ -19,4 +19,6 @@ public interface IQueryModerationCommunityPostRepository
         ModerationStatus? status,
         string? search,
         CancellationToken ct = default);
+
+    Task<int> CountByUserSinceAsync(Guid userId, DateTime sinceUtc, CancellationToken ct = default);
 }

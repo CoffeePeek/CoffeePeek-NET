@@ -16,6 +16,7 @@ public static class BusinessConstants
     public const int MaxCommunityPostTitleLength = 120;
     public const int MinCommunityPostBodyLength = 10;
     public const int MaxCommunityPostBodyLength = 2000;
+    public const int MaxCommunityPostsPerUserPerDay = 10;
     
     #region ShopContact
 

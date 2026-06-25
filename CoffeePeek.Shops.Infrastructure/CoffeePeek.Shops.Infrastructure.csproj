@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CoffeePeek.Shared.Auth\CoffeePeek.Shared.Auth.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shops.Application\CoffeePeek.Shops.Application.csproj" />
       <ProjectReference Include="..\CoffeePeek.Shops.Persistance\CoffeePeek.Shops.Persistance.csproj" />
     </ItemGroup>
