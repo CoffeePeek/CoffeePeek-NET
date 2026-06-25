@@ -12,4 +12,7 @@ public class QueryCityRepository(ShopsDbContext dbContext) : IQueryCityRepositor
     {
         return _repository.AsNoTracking().ToArrayAsync(ct);
     }
+
+    public Task<bool> Exists(Guid cityId, CancellationToken ct = default) =>
+        _repository.AsNoTracking().AnyAsync(c => c.Id == cityId, ct);
 }

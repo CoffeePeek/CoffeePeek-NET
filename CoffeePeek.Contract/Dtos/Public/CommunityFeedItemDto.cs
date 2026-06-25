@@ -18,7 +18,10 @@ public record CommunityFeedItemDto
     public string? Note { get; init; }
     public RatingDto? Rating { get; init; }
     public Guid? LinkedReviewId { get; init; }
+    public CommunityPostType? PostType { get; init; }
     public int CommentCount { get; init; }
+    public CommunityReactionCountsDto Reactions { get; init; } = new();
+    public CommunityReactionType? ViewerReaction { get; init; }
 
     public ICollection<ShortPhotoMetadataDto> Photos { get; init; } = [];
 }

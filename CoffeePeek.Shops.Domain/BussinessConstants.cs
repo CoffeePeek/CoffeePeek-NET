@@ -30,6 +30,15 @@ public static class BusinessConstants
 
     #endregion
 
+    #region CommunityPost
+
+    public const int MinCommunityPostTitleLength = 3;
+    public const int MaxCommunityPostTitleLength = 120;
+    public const int MinCommunityPostBodyLength = 10;
+    public const int MaxCommunityPostBodyLength = 2000;
+
+    #endregion
+
     #region ShopContact
 
     public const int MaxShopContactInstagramLinkLength = 255;

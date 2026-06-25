@@ -1,0 +1,3 @@
+namespace CoffeePeek.Moderation.Application.Features.CommunityPost.GetModerationCommunityPostById;
+
+public record GetModerationCommunityPostByIdQuery(Guid PostId);

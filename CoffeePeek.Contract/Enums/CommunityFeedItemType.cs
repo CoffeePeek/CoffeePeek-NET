@@ -3,5 +3,6 @@ namespace CoffeePeek.Contract.Enums;
 public enum CommunityFeedItemType
 {
     Review = 1,
-    CheckIn = 2
+    CheckIn = 2,
+    Post = 3
 }

@@ -4,5 +4,7 @@ public enum CommunityFeedFilter
 {
     All = 0,
     Reviews = 1,
-    CheckIns = 2
+    CheckIns = 2,
+    Posts = 3,
+    Following = 4
 }

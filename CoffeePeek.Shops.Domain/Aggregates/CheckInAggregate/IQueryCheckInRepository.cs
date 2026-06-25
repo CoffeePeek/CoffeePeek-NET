@@ -11,4 +11,5 @@ public interface IQueryCheckInRepository
         CancellationToken ct = default);
     Task<bool> Exists(Guid userId, Guid shopDtoId, CancellationToken cancellationToken);
     Task<bool> ExistsByIdAsync(Guid checkInId, CancellationToken ct = default);
+    Task<Guid?> GetUserIdByIdAsync(Guid checkInId, CancellationToken ct = default);
 }

@@ -1,7 +1,9 @@
 using CoffeePeek.Contract.Dtos.Public;
+using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
-using CoffeePeek.Shops.Application.Features.Public.Feed;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityFollowAggregate;
 
 namespace CoffeePeek.Shops.Application.Features.Public.Feed;
 
@@ -10,19 +12,39 @@ public static class GetCommunityFeedHandler
     public static async Task<Response<GetCommunityFeedResponse>> Handle(
         GetCommunityFeedQuery query,
         ICommunityFeedQueries repository,
+        IQueryCommunityUserFollowRepository followRepository,
         ICacheService cacheService,
         CancellationToken ct)
     {
         var page = Math.Max(1, query.Page);
         var pageSize = Math.Clamp(query.PageSize, 1, 50);
 
-        var cacheKey = CacheKey.Shop.PublicCommunityFeed(page, pageSize, query.Filter.ToString());
-        var cached = await cacheService.GetAsync<GetCommunityFeedResponse>(cacheKey, ct);
+        IReadOnlyList<Guid>? followingUserIds = null;
+        if (query.Filter == CommunityFeedFilter.Following)
+        {
+            if (query.ViewerUserId is not { } viewerId)
+                throw new UnauthorizedException("Authentication is required for the Following feed.");
 
-        if (cached is not null)
-            return Response<GetCommunityFeedResponse>.Success(cached);
+            followingUserIds = await followRepository.GetFollowingUserIdsAsync(viewerId, ct);
+            if (followingUserIds.Count == 0)
+            {
+                return Response<GetCommunityFeedResponse>.Success(new GetCommunityFeedResponse(
+                    [], 0, 0, page, pageSize, query.Filter, query.CityId));
+            }
+        }
 
-        var (items, totalCount) = await repository.GetFeedAsync(page, pageSize, query.Filter, ct);
+        var context = new CommunityFeedQueryContext(query.CityId, query.ViewerUserId, followingUserIds);
+        var cacheKey = CacheKey.Shop.PublicCommunityFeed(
+            page, pageSize, query.Filter.ToString(), query.CityId, query.ViewerUserId);
+
+        if (query.ViewerUserId is null)
+        {
+            var cached = await cacheService.GetAsync<GetCommunityFeedResponse>(cacheKey, ct);
+            if (cached is not null)
+                return Response<GetCommunityFeedResponse>.Success(cached);
+        }
+
+        var (items, totalCount) = await repository.GetFeedAsync(page, pageSize, query.Filter, context, ct);
         var totalPages = totalCount == 0 ? 0 : (int)Math.Ceiling(totalCount / (double)pageSize);
 
         var response = new GetCommunityFeedResponse(
@@ -31,9 +53,11 @@ public static class GetCommunityFeedHandler
             totalPages,
             page,
             pageSize,
-            query.Filter);
+            query.Filter,
+            query.CityId);
 
-        await cacheService.SetAsync(cacheKey, response, cacheKey.DefaultTtl);
+        if (query.ViewerUserId is null)
+            await cacheService.SetAsync(cacheKey, response, cacheKey.DefaultTtl);
 
         return Response<GetCommunityFeedResponse>.Success(response);
     }

@@ -6,7 +6,11 @@ namespace CoffeePeek.Shops.Application.Features.Public.Feed;
 public record GetCommunityFeedQuery(
     int Page = 1,
     int PageSize = 20,
-    CommunityFeedFilter Filter = CommunityFeedFilter.All);
+    CommunityFeedFilter Filter = CommunityFeedFilter.All,
+    Guid? CityId = null)
+{
+    public Guid? ViewerUserId { get; init; }
+}
 
 public record GetCommunityFeedResponse(
     IReadOnlyList<CommunityFeedItemDto> Items,
@@ -14,4 +18,5 @@ public record GetCommunityFeedResponse(
     int TotalPages,
     int CurrentPage,
     int PageSize,
-    CommunityFeedFilter Filter);
+    CommunityFeedFilter Filter,
+    Guid? CityId);
