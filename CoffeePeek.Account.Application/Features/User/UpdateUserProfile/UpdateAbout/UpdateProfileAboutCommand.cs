@@ -5,4 +5,4 @@ namespace CoffeePeek.Account.Application.Features.User.UpdateUserProfile.UpdateA
 
 public record UpdateProfileAboutCommand(
     [property: JsonIgnore] Guid UserId,
-    [property: MaxLength(600)] string About);
+    [MaxLength(600)] string About);

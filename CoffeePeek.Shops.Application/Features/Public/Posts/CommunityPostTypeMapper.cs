@@ -1,13 +1,13 @@
-using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityPostAggregate;
+using DomainPostType = CoffeePeek.Shops.Domain.Aggregates.CommunityPostAggregate.CommunityPostType;
 
 namespace CoffeePeek.Shops.Application.Features.Public.Posts;
 
 public static class CommunityPostTypeMapper
 {
-    public static CommunityPostType ToDomain(Contract.Enums.CommunityPostType postType) =>
-        (CommunityPostType)(int)postType;
+    public static DomainPostType ToDomain(Contract.Enums.CommunityPostType postType) =>
+        (DomainPostType)(int)postType;
 
-    public static Contract.Enums.CommunityPostType ToContract(CommunityPostType postType) =>
+    public static Contract.Enums.CommunityPostType ToContract(DomainPostType postType) =>
         (Contract.Enums.CommunityPostType)(int)postType;
 }

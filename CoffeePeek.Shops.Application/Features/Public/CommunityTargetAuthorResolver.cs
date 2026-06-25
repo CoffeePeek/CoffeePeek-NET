@@ -1,6 +1,7 @@
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityCommentAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityPostAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityReactionAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 
 namespace CoffeePeek.Shops.Application.Features.Public;

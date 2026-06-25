@@ -5,6 +5,9 @@ using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityCommentAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityFollowAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityPostAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityReactionAggregate;
 using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
 using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 
@@ -20,6 +23,10 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     public virtual DbSet<Review> Reviews { get; set; }
     public virtual DbSet<CheckIn> CheckIns { get; set; }
     public virtual DbSet<CommunityComment> CommunityComments { get; set; }
+    public virtual DbSet<CommunityPost> CommunityPosts { get; set; }
+    public virtual DbSet<CommunityReaction> CommunityReactions { get; set; }
+    public virtual DbSet<CommunityUserFollow> CommunityUserFollows { get; set; }
+    public virtual DbSet<CommunityCityFollow> CommunityCityFollows { get; set; }
     
     public virtual DbSet<Roaster> Roasters { get; set; }
     
@@ -101,6 +108,53 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
                 .WithMany()
                 .HasForeignKey(c => c.ParentCommentId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<CommunityPost>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.HasIndex(p => p.UserId);
+            entity.HasIndex(p => p.LinkedShopId);
+            entity.HasIndex(p => p.ModerationPostId).IsUnique();
+
+            entity.Property(p => p.UserName).IsRequired().HasMaxLength(30);
+            entity.Property(p => p.Title).IsRequired().HasMaxLength(BusinessConstants.MaxCommunityPostTitleLength);
+            entity.Property(p => p.Body).IsRequired().HasMaxLength(BusinessConstants.MaxCommunityPostBodyLength);
+            entity.Property(p => p.ModerationPostId).IsRequired();
+        });
+
+        modelBuilder.Entity<CommunityReaction>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.HasIndex(r => new { r.UserId, r.TargetType, r.TargetId }).IsUnique();
+            entity.HasIndex(r => new { r.TargetType, r.TargetId });
+
+            entity.Property(r => r.UserId).IsRequired();
+            entity.Property(r => r.TargetType).IsRequired();
+            entity.Property(r => r.TargetId).IsRequired();
+            entity.Property(r => r.ReactionType).IsRequired();
+        });
+
+        modelBuilder.Entity<CommunityUserFollow>(entity =>
+        {
+            entity.HasKey(f => f.Id);
+            entity.HasIndex(f => new { f.FollowerId, f.FollowingUserId }).IsUnique();
+            entity.HasIndex(f => f.FollowerId);
+            entity.HasIndex(f => f.FollowingUserId);
+
+            entity.Property(f => f.FollowerId).IsRequired();
+            entity.Property(f => f.FollowingUserId).IsRequired();
+        });
+
+        modelBuilder.Entity<CommunityCityFollow>(entity =>
+        {
+            entity.HasKey(f => f.Id);
+            entity.HasIndex(f => new { f.UserId, f.CityId }).IsUnique();
+            entity.HasIndex(f => f.UserId);
+            entity.HasIndex(f => f.CityId);
+
+            entity.Property(f => f.UserId).IsRequired();
+            entity.Property(f => f.CityId).IsRequired();
         });
 
         modelBuilder.Entity<UserFavorite>(entity =>

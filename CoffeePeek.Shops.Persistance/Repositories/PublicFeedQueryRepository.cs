@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 using CommunityPost = CoffeePeek.Shops.Domain.Aggregates.CommunityPostAggregate.CommunityPost;
 using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
+using DomainReactionType = CoffeePeek.Shops.Domain.Aggregates.CommunityReactionAggregate.CommunityReactionType;
 
 namespace CoffeePeek.Shops.Persistance.Repositories;
 
@@ -142,7 +143,7 @@ public class PublicFeedQueryRepository(
             .Take(pageSize)
             .ToList();
 
-        var items = await EnrichFeedItemsAsync(merged, ct, context.ViewerUserId);
+        var items = await EnrichFeedItemsAsync(merged, ct, viewerUserId);
         return (items, totalCount);
     }
 
@@ -224,9 +225,9 @@ public class PublicFeedQueryRepository(
         var checkInReactions = await reactionRepository.GetCountsByTargetsAsync(ReactionTargetType.CheckIn, checkInIds, ct);
         var postReactions = await reactionRepository.GetCountsByTargetsAsync(ReactionTargetType.Post, postIds, ct);
 
-        Dictionary<Guid, CommunityReactionType>? viewerReviewReactions = null;
-        Dictionary<Guid, CommunityReactionType>? viewerCheckInReactions = null;
-        Dictionary<Guid, CommunityReactionType>? viewerPostReactions = null;
+        Dictionary<Guid, DomainReactionType>? viewerReviewReactions = null;
+        Dictionary<Guid, DomainReactionType>? viewerCheckInReactions = null;
+        Dictionary<Guid, DomainReactionType>? viewerPostReactions = null;
         if (viewerUserId is { } viewerId)
         {
             viewerReviewReactions = await reactionRepository.GetViewerReactionsByTargetsAsync(viewerId, ReactionTargetType.Review, reviewIds, ct);
@@ -245,7 +246,7 @@ public class PublicFeedQueryRepository(
                     _ => null
                 };
 
-                CommunityReactionType? viewerReaction = item.Type switch
+                DomainReactionType? viewerReaction = item.Type switch
                 {
                     CommunityFeedItemType.Review => viewerReviewReactions?.GetValueOrDefault(item.Id),
                     CommunityFeedItemType.CheckIn => viewerCheckInReactions?.GetValueOrDefault(item.Id),

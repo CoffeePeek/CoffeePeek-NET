@@ -10,6 +10,9 @@ using CoffeePeek.Shops.Application.Features.Public.Feed;
 using CoffeePeek.Shops.Application.Features.Review;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityCommentAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityFollowAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityPostAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityReactionAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Repositories;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
@@ -72,6 +75,14 @@ public static class DependencyInjection
         services.AddScoped<ICommunityFeedQueries, PublicFeedQueryRepository>();
         services.AddScoped<ICommunityCommentRepository, CommunityCommentRepository>();
         services.AddScoped<IQueryCommunityCommentRepository, QueryCommunityCommentRepository>();
+        services.AddScoped<ICommunityPostRepository, CommunityPostRepository>();
+        services.AddScoped<IQueryCommunityPostRepository, QueryCommunityPostRepository>();
+        services.AddScoped<ICommunityReactionRepository, CommunityReactionRepository>();
+        services.AddScoped<IQueryCommunityReactionRepository, QueryCommunityReactionRepository>();
+        services.AddScoped<ICommunityUserFollowRepository, CommunityUserFollowRepository>();
+        services.AddScoped<IQueryCommunityUserFollowRepository, QueryCommunityUserFollowRepository>();
+        services.AddScoped<ICommunityCityFollowRepository, CommunityCityFollowRepository>();
+        services.AddScoped<IQueryCommunityCityFollowRepository, QueryCommunityCityFollowRepository>();
         services.AddCacheModule();
 
         return services;

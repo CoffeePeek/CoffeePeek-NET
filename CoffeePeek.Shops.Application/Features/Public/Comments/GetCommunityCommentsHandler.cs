@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Dtos.Public;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityCommentAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityPostAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
 using MapsterMapper;
 
@@ -14,6 +15,7 @@ public static class GetCommunityCommentsHandler
         IQueryCommunityCommentRepository commentRepository,
         IQueryReviewRepository reviewRepository,
         IQueryCheckInRepository checkInRepository,
+        IQueryCommunityPostRepository postRepository,
         IMapper mapper,
         CancellationToken ct)
     {
@@ -21,7 +23,7 @@ public static class GetCommunityCommentsHandler
             return Response<GetCommunityCommentsResponse>.Error("TargetId is required.");
 
         var domainTargetType = CommentTargetTypeMapper.ToDomain(query.TargetType);
-        if (!await TargetExistsAsync(domainTargetType, query.TargetId, reviewRepository, checkInRepository, ct))
+        if (!await TargetExistsAsync(domainTargetType, query.TargetId, reviewRepository, checkInRepository, postRepository, ct))
             return Response<GetCommunityCommentsResponse>.Error("Feed item not found.");
 
         var page = Math.Max(1, query.Page);
@@ -61,11 +63,13 @@ public static class GetCommunityCommentsHandler
         Guid targetId,
         IQueryReviewRepository reviewRepository,
         IQueryCheckInRepository checkInRepository,
+        IQueryCommunityPostRepository postRepository,
         CancellationToken ct) =>
         targetType switch
         {
             CommentTargetType.Review => await ReviewExistsAsync(targetId, reviewRepository, ct),
             CommentTargetType.CheckIn => await checkInRepository.ExistsByIdAsync(targetId, ct),
+            CommentTargetType.Post => await postRepository.ExistsByIdAsync(targetId, ct),
             _ => false
         };
 

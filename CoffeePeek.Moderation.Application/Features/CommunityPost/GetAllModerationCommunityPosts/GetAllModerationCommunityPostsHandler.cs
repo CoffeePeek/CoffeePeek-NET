@@ -1,6 +1,7 @@
 using CoffeePeek.Contract.Dtos.Public;
 using CoffeePeek.Moderation.Domain.Aggregates.ModerationCommunityPostAggregate;
 using CoffeePeek.Moderation.Domain.Common.Enums;
+using DomainModerationStatus = CoffeePeek.Moderation.Domain.Common.Enums.ModerationStatus;
 using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
 
@@ -14,8 +15,8 @@ public static class GetAllModerationCommunityPostsHandler
         IMapper mapper,
         CancellationToken ct)
     {
-        ModerationStatus? domainStatus = query.Status.HasValue
-            ? (ModerationStatus?)query.Status.Value
+        DomainModerationStatus? domainStatus = query.Status.HasValue
+            ? (DomainModerationStatus?)query.Status.Value
             : null;
 
         var page = Math.Max(1, query.Page);
