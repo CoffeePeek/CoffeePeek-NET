@@ -32,7 +32,7 @@ builder.Services.AddGatewayOpenApi();
 builder.Services.AddGatewayProxy(builder.Configuration);
 
 // ── Security ──────────────────────────────────────────────────────────────────
-builder.Services.AddGatewayAuth(builder.Environment);
+builder.Services.AddGatewayAuth(builder.Environment, builder.Configuration);
 builder.Services.AddCorsModule(builder.Environment);
 builder.Services.AddGatewayRateLimiting();
 

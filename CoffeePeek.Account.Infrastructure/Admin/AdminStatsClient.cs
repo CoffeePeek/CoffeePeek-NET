@@ -2,7 +2,9 @@ using System.Net.Http.Json;
 using CoffeePeek.Account.Application.Features.Admin.Stats;
 using CoffeePeek.Account.Infrastructure.Options;
 using CoffeePeek.Contract.Dtos.Admin;
+using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Auth.Constants;
+using CoffeePeek.Shared.Auth.Options;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +17,7 @@ public class AdminStatsClient(
     IHttpClientFactory httpClientFactory,
     IHttpContextAccessor httpContextAccessor,
     IOptions<AdminStatsOptions> options,
+    IOptions<GatewayAuthOptions> gatewayAuthOptions,
     ILogger<AdminStatsClient> logger) : IAdminStatsClient
 {
     public async Task<AdminServiceStatsDto> GetPlatformStatsAsync(CancellationToken cancellationToken = default)
@@ -48,6 +51,7 @@ public class AdminStatsClient(
         using var request = new HttpRequestMessage(
             HttpMethod.Get,
             $"{baseUrl}/api/admin/stats/summary");
+        request.AddGatewayAuthHeader(gatewayAuthOptions.Value.SecretKey);
         ForwardAuthHeaders(request);
 
         using var response = await client.SendAsync(request, cancellationToken);

@@ -47,4 +47,14 @@ public class QueryCheckInRepository(ShopsDbContext dbContext) : IQueryCheckInRep
 
         return counts.ToDictionary(c => c.ShopId, c => c.Count);
     }
+
+    public Task<bool> ExistsByIdAsync(Guid checkInId, CancellationToken ct = default) =>
+        _repository.AsNoTracking().AnyAsync(x => x.Id == checkInId, ct);
+
+    public Task<Guid?> GetUserIdByIdAsync(Guid checkInId, CancellationToken ct = default) =>
+        _repository
+            .AsNoTracking()
+            .Where(x => x.Id == checkInId)
+            .Select(x => (Guid?)x.UserId)
+            .FirstOrDefaultAsync(ct);
 }

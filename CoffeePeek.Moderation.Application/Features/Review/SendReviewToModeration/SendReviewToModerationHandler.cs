@@ -4,6 +4,7 @@ using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
+using CoffeePeek.Shared.Validation;
 using ModerationReview = CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate.ModerationReview;
 
 namespace CoffeePeek.Moderation.Application.Features.Review.SendReviewToModeration;
@@ -12,12 +13,17 @@ public static class SendReviewToModerationHandler
 {
     public static async Task<CreateEntityResponse> Handle(
         SendReviewToModerationCommand command,
+        IAsyncValidationStrategy<SendReviewToModerationCommand> validationStrategy,
         IQueryModerationShopRepository moderationShopRepository,
         IModerationReviewRepository repository,
         IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
-        var moderationShop = await moderationShopRepository.GetById(command.ShopId, ct);
+        var validationResult = await validationStrategy.ValidateAsync(command, ct);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.ErrorMessage!);
+
+        var moderationShop = await moderationShopRepository.GetByPublishedShopId(command.ShopId, ct);
 
         if (moderationShop == null)
             throw new NotFoundException("Coffee shop not found");

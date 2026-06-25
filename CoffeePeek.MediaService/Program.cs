@@ -21,7 +21,7 @@ var services = builder.Services;
 services.AddControllers();
 services.AddProblemDetails();
 services.AddExceptionHandler<GlobalExceptionHandler>();
-services.AddHeaderUserContext();
+services.AddHeaderUserContext(builder.Configuration);
 
 services.AddOpenApi(options =>
 {

@@ -11,6 +11,12 @@ public static class BusinessConstants
     public const int MaxReviewCommentLength = 1000;
     public const int MinRejectReasonCommentLength = 2;
     public const int MaxRejectReasonCommentLength = 1000;
+
+    public const int MinCommunityPostTitleLength = 3;
+    public const int MaxCommunityPostTitleLength = 120;
+    public const int MinCommunityPostBodyLength = 10;
+    public const int MaxCommunityPostBodyLength = 2000;
+    public const int MaxCommunityPostsPerUserPerDay = 10;
     
     #region ShopContact
 

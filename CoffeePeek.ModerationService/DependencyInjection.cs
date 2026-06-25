@@ -8,18 +8,16 @@ namespace CoffeePeek.ModerationService;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPresentation(this IServiceCollection services)
+    public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOpenApi(options =>
         {
             options.AddDocumentTransformer<BearerSecurityTransformer>();
         });
         
-        // Controllers and API
         services.AddControllersModule();
 
-        // User context for reading claims from headers (set by Gateway)
-        services.AddHeaderUserContext();
+        services.AddHeaderUserContext(configuration);
 
         // Authorization policies (JWT validation happens in Gateway)
         services.AddAuthorizationBuilder()

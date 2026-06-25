@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using CoffeePeek.Moderation.Domain.Aggregates;
+using CoffeePeek.Moderation.Domain.Aggregates.ModerationCommunityPostAggregate;
 using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Extentions;
@@ -45,6 +46,8 @@ public static class DependencyInjection
         services.AddScoped<IModerationReviewRepository, ModerationReviewRepository>();
         services.AddScoped<IAdminModerationStatsQueryRepository, AdminModerationStatsQueryRepository>();
         services.AddScoped<IModerationAuditLogRepository, ModerationAuditLogRepository>();
+        services.AddScoped<IModerationCommunityPostRepository, ModerationCommunityPostRepository>();
+        services.AddScoped<IQueryModerationCommunityPostRepository, QueryModerationCommunityPostRepository>();
 
         return services;
     }

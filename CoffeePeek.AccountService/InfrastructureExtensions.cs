@@ -28,7 +28,7 @@ public static class InfrastructureExtensions
             .AddApplication()
             .AddInfrastructure()
             .AddPersistence(builder)
-            .AddPresentation();
+            .AddPresentation(builder.Configuration);
         
         return builder;
     }

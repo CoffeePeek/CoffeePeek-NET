@@ -21,6 +21,7 @@ public partial class MapsterConfiguration
 
         ConfigureModerationReview(config);
         ConfigureModerationShop(config);
+        ConfigureModerationCommunityPost(config);
 
         config.NewConfig<PhotoMetadata, ShortPhotoMetadataDto>()
             .Map(d => d.FullUrl, s =>
