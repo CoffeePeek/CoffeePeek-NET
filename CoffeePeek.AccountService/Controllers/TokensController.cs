@@ -4,6 +4,7 @@ using CoffeePeek.Account.Application.Features.Auth.OAuthLogin;
 using CoffeePeek.Account.Application.Features.Auth.RefreshToken;
 using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Auth.Options;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -86,12 +87,25 @@ public class TokensController(
 
         var command = new RefreshTokenCommand(refreshToken, deviceName, ipAddress);
 
-        var response = await bus.InvokeAsync<Response<RefreshTokenResponse>>(command);
+        try
+        {
+            var response = await bus.InvokeAsync<Response<RefreshTokenResponse>>(command);
 
-        if (response.IsSuccess && response.Data is not null)
-            Response.Cookies.Append("refreshToken", response.Data.RefreshToken, CreateRefreshTokenCookieOptions());
+            if (response.IsSuccess && response.Data is not null)
+                Response.Cookies.Append("refreshToken", response.Data.RefreshToken, CreateRefreshTokenCookieOptions());
 
-        return Ok(response);
+            return Ok(response);
+        }
+        catch (UnauthorizedException)
+        {
+            DeleteRefreshTokenCookie();
+            throw;
+        }
+        catch (DomainException ex) when (ex.Message.Contains("Security breach", StringComparison.Ordinal))
+        {
+            DeleteRefreshTokenCookie();
+            throw;
+        }
     }
 
     /// <summary>
@@ -120,6 +134,16 @@ public class TokensController(
         HttpOnly = true,
         Secure = true,
         SameSite = SameSiteMode.Strict,
+        Path = "/",
         Expires = DateTimeOffset.UtcNow.AddDays(jwtOptions.Value.RefreshTokenLifetimeDays)
     };
+
+    private void DeleteRefreshTokenCookie() =>
+        Response.Cookies.Delete("refreshToken", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Path = "/"
+        });
 }

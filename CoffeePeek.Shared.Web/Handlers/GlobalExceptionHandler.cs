@@ -18,13 +18,22 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IWeb
         CancellationToken cancellationToken)
     {
         var traceId = httpContext.TraceIdentifier;
-
-        logger.LogError(
-            exception,
-            "Exception occurred: {Message}. TraceId: {TraceId}",
-            exception.Message, traceId);
-
         var statusCode = GetStatusCode(exception);
+
+        if (statusCode < StatusCodes.Status500InternalServerError)
+        {
+            logger.LogWarning(
+                exception,
+                "Client error ({StatusCode}): {Message}. TraceId: {TraceId}",
+                statusCode, exception.Message, traceId);
+        }
+        else
+        {
+            logger.LogError(
+                exception,
+                "Exception occurred: {Message}. TraceId: {TraceId}",
+                exception.Message, traceId);
+        }
         var errorCode = GetErrorCode(exception);
         var fieldErrors = (exception as ValidationException)?.Errors;
 
