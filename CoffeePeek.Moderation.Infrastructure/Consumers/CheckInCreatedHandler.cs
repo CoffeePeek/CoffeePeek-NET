@@ -10,12 +10,14 @@ public static class CheckInCreatedHandler
         var review = @event.ReviewDto;
 
         return new SendReviewToModerationCommand(
-            review.UserId,
-            review.Username,
             review.CoffeeShopId,
             review.Header,
             review.Comment,
             review.Rating,
-            review.Photos);
+            review.Photos)
+        {
+            UserId = review.UserId,
+            UserName = review.Username
+        };
     }
 }

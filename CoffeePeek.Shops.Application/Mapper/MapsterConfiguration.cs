@@ -1,14 +1,18 @@
 using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Dtos.Public;
 using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Options;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using CoffeePeek.Shops.Application.Features.Public.Posts;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityPostAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using Mapster;
 using MapsterMapper;
 using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
+using CommunityComment = CoffeePeek.Shops.Domain.Aggregates.CommunityCommentAggregate.CommunityComment;
 using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Application.Mapper;
@@ -68,6 +72,45 @@ public static class MapsterConfiguration
         config.NewConfig<CheckIn, CheckInDto>()
             // ShopName is set manually in handlers via repository
             .Ignore(dest => dest.ShopName);
+
+        config.NewConfig<Review, CommunityFeedItemDto>()
+            .Map(dest => dest.Type, _ => CommunityFeedItemType.Review)
+            .Map(dest => dest.Username, src => src.UserName)
+            .Map(dest => dest.ShopId, src => src.CoffeeShopId)
+            .Map(dest => dest.Photos, src => src.Photos)
+            .Ignore(dest => dest.ShopName)
+            .Ignore(dest => dest.Note)
+            .Ignore(dest => dest.LinkedReviewId)
+            .Ignore(dest => dest.CommentCount);
+
+        config.NewConfig<CheckIn, CommunityFeedItemDto>()
+            .Map(dest => dest.Type, _ => CommunityFeedItemType.CheckIn)
+            .Map(dest => dest.Username, _ => string.Empty)
+            .Map(dest => dest.Photos, src => src.ShopPhotos)
+            .Map(dest => dest.LinkedReviewId, src => src.ReviewId)
+            .Ignore(dest => dest.ShopName)
+            .Ignore(dest => dest.Header)
+            .Ignore(dest => dest.Comment)
+            .Ignore(dest => dest.CommentCount);
+
+        config.NewConfig<CommunityPost, CommunityFeedItemDto>()
+            .Map(dest => dest.Type, _ => CommunityFeedItemType.Post)
+            .Map(dest => dest.Username, src => src.UserName)
+            .Map(dest => dest.ShopId, src => src.LinkedShopId ?? Guid.Empty)
+            .Map(dest => dest.Header, src => src.Title)
+            .Map(dest => dest.Comment, src => src.Body)
+            .Map(dest => dest.PostType, src => CommunityPostTypeMapper.ToContract(src.PostType))
+            .Ignore(dest => dest.ShopName)
+            .Ignore(dest => dest.Note)
+            .Ignore(dest => dest.LinkedReviewId)
+            .Ignore(dest => dest.Photos)
+            .Ignore(dest => dest.CommentCount)
+            .Ignore(dest => dest.Reactions)
+            .Ignore(dest => dest.ViewerReaction);
+
+        config.NewConfig<CommunityComment, CommunityCommentDto>()
+            .Map(dest => dest.Username, src => src.UserName)
+            .Ignore(dest => dest.Replies);
 
         config.NewConfig<EquipmentCategory, EquipmentCategoryEnum>()
             .MapWith(category => (EquipmentCategoryEnum)category.Id);

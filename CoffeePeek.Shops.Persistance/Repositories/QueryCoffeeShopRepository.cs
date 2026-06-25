@@ -51,4 +51,29 @@ public class QueryCoffeeShopRepository(ShopsDbContext dbContext) : IQueryCoffeeS
 
         return shops.ToDictionary(s => s.Id, s => s.Name);
     }
+
+    public async Task<HashSet<Guid>> GetShopIdsByCityIdAsync(Guid cityId, CancellationToken ct = default)
+    {
+        var shopIds = await _repository
+            .AsNoTracking()
+            .Where(s => s.Location.CityId == cityId)
+            .Select(s => s.Id)
+            .ToListAsync(ct);
+
+        return shopIds.ToHashSet();
+    }
+
+    public async Task<HashSet<Guid>> GetShopIdsByCityIdsAsync(IReadOnlyCollection<Guid> cityIds, CancellationToken ct = default)
+    {
+        if (cityIds.Count == 0)
+            return [];
+
+        var shopIds = await _repository
+            .AsNoTracking()
+            .Where(s => cityIds.Contains(s.Location.CityId))
+            .Select(s => s.Id)
+            .ToListAsync(ct);
+
+        return shopIds.ToHashSet();
+    }
 }

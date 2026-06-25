@@ -27,7 +27,7 @@ public class SendReviewToModerationValidationStrategy : BaseReviewValidationStra
         var firstError = validations.FirstOrDefault(v => !v.IsValid);
         if (firstError != null) return firstError;
 
-        if (!IsValidRating(command.Rating.Place)) return ValidationResult.Invalid("RatingCoffee invalid");
+        if (!IsValidRating(command.Rating.Coffee)) return ValidationResult.Invalid("RatingCoffee invalid");
         if (!IsValidRating(command.Rating.Service)) return ValidationResult.Invalid("RatingService invalid");
         if (!IsValidRating(command.Rating.Place)) return ValidationResult.Invalid("RatingPlace invalid");
 

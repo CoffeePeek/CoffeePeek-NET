@@ -14,7 +14,7 @@ namespace CoffeePeek.AccountService;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPresentation(this IServiceCollection services)
+    public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOpenApi(options =>
         {
@@ -23,9 +23,7 @@ public static class DependencyInjection
 
         services.AddControllersModule();
 
-        // JWT validation happens in the Gateway — downstream services authenticate
-        // via X-User-Id / X-User-Role headers injected by the Gateway.
-        services.AddHeaderUserContext();
+        services.AddHeaderUserContext(configuration);
 
         services.AddAuthorizationBuilder()
             .AddPolicy(RoleConsts.Admin, policy => policy.RequireRole(RoleConsts.Admin))

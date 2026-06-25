@@ -34,6 +34,9 @@ public static class WolverineModule
                         o.UserName = rabbitMqOptions.Username;
                         o.HostName = rabbitMqOptions.HostName;
                         o.Port = rabbitMqOptions.Port;
+                        o.RequestedConnectionTimeout = TimeSpan.FromSeconds(30);
+                        o.AutomaticRecoveryEnabled = true;
+                        o.NetworkRecoveryInterval = TimeSpan.FromSeconds(5);
                     })
                     .AutoProvision()
                     // Each handler gets its own queue (Account + Shops both listen to ModerationShopApprovedEvent).

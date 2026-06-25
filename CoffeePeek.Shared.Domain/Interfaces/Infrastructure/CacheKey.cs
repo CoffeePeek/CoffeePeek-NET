@@ -98,6 +98,22 @@ public record CacheKey(
             Description: "Shop search results",
             Service: "ShopsService");
         
+        public static CacheKey PublicCommunityFeed(
+            int page,
+            int pageSize,
+            string filter,
+            Guid? cityId,
+            Guid? viewerUserId) => new(
+            Key: $"shop:public:community-feed:page:{page}:size:{pageSize}:filter:{filter}:city:{cityId}:viewer:{viewerUserId}",
+            DefaultTtl: TimeSpan.FromMinutes(2),
+            Description: "Public community feed page",
+            Service: "ShopsService");
+        
+        public static CacheKey PublicCommunityFeed(int page, int pageSize, string filter) =>
+            PublicCommunityFeed(page, pageSize, filter, null, null);
+        
+        public static string PublicCommunityFeedPattern() => "shop:public:community-feed:*";
+        
         public static CacheKey PublicPlatformStats() => new(
             Key: "shop:public:platform-stats",
             DefaultTtl: TimeSpan.FromMinutes(5),

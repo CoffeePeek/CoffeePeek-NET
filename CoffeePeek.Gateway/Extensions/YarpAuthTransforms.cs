@@ -1,4 +1,7 @@
 using CoffeePeek.Shared.Auth.Constants;
+using CoffeePeek.Shared.Auth.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Yarp.ReverseProxy.Transforms;
 using Yarp.ReverseProxy.Transforms.Builder;
 
@@ -19,20 +22,21 @@ public class ClaimsToHeadersTransformProvider : ITransformProvider
     {
         context.AddRequestTransform(transformContext =>
         {
-            // Security: strip any X-User-* headers sent by the client to prevent impersonation.
-            // Downstream services must only trust these headers when they originate from the gateway.
             var requestHeaders = transformContext.ProxyRequest.Headers;
             requestHeaders.Remove(GatewayHeaderConsts.XUserId);
             requestHeaders.Remove(GatewayHeaderConsts.XUserName);
             requestHeaders.Remove(GatewayHeaderConsts.XUserRole);
             requestHeaders.Remove(GatewayHeaderConsts.XUserEmail);
+            requestHeaders.Remove(GatewayHeaderConsts.XGatewayAuth);
 
-            // Now add the verified, gateway-issued claims headers.
+            var gatewayAuth = transformContext.HttpContext.RequestServices
+                .GetRequiredService<IOptions<GatewayAuthOptions>>().Value;
+            if (!string.IsNullOrWhiteSpace(gatewayAuth.SecretKey))
+                requestHeaders.TryAddWithoutValidation(GatewayHeaderConsts.XGatewayAuth, gatewayAuth.SecretKey);
+
             var claimsHeaders = ClaimsTransformationExtensions.ExtractClaimsAsHeaders(transformContext.HttpContext.User);
             foreach (var (key, value) in claimsHeaders)
-            {
                 requestHeaders.TryAddWithoutValidation(key, value);
-            }
 
             return ValueTask.CompletedTask;
         });

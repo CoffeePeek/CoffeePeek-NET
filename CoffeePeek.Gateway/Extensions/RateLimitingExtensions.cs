@@ -9,6 +9,7 @@ public static class RateLimitingExtensions
     public const string GlobalPolicy = "global";
     public const string AuthEndpointsPolicy = "auth-endpoints";
     public const string MediaUploadPolicy = "media-upload";
+    public const string CommunityWritePolicy = "community-write";
 
     public static IServiceCollection AddGatewayRateLimiting(this IServiceCollection services)
     {
@@ -42,6 +43,16 @@ public static class RateLimitingExtensions
                 limiterOptions.Window = TimeSpan.FromMinutes(1);
                 limiterOptions.SegmentsPerWindow = 6;
                 limiterOptions.PermitLimit = 10;
+                limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                limiterOptions.QueueLimit = 0;
+            });
+
+            // Community write endpoints: 60 requests per minute per IP
+            options.AddSlidingWindowLimiter(CommunityWritePolicy, limiterOptions =>
+            {
+                limiterOptions.Window = TimeSpan.FromMinutes(1);
+                limiterOptions.SegmentsPerWindow = 6;
+                limiterOptions.PermitLimit = 60;
                 limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                 limiterOptions.QueueLimit = 0;
             });
