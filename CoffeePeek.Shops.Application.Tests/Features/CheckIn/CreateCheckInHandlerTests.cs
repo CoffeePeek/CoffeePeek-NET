@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CoffeePeek.Contract.Dtos;
 using CoffeePeek.Contract.Events.Shops;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Validation;
@@ -22,6 +23,7 @@ public class CreateCheckInHandlerTests
     private readonly Mock<IMessageBus> _busMock = new();
     private readonly Mock<IAsyncValidationStrategy<CreateCheckInCommand>> _validationMock = new();
     private readonly Mock<IMapper> _mapperMock = new();
+    private readonly Mock<ICacheService> _cacheMock = new();
     private readonly CancellationToken _ct = CancellationToken.None;
 
     private static CreateCheckInCommand BuildCommand(
@@ -51,6 +53,7 @@ public class CreateCheckInHandlerTests
             _busMock.Object,
             _validationMock.Object,
             _mapperMock.Object,
+            _cacheMock.Object,
             _ct);
 
         result.IsSuccess.Should().BeTrue();
@@ -81,6 +84,7 @@ public class CreateCheckInHandlerTests
             _busMock.Object,
             _validationMock.Object,
             _mapperMock.Object,
+            _cacheMock.Object,
             _ct);
 
         result.IsSuccess.Should().BeTrue();
@@ -107,6 +111,7 @@ public class CreateCheckInHandlerTests
             _busMock.Object,
             _validationMock.Object,
             _mapperMock.Object,
+            _cacheMock.Object,
             _ct);
 
         // TEST-04 regression: DomainException must NOT be swallowed by catch block
@@ -128,6 +133,7 @@ public class CreateCheckInHandlerTests
             _busMock.Object,
             _validationMock.Object,
             _mapperMock.Object,
+            _cacheMock.Object,
             _ct);
 
         await act.Should().ThrowAsync<CoffeePeek.Shared.Kernel.Exceptions.ValidationException>();

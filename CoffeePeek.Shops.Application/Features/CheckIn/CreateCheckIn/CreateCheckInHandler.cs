@@ -1,9 +1,11 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Contract.Events.Shops;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shared.Validation;
+using CoffeePeek.Shops.Application.Features.Public.Stats;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using MapsterMapper;
@@ -23,6 +25,7 @@ public static class CreateCheckInHandler
         IMessageBus bus,
         IAsyncValidationStrategy<CreateCheckInCommand> validationStrategy,
         IMapper mapper,
+        ICacheService cacheService,
         CancellationToken ct)
     {
         var validationResult = await validationStrategy.ValidateAsync(command, ct);
@@ -79,6 +82,7 @@ public static class CreateCheckInHandler
         }
 
         await unitOfWork.SaveChangesAsync(ct);
+        await PublicStatsCacheInvalidator.InvalidateAsync(cacheService, ct);
 
         return Response<CreateCheckInResponse>.Success(new CreateCheckInResponse(checkIn.Id));
     }

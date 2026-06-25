@@ -1,6 +1,7 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shops.Application.Features.Public.Stats;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using Microsoft.Extensions.Logging;
@@ -96,6 +97,7 @@ public class CreateShopFromModerationService(
 
         await cacheService.RemoveByPattern("shop:search:*", cancellationToken);
         await cacheService.RemoveByPattern("shop:list:city:*", cancellationToken);
+        await PublicStatsCacheInvalidator.InvalidateAsync(cacheService, cancellationToken);
 
         logger.LogInformation("Shop {ShopId} successfully created from moderation event {ModerationId}", shop.Id,
             moderationId);
