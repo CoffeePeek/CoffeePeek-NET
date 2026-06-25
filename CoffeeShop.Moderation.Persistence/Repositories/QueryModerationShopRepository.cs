@@ -9,9 +9,9 @@ public class QueryModerationShopRepository(ModerationDbContext dbContext) : IQue
 {
     private readonly DbSet<ModerationShop> _repository = dbContext.ModerationShops;
 
-    public Task<ModerationShop?> GetById(Guid shopId, CancellationToken ct)
+    public Task<ModerationShop?> GetByPublishedShopId(Guid publishedShopId, CancellationToken ct)
     {
-        return _repository.FirstOrDefaultAsync(x => x.Id == shopId, ct);
+        return _repository.FirstOrDefaultAsync(x => x.ShopId == publishedShopId, ct);
     }
 
     public async Task<IReadOnlyList<ModerationShop>> GetAllForReviewAsync(CancellationToken cancellationToken = default)

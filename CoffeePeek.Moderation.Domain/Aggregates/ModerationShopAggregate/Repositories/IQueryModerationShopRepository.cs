@@ -4,7 +4,7 @@ namespace CoffeePeek.Moderation.Domain.Aggregates;
 
 public interface IQueryModerationShopRepository
 {
-    Task<ModerationShop?> GetById(Guid commandShopId, CancellationToken cancellationToken);
+    Task<ModerationShop?> GetByPublishedShopId(Guid publishedShopId, CancellationToken cancellationToken);
     Task<IReadOnlyList<ModerationShop>> GetAllForReviewAsync(CancellationToken cancellationToken = default);
     Task<(IReadOnlyList<ModerationShop> Items, int TotalCount)> GetPagedForReviewAsync(
         int page,
