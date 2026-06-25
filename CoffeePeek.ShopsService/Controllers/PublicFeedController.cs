@@ -33,6 +33,9 @@ public class PublicFeedController(IMessageBus bus, IUserContext userContext) : C
         if (filter == CommunityFeedFilter.Following && !userContext.IsAuthenticated)
             return Unauthorized();
 
+        if (filter == CommunityFeedFilter.FollowedCities && !userContext.IsAuthenticated)
+            return Unauthorized();
+
         var query = new GetCommunityFeedQuery(page, pageSize, filter, cityId)
         {
             ViewerUserId = userContext.GetUserId()

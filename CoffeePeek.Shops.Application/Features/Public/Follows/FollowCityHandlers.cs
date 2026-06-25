@@ -22,7 +22,18 @@ public static class FollowCityHandler
             return Response.Success("Already following this city.");
 
         followRepository.Add(CommunityCityFollow.Create(command.UserId, command.CityId));
-        await unitOfWork.SaveChangesAsync(ct);
+
+        try
+        {
+            await unitOfWork.SaveChangesAsync(ct);
+        }
+        catch (Exception)
+        {
+            if (await followRepository.GetAsync(command.UserId, command.CityId, ct) is not null)
+                return Response.Success("Already following this city.");
+
+            throw;
+        }
 
         return Response.Success("City followed.");
     }

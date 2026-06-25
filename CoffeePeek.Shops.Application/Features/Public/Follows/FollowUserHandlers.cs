@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Events.Community;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
+using CoffeePeek.Shops.Application.Abstractions;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityFollowAggregate;
 
 namespace CoffeePeek.Shops.Application.Features.Public.Follows;
@@ -11,9 +12,13 @@ public static class FollowUserHandler
     public static async Task<(Response, CommunityFollowNotificationEvent?)> Handle(
         FollowUserCommand command,
         ICommunityUserFollowRepository followRepository,
+        IUserExistenceLookup userExistenceLookup,
         IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
+        if (!await userExistenceLookup.ExistsAsync(command.FollowingUserId, ct))
+            throw new NotFoundException("User not found.");
+
         if (await followRepository.GetAsync(command.FollowerId, command.FollowingUserId, ct) is not null)
             return (Response.Success("Already following this user."), null);
 

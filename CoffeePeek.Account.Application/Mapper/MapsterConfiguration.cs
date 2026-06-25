@@ -36,7 +36,10 @@ public static class MapsterConfiguration
                 : null);
 
         config.NewConfig<CommunityNotification, CommunityNotificationDto>()
-            .Map(dest => dest.Type, src => (Contract.Enums.CommunityNotificationType)(int)src.Type);
+            .Map(dest => dest.Type, src => (Contract.Enums.CommunityNotificationType)(int)src.Type)
+            .Map(dest => dest.ReactionType, src => src.ReactionType.HasValue
+                ? (CommunityReactionType)src.ReactionType.Value
+                : (CommunityReactionType?)null);
 
         return config;
     }

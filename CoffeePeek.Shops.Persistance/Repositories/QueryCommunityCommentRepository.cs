@@ -59,7 +59,10 @@ public class QueryCommunityCommentRepository(ShopsDbContext dbContext) : IQueryC
 
         return await dbContext.CommunityComments
             .AsNoTracking()
-            .Where(c => !c.IsSoftDelete && c.TargetType == targetType && ids.Contains(c.TargetId))
+            .Where(c => !c.IsSoftDelete
+                        && c.ParentCommentId == null
+                        && c.TargetType == targetType
+                        && ids.Contains(c.TargetId))
             .GroupBy(c => c.TargetId)
             .Select(g => new { TargetId = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.TargetId, x => x.Count, ct);
@@ -73,4 +76,11 @@ public class QueryCommunityCommentRepository(ShopsDbContext dbContext) : IQueryC
                 setters => setters.SetProperty(c => c.IsSoftDelete, true),
                 ct);
     }
+
+    public Task SoftDeleteByTargetAsync(CommentTargetType targetType, Guid targetId, CancellationToken ct = default) =>
+        dbContext.CommunityComments
+            .Where(c => !c.IsSoftDelete && c.TargetType == targetType && c.TargetId == targetId)
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(c => c.IsSoftDelete, true),
+                ct);
 }

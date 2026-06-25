@@ -8,6 +8,9 @@ public class CommunityNotificationRepository(AccountDbContext dbContext) : IComm
 {
     public void Add(CommunityNotification notification) => dbContext.CommunityNotifications.Add(notification);
 
+    public Task<bool> ExistsByDedupKeyAsync(string dedupKey, CancellationToken ct = default) =>
+        dbContext.CommunityNotifications.AnyAsync(n => n.DedupKey == dedupKey, ct);
+
     public Task<CommunityNotification?> GetByIdForUserAsync(
         Guid notificationId,
         Guid userId,

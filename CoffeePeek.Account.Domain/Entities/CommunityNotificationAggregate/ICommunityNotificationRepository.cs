@@ -3,6 +3,7 @@ namespace CoffeePeek.Account.Domain.Entities.CommunityNotificationAggregate;
 public interface ICommunityNotificationRepository
 {
     void Add(CommunityNotification notification);
+    Task<bool> ExistsByDedupKeyAsync(string dedupKey, CancellationToken ct = default);
     Task<CommunityNotification?> GetByIdForUserAsync(Guid notificationId, Guid userId, CancellationToken ct = default);
     Task MarkAllReadAsync(Guid userId, CancellationToken ct = default);
 }

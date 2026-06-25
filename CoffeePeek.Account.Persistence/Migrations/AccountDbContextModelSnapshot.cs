@@ -31,6 +31,13 @@ namespace CoffeePeek.Account.Persistence.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("CommentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DedupKey")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<bool>("IsRead")
                         .HasColumnType("boolean");
 
@@ -49,6 +56,9 @@ namespace CoffeePeek.Account.Persistence.Migrations
                     b.Property<Guid?>("RelatedUserId")
                         .HasColumnType("uuid");
 
+                    b.Property<int?>("ReactionType")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(120)
@@ -64,6 +74,9 @@ namespace CoffeePeek.Account.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DedupKey")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 

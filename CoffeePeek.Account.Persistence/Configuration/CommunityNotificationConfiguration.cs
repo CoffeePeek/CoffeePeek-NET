@@ -15,6 +15,8 @@ public class CommunityNotificationConfiguration : IEntityTypeConfiguration<Commu
         entity.Property(n => n.Title).IsRequired().HasMaxLength(120);
         entity.Property(n => n.Message).IsRequired().HasMaxLength(500);
         entity.Property(n => n.RelatedEntityType).HasMaxLength(50);
+        entity.Property(n => n.DedupKey).HasMaxLength(200);
+        entity.HasIndex(n => n.DedupKey).IsUnique();
         entity.Property(n => n.Type).IsRequired();
         entity.Property(n => n.UserId).IsRequired();
     }

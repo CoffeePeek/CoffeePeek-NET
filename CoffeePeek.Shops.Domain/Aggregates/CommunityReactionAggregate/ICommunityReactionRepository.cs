@@ -9,6 +9,8 @@ public interface ICommunityReactionRepository
         ReactionTargetType targetType,
         Guid targetId,
         CancellationToken ct = default);
+
+    Task RemoveByTargetAsync(ReactionTargetType targetType, Guid targetId, CancellationToken ct = default);
 }
 
 public interface IQueryCommunityReactionRepository

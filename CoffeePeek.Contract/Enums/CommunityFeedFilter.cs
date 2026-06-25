@@ -6,5 +6,6 @@ public enum CommunityFeedFilter
     Reviews = 1,
     CheckIns = 2,
     Posts = 3,
-    Following = 4
+    Following = 4,
+    FollowedCities = 5
 }

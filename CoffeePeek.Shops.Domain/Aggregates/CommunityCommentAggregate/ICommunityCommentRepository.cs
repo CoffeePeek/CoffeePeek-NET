@@ -27,4 +27,6 @@ public interface IQueryCommunityCommentRepository
         CancellationToken ct = default);
 
     Task SoftDeleteRepliesAsync(Guid parentCommentId, CancellationToken ct = default);
+
+    Task SoftDeleteByTargetAsync(CommentTargetType targetType, Guid targetId, CancellationToken ct = default);
 }

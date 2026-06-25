@@ -11,6 +11,8 @@ public record CommunityNotificationDto
     public Guid? RelatedUserId { get; init; }
     public string? RelatedEntityType { get; init; }
     public Guid? RelatedEntityId { get; init; }
+    public Guid? CommentId { get; init; }
+    public CommunityReactionType? ReactionType { get; init; }
     public bool IsRead { get; init; }
     public DateTime CreatedAtUtc { get; init; }
 }

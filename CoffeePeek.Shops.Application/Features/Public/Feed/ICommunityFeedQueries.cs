@@ -6,7 +6,8 @@ namespace CoffeePeek.Shops.Application.Features.Public.Feed;
 public record CommunityFeedQueryContext(
     Guid? CityId = null,
     Guid? ViewerUserId = null,
-    IReadOnlyList<Guid>? FollowingUserIds = null);
+    IReadOnlyList<Guid>? FollowingUserIds = null,
+    HashSet<Guid>? CityShopIds = null);
 
 public interface ICommunityFeedQueries
 {

@@ -19,4 +19,9 @@ public class CommunityReactionRepository(ShopsDbContext dbContext) : ICommunityR
             .FirstOrDefaultAsync(
                 r => r.UserId == userId && r.TargetType == targetType && r.TargetId == targetId,
                 ct);
+
+    public Task RemoveByTargetAsync(ReactionTargetType targetType, Guid targetId, CancellationToken ct = default) =>
+        dbContext.CommunityReactions
+            .Where(r => r.TargetType == targetType && r.TargetId == targetId)
+            .ExecuteDeleteAsync(ct);
 }

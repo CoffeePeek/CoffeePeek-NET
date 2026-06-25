@@ -7,6 +7,7 @@ using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shops.Application.Features.Public.Feed;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityFollowAggregate;
 using FluentAssertions;
 using Moq;
@@ -17,6 +18,8 @@ public class GetCommunityFeedHandlerTests
 {
     private readonly Mock<ICommunityFeedQueries> _repositoryMock = new();
     private readonly Mock<IQueryCommunityUserFollowRepository> _followRepoMock = new();
+    private readonly Mock<IQueryCommunityCityFollowRepository> _cityFollowRepoMock = new();
+    private readonly Mock<IQueryCoffeeShopRepository> _coffeeShopRepoMock = new();
     private readonly Mock<ICacheService> _cacheMock = new();
     private readonly CancellationToken _ct = CancellationToken.None;
 
@@ -40,6 +43,8 @@ public class GetCommunityFeedHandlerTests
             new GetCommunityFeedQuery(),
             _repositoryMock.Object,
             _followRepoMock.Object,
+            _cityFollowRepoMock.Object,
+            _coffeeShopRepoMock.Object,
             _cacheMock.Object,
             _ct);
 
@@ -85,6 +90,8 @@ public class GetCommunityFeedHandlerTests
             new GetCommunityFeedQuery(Page: 1, PageSize: 20, Filter: CommunityFeedFilter.Reviews),
             _repositoryMock.Object,
             _followRepoMock.Object,
+            _cityFollowRepoMock.Object,
+            _coffeeShopRepoMock.Object,
             _cacheMock.Object,
             _ct);
 
@@ -120,6 +127,8 @@ public class GetCommunityFeedHandlerTests
             new GetCommunityFeedQuery(PageSize: 500),
             _repositoryMock.Object,
             _followRepoMock.Object,
+            _cityFollowRepoMock.Object,
+            _coffeeShopRepoMock.Object,
             _cacheMock.Object,
             _ct);
 
@@ -135,6 +144,8 @@ public class GetCommunityFeedHandlerTests
             new GetCommunityFeedQuery(Filter: CommunityFeedFilter.Following),
             _repositoryMock.Object,
             _followRepoMock.Object,
+            _cityFollowRepoMock.Object,
+            _coffeeShopRepoMock.Object,
             _cacheMock.Object,
             _ct);
 

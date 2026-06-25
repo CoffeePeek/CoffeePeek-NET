@@ -19,6 +19,9 @@ public sealed class CommunityNotification : Entity<Guid>
     public Guid? RelatedUserId { get; private set; }
     public string? RelatedEntityType { get; private set; }
     public Guid? RelatedEntityId { get; private set; }
+    public Guid? CommentId { get; private set; }
+    public int? ReactionType { get; private set; }
+    public string? DedupKey { get; private set; }
     public bool IsRead { get; private set; }
 
     private CommunityNotification() { }
@@ -30,7 +33,10 @@ public sealed class CommunityNotification : Entity<Guid>
         string message,
         Guid? relatedUserId,
         string? relatedEntityType,
-        Guid? relatedEntityId)
+        Guid? relatedEntityId,
+        Guid? commentId,
+        int? reactionType,
+        string? dedupKey)
     {
         Id = Guid.NewGuid();
         UserId = userId;
@@ -40,6 +46,9 @@ public sealed class CommunityNotification : Entity<Guid>
         RelatedUserId = relatedUserId;
         RelatedEntityType = relatedEntityType;
         RelatedEntityId = relatedEntityId;
+        CommentId = commentId;
+        ReactionType = reactionType;
+        DedupKey = dedupKey;
         CreatedAtUtc = DateTime.UtcNow;
     }
 
@@ -50,7 +59,10 @@ public sealed class CommunityNotification : Entity<Guid>
         string message,
         Guid? relatedUserId = null,
         string? relatedEntityType = null,
-        Guid? relatedEntityId = null)
+        Guid? relatedEntityId = null,
+        Guid? commentId = null,
+        int? reactionType = null,
+        string? dedupKey = null)
     {
         if (userId == Guid.Empty)
             throw new DomainException("UserId cannot be empty.");
@@ -68,7 +80,10 @@ public sealed class CommunityNotification : Entity<Guid>
             message.Trim(),
             relatedUserId,
             relatedEntityType,
-            relatedEntityId);
+            relatedEntityId,
+            commentId,
+            reactionType,
+            dedupKey);
     }
 
     public void MarkRead() => IsRead = true;

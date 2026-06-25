@@ -16,7 +16,7 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class CommunityCommentsController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
-    /// <summary>Creates a comment or a one-level reply on a review or check-in.</summary>
+    /// <summary>Creates a comment or a one-level reply on a review, check-in, or post.</summary>
     [HttpPost]
     [ProducesResponseType<Response<CreateCommunityCommentResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -48,7 +48,7 @@ public class CommunityCommentsController(IMessageBus bus, IUserContext userConte
             userContext.GetUserIdOrThrow(),
             canModerate);
 
-        var response = await bus.InvokeAsync<Response>(command, cancellationToken);
-        return response.IsSuccess ? NoContent() : NotFound(response);
+        await bus.InvokeAsync<Response>(command, cancellationToken);
+        return NoContent();
     }
 }

@@ -30,8 +30,8 @@ public class PublicFeedQueryRepository(
         CommunityFeedQueryContext context,
         CancellationToken cancellationToken = default)
     {
-        HashSet<Guid>? cityShopIds = null;
-        if (context.CityId is { } cityId)
+        HashSet<Guid>? cityShopIds = context.CityShopIds;
+        if (cityShopIds is null && context.CityId is { } cityId)
             cityShopIds = await coffeeShopRepository.GetShopIdsByCityIdAsync(cityId, cancellationToken);
 
         var viewerUserId = context.ViewerUserId;
@@ -42,6 +42,7 @@ public class PublicFeedQueryRepository(
             CommunityFeedFilter.CheckIns => await GetCheckInsFeedAsync(page, pageSize, cityShopIds, context.FollowingUserIds, viewerUserId, cancellationToken),
             CommunityFeedFilter.Posts => await GetPostsFeedAsync(page, pageSize, cityShopIds, context.FollowingUserIds, viewerUserId, cancellationToken),
             CommunityFeedFilter.Following => await GetMergedFeedAsync(page, pageSize, cityShopIds, context.FollowingUserIds, viewerUserId, cancellationToken),
+            CommunityFeedFilter.FollowedCities => await GetMergedFeedAsync(page, pageSize, cityShopIds, context.FollowingUserIds, viewerUserId, cancellationToken),
             _ => await GetMergedFeedAsync(page, pageSize, cityShopIds, context.FollowingUserIds, viewerUserId, cancellationToken)
         };
     }
