@@ -33,6 +33,9 @@ x-jwt-env: &jwt-env
   JWTOptions__Audience: CoffeePeek.API
   JWTOptions__Issuer: CoffeePeek.WEB
 
+x-gateway-auth-env: &gateway-auth-env
+  GatewayAuth__SecretKey: ${GATEWAY_AUTH_SECRET}
+
 x-media-public-env: &media-public-env
   MediaPublicUrlOptions__PublicEndpoint: ${MEDIA_PUBLIC_URL:-}
   MediaPublicUrlOptions__ShopBucketName: coffeepeek.shops
