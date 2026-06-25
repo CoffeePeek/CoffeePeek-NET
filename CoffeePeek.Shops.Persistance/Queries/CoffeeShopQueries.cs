@@ -53,7 +53,8 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
 
         if (request.PriceRange.HasValue)
         {
-            query = query.Where(s => (int)s.PriceRange == (int)request.PriceRange);
+            var priceRangeValue = (int)request.PriceRange.Value;
+            query = query.Where(s => (int)s.PriceRange == priceRangeValue);
         }
         
         if (request.MinRating.HasValue)
@@ -89,7 +90,7 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
             .AsNoTracking()
             .AsSplitQuery()
             .Where(x => x.Id == id)
-            .ProjectToType<CoffeeShopDetailsDto>()
+            .ProjectToType<CoffeeShopDetailsDto>(mapper.Config)
             .FirstOrDefaultAsync(ct);
     }
 
@@ -119,7 +120,7 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
         return context.UserFavorites.AsNoTracking()
             .Where(x => x.UserId == userId)
             .Select(x => x.CoffeeShop)
-            .ProjectToType<CoffeeShopDetailsDto>()
+            .ProjectToType<CoffeeShopDetailsDto>(mapper.Config)
             .ToArrayAsync(cancellationToken);
     }
 }

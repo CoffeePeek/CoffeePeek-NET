@@ -230,7 +230,7 @@ services:
       minio-init:
         condition: service_completed_successfully
     environment:
-      <<: [*dotnet-common, *rabbitmq-env]
+      <<: [*dotnet-common, *rabbitmq-env, *media-public-env]
       PostgresCpOptions__ConnectionString: Host=postgres;Port=5432;Database=cpmediadb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};SslMode=Disable;GSS Encryption Mode=Disable
       MinIOOptions__Endpoint: http://minio:9000
       MinIOOptions__AccessKey: ${MINIO_ROOT_USER}

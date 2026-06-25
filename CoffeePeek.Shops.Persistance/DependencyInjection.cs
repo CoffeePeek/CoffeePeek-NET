@@ -83,6 +83,7 @@ public static class DependencyInjection
         services.AddScoped<IQueryCommunityUserFollowRepository, QueryCommunityUserFollowRepository>();
         services.AddScoped<ICommunityCityFollowRepository, CommunityCityFollowRepository>();
         services.AddScoped<IQueryCommunityCityFollowRepository, QueryCommunityCityFollowRepository>();
+        services.AddScoped<IPublicStatsQueryRepository, PublicStatsQueryRepository>();
         services.AddCacheModule();
 
         return services;

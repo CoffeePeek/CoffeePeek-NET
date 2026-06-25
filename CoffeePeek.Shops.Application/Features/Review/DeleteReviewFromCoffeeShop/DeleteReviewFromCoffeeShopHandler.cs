@@ -4,6 +4,7 @@ using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.Public.Feed;
+using CoffeePeek.Shops.Application.Features.Public.Stats;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityCommentAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityReactionAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
@@ -35,7 +36,7 @@ public class DeleteReviewFromCoffeeShopHandler
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         await CommunityFeedCacheInvalidator.InvalidateAsync(cacheService, cancellationToken);
-
+        await PublicStatsCacheInvalidator.InvalidateAsync(cacheService, cancellationToken);
         return Response.Success();
     }
 }

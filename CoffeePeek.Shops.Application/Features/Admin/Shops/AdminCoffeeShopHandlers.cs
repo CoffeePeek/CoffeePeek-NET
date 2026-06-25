@@ -1,4 +1,5 @@
 using CoffeePeek.Contract.Enums;
+using CoffeePeek.Shops.Application.Features.Public.Stats;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Repositories;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
@@ -135,6 +136,7 @@ public static class SetAdminCoffeeShopVisibilityHandler
 
         await unitOfWork.SaveChangesAsync(ct);
         await cacheService.RemoveAsync(CacheKey.Shop.Detail(shop.Id));
+        await PublicStatsCacheInvalidator.InvalidateAsync(cacheService, ct);
 
         return Response<AdminPublishedShopDto>.Success(AdminPublishedShopMapper.Map(shop));
     }

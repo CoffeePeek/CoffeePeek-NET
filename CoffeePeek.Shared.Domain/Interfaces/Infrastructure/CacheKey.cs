@@ -114,6 +114,12 @@ public record CacheKey(
         
         public static string PublicCommunityFeedPattern() => "shop:public:community-feed:*";
         
+        public static CacheKey PublicPlatformStats() => new(
+            Key: "shop:public:platform-stats",
+            DefaultTtl: TimeSpan.FromMinutes(5),
+            Description: "Public landing page platform statistics",
+            Service: "ShopsService");
+        
         public static string SearchPattern() => "shop:search:*";
     }
     
