@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.MediaService.Configuration;
 using CoffeePeek.MediaService.Data;
+using CoffeePeek.Shared.Kernel.Options;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
@@ -8,11 +9,26 @@ using Minio.Exceptions;
 
 namespace CoffeePeek.MediaService.Services;
 
-public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions> options) : IStorageService
+public class MinIOStorageService : IStorageService, IDisposable
 {
     private const string IsPermanentTag = "is_permanent";
     private const int PresignedUrlExpirySeconds = 600;
-    
+
+    private readonly IMinioClient _internalClient;
+    private readonly IMinioClient _presignClient;
+    private readonly MinIOOptions _options;
+
+    public MinIOStorageService(
+        IOptions<MinIOOptions> options,
+        IOptions<MediaPublicUrlOptions> mediaPublicOptions)
+    {
+        _options = options.Value;
+        _internalClient = BuildClient(_options.Endpoint);
+        var presignEndpoint = !string.IsNullOrWhiteSpace(mediaPublicOptions.Value.PublicEndpoint)
+            ? mediaPublicOptions.Value.PublicEndpoint
+            : _options.Endpoint;
+        _presignClient = BuildClient(presignEndpoint);
+    }
 
     public async Task<PresignedPhotoMetaData> GetPresignedUploadUrl(string fileName,
         string contentType, BucketType bucketType, CancellationToken ct = default)
@@ -28,7 +44,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
             })
             .WithExpiry(PresignedUrlExpirySeconds);
 
-        var url = await minioClient.PresignedPutObjectAsync(args);
+        var url = await _presignClient.PresignedPutObjectAsync(args);
 
         return new PresignedPhotoMetaData(url, storageKey);
     }
@@ -45,7 +61,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
             .WithObject(storageKey)
             .WithTagging(Tagging.GetObjectTags(tags));
 
-        await minioClient.SetObjectTagsAsync(args, ct);
+        await _internalClient.SetObjectTagsAsync(args, ct);
     }
 
     public async Task<bool> Exists(string storageKey, BucketType bucketType, CancellationToken ct = default)
@@ -56,7 +72,7 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
                 .WithBucket(GetBucketName(bucketType))
                 .WithObject(storageKey);
 
-            await minioClient.StatObjectAsync(args, ct);
+            await _internalClient.StatObjectAsync(args, ct);
             return true;
         }
         catch (MinioException)
@@ -71,15 +87,36 @@ public class MinIOStorageService(IMinioClient minioClient, IOptions<MinIOOptions
             .WithBucket(GetBucketName(bucketType))
             .WithObject(storageKey);
 
-        await minioClient.RemoveObjectAsync(args, ct);
+        await _internalClient.RemoveObjectAsync(args, ct);
+    }
+
+    public void Dispose()
+    {
+        _internalClient.Dispose();
+        _presignClient.Dispose();
+    }
+
+    private IMinioClient BuildClient(string endpoint)
+    {
+        var uri = new Uri(endpoint);
+        var builder = new MinioClient()
+            .WithEndpoint(uri)
+            .WithCredentials(_options.AccessKey, _options.SecretKey);
+
+        if (uri.Scheme == Uri.UriSchemeHttps)
+        {
+            builder = builder.WithSSL();
+        }
+
+        return builder.Build();
     }
 
     private string GetBucketName(BucketType type)
     {
         return type switch
         {
-            BucketType.User => options.Value.UserBucketName,
-            BucketType.Shop => options.Value.ShopBucketName,
+            BucketType.User => _options.UserBucketName,
+            BucketType.Shop => _options.ShopBucketName,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported bucket type")
         };
     }

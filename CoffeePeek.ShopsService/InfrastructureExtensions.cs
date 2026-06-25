@@ -38,6 +38,7 @@ public static class InfrastructureExtensions
         app.UseCoffeePeekRequestLogging();
 
         app.UseExceptionHandler();
+        app.UseResponseCaching();
 
         if (app.Environment.IsDevelopment())
         {
