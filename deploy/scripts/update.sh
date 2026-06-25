@@ -40,14 +40,31 @@ wait_for_backend() {
   return 1
 }
 
-echo "==> Building backend services..."
-"${COMPOSE[@]}" up -d --build account shops moderation media
+use_registry_images=false
+if [[ -n "${DOCKER_HUB_USERNAME:-}" && -n "${DOCKER_HUB_PASSWORD:-}" ]]; then
+  use_registry_images=true
+fi
+
+if [[ "${use_registry_images}" == "true" ]]; then
+  echo "==> Pulling backend images from Docker Hub..."
+  "${COMPOSE[@]}" pull account shops moderation media
+  echo "==> Starting backend services..."
+  "${COMPOSE[@]}" up -d account shops moderation media
+else
+  echo "==> Building backend services (no registry credentials)..."
+  "${COMPOSE[@]}" up -d --build account shops moderation media
+fi
 
 wait_for_backend shops /api/Catalogs/cities
 wait_for_backend account /health
 
 echo "==> Starting gateway and caddy..."
-"${COMPOSE[@]}" up -d --build gateway caddy
+if [[ "${use_registry_images}" == "true" ]]; then
+  "${COMPOSE[@]}" pull gateway
+  "${COMPOSE[@]}" up -d gateway caddy
+else
+  "${COMPOSE[@]}" up -d --build gateway caddy
+fi
 
 echo "==> Health check..."
 sleep 3
