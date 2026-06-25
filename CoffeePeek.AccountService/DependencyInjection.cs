@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning.ApiExplorer;
 using CoffeePeek.Account.Infrastructure.Consumers;
 using CoffeePeek.Account.Persistence.Configuration;
+using CoffeePeek.AccountService.Extensions;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Extensions;
 using CoffeePeek.Shared.Kernel.Extentions;
@@ -40,7 +41,7 @@ public static class DependencyInjection
     public static IWebHostBuilder ConfigureWebhost(this IWebHostBuilder builder)
     {
         builder.ConfigureEnvironment();
-        builder.UseSentry();
+        builder.UseSentry(options => options.SetBeforeSend(SentryExtensions.FilterExpectedClientErrors));
         return builder;
     }
 }
