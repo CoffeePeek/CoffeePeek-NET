@@ -4,8 +4,9 @@ using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityCommentAggregate;
 using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
+using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 
 namespace CoffeePeek.Shops.Persistance.Configuration;
 
@@ -18,6 +19,7 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     
     public virtual DbSet<Review> Reviews { get; set; }
     public virtual DbSet<CheckIn> CheckIns { get; set; }
+    public virtual DbSet<CommunityComment> CommunityComments { get; set; }
     
     public virtual DbSet<Roaster> Roasters { get; set; }
     
@@ -81,6 +83,24 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
                 .OnDelete(DeleteBehavior.SetNull);
             
             entity.OwnsOne<Rating>(r => r.Rating);
+        });
+
+        modelBuilder.Entity<CommunityComment>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+            entity.HasIndex(c => new { c.TargetType, c.TargetId });
+            entity.HasIndex(c => c.ParentCommentId);
+            entity.HasIndex(c => c.UserId);
+
+            entity.Property(c => c.UserName).IsRequired().HasMaxLength(30);
+            entity.Property(c => c.Body).IsRequired().HasMaxLength(BusinessConstants.MaxCommunityCommentBodyLength);
+            entity.Property(c => c.TargetType).IsRequired();
+            entity.Property(c => c.TargetId).IsRequired();
+
+            entity.HasOne<CommunityComment>()
+                .WithMany()
+                .HasForeignKey(c => c.ParentCommentId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<UserFavorite>(entity =>

@@ -10,6 +10,7 @@ using CoffeePeek.Shops.Domain.Entities;
 using Mapster;
 using MapsterMapper;
 using CheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
+using CommunityComment = CoffeePeek.Shops.Domain.Aggregates.CommunityCommentAggregate.CommunityComment;
 using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
 
 namespace CoffeePeek.Shops.Application.Mapper;
@@ -78,7 +79,8 @@ public static class MapsterConfiguration
             .Map(dest => dest.Photos, src => src.Photos)
             .Ignore(dest => dest.ShopName)
             .Ignore(dest => dest.Note)
-            .Ignore(dest => dest.LinkedReviewId);
+            .Ignore(dest => dest.LinkedReviewId)
+            .Ignore(dest => dest.CommentCount);
 
         config.NewConfig<CheckIn, CommunityFeedItemDto>()
             .Map(dest => dest.Type, _ => CommunityFeedItemType.CheckIn)
@@ -87,7 +89,12 @@ public static class MapsterConfiguration
             .Map(dest => dest.LinkedReviewId, src => src.ReviewId)
             .Ignore(dest => dest.ShopName)
             .Ignore(dest => dest.Header)
-            .Ignore(dest => dest.Comment);
+            .Ignore(dest => dest.Comment)
+            .Ignore(dest => dest.CommentCount);
+
+        config.NewConfig<CommunityComment, CommunityCommentDto>()
+            .Map(dest => dest.Username, src => src.UserName)
+            .Ignore(dest => dest.Replies);
 
         config.NewConfig<Equipment, EquipmentDto>()
             .Map(dest => dest.Model, src => src.ModelName)

@@ -1,7 +1,9 @@
 using CoffeePeek.Contract.Dtos.Public;
 using CoffeePeek.Contract.Enums;
+using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shops.Application.Features.Public.Feed;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CommunityCommentAggregate;
 using CoffeePeek.Shops.Persistance.Configuration;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +15,8 @@ namespace CoffeePeek.Shops.Persistance.Repositories;
 public class PublicFeedQueryRepository(
     ShopsDbContext dbContext,
     IMapper mapper,
-    IQueryCoffeeShopRepository coffeeShopRepository) : ICommunityFeedQueries
+    IQueryCoffeeShopRepository coffeeShopRepository,
+    IQueryCommunityCommentRepository commentRepository) : ICommunityFeedQueries
 {
     public async Task<(IReadOnlyList<CommunityFeedItemDto> Items, int TotalCount)> GetFeedAsync(
         int page,
@@ -47,9 +50,7 @@ public class PublicFeedQueryRepository(
             .Include(r => r.Photos)
             .ToListAsync(cancellationToken);
 
-        var items = await EnrichShopNamesAsync(
-            reviews.Select(r => mapper.Map<CommunityFeedItemDto>(r)).ToList(),
-            cancellationToken);
+        var items = await EnrichFeedItemsAsync(reviews.Select(r => mapper.Map<CommunityFeedItemDto>(r)).ToList(), cancellationToken);
 
         return (items, totalCount);
     }
@@ -69,9 +70,7 @@ public class PublicFeedQueryRepository(
             .Include(c => c.ShopPhotos)
             .ToListAsync(cancellationToken);
 
-        var items = await EnrichShopNamesAsync(
-            checkIns.Select(c => mapper.Map<CommunityFeedItemDto>(c)).ToList(),
-            cancellationToken);
+        var items = await EnrichFeedItemsAsync(checkIns.Select(c => mapper.Map<CommunityFeedItemDto>(c)).ToList(), cancellationToken);
 
         return (items, totalCount);
     }
@@ -115,11 +114,11 @@ public class PublicFeedQueryRepository(
             .Take(pageSize)
             .ToList();
 
-        var items = await EnrichShopNamesAsync(merged, cancellationToken);
+        var items = await EnrichFeedItemsAsync(merged, cancellationToken);
         return (items, totalCount);
     }
 
-    private async Task<IReadOnlyList<CommunityFeedItemDto>> EnrichShopNamesAsync(
+    private async Task<IReadOnlyList<CommunityFeedItemDto>> EnrichFeedItemsAsync(
         IReadOnlyList<CommunityFeedItemDto> items,
         CancellationToken cancellationToken)
     {
@@ -129,10 +128,27 @@ public class PublicFeedQueryRepository(
         var shopIds = items.Select(i => i.ShopId).Distinct();
         var shopNames = await coffeeShopRepository.GetShopNamesByIdsAsync(shopIds, cancellationToken);
 
+        var reviewIds = items
+            .Where(i => i.Type == CommunityFeedItemType.Review)
+            .Select(i => i.Id)
+            .ToArray();
+        var checkInIds = items
+            .Where(i => i.Type == CommunityFeedItemType.CheckIn)
+            .Select(i => i.Id)
+            .ToArray();
+
+        var reviewCommentCounts = await commentRepository.GetCommentCountsByTargetsAsync(
+            CommentTargetType.Review, reviewIds, cancellationToken);
+        var checkInCommentCounts = await commentRepository.GetCommentCountsByTargetsAsync(
+            CommentTargetType.CheckIn, checkInIds, cancellationToken);
+
         return items
             .Select(item => item with
             {
-                ShopName = shopNames.GetValueOrDefault(item.ShopId, string.Empty)
+                ShopName = shopNames.GetValueOrDefault(item.ShopId, string.Empty),
+                CommentCount = item.Type == CommunityFeedItemType.Review
+                    ? reviewCommentCounts.GetValueOrDefault(item.Id, 0)
+                    : checkInCommentCounts.GetValueOrDefault(item.Id, 0)
             })
             .ToList();
     }

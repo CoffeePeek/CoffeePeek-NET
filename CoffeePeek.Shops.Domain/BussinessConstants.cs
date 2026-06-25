@@ -23,6 +23,13 @@ public static class BusinessConstants
     
     #endregion
 
+    #region CommunityComment
+
+    public const int MinCommunityCommentBodyLength = 1;
+    public const int MaxCommunityCommentBodyLength = 500;
+
+    #endregion
+
     #region ShopContact
 
     public const int MaxShopContactInstagramLinkLength = 255;
