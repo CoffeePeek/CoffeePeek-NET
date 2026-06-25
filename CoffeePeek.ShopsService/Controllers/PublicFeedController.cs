@@ -21,7 +21,6 @@ public class PublicFeedController(IMessageBus bus, IUserContext userContext) : C
     /// ordered by most recent activity first. Optional auth enriches items with the viewer's reactions.
     /// </summary>
     [HttpGet]
-    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any, VaryByQueryKeys = ["page", "pageSize", "filter", "cityId"])]
     [ProducesResponseType<Response<GetCommunityFeedResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetFeed(

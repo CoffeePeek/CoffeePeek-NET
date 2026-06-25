@@ -122,25 +122,80 @@ public class PublicFeedQueryRepository(
             postQuery = postQuery.Where(p => p.LinkedShopId != null && cityShopIds.Contains(p.LinkedShopId.Value));
         postQuery = ApplyFollowingFilter(postQuery, p => p.UserId, followingUserIds);
 
-        var reviewCount = await reviewQuery.CountAsync(ct);
-        var checkInCount = await checkInQuery.CountAsync(ct);
-        var postCount = await postQuery.CountAsync(ct);
-        var totalCount = reviewCount + checkInCount + postCount;
+        var reviewTimeline = reviewQuery.Select(r => new
+        {
+            Type = CommunityFeedItemType.Review,
+            r.Id,
+            r.CreatedAtUtc
+        });
+        var checkInTimeline = checkInQuery.Select(c => new
+        {
+            Type = CommunityFeedItemType.CheckIn,
+            c.Id,
+            c.CreatedAtUtc
+        });
+        var postTimeline = postQuery.Select(p => new
+        {
+            Type = CommunityFeedItemType.Post,
+            p.Id,
+            p.CreatedAtUtc
+        });
+
+        var timeline = reviewTimeline.Concat(checkInTimeline).Concat(postTimeline);
+        var totalCount = await timeline.CountAsync(ct);
 
         if (totalCount == 0)
             return ([], 0);
 
-        var window = page * pageSize;
-        var reviews = await reviewQuery.OrderByDescending(r => r.CreatedAtUtc).Take(window).Include(r => r.Photos).ToListAsync(ct);
-        var checkIns = await checkInQuery.OrderByDescending(c => c.CreatedAtUtc).Take(window).Include(c => c.ShopPhotos).ToListAsync(ct);
-        var posts = await postQuery.OrderByDescending(p => p.CreatedAtUtc).Take(window).ToListAsync(ct);
-
-        var merged = reviews.Select(r => mapper.Map<CommunityFeedItemDto>(r))
-            .Concat(checkIns.Select(c => mapper.Map<CommunityFeedItemDto>(c)))
-            .Concat(posts.Select(p => mapper.Map<CommunityFeedItemDto>(p)))
-            .OrderByDescending(item => item.CreatedAtUtc)
+        var pageRows = await timeline
+            .OrderByDescending(x => x.CreatedAtUtc)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
+            .ToListAsync(ct);
+
+        var reviewIds = pageRows
+            .Where(x => x.Type == CommunityFeedItemType.Review)
+            .Select(x => x.Id)
+            .ToList();
+        var checkInIds = pageRows
+            .Where(x => x.Type == CommunityFeedItemType.CheckIn)
+            .Select(x => x.Id)
+            .ToList();
+        var postIds = pageRows
+            .Where(x => x.Type == CommunityFeedItemType.Post)
+            .Select(x => x.Id)
+            .ToList();
+
+        var reviews = reviewIds.Count == 0
+            ? []
+            : await dbContext.Reviews.AsNoTracking()
+                .Where(r => reviewIds.Contains(r.Id))
+                .Include(r => r.Photos)
+                .ToListAsync(ct);
+        var checkIns = checkInIds.Count == 0
+            ? []
+            : await dbContext.CheckIns.AsNoTracking()
+                .Where(c => checkInIds.Contains(c.Id))
+                .Include(c => c.ShopPhotos)
+                .ToListAsync(ct);
+        var posts = postIds.Count == 0
+            ? []
+            : await dbContext.CommunityPosts.AsNoTracking()
+                .Where(p => postIds.Contains(p.Id))
+                .ToListAsync(ct);
+
+        var reviewById = reviews.ToDictionary(r => r.Id);
+        var checkInById = checkIns.ToDictionary(c => c.Id);
+        var postById = posts.ToDictionary(p => p.Id);
+
+        var merged = pageRows
+            .Select(row => row.Type switch
+            {
+                CommunityFeedItemType.Review => mapper.Map<CommunityFeedItemDto>(reviewById[row.Id]),
+                CommunityFeedItemType.CheckIn => mapper.Map<CommunityFeedItemDto>(checkInById[row.Id]),
+                CommunityFeedItemType.Post => mapper.Map<CommunityFeedItemDto>(postById[row.Id]),
+                _ => throw new InvalidOperationException($"Unsupported feed item type: {row.Type}")
+            })
             .ToList();
 
         var items = await EnrichFeedItemsAsync(merged, ct, viewerUserId);

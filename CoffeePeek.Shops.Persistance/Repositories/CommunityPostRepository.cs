@@ -10,4 +10,7 @@ public class CommunityPostRepository(ShopsDbContext dbContext) : ICommunityPostR
 
     public Task<bool> ExistsByModerationPostIdAsync(Guid moderationPostId, CancellationToken ct = default) =>
         dbContext.CommunityPosts.AsNoTracking().AnyAsync(p => p.ModerationPostId == moderationPostId, ct);
+
+    public Task<CommunityPost?> GetByModerationPostIdAsync(Guid moderationPostId, CancellationToken ct = default) =>
+        dbContext.CommunityPosts.FirstOrDefaultAsync(p => p.ModerationPostId == moderationPostId && !p.IsSoftDelete, ct);
 }

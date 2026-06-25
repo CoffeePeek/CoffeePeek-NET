@@ -30,19 +30,20 @@ public static class CreateCommunityCommentHandler
             throw new NotFoundException("Feed item not found.");
 
         Guid? parentCommentId = null;
-        if (command.ParentCommentId is { } parentId)
+        CommunityComment? parentComment = null;
+        if (command.ParentCommentId is { } parentIdInput)
         {
-            var parent = await commentRepository.GetById(parentId, ct);
-            if (parent is null || parent.IsSoftDelete)
+            parentComment = await commentRepository.GetById(parentIdInput, ct);
+            if (parentComment is null || parentComment.IsSoftDelete)
                 throw new NotFoundException("Parent comment not found.");
 
-            if (parent.ParentCommentId is not null)
+            if (parentComment.ParentCommentId is not null)
                 throw new DomainException("Replies are limited to one level deep.");
 
-            if (parent.TargetType != domainTargetType || parent.TargetId != command.TargetId)
+            if (parentComment.TargetType != domainTargetType || parentComment.TargetId != command.TargetId)
                 throw new DomainException("Parent comment does not belong to the same feed item.");
 
-            parentCommentId = parent.Id;
+            parentCommentId = parentComment.Id;
         }
 
         var comment = CommunityComment.Create(
@@ -68,7 +69,17 @@ public static class CreateCommunityCommentHandler
             ct);
 
         CommunityCommentNotificationEvent? notificationEvent = null;
-        if (authorUserId is { } recipientId && recipientId != command.UserId)
+        if (parentComment is not null && parentComment.UserId != command.UserId)
+        {
+            notificationEvent = new CommunityCommentNotificationEvent(
+                parentComment.UserId,
+                command.UserId,
+                command.UserName,
+                command.TargetType,
+                command.TargetId,
+                comment.Id);
+        }
+        else if (authorUserId is { } recipientId && recipientId != command.UserId)
         {
             notificationEvent = new CommunityCommentNotificationEvent(
                 recipientId,

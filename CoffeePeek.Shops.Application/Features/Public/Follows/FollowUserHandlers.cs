@@ -2,7 +2,6 @@ using CoffeePeek.Contract.Events.Community;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
-using CoffeePeek.Shops.Application.Features.Public.Feed;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityFollowAggregate;
 
 namespace CoffeePeek.Shops.Application.Features.Public.Follows;
@@ -20,7 +19,18 @@ public static class FollowUserHandler
 
         var follow = CommunityUserFollow.Create(command.FollowerId, command.FollowingUserId);
         followRepository.Add(follow);
-        await unitOfWork.SaveChangesAsync(ct);
+
+        try
+        {
+            await unitOfWork.SaveChangesAsync(ct);
+        }
+        catch (Exception)
+        {
+            if (await followRepository.GetAsync(command.FollowerId, command.FollowingUserId, ct) is not null)
+                return (Response.Success("Already following this user."), null);
+
+            throw;
+        }
 
         var notificationEvent = new CommunityFollowNotificationEvent(
             command.FollowingUserId,

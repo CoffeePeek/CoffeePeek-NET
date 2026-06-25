@@ -5,20 +5,25 @@ using CoffeePeek.Moderation.Application.Features.Admin.Audit;
 using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Moderation.Domain.Aggregates.ModerationCommunityPostAggregate;
 using CoffeePeek.Moderation.Domain.Entities;
+using CoffeePeek.Moderation.Domain.Common.Enums;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
+using Wolverine;
+using ContractModerationStatus = CoffeePeek.Contract.Enums.ModerationStatus;
+using DomainModerationStatus = CoffeePeek.Moderation.Domain.Common.Enums.ModerationStatus;
 
 namespace CoffeePeek.Moderation.Application.Features.CommunityPost.ChangeStatusModerationCommunityPost;
 
 public static class ChangeStatusModerationCommunityPostHandler
 {
-    public static async Task<(UpdateEntityResponse<ModerationStatus>, ModerationCommunityPostApprovedEvent?)> Handle(
+    public static async Task<(UpdateEntityResponse<ContractModerationStatus>, ModerationCommunityPostApprovedEvent?)> Handle(
         ChangeStatusModerationCommunityPostCommand command,
         IModerationCommunityPostRepository repository,
         IModerationAuditLogRepository auditLogRepository,
         IMapper mapper,
+        OutgoingMessages outgoingMessages,
         IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
@@ -30,10 +35,11 @@ public static class ChangeStatusModerationCommunityPostHandler
         ModerationCommunityPostApprovedEvent? approvedEvent = null;
         var oldStatus = post.ModerationStatus;
         string? auditComment = null;
+        var wasApproved = oldStatus == DomainModerationStatus.Approved;
 
         switch (command.ModerationStatus)
         {
-            case ModerationStatus.Approved:
+            case ContractModerationStatus.Approved:
                 post.Approve(command.UserId);
                 approvedEvent = new ModerationCommunityPostApprovedEvent(mapper.Map<ModerationCommunityPostDto>(post));
                 await ModerationAuditWriter.WriteAsync(
@@ -47,7 +53,7 @@ public static class ChangeStatusModerationCommunityPostHandler
                     ct);
                 break;
 
-            case ModerationStatus.Rejected:
+            case ContractModerationStatus.Rejected:
             {
                 var reason = !string.IsNullOrWhiteSpace(command.Comment)
                     ? command.Comment.Trim()
@@ -66,7 +72,7 @@ public static class ChangeStatusModerationCommunityPostHandler
                 break;
             }
 
-            case ModerationStatus.Pending:
+            case ContractModerationStatus.Pending:
                 post.MoveToPending(command.UserId);
                 await ModerationAuditWriter.WriteAsync(
                     auditLogRepository,
@@ -80,11 +86,14 @@ public static class ChangeStatusModerationCommunityPostHandler
                 break;
         }
 
+        if (wasApproved && command.ModerationStatus is ContractModerationStatus.Rejected or ContractModerationStatus.Pending)
+            outgoingMessages.Add(new ModerationCommunityPostUnpublishedEvent(post.Id));
+
         await unitOfWork.SaveChangesAsync(ct);
 
-        var response = UpdateEntityResponse<ModerationStatus>.Success(
-            (ModerationStatus)post.ModerationStatus,
-            oldEntity: (ModerationStatus)oldStatus);
+        var response = UpdateEntityResponse<ContractModerationStatus>.Success(
+            (ContractModerationStatus)post.ModerationStatus,
+            oldEntity: (ContractModerationStatus)oldStatus);
 
         return (response, approvedEvent);
     }

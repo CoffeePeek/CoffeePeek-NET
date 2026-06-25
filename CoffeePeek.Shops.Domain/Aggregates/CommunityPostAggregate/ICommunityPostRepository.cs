@@ -6,6 +6,7 @@ public interface ICommunityPostRepository
 {
     void Add(CommunityPost post);
     Task<bool> ExistsByModerationPostIdAsync(Guid moderationPostId, CancellationToken ct = default);
+    Task<CommunityPost?> GetByModerationPostIdAsync(Guid moderationPostId, CancellationToken ct = default);
 }
 
 public interface IQueryCommunityPostRepository

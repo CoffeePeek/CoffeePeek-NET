@@ -19,7 +19,6 @@ public class PublicCommentsController(IMessageBus bus) : ControllerBase
     /// Returns paginated top-level comments and one level of replies for a review or check-in.
     /// </summary>
     [HttpGet]
-    [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any)]
     [ProducesResponseType<Response<GetCommunityCommentsResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetComments(
         [FromQuery] CommunityCommentTargetType targetType,

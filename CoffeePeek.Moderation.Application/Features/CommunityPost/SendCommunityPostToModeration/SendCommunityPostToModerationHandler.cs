@@ -23,6 +23,6 @@ public static class SendCommunityPostToModerationHandler
         repository.Add(post);
         await unitOfWork.SaveChangesAsync(ct);
 
-        return CreateEntityResponse.Success();
+        return CreateEntityResponse.Success(entityId: post.Id);
     }
 }

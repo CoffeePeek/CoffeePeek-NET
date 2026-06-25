@@ -1,4 +1,3 @@
-using CoffeePeek.Contract.Dtos.Public;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
@@ -25,7 +24,10 @@ public static class ModerationCommunityPostApprovedHandler
             return;
 
         if (dto.LinkedShopId is { } linkedShopId && !await coffeeShopRepository.Exists(linkedShopId, ct))
-            return;
+        {
+            throw new InvalidOperationException(
+                $"Cannot publish community post {dto.Id}: linked shop {linkedShopId} was not found.");
+        }
 
         var post = CommunityPost.Create(
             dto.UserId,

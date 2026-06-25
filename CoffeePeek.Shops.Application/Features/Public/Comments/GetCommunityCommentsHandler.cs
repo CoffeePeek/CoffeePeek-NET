@@ -1,4 +1,5 @@
 using CoffeePeek.Contract.Dtos.Public;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CommunityCommentAggregate;
@@ -20,11 +21,11 @@ public static class GetCommunityCommentsHandler
         CancellationToken ct)
     {
         if (query.TargetId == Guid.Empty)
-            return Response<GetCommunityCommentsResponse>.Error("TargetId is required.");
+            throw new ValidationException("TargetId is required.");
 
         var domainTargetType = CommentTargetTypeMapper.ToDomain(query.TargetType);
         if (!await TargetExistsAsync(domainTargetType, query.TargetId, reviewRepository, checkInRepository, postRepository, ct))
-            return Response<GetCommunityCommentsResponse>.Error("Feed item not found.");
+            throw new NotFoundException("Feed item not found.");
 
         var page = Math.Max(1, query.Page);
         var pageSize = Math.Clamp(query.PageSize, 1, 50);
