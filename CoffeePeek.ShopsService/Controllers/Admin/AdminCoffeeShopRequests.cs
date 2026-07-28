@@ -12,3 +12,6 @@ public record UpdateAdminCoffeeShopRequest(
 public record SetCoffeeShopVisibilityRequest(bool Hidden);
 
 public record AssignCoffeeShopOwnerRequest(Guid? OwnerUserId);
+
+/// <summary>Full permutation of gallery photo IDs in desired display order (index 0 = cover).</summary>
+public record ReorderCoffeeShopPhotosRequest(IReadOnlyList<Guid> PhotoIds);

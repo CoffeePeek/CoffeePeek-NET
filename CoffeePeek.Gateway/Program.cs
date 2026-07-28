@@ -3,6 +3,7 @@ using CoffeePeek.Gateway.Middleware;
 using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
 using CoffeePeek.Shared.Web.Logging;
+using CoffeePeek.Shared.Web.Sentry;
 using CoffePeek.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,7 @@ builder.AddServiceDefaults();
 builder.Services.AddServiceDiscovery();
 builder.AddSerilogLogging();
 builder.ConfigureEnvironment();
+builder.WebHost.UseCoffeePeekSentry();
 
 // ── API Documentation ─────────────────────────────────────────────────────────
 builder.Services.AddGatewayOpenApi();

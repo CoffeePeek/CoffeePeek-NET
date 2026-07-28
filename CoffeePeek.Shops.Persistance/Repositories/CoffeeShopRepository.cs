@@ -9,12 +9,16 @@ public class CoffeeShopRepository(ShopsDbContext dbContext) : ICoffeeShopReposit
 {
     public Task<CoffeeShop?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
-        return dbContext.Shops.FirstOrDefaultAsync(s => s.Id == id, ct);
+        return dbContext.Shops
+            .Include(s => s.ShopPhotos)
+            .FirstOrDefaultAsync(s => s.Id == id, ct);
     }
 
     public Task<CoffeeShop?> GetByIdForOwnerAsync(Guid id, Guid ownerUserId, CancellationToken ct = default)
     {
-        return dbContext.Shops.FirstOrDefaultAsync(s => s.Id == id && s.OwnerUserId == ownerUserId, ct);
+        return dbContext.Shops
+            .Include(s => s.ShopPhotos)
+            .FirstOrDefaultAsync(s => s.Id == id && s.OwnerUserId == ownerUserId, ct);
     }
 }
 
