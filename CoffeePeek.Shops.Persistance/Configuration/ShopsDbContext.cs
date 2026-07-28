@@ -44,6 +44,7 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     {
         modelBuilder.HasPostgresExtension("pg_trgm");
         modelBuilder.ApplyConfiguration(new CoffeeShopConfiguration());
+        modelBuilder.ApplyConfiguration(new ShopPhotoConfiguration());
         
         modelBuilder.Entity<Review>(entity =>
         {
