@@ -30,7 +30,7 @@ public static class MapsterConfiguration
 
         config.NewConfig<CoffeeShop, ShortShopDto>()
             .Map(dest => dest.CityId, src => src.Location.CityId)
-            .Map(dest => dest.Photos, src => src.ShopPhotos)
+            .Map(dest => dest.Photos, src => src.ShopPhotos.OrderBy(p => p.SortIndex).ThenBy(p => p.CreatedAtUtc))
             .Map(dest => dest.ShopContact, src => src.Contact)
             .Map(dest => dest.Beans, src => src.CoffeeBeans)
             // IsOpen uses Schedules which can't be translated to SQL — mark as not open; set in handler if needed
@@ -49,7 +49,7 @@ public static class MapsterConfiguration
                     src.StorageKey) ?? string.Empty);
 
         config.NewConfig<CoffeeShop, ShopDto>()
-            .Map(d => d.Photos, s => s.ShopPhotos)
+            .Map(d => d.Photos, s => s.ShopPhotos.OrderBy(p => p.SortIndex).ThenBy(p => p.CreatedAtUtc))
             .Map(dest => dest.IsOpen, src => true)
             .Map(dest => dest.CoffeeBeans, src => src.CoffeeBeans)
             // Rating, ReviewCount and Reviews are set manually in handlers via repository
@@ -59,7 +59,7 @@ public static class MapsterConfiguration
 
         config.NewConfig<CoffeeShop, CoffeeShopDetailsDto>()
             .Map(d => d.CityId, s => s.Location.CityId)
-            .Map(d => d.Photos, s => s.ShopPhotos)
+            .Map(d => d.Photos, s => s.ShopPhotos.OrderBy(p => p.SortIndex).ThenBy(p => p.CreatedAtUtc))
             .Map(d => d.ShopContact, s => s.Contact)
             .Map(d => d.Schedules, s => s.Schedules)
             .Map(dest => dest.IsOpen, src => src.IsOpen)

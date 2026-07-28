@@ -12,15 +12,28 @@ public sealed class ShopPhoto : Entity<Guid>
     public long SizeBytes { get; private set; }
     public Guid OwnerId { get; private set; }
 
+    /// <summary>0-based display order within the parent gallery (shop / check-in / review).</summary>
+    public int SortIndex { get; private set; }
+
     // ReSharper disable once UnusedMember.Local
     private ShopPhoto() { }
 
-    public ShopPhoto(string fileName, string contentType, string storageKey, long sizeBytes, Guid ownerId)
+    public ShopPhoto(string fileName, string contentType, string storageKey, long sizeBytes, Guid ownerId, int sortIndex = 0)
     {
+        Id = Guid.NewGuid();
         FileName = fileName;
         ContentType = contentType;
         StorageKey = storageKey;
         SizeBytes = sizeBytes;
         OwnerId = ownerId;
+        SortIndex = sortIndex;
+    }
+
+    public void SetSortIndex(int sortIndex)
+    {
+        if (sortIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(sortIndex), "SortIndex cannot be negative.");
+
+        SortIndex = sortIndex;
     }
 }

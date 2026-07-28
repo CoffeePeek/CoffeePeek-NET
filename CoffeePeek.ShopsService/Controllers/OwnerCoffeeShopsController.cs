@@ -3,6 +3,7 @@ using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.Admin.Shops;
 using CoffeePeek.Shops.Application.Features.Owner;
+using CoffeePeek.ShopsService.Controllers.Admin;
 using CoffeePeek.ShopsService.Controllers.Owner;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -59,6 +60,22 @@ public class OwnerCoffeeShopsController(IMessageBus bus, IUserContext userContex
             request.InstagramLink);
 
         var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(command, ct);
+        return response.IsSuccess ? Ok(response) : NotFound(response);
+    }
+
+    /// <summary>Reorder gallery photos. Body must list every shop photo ID in the new display order (first = cover).</summary>
+    [HttpPut("{id:guid}/photos/order")]
+    [ProducesResponseType<Response<AdminPublishedShopDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ReorderPhotos(
+        Guid id,
+        [FromBody] ReorderCoffeeShopPhotosRequest request,
+        CancellationToken ct)
+    {
+        var ownerId = userContext.GetUserIdOrThrow();
+        var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
+            new ReorderOwnerCoffeeShopPhotosCommand(id, ownerId, request.PhotoIds), ct);
         return response.IsSuccess ? Ok(response) : NotFound(response);
     }
 }
