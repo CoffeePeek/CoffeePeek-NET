@@ -8,6 +8,8 @@ public partial class MapsterConfiguration
 {
     private static void ConfigureModerationReview(TypeAdapterConfig config)
     {
-        config.NewConfig<ModerationReview, ModerationReviewDto>();
+        config.NewConfig<ModerationReview, ModerationReviewDto>()
+            // DTO uses CreatedAt; entity audit field is CreatedAtUtc
+            .Map(dest => dest.CreatedAt, src => src.CreatedAtUtc);
     }
 }
