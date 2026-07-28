@@ -1,14 +1,10 @@
-﻿using Asp.Versioning.ApiExplorer;
-using CoffeePeek.Account.Infrastructure.Consumers;
-using CoffeePeek.Account.Persistence.Configuration;
-using CoffeePeek.AccountService.Extensions;
+﻿using CoffeePeek.AccountService.Extensions;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Extensions;
-using CoffeePeek.Shared.Kernel.Extentions;
-using CoffeePeek.Shared.Persistence.Extensions;
 using CoffeePeek.Shared.Web;
 using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
+using CoffeePeek.Shared.Web.Sentry;
 
 namespace CoffeePeek.AccountService;
 
@@ -39,7 +35,8 @@ public static class DependencyInjection
     public static IWebHostBuilder ConfigureWebhost(this IWebHostBuilder builder)
     {
         builder.ConfigureEnvironment();
-        builder.UseSentry(options => options.SetBeforeSend(SentryExtensions.FilterExpectedClientErrors));
+        builder.UseCoffeePeekSentry(options =>
+            options.SetBeforeSend(SentryExtensions.FilterExpectedClientErrors));
         return builder;
     }
 }

@@ -3,6 +3,7 @@ using CoffeePeek.Shared.Auth.Extensions;
 using CoffeePeek.Shared.Web;
 using CoffeePeek.Shared.Web.Extensions;
 using CoffeePeek.Shared.Web.Handlers;
+using CoffeePeek.Shared.Web.Sentry;
 
 namespace CoffeePeek.ShopsService;
 
@@ -37,7 +38,7 @@ public static class DependencyInjection
     public static IWebHostBuilder ConfigureWebhost(this IWebHostBuilder builder)
     {
         builder.ConfigureEnvironment();
-        builder.UseSentry();
+        builder.UseCoffeePeekSentry();
 
         return builder;
     }
