@@ -17,7 +17,7 @@ public partial class ModerationReview : Entity<Guid>
 
     public string? RejectedReason { get; private set; }
     public Guid? ModeratedBy { get; private set; }
-    public DateTime ModeratedAt { get; private set; }
+    public DateTime? ModeratedAt { get; private set; }
     public ModerationStatus ModerationStatus { get; private set; }
 
     public bool IsSoftDelete { get; private set; }
@@ -45,6 +45,7 @@ public partial class ModerationReview : Entity<Guid>
         Comment = comment;
         Rating = rating;
         ModerationStatus = ModerationStatus.Pending;
+        CreatedAtUtc = DateTime.UtcNow;
         
         if (photos.Count != 0)
         {
