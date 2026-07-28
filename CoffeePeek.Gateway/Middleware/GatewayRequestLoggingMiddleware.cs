@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using CoffeePeek.Gateway.Extensions;
 using CoffeePeek.Shared.Web.Logging;
+using CoffeePeek.Shared.Web.Sentry;
 using Yarp.ReverseProxy.Model;
 
 namespace CoffeePeek.Gateway.Middleware;
@@ -12,6 +13,7 @@ namespace CoffeePeek.Gateway.Middleware;
 /// - Matched YARP route ID and cluster ID
 /// - Response status code
 /// - Elapsed time in milliseconds
+/// Also emits Sentry metrics for popular-request tracking.
 /// </summary>
 public class GatewayRequestLoggingMiddleware(RequestDelegate next, ILogger<GatewayRequestLoggingMiddleware> logger)
 {
@@ -45,6 +47,11 @@ public class GatewayRequestLoggingMiddleware(RequestDelegate next, ILogger<Gatew
         var method = context.Request.Method;
         var path = context.Request.Path;
         var elapsed = stopwatch.ElapsedMilliseconds;
+
+        var metricRoute = routeId != "n/a"
+            ? routeId
+            : SentryRequestMetrics.NormalizePath(path.Value ?? "/");
+        SentryRequestMetrics.Record(context, elapsed, metricRoute);
 
         if (statusCode >= 500)
         {
