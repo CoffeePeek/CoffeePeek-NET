@@ -1,6 +1,7 @@
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.Admin.Shops;
+using CoffeePeek.Shops.Application.Features.Admin.Shops.ReorderPhotos;
 using CoffeePeek.ShopsService.Controllers.Admin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -102,6 +103,14 @@ public class AdminCoffeeShopsController(IMessageBus bus) : ControllerBase
     {
         var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
             new ReorderAdminCoffeeShopPhotosCommand(id, request.PhotoIds), ct);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return response.StatusCode switch
+        {
+            StatusCodes.Status404NotFound => NotFound(response),
+            _ => BadRequest(response)
+        };
     }
 }

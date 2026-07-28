@@ -1,7 +1,7 @@
 ﻿using CoffeePeek.Shared.Domain.Entities;
-using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Entities;
+using FluentResults;
 
 namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
@@ -135,28 +135,28 @@ public sealed class CoffeeShop : Entity<Guid>
     /// Reorders gallery photos. <paramref name="orderedPhotoIds"/> must be a full permutation
     /// of the shop's current photo IDs; first ID becomes SortIndex 0 (cover).
     /// </summary>
-    public void ReorderPhotos(IReadOnlyList<Guid> orderedPhotoIds)
+    public Result ReorderPhotos(IReadOnlyList<Guid> orderedPhotoIds)
     {
         if (orderedPhotoIds is null)
-            throw new DomainException("Photo order is required.");
+            return Result.Fail("Photo order is required.");
 
         if (orderedPhotoIds.Count != _shopPhotos.Count)
-            throw new DomainException(
-                "Photo order must include every gallery photo exactly once.",
-                statusCode: 400);
+            return Result.Fail("Photo order must include every gallery photo exactly once.");
 
         if (orderedPhotoIds.Distinct().Count() != orderedPhotoIds.Count)
-            throw new DomainException("Photo order contains duplicate photo IDs.", statusCode: 400);
+            return Result.Fail("Photo order contains duplicate photo IDs.");
 
         var byId = _shopPhotos.ToDictionary(p => p.Id);
         foreach (var id in orderedPhotoIds)
         {
             if (!byId.ContainsKey(id))
-                throw new DomainException($"Photo '{id}' does not belong to this shop.", statusCode: 400);
+                return Result.Fail($"Photo '{id}' does not belong to this shop.");
         }
 
         for (var i = 0; i < orderedPhotoIds.Count; i++)
             byId[orderedPhotoIds[i]].SetSortIndex(i);
+
+        return Result.Ok();
     }
     
     public void AddEquipment(Equipment equipment)

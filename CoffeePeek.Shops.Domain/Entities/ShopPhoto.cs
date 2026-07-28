@@ -26,9 +26,10 @@ public sealed class ShopPhoto : Entity<Guid>
         StorageKey = storageKey;
         SizeBytes = sizeBytes;
         OwnerId = ownerId;
-        SortIndex = sortIndex;
+        SetSortIndex(sortIndex);
     }
 
+    /// <summary>Sets display order. Callers must pass a non-negative index (validated).</summary>
     public void SetSortIndex(int sortIndex)
     {
         if (sortIndex < 0)

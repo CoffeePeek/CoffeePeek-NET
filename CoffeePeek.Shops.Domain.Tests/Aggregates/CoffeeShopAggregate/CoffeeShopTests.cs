@@ -1,6 +1,5 @@
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
-using CoffeePeek.Shared.Kernel.Exceptions;
 using FluentAssertions;
 using JetBrains.Annotations;
 
@@ -12,14 +11,11 @@ public class CoffeeShopTests
     [Fact]
     public void Constructor_WithValidData_SetsProperties()
     {
-        // Arrange
         var creatorId = Guid.NewGuid();
         var moderationId = Guid.NewGuid();
 
-        // Act
         var shop = new CoffeeShop(creatorId, "Test Shop", null, PriceRange.Moderate, moderationId);
 
-        // Assert
         shop.Name.Should().Be("Test Shop");
         shop.CreatorId.Should().Be(creatorId);
         shop.Id.Should().NotBeEmpty();
@@ -29,10 +25,8 @@ public class CoffeeShopTests
     [Fact]
     public void IsOpen_WhenActiveWithNoSchedule_ReturnsTrue()
     {
-        // Arrange — Active shop with no schedules returns true from IsOpenAt
         var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
 
-        // Act & Assert
         shop.IsOpen.Should().BeTrue();
     }
 
@@ -52,6 +46,18 @@ public class CoffeeShopTests
     }
 
     [Fact]
+    public void AddPhotos_CalledTwice_ContinuesSortIndex()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
+        var ownerId = Guid.NewGuid();
+
+        shop.AddPhotos([new ShopPhoto("a.jpg", "image/jpeg", "a", 1, ownerId)]);
+        shop.AddPhotos([new ShopPhoto("b.jpg", "image/jpeg", "b", 1, ownerId)]);
+
+        shop.ShopPhotos.Select(p => p.SortIndex).Should().Equal(0, 1);
+    }
+
+    [Fact]
     public void ReorderPhotos_UpdatesSortIndexToMatchOrder()
     {
         var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
@@ -61,27 +67,28 @@ public class CoffeeShopTests
         var third = new ShopPhoto("c.jpg", "image/jpeg", "c", 1, ownerId);
         shop.AddPhotos([first, second, third]);
 
-        shop.ReorderPhotos([third.Id, first.Id, second.Id]);
+        var result = shop.ReorderPhotos([third.Id, first.Id, second.Id]);
 
+        result.IsSuccess.Should().BeTrue();
         shop.ShopPhotos.Single(p => p.Id == third.Id).SortIndex.Should().Be(0);
         shop.ShopPhotos.Single(p => p.Id == first.Id).SortIndex.Should().Be(1);
         shop.ShopPhotos.Single(p => p.Id == second.Id).SortIndex.Should().Be(2);
     }
 
     [Fact]
-    public void ReorderPhotos_WithMissingId_Throws()
+    public void ReorderPhotos_WithMissingId_Fails()
     {
         var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
         var photo = new ShopPhoto("a.jpg", "image/jpeg", "a", 1, Guid.NewGuid());
         shop.AddPhotos([photo]);
 
-        var act = () => shop.ReorderPhotos([Guid.NewGuid()]);
+        var result = shop.ReorderPhotos([Guid.NewGuid()]);
 
-        act.Should().Throw<DomainException>();
+        result.IsFailed.Should().BeTrue();
     }
 
     [Fact]
-    public void ReorderPhotos_WithIncompleteList_Throws()
+    public void ReorderPhotos_WithIncompleteList_Fails()
     {
         var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
         var ownerId = Guid.NewGuid();
@@ -89,9 +96,42 @@ public class CoffeeShopTests
         var second = new ShopPhoto("b.jpg", "image/jpeg", "b", 1, ownerId);
         shop.AddPhotos([first, second]);
 
-        var act = () => shop.ReorderPhotos([first.Id]);
+        var result = shop.ReorderPhotos([first.Id]);
 
-        act.Should().Throw<DomainException>();
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ReorderPhotos_WithDuplicateIds_Fails()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
+        var ownerId = Guid.NewGuid();
+        var first = new ShopPhoto("a.jpg", "image/jpeg", "a", 1, ownerId);
+        var second = new ShopPhoto("b.jpg", "image/jpeg", "b", 1, ownerId);
+        shop.AddPhotos([first, second]);
+
+        var result = shop.ReorderPhotos([first.Id, first.Id]);
+
+        result.IsFailed.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ReorderPhotos_EmptyGallery_Succeeds()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
+
+        var result = shop.ReorderPhotos([]);
+
+        result.IsSuccess.Should().BeTrue();
+        shop.ShopPhotos.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ShopPhoto_Constructor_RejectsNegativeSortIndex()
+    {
+        var act = () => new ShopPhoto("a.jpg", "image/jpeg", "a", 1, Guid.NewGuid(), -1);
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Fact]

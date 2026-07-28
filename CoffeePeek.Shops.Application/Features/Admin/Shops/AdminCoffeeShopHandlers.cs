@@ -14,6 +14,7 @@ using ContractPriceRange = CoffeePeek.Contract.Enums.PriceRange;
 
 namespace CoffeePeek.Shops.Application.Features.Admin.Shops;
 
+/// <summary>Gallery photo metadata returned on admin/owner published shop responses.</summary>
 public record AdminShopPhotoDto(
     Guid Id,
     string FileName,
@@ -23,6 +24,7 @@ public record AdminShopPhotoDto(
     long SizeBytes,
     int SortIndex);
 
+/// <summary>Published coffee shop summary for admin and owner portals.</summary>
 public record AdminPublishedShopDto(
     Guid Id,
     string Name,
@@ -198,31 +200,6 @@ public static class AssignCoffeeShopOwnerHandler
         shop.AssignOwner(command.OwnerUserId);
 
         await unitOfWork.SaveChangesAsync(ct);
-
-        return Response<AdminPublishedShopDto>.Success(AdminPublishedShopMapper.Map(shop, mediaOptions.Value));
-    }
-}
-
-public record ReorderAdminCoffeeShopPhotosCommand(Guid ShopId, IReadOnlyList<Guid> PhotoIds);
-
-public static class ReorderAdminCoffeeShopPhotosHandler
-{
-    public static async Task<Response<AdminPublishedShopDto>> Handle(
-        ReorderAdminCoffeeShopPhotosCommand command,
-        ICoffeeShopRepository repository,
-        IUnitOfWork unitOfWork,
-        ICacheService cacheService,
-        IOptions<MediaPublicUrlOptions> mediaOptions,
-        CancellationToken ct)
-    {
-        var shop = await repository.GetByIdAsync(command.ShopId, ct);
-        if (shop is null)
-            return Response<AdminPublishedShopDto>.Error(System.Net.HttpStatusCode.NotFound, "Shop not found.");
-
-        shop.ReorderPhotos(command.PhotoIds);
-
-        await unitOfWork.SaveChangesAsync(ct);
-        await cacheService.RemoveAsync(CacheKey.Shop.Detail(shop.Id));
 
         return Response<AdminPublishedShopDto>.Success(AdminPublishedShopMapper.Map(shop, mediaOptions.Value));
     }

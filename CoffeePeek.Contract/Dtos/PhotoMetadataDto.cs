@@ -3,9 +3,9 @@
 public class PhotoMetadataDto
 {
     public Guid Id { get; init; }
-    public string FileName { get; init; } = null!;
-    public string ContentType { get; init; } = null!;
-    public string StorageKey { get; init; } = null!;
+    public required string FileName { get; init; }
+    public required string ContentType { get; init; }
+    public required string StorageKey { get; init; }
     public string? FullUrl { get; init; }
     public long SizeBytes { get; init; }
     public Guid OwnerId { get; init; }

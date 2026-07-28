@@ -77,31 +77,3 @@ public static class UpdateOwnerCoffeeShopHandler
         return Response<AdminPublishedShopDto>.Success(AdminPublishedShopMapper.Map(shop, mediaOptions.Value));
     }
 }
-
-public record ReorderOwnerCoffeeShopPhotosCommand(
-    Guid ShopId,
-    Guid OwnerUserId,
-    IReadOnlyList<Guid> PhotoIds);
-
-public static class ReorderOwnerCoffeeShopPhotosHandler
-{
-    public static async Task<Response<AdminPublishedShopDto>> Handle(
-        ReorderOwnerCoffeeShopPhotosCommand command,
-        ICoffeeShopRepository repository,
-        IUnitOfWork unitOfWork,
-        ICacheService cacheService,
-        IOptions<MediaPublicUrlOptions> mediaOptions,
-        CancellationToken ct)
-    {
-        var shop = await repository.GetByIdForOwnerAsync(command.ShopId, command.OwnerUserId, ct);
-        if (shop is null)
-            return Response<AdminPublishedShopDto>.Error(System.Net.HttpStatusCode.NotFound, "Shop not found.");
-
-        shop.ReorderPhotos(command.PhotoIds);
-
-        await unitOfWork.SaveChangesAsync(ct);
-        await cacheService.RemoveAsync(CacheKey.Shop.Detail(shop.Id));
-
-        return Response<AdminPublishedShopDto>.Success(AdminPublishedShopMapper.Map(shop, mediaOptions.Value));
-    }
-}

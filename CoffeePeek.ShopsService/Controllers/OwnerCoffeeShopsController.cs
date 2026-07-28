@@ -3,6 +3,7 @@ using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.Admin.Shops;
 using CoffeePeek.Shops.Application.Features.Owner;
+using CoffeePeek.Shops.Application.Features.Owner.ReorderPhotos;
 using CoffeePeek.ShopsService.Controllers.Admin;
 using CoffeePeek.ShopsService.Controllers.Owner;
 using Microsoft.AspNetCore.Authorization;
@@ -76,6 +77,14 @@ public class OwnerCoffeeShopsController(IMessageBus bus, IUserContext userContex
         var ownerId = userContext.GetUserIdOrThrow();
         var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
             new ReorderOwnerCoffeeShopPhotosCommand(id, ownerId, request.PhotoIds), ct);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return response.StatusCode switch
+        {
+            StatusCodes.Status404NotFound => NotFound(response),
+            _ => BadRequest(response)
+        };
     }
 }
