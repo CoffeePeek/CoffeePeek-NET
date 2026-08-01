@@ -1,5 +1,4 @@
 using CoffeePeek.Moderation.Domain.Aggregates;
-using CoffeePeek.Moderation.Domain.Aggregates.ModerationCommunityPostAggregate;
 using CoffeePeek.Moderation.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using ModerationReview = CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate.ModerationReview;
@@ -17,7 +16,6 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
     public DbSet<ModerationShopRoaster> ModerationRoasterShops { get; set; }
     public DbSet<ModerationShopBrewMethod> ModerationShopBrewMethods { get; set; }
     public DbSet<ModerationAuditLog> ModerationAuditLogs { get; set; }
-    public DbSet<ModerationCommunityPost> ModerationCommunityPosts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
