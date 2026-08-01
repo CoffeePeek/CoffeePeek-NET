@@ -8,7 +8,6 @@ using CoffeePeek.Shops.Application.Common.Responses;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using FluentAssertions;
 using Moq;
 
@@ -17,7 +16,6 @@ namespace CoffeePeek.Shops.Application.Tests.Features.CoffeeShop.SearchCoffeeSho
 public class SearchCoffeeShopsHandlerTests
 {
     private readonly Mock<ICoffeeShopQueries> _shopQueriesMock = new();
-    private readonly Mock<IUserFavoriteRepository> _favoriteRepoMock = new();
     private readonly Mock<IQueryCheckInRepository> _visitRepoMock = new();
     private readonly Mock<ICacheService> _cacheMock = new();
     private readonly CancellationToken _ct = CancellationToken.None;
@@ -50,23 +48,19 @@ public class SearchCoffeeShopsHandlerTests
         var result = await SearchCoffeeShopsHandler.Handle(
             query,
             _shopQueriesMock.Object,
-            _favoriteRepoMock.Object,
             _visitRepoMock.Object,
             _cacheMock.Object,
             _ct);
 
         result.IsSuccess.Should().BeTrue();
         result.Data.CoffeeShops.Should().HaveCount(1);
-        _favoriteRepoMock.Verify(
-            r => r.GetFavoriteShopIdsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
-            Times.Never);
         _visitRepoMock.Verify(
             r => r.GetVisitedShopIdsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
     [Fact]
-    public async Task Handle_AuthenticatedRequest_EnrichesWithFavoriteAndVisitedFlags()
+    public async Task Handle_AuthenticatedRequest_EnrichesWithVisitedFlags()
     {
         var userId = Guid.NewGuid();
         var shopId = Guid.NewGuid();
@@ -87,10 +81,6 @@ public class SearchCoffeeShopsHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
-        _favoriteRepoMock
-            .Setup(r => r.GetFavoriteShopIdsAsync(userId, _ct))
-            .ReturnsAsync(new List<Guid> { shopId });
-
         _visitRepoMock
             .Setup(r => r.GetVisitedShopIdsAsync(userId, _ct))
             .ReturnsAsync(new List<Guid>());
@@ -99,13 +89,11 @@ public class SearchCoffeeShopsHandlerTests
         var result = await SearchCoffeeShopsHandler.Handle(
             query,
             _shopQueriesMock.Object,
-            _favoriteRepoMock.Object,
             _visitRepoMock.Object,
             _cacheMock.Object,
             _ct);
 
         result.IsSuccess.Should().BeTrue();
-        result.Data.CoffeeShops[0].IsFavorite.Should().BeTrue();
         result.Data.CoffeeShops[0].IsVisited.Should().BeFalse();
     }
 
@@ -124,7 +112,6 @@ public class SearchCoffeeShopsHandlerTests
         var result = await SearchCoffeeShopsHandler.Handle(
             query,
             _shopQueriesMock.Object,
-            _favoriteRepoMock.Object,
             _visitRepoMock.Object,
             _cacheMock.Object,
             _ct);

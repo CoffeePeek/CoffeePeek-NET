@@ -10,7 +10,6 @@ using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Repositories;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shops.Persistance.Configuration;
 using CoffeePeek.Shops.Persistance.Queries;
 using CoffeePeek.Shops.Persistance.Repositories;
@@ -51,7 +50,6 @@ public static class DependencyInjection
         services.AddScoped<IReviewQueries, ReviewQueries>();
         
         // Repositories
-        services.AddScoped<IUserFavoriteRepository, UserFavoriteRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
         
         // Query Repository 

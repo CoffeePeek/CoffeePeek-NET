@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+> Avalonia client and job vacancies are removed from product scope and are no longer part of the platform. Historical entries below that mention them are retained for history only.
+
+### Removed
+
+- Avalonia client references and unused client NuGet packages from the solution
+- Job vacancies from product scope (not planned)
+
 ## [v0.3.0] - 2026-05-17
 
 ### Added
@@ -104,6 +113,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Начало ведения `Changelog.md`
-- Начальная реализация микросервисов: Account, Shops, JobVacancies, Moderation.
+- Начальная реализация микросервисов: Account, Shops, Moderation (JobVacancies was explored historically; no longer in product scope).
 - API Gateway на базе YARP.
 - Интеграция с .NET Aspire для локальной разработки.

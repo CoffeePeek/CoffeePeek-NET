@@ -42,6 +42,13 @@ public class UserRepository(AccountDbContext dbContext) : IUserRepository
             cancellationToken);
     }
 
+    public Task<User?> GetByPasswordResetToken(string resetToken, CancellationToken cancellationToken)
+    {
+        return _repository
+            .Include(x => x.RefreshTokens)
+            .FirstOrDefaultAsync(c => c.Credentials.PasswordResetToken == resetToken, cancellationToken);
+    }
+
     public Task<User?> GetByRefreshToken(string refreshToken, CancellationToken ct = default)
     {
         return _repository

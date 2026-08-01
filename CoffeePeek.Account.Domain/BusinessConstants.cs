@@ -13,4 +13,5 @@ public static class BusinessConstants
     public const int MaxIdProviderLength = 255;
     public const int MaxPhoneNumberLength = 20;
     public const int MaxEmailConfirmationTokenLength = 100;
+    public const int MaxPasswordResetTokenLength = 100;
 }

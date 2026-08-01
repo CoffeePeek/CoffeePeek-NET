@@ -36,8 +36,7 @@ public sealed class CacheInvalidationStrategy(ICacheService cacheService, ILogge
         {
             Tags.ShopsDetails,
             [
-                "shop:detail:*",
-                "shop:favorites:*"
+                "shop:detail:*"
             ]
         }
     };

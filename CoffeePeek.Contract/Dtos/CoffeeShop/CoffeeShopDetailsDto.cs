@@ -18,7 +18,6 @@ public record CoffeeShopDetailsDto
     public ReviewDto[] Reviews { get; init; }
 
 
-    public bool IsFavorite { get; init; }
     public bool IsVisited { get; init; }
     public bool? CanCreateReview { get; init; }
     /// <summary>

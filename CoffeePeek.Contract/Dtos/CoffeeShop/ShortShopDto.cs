@@ -15,7 +15,6 @@ public class ShortShopDto
     public decimal Rating { get; init; }
     public int ReviewCount { get; init; }
 
-    public bool IsFavorite { get; set; }
     public bool IsVisited { get; set; }
     public bool IsNew { get; init; }
     public bool IsOpen { get; init; }

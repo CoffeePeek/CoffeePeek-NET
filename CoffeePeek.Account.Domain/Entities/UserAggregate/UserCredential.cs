@@ -12,6 +12,10 @@ public partial record UserCredential
     public string? ProviderId { get; private set; }
     public string? EmailConfirmationToken { get; private set; }
     public DateTime? EmailConfirmationExpiresAt { get; private set; }
+    public string? PasswordResetToken { get; private set; }
+    public DateTime? PasswordResetExpiresAt { get; private set; }
+
+    public bool HasPasswordAuth => !string.IsNullOrEmpty(PasswordHash);
 
     private UserCredential()
     {
@@ -61,10 +65,50 @@ public partial record UserCredential
             EmailConfirmationExpiresAt = null
         };
     }
+
+    public void BeginPasswordReset()
+    {
+        EnsurePasswordAuthAvailable();
+        PasswordResetToken = Guid.NewGuid().ToString("N");
+        PasswordResetExpiresAt = DateTime.UtcNow.AddMinutes(30);
+    }
+
+    public void ClearPasswordReset()
+    {
+        PasswordResetToken = null;
+        PasswordResetExpiresAt = null;
+    }
+
+    public UserCredential ChangePassword(string newHash)
+    {
+        EnsurePasswordAuthAvailable();
+
+        return this with
+        {
+            PasswordHash = newHash,
+            PasswordResetToken = null,
+            PasswordResetExpiresAt = null
+        };
+    }
+
+    public UserCredential CompletePasswordReset(string token, string newHash)
+    {
+        EnsurePasswordAuthAvailable();
+
+        if (token != PasswordResetToken) throw new DomainException("Invalid token.");
+        if (DateTime.UtcNow > PasswordResetExpiresAt) throw new DomainException("Token expired.");
+
+        return this with
+        {
+            PasswordHash = newHash,
+            PasswordResetToken = null,
+            PasswordResetExpiresAt = null
+        };
+    }
     
     public bool ValidatePassword(string password, IPasswordHasherService passwordHasher)
     {
-        return passwordHasher.VerifyPassword(PasswordHash, password);;
+        return passwordHasher.VerifyPassword(PasswordHash, password);
     }
 
     public void LinkExternalProvider(string provider, string providerId)
@@ -74,5 +118,11 @@ public partial record UserCredential
 
         OAuthProvider = provider;
         ProviderId = providerId;
+    }
+
+    private void EnsurePasswordAuthAvailable()
+    {
+        if (!HasPasswordAuth)
+            throw new DomainException("Password login not available");
     }
 }

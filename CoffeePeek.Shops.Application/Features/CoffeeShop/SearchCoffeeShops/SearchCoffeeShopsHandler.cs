@@ -5,7 +5,6 @@ using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Common.Responses;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 
@@ -13,7 +12,6 @@ public class SearchCoffeeShopsHandler
 {
     public static async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsQuery queryRequest,
         ICoffeeShopQueries coffeeShopQueries,
-        IUserFavoriteRepository favoriteRepository,
         IQueryCheckInRepository visitRepository,
         ICacheService redisService,
         CancellationToken ct)
@@ -39,12 +37,10 @@ public class SearchCoffeeShopsHandler
         if (queryRequest.UserId.HasValue)
         {
             var userId = queryRequest.UserId.Value;
-            var favoriteIds = await favoriteRepository.GetFavoriteShopIdsAsync(userId, ct);
             var visitedIds = await visitRepository.GetVisitedShopIdsAsync(userId, ct);
 
             foreach (var shop in cachedResponse.CoffeeShops)
             {
-                shop.IsFavorite = favoriteIds.Contains(shop.Id);
                 shop.IsVisited = visitedIds.Contains(shop.Id);
             }
         }

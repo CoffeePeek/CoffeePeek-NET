@@ -95,8 +95,10 @@ public class CreateShopFromModerationService(
         shopRepository.Add(shop);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await cacheService.RemoveByPattern("shop:search:*", cancellationToken);
-        await cacheService.RemoveByPattern("shop:list:city:*", cancellationToken);
+        await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), cancellationToken);
+        await cacheService.RemoveByPattern(CacheKey.Shop.ListPattern(), cancellationToken);
+        await cacheService.RemoveByPattern(CacheKey.Shop.DetailPattern(), cancellationToken);
+        await cacheService.RemoveAsync(CacheKey.Shop.Detail(shop.Id));
         await PublicStatsCacheInvalidator.InvalidateAsync(cacheService, cancellationToken);
 
         logger.LogInformation("Shop {ShopId} successfully created from moderation event {ModerationId}", shop.Id,

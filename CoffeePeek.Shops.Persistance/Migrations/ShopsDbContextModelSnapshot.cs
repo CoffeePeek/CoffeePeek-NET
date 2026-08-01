@@ -310,36 +310,6 @@ namespace CoffeePeek.Shops.Persistance.Migrations
                     b.ToTable("Reviews");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate.UserFavorite", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CoffeeShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CoffeeShopId");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("UserId", "CoffeeShopId")
-                        .IsUnique();
-
-                    b.ToTable("UserFavorites");
-                });
-
             modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopPhoto", b =>
                 {
                     b.Property<Guid>("Id")
@@ -695,17 +665,6 @@ namespace CoffeePeek.Shops.Persistance.Migrations
 
                     b.Navigation("Rating")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate.UserFavorite", b =>
-                {
-                    b.HasOne("CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop", "CoffeeShop")
-                        .WithMany()
-                        .HasForeignKey("CoffeeShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CoffeeShop");
                 });
 
             modelBuilder.Entity("CoffeePeek.Shops.Domain.Entities.ShopPhoto", b =>

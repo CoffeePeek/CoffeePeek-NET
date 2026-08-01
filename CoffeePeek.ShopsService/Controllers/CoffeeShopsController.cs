@@ -83,7 +83,7 @@ public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : 
     /// This endpoint returns full coffee shop details including:
     /// - Average rating and review count
     /// - Top 10 recent reviews
-    /// - Personal user interaction status (IsFavorite, IsVisited) if authenticated
+    /// - Personal user interaction status (IsVisited) if authenticated
     /// </remarks>
     /// <param name="id">The unique identifier (GUID) of the coffee shop</param>
     /// <returns>Returns coffee shop details or an error message</returns>

@@ -33,7 +33,6 @@ public static class MapsterConfiguration
             // Rating and ReviewCount are set manually in handlers via repository
             .Ignore(dest => dest.Rating)
             .Ignore(dest => dest.ReviewCount)
-            .Ignore(dest => dest.IsFavorite)
             .Ignore(dest => dest.IsVisited);
 
         config.NewConfig<ShopPhoto, ShortPhotoMetadataDto>()

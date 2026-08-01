@@ -13,7 +13,7 @@
 
 ## About the Project
 
-CoffeePeek is a comprehensive platform that connects coffee enthusiasts with coffee shops. It allows users to discover coffee shops, view job vacancies, and share their experiences. The back-end is built using a microservices architecture to ensure scalability, resilience, and maintainability. Each service is responsible for a specific business domain, communicating with others through a well-defined API gateway.
+CoffeePeek is a comprehensive platform that connects coffee enthusiasts with coffee shops. It allows users to discover coffee shops and share their experiences via reviews and check-ins. The back-end is built using a microservices architecture to ensure scalability, resilience, and maintainability. Each service is responsible for a specific business domain, communicating with others through a well-defined API gateway.
 
 ## Architecture Overview
 

@@ -1,7 +1,6 @@
 using CoffeePeek.Shops.Application.Extensions;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
-using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shared.Kernel.Options;
 using Mapster;
 using MapsterMapper;
@@ -29,7 +28,6 @@ public static class DependencyInjection
 
         // Application Services
         services.AddScoped<ICreateShopFromModerationService, CreateShopFromModerationService>();
-        services.AddScoped<IUserFavoriteService, UserFavoriteService>();
 
         return services;
     }

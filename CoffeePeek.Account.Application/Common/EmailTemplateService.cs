@@ -171,6 +171,127 @@ public class EmailTemplateService : IEmailTemplateService
             """;
     }
 
+    public string GetPasswordResetHtml(string username, string resetUrl)
+    {
+        var safeUsername = WebUtility.HtmlEncode(username);
+        var safeUrlDisplay = WebUtility.HtmlEncode(resetUrl);
+        var year = DateTime.UtcNow.Year;
+
+        return $"""
+            <!DOCTYPE html>
+            <html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <meta name="color-scheme" content="dark" />
+                <meta name="supported-color-schemes" content="dark" />
+                <title>Сброс пароля — CoffeePeek</title>
+                <!--[if mso]>
+                <noscript>
+                    <xml>
+                        <o:OfficeDocumentSettings>
+                            <o:PixelsPerInch>96</o:PixelsPerInch>
+                        </o:OfficeDocumentSettings>
+                    </xml>
+                </noscript>
+                <![endif]-->
+                <style type="text/css">
+                    {ConfirmationEmailCss}
+                </style>
+            </head>
+            <body style="margin:0;padding:0;background-color:{BrandBg};font-family:'Noto Sans','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+                <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:{BrandBg};">
+                    Сбросьте пароль CoffeePeek. Ссылка действует 30 минут.
+                </div>
+
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:{BrandBg};">
+                    <tr>
+                        <td align="center" class="email-wrapper" style="padding:40px 16px;">
+                            <table role="presentation" class="email-card" width="480" border="0" cellspacing="0" cellpadding="0" style="max-width:480px;width:100%;border:1px solid {BrandBorder};border-radius:24px;overflow:hidden;background-color:{BrandSurface};box-shadow:0 24px 48px -12px rgba(0,0,0,0.5);">
+                                <tr>
+                                    <td height="4" style="background:linear-gradient(90deg,#B8860B 0%,{BrandGold} 50%,#B8860B 100%);background-color:{BrandGold};font-size:0;line-height:0;">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td class="email-content" style="padding:40px 36px 32px;text-align:center;">
+                                        <table role="presentation" align="center" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto 28px;">
+                                            <tr>
+                                                <td align="center" style="padding-right:10px;vertical-align:middle;">
+                                                    <table role="presentation" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td align="center" style="width:36px;height:36px;background-color:{BrandBg};border:1px solid {BrandBorder};border-radius:11px;">
+                                                                <img src="{LogoUrl}" width="18" height="18" alt="" style="display:block;margin:9px auto;" />
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td align="left" style="vertical-align:middle;font-family:'Segoe UI',system-ui,sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.025em;color:{TextPrimary};">
+                                                    Coffee<span style="color:{BrandGold};">Peek</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <table role="presentation" align="center" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto 20px;">
+                                            <tr>
+                                                <td align="center" style="width:72px;height:72px;border-radius:99px;background-color:rgba(234,179,8,0.10);font-size:32px;line-height:72px;color:{BrandGold};">
+                                                    &#128274;
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <h1 class="email-heading" style="margin:0 0 10px;font-family:'Segoe UI',system-ui,sans-serif;font-size:28px;line-height:36px;font-weight:700;color:{TextPrimary};">
+                                            Привет, {safeUsername}!
+                                        </h1>
+                                        <p style="margin:0 0 8px;font-size:14px;line-height:22px;color:{TextMuted};">
+                                            Мы получили запрос на сброс пароля для вашего аккаунта CoffeePeek.
+                                        </p>
+                                        <p style="margin:0 0 28px;font-size:14px;line-height:22px;color:{TextMuted};">
+                                            Нажмите кнопку ниже, чтобы задать новый пароль.
+                                            Ссылка действительна <strong style="color:{TextPrimary};font-weight:600;">30 минут</strong>.
+                                        </p>
+
+                                        <table role="presentation" align="center" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto 28px;width:100%;max-width:320px;">
+                                            <tr>
+                                                <td align="center" bgcolor="{BrandGold}" style="border-radius:12px;box-shadow:0 4px 6px -4px rgba(180,140,75,0.2),0 10px 15px -3px rgba(180,140,75,0.2);">
+                                                    <a href="{resetUrl}" target="_blank" class="email-cta" style="display:block;padding:14px 24px;font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;font-weight:600;color:{BrandBg};text-decoration:none;border-radius:12px;background-color:{BrandGold};">
+                                                        Сбросить пароль
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <table role="presentation" align="center" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto;width:100%;">
+                                            <tr>
+                                                <td style="padding:14px 16px;border-radius:12px;background-color:rgba(26,20,18,0.6);border:1px solid {BrandBorder};text-align:left;">
+                                                    <p style="margin:0 0 6px;font-size:12px;line-height:18px;color:{TextDim};">
+                                                        Если кнопка не работает, скопируйте ссылку:
+                                                    </p>
+                                                    <p style="margin:0;font-size:11px;line-height:18px;word-break:break-all;">
+                                                        <a href="{resetUrl}" target="_blank" style="color:{BrandGold};text-decoration:underline;font-family:monospace;">{safeUrlDisplay}</a>
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:20px 36px 28px;border-top:1px solid {BrandBorder};text-align:center;background-color:{BrandBg};">
+                                        <p style="margin:0 0 6px;font-size:12px;line-height:18px;color:{TextDim};">
+                                            Если вы не запрашивали сброс пароля, проигнорируйте это письмо.
+                                        </p>
+                                        <p style="margin:0;font-size:12px;line-height:18px;color:{TextDim};">
+                                            &copy; {year} CoffeePeek &middot; coffeepeek.by
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>
+            """;
+    }
+
     public string GetWelcomeBackHtml(string username)
     {
         var safeUsername = WebUtility.HtmlEncode(username);

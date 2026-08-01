@@ -1,7 +1,6 @@
 using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
@@ -21,7 +20,6 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     
     public virtual DbSet<Roaster> Roasters { get; set; }
     
-    public virtual DbSet<UserFavorite> UserFavorites { get; set; }
     public virtual DbSet<CoffeeShop> Shops { get; set; }
     
     public virtual DbSet<ShopPhoto> ShopPhotos { get; set; }
@@ -83,18 +81,6 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
                 .OnDelete(DeleteBehavior.SetNull);
             
             entity.OwnsOne<Rating>(r => r.Rating);
-        });
-
-        modelBuilder.Entity<UserFavorite>(entity =>
-        {
-            entity.HasIndex(f => new { f.UserId, f.CoffeeShopId }).IsUnique();
-
-            entity.HasIndex(f => f.UserId);
-
-            entity.HasIndex(f => f.CoffeeShopId);
-
-            entity.Property(f => f.UserId).IsRequired();
-            entity.Property(f => f.CoffeeShopId).IsRequired();
         });
 
         modelBuilder.Entity<Equipment>(entity =>

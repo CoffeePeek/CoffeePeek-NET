@@ -74,6 +74,9 @@ public class CreateShopFromModerationServiceTests
         result.Should().NotBe(Guid.Empty);
         _shopRepoMock.Verify(r => r.Add(It.IsAny<CoffeeShop>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(_ct), Times.Once);
+        _cacheServiceMock.Verify(c => c.RemoveByPattern("shop:search:*", _ct), Times.Once);
+        _cacheServiceMock.Verify(c => c.RemoveByPattern("shop:list:city:*", _ct), Times.Once);
+        _cacheServiceMock.Verify(c => c.RemoveByPattern("shop:detail:*", _ct), Times.Once);
     }
 
     [Fact]
