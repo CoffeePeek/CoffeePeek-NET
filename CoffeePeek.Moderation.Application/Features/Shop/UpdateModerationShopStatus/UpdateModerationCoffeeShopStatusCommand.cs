@@ -9,4 +9,4 @@ public record UpdateModerationCoffeeShopStatusCommand(
     [property: JsonIgnore] Guid UserId,
     Guid Id,
     [property: JsonConverter(typeof(JsonStringEnumConverter))] ModerationStatus ModerationStatus,
-    [property: MaxLength(BusinessConstants.MaxRejectReasonCommentLength)] string? Comment = null);
+    [MaxLength(BusinessConstants.MaxRejectReasonCommentLength)] string? Comment = null);
