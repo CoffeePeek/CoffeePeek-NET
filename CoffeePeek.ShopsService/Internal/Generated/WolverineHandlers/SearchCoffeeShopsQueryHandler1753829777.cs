@@ -34,12 +34,6 @@ namespace Internal.Generated.WolverineHandlers
             * Dependency: Descriptor: ServiceType: CoffeePeek.Shops.Persistance.Configuration.ShopsDbContext Lifetime: Scoped ImplementationFactory: Microsoft.Extensions.DependencyInjection.EntityFrameworkServiceCollectionExtensions+<>c__5"2.<AddDbContextPool>b__5_0
             * The service registration for CoffeePeek.Shops.Persistance.Configuration.ShopsDbContext is an 'opaque' lambda factory with the Scoped lifetime and requires service location
             */
-            var userFavoriteRepository = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate.IUserFavoriteRepository>(serviceScope.ServiceProvider);
-            
-            /*
-            * Dependency: Descriptor: ServiceType: CoffeePeek.Shops.Persistance.Configuration.ShopsDbContext Lifetime: Scoped ImplementationFactory: Microsoft.Extensions.DependencyInjection.EntityFrameworkServiceCollectionExtensions+<>c__5"2.<AddDbContextPool>b__5_0
-            * The service registration for CoffeePeek.Shops.Persistance.Configuration.ShopsDbContext is an 'opaque' lambda factory with the Scoped lifetime and requires service location
-            */
             var coffeeShopQueries = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop.ICoffeeShopQueries>(serviceScope.ServiceProvider);
             var domainEventScraperIEnumerable = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<System.Collections.Generic.IEnumerable<Wolverine.EntityFrameworkCore.IDomainEventScraper>>(serviceScope.ServiceProvider);
             
@@ -66,7 +60,7 @@ namespace Internal.Generated.WolverineHandlers
                 System.Diagnostics.Activity.Current?.SetTag("handler.type", "CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops.SearchCoffeeShopsHandler");
                 
                 // The actual message execution
-                var outgoing1 = await CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops.SearchCoffeeShopsHandler.Handle(searchCoffeeShopsQuery, coffeeShopQueries, userFavoriteRepository, queryCheckInRepository, _cacheService, cancellation).ConfigureAwait(false);
+                var outgoing1 = await CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops.SearchCoffeeShopsHandler.Handle(searchCoffeeShopsQuery, coffeeShopQueries, queryCheckInRepository, _cacheService, cancellation).ConfigureAwait(false);
 
                 
                 // Outgoing, cascaded message

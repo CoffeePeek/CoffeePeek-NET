@@ -3,5 +3,6 @@
 public interface IEmailTemplateService
 {
     string GetConfirmationHtml(string username, string confirmationUrl);
+    string GetPasswordResetHtml(string username, string resetUrl);
     string GetWelcomeBackHtml(string username);
 }

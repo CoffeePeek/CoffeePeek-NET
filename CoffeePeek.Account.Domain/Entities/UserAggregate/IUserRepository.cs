@@ -7,5 +7,6 @@ public interface IUserRepository
     Task Update(User user, CancellationToken ct = default);
     Task<User?> GetByEmail(string email, CancellationToken ct);
     Task<User?> GetByEmailConfirmToken(string requestToken, CancellationToken cancellationToken);
+    Task<User?> GetByPasswordResetToken(string resetToken, CancellationToken cancellationToken);
     Task<User?> GetByRefreshToken(string refreshToken, CancellationToken ct = default);
 }

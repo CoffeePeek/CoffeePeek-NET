@@ -49,69 +49,6 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.ToTable("ModerationCoffeeBeanShops");
                 });
 
-            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Aggregates.ModerationCommunityPostAggregate.ModerationCommunityPost", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsSoftDelete")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("LinkedShopId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("ModeratedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("ModeratedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("ModerationStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PostType")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("RejectedReason")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LinkedShopId");
-
-                    b.HasIndex("ModerationStatus");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ModerationCommunityPosts");
-                });
-
             modelBuilder.Entity("CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate.ModerationReview", b =>
                 {
                     b.Property<Guid>("Id")

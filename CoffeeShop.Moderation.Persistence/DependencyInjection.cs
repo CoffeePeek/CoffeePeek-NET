@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using CoffeePeek.Moderation.Domain.Aggregates;
-using CoffeePeek.Moderation.Domain.Aggregates.ModerationCommunityPostAggregate;
+﻿using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Extentions;
@@ -10,7 +8,6 @@ using CoffeePeek.Shared.Persistence.Extensions;
 using CoffeeShop.Moderation.Persistence.Configuration;
 using CoffeeShop.Moderation.Persistence.Repositories;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -46,8 +43,6 @@ public static class DependencyInjection
         services.AddScoped<IModerationReviewRepository, ModerationReviewRepository>();
         services.AddScoped<IAdminModerationStatsQueryRepository, AdminModerationStatsQueryRepository>();
         services.AddScoped<IModerationAuditLogRepository, ModerationAuditLogRepository>();
-        services.AddScoped<IModerationCommunityPostRepository, ModerationCommunityPostRepository>();
-        services.AddScoped<IQueryModerationCommunityPostRepository, QueryModerationCommunityPostRepository>();
 
         return services;
     }

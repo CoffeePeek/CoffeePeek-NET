@@ -1,8 +1,5 @@
 ﻿using CoffeePeek.Account.Application.Features.User.GetProfile;
-using CoffeePeek.Account.Domain.Entities.CommunityNotificationAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
-using CoffeePeek.Contract.Dtos.Public;
-using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Options;
 using Mapster;
@@ -34,12 +31,6 @@ public static class MapsterConfiguration
                     mediaOptions.AvatarBucketName,
                     src.PhotoMetadata!.StorageKey)
                 : null);
-
-        config.NewConfig<CommunityNotification, CommunityNotificationDto>()
-            .Map(dest => dest.Type, src => (Contract.Enums.CommunityNotificationType)(int)src.Type)
-            .Map(dest => dest.ReactionType, src => src.ReactionType.HasValue
-                ? (CommunityReactionType)src.ReactionType.Value
-                : (CommunityReactionType?)null);
 
         return config;
     }

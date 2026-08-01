@@ -3,8 +3,7 @@ namespace CoffeePeek.Moderation.Domain.Entities;
 public enum ModerationAuditEntityType
 {
     Shop = 0,
-    Review = 1,
-    CommunityPost = 2
+    Review = 1
 }
 
 public enum ModerationAuditAction

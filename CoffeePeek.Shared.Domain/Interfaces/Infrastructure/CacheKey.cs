@@ -73,13 +73,9 @@ public record CacheKey(
             Service: "ShopsService");
         
         public static string ListByCityPattern(Guid cityId) => $"shop:list:city:{cityId}:*";
+
+        public static string ListPattern() => "shop:list:city:*";
             
-        public static CacheKey Favorites(Guid userId) => new(
-            Key: $"shop:favorites:{userId}",
-            DefaultTtl: TimeSpan.FromHours(1),
-            Description: "User favorite shops",
-            Service: "ShopsService");
-        
         public static CacheKey Visited(Guid userId) => new(
             Key: $"shop:visited:{userId}",
             DefaultTtl: TimeSpan.FromHours(1),
@@ -98,22 +94,6 @@ public record CacheKey(
             Description: "Shop search results",
             Service: "ShopsService");
         
-        public static CacheKey PublicCommunityFeed(
-            int page,
-            int pageSize,
-            string filter,
-            Guid? cityId,
-            Guid? viewerUserId) => new(
-            Key: $"shop:public:community-feed:page:{page}:size:{pageSize}:filter:{filter}:city:{cityId}:viewer:{viewerUserId}",
-            DefaultTtl: TimeSpan.FromMinutes(2),
-            Description: "Public community feed page",
-            Service: "ShopsService");
-        
-        public static CacheKey PublicCommunityFeed(int page, int pageSize, string filter) =>
-            PublicCommunityFeed(page, pageSize, filter, null, null);
-        
-        public static string PublicCommunityFeedPattern() => "shop:public:community-feed:*";
-        
         public static CacheKey PublicPlatformStats() => new(
             Key: "shop:public:platform-stats",
             DefaultTtl: TimeSpan.FromMinutes(5),
@@ -121,6 +101,14 @@ public record CacheKey(
             Service: "ShopsService");
         
         public static string SearchPattern() => "shop:search:*";
+
+        public static CacheKey TagsCatalog() => new(
+            Key: "shop:tags:catalog",
+            DefaultTtl: TimeSpan.FromHours(1),
+            Description: "Active shop filter tags catalog",
+            Service: "ShopsService");
+
+        public static string TagsCatalogPattern() => "shop:tags:*";
     }
     
     public static class City
@@ -217,16 +205,16 @@ public record CacheKey(
             {
                 [Dictionaries] = "Cities, Equipment, Beans, Roasters, Brew Methods",
                 [Lists] = "Coffee shops lists by city (paginated)",
-                [Details] = "Shop details and favorites",
+                [Details] = "Shop details",
                 [Search] = "Coffee shops search results"
             };
             
             private static readonly Dictionary<string, string[]> Patterns = new()
             {
                 [Dictionaries] = [City.ListPattern(), Equipment.ListPattern(), CoffeeBean.ListPattern(), 
-                                   Roaster.ListPattern(), BrewMethod.ListPattern()],
-                [Lists] = [$"shop:list:city:*"],
-                [Details] = [Shop.DetailPattern(), $"shop:favorites:*"],
+                                   Roaster.ListPattern(), BrewMethod.ListPattern(), Shop.TagsCatalogPattern()],
+                [Lists] = [Shop.ListPattern()],
+                [Details] = [Shop.DetailPattern()],
                 [Search] = [Shop.SearchPattern()]
             };
         }

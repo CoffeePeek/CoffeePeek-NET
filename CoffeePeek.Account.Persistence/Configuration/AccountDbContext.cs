@@ -1,7 +1,6 @@
 ﻿using CoffeePeek.Account.Domain;
 using CoffeePeek.Account.Domain.Entities;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
-using CoffeePeek.Account.Domain.Entities.CommunityNotificationAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +12,6 @@ public class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbCo
     public DbSet<Role> Roles { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<PhotoMetadata> Photos { get; set; }
-    public DbSet<CommunityNotification> CommunityNotifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

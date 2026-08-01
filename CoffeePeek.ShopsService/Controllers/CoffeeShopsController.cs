@@ -37,6 +37,10 @@ public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : 
         [FromQuery] Guid[]? equipments = null,
         [FromQuery] Guid[]? beans = null,
         [FromQuery] Guid[]? brewMethods = null,
+        [FromQuery] Guid[]? tags = null,
+        [FromQuery] bool? isOpen = null,
+        [FromQuery] bool? isNew = null,
+        [FromQuery] bool? isVisited = null,
         [FromQuery] Contract.Enums.PriceRange? priceRange = null,
         [FromQuery][Range(0, 5)] decimal? minRating = null,
         [FromQuery][Range(1, int.MaxValue)] int page = 1,
@@ -53,6 +57,10 @@ public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : 
             Equipments: equipments,
             Beans: beans,
             BrewMethods: brewMethods,
+            Tags: tags,
+            IsOpen: isOpen,
+            IsNew: isNew,
+            IsVisited: isVisited,
             PriceRange: priceRange,
             MinRating: minRating,
             PageNumber: page,
@@ -83,7 +91,7 @@ public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : 
     /// This endpoint returns full coffee shop details including:
     /// - Average rating and review count
     /// - Top 10 recent reviews
-    /// - Personal user interaction status (IsFavorite, IsVisited) if authenticated
+    /// - Personal user interaction status (IsVisited) if authenticated
     /// </remarks>
     /// <param name="id">The unique identifier (GUID) of the coffee shop</param>
     /// <returns>Returns coffee shop details or an error message</returns>

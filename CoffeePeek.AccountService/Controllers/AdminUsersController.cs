@@ -1,4 +1,5 @@
 using CoffeePeek.Account.Application.Features.Admin.Users;
+using CoffeePeek.Account.Application.Features.Admin.Users.Sessions;
 using CoffeePeek.AccountService.Controllers.Admin;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Kernel.Response;
@@ -44,6 +45,45 @@ public class AdminUsersController(IMessageBus bus) : ControllerBase
         var response = await bus.InvokeAsync<Response<GetAdminUsersStatsResponse>>(
             new GetAdminUsersStatsQuery(), cancellationToken);
         return Ok(response);
+    }
+
+    /// <summary>Lists refresh-token sessions for a user (token value omitted).</summary>
+    [HttpGet("{userId:guid}/sessions")]
+    [ProducesResponseType<Response<GetAdminUserSessionsResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetSessions(Guid userId, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<Response<GetAdminUserSessionsResponse>>(
+            new GetAdminUserSessionsQuery(userId), cancellationToken);
+
+        return response.IsSuccess ? Ok(response) : NotFound(response);
+    }
+
+    /// <summary>Revokes a single refresh-token session.</summary>
+    [HttpDelete("{userId:guid}/sessions/{sessionId:guid}")]
+    [ProducesResponseType<Response<bool>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RevokeSession(
+        Guid userId,
+        Guid sessionId,
+        CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<Response<bool>>(
+            new RevokeAdminUserSessionCommand(userId, sessionId), cancellationToken);
+
+        return response.IsSuccess ? Ok(response) : NotFound(response);
+    }
+
+    /// <summary>Revokes all refresh-token sessions for a user.</summary>
+    [HttpDelete("{userId:guid}/sessions")]
+    [ProducesResponseType<Response<bool>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RevokeAllSessions(Guid userId, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<Response<bool>>(
+            new RevokeAllAdminUserSessionsCommand(userId), cancellationToken);
+
+        return response.IsSuccess ? Ok(response) : NotFound(response);
     }
 
     /// <summary>Replaces the target user's role.</summary>

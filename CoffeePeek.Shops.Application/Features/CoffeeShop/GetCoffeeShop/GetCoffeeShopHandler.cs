@@ -3,7 +3,6 @@ using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 using MapsterMapper;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
@@ -13,7 +12,6 @@ public static class GetCoffeeShopHandler
     public static async Task<Response<GetCoffeeShopResponse>> Handle(
         GetCoffeeShopQuery query,
         ICoffeeShopQueries shopQueries,
-        IUserFavoriteRepository favoriteRepository,
         IQueryCheckInRepository checkInRepository,
         IQueryReviewRepository reviewRepository,
         ICacheService redisService,
@@ -45,7 +43,6 @@ public static class GetCoffeeShopHandler
             var userId = query.UserId.Value;
             shopDto = shopDto with
             {
-                IsFavorite = await favoriteRepository.Exists(userId, query.Id, ct),
                 IsVisited = await checkInRepository.Exists(userId, query.Id, ct)
             };
         }

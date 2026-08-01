@@ -5,7 +5,6 @@ using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Common.Responses;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
 
@@ -13,7 +12,6 @@ public class SearchCoffeeShopsHandler
 {
     public static async Task<Response<GetCoffeeShopsResponse>> Handle(SearchCoffeeShopsQuery queryRequest,
         ICoffeeShopQueries coffeeShopQueries,
-        IUserFavoriteRepository favoriteRepository,
         IQueryCheckInRepository visitRepository,
         ICacheService redisService,
         CancellationToken ct)
@@ -39,12 +37,10 @@ public class SearchCoffeeShopsHandler
         if (queryRequest.UserId.HasValue)
         {
             var userId = queryRequest.UserId.Value;
-            var favoriteIds = await favoriteRepository.GetFavoriteShopIdsAsync(userId, ct);
             var visitedIds = await visitRepository.GetVisitedShopIdsAsync(userId, ct);
 
             foreach (var shop in cachedResponse.CoffeeShops)
             {
-                shop.IsFavorite = favoriteIds.Contains(shop.Id);
                 shop.IsVisited = visitedIds.Contains(shop.Id);
             }
         }
@@ -52,7 +48,7 @@ public class SearchCoffeeShopsHandler
         return Response<GetCoffeeShopsResponse>.Success(cachedResponse);
     }
 
-    private static string CreateSearchHash(SearchCoffeeShopsQuery query)
+    public static string CreateSearchHash(SearchCoffeeShopsQuery query)
     {
         var keyBuilder = new StringBuilder();
 
@@ -89,6 +85,26 @@ public class SearchCoffeeShopsHandler
         {
             var brewMethodsHash = ComputeHash(string.Join(",", query.BrewMethods.OrderBy(x => x)));
             keyBuilder.Append($"brew:{brewMethodsHash}:");
+        }
+
+        if (query.Tags is { Length: > 0 })
+        {
+            var tagsHash = ComputeHash(string.Join(",", query.Tags.OrderBy(x => x)));
+            keyBuilder.Append($"tags:{tagsHash}:");
+        }
+
+        if (query.IsOpen.HasValue)
+            keyBuilder.Append($"open:{query.IsOpen.Value}:");
+
+        if (query.IsNew.HasValue)
+            keyBuilder.Append($"new:{query.IsNew.Value}:");
+
+        if (query.IsVisited.HasValue)
+        {
+            keyBuilder.Append($"visited:{query.IsVisited.Value}:");
+            // Visited filter is user-specific — must include userId for cache correctness
+            if (query.UserId.HasValue)
+                keyBuilder.Append($"uid:{query.UserId.Value}:");
         }
 
         if (query.PriceRange.HasValue)

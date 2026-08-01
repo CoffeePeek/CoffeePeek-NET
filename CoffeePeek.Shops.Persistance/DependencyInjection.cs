@@ -1,4 +1,3 @@
-using System.Reflection;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Extentions;
 using CoffeePeek.Shared.Persistence;
@@ -6,17 +5,12 @@ using CoffeePeek.Shared.Persistence.Data;
 using CoffeePeek.Shared.Persistence.Extensions;
 using CoffeePeek.Shops.Application.Features.CheckIn;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
-using CoffeePeek.Shops.Application.Features.Public.Feed;
 using CoffeePeek.Shops.Application.Features.Review;
 using CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.CommunityCommentAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.CommunityFollowAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.CommunityPostAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.CommunityReactionAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Repositories;
 using CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate;
 using CoffeePeek.Shops.Persistance.Configuration;
 using CoffeePeek.Shops.Persistance.Queries;
 using CoffeePeek.Shops.Persistance.Repositories;
@@ -57,7 +51,6 @@ public static class DependencyInjection
         services.AddScoped<IReviewQueries, ReviewQueries>();
         
         // Repositories
-        services.AddScoped<IUserFavoriteRepository, UserFavoriteRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
         
         // Query Repository 
@@ -72,21 +65,11 @@ public static class DependencyInjection
         services.AddScoped<IQueryCoffeeBeanRepository, QueryCoffeeBeanRepository>();
         services.AddScoped<IQueryBrewMethodRepository, QueryBrewMethodRepository>();
         services.AddScoped<IAdminStatsQueryRepository, AdminStatsQueryRepository>();
-        services.AddScoped<ICommunityFeedQueries, PublicFeedQueryRepository>();
-        services.AddScoped<ICommunityCommentRepository, CommunityCommentRepository>();
-        services.AddScoped<IQueryCommunityCommentRepository, QueryCommunityCommentRepository>();
-        services.AddScoped<ICommunityPostRepository, CommunityPostRepository>();
-        services.AddScoped<IQueryCommunityPostRepository, QueryCommunityPostRepository>();
-        services.AddScoped<ICommunityReactionRepository, CommunityReactionRepository>();
-        services.AddScoped<IQueryCommunityReactionRepository, QueryCommunityReactionRepository>();
-        services.AddScoped<ICommunityUserFollowRepository, CommunityUserFollowRepository>();
-        services.AddScoped<IQueryCommunityUserFollowRepository, QueryCommunityUserFollowRepository>();
-        services.AddScoped<ICommunityCityFollowRepository, CommunityCityFollowRepository>();
-        services.AddScoped<IQueryCommunityCityFollowRepository, QueryCommunityCityFollowRepository>();
         services.AddScoped<IPublicStatsQueryRepository, PublicStatsQueryRepository>();
+        services.AddScoped<IShopTagRepository, ShopTagRepository>();
+        services.AddScoped<IQueryShopTagRepository, QueryShopTagRepository>();
         services.AddCacheModule();
 
         return services;
     }
 }
-

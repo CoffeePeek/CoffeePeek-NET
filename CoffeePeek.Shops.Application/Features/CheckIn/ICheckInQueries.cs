@@ -4,5 +4,9 @@ namespace CoffeePeek.Shops.Application.Features.CheckIn;
 
 public interface ICheckInQueries
 {
-    Task<CheckInDto[]> GetByUserId(Guid userId, int pageNumber, int pageSize, CancellationToken ct = default);
+    Task<(CheckInDto[] Items, int TotalCount)> GetByUserId(
+        Guid userId,
+        int pageNumber,
+        int pageSize,
+        CancellationToken ct = default);
 }

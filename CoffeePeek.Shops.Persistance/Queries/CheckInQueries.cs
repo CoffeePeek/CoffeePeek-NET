@@ -12,14 +12,23 @@ public class CheckInQueries(ShopsDbContext dbContext, IMapper mapper) : ICheckIn
 {
     private readonly DbSet<CheckIn> _repository = dbContext.CheckIns;
     
-    public async Task<CheckInDto[]> GetByUserId(Guid userId, int pageNumber, int pageSize, CancellationToken ct = default)
+    public async Task<(CheckInDto[] Items, int TotalCount)> GetByUserId(
+        Guid userId,
+        int pageNumber,
+        int pageSize,
+        CancellationToken ct = default)
     {
-        return await _repository.AsNoTracking()
-            .Where(x => x.UserId == userId)
+        var query = _repository.AsNoTracking().Where(x => x.UserId == userId);
+
+        var totalCount = await query.CountAsync(ct);
+
+        var items = await query
             .OrderByDescending(c => c.CreatedAtUtc)
             .Skip((pageNumber - 1) * pageSize)
-            .Take(pageNumber)
+            .Take(pageSize)
             .ProjectToType<CheckInDto>(mapper.Config)
             .ToArrayAsync(ct);
+
+        return (items, totalCount);
     }
 }
