@@ -63,7 +63,6 @@ namespace CoffeePeek.Account.Persistence.Migrations
             modelBuilder.Entity("CoffeePeek.Account.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAtUtc")
