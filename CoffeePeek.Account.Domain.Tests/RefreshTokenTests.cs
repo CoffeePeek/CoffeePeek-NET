@@ -22,6 +22,7 @@ public class RefreshTokenTests
         var afterCreation = DateTime.UtcNow;
 
         // Assert
+        refreshToken.Id.Should().NotBe(Guid.Empty);
         refreshToken.UserId.Should().Be(userId);
         refreshToken.Token.Should().Be(token);
         refreshToken.DeviceName.Should().Be(device);
