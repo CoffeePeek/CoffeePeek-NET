@@ -12,7 +12,7 @@ public class GetUserCheckInsHandler(
     public async Task<Response<GetUserCheckInsResponse>> Handle(GetUserCheckInsCommand request,
         CancellationToken cancellationToken)
     {
-        var checkinDtos =
+        var (checkinDtos, totalCount) =
             await checkInQueries.GetByUserId(request.UserId, request.PageNumber, request.PageSize, cancellationToken);
 
         var shopIds = checkinDtos.Select(c => c.ShopId).Distinct().ToList();
@@ -26,8 +26,8 @@ public class GetUserCheckInsHandler(
 
         var response = new GetUserCheckInsResponse(
             checkInDtos,
-            TotalItems: checkinDtos.Length,
-            TotalPages: (int)Math.Ceiling(checkinDtos.Length / (double)request.PageSize),
+            TotalItems: totalCount,
+            TotalPages: (int)Math.Ceiling(totalCount / (double)request.PageSize),
             request.PageNumber,
             request.PageSize);
 

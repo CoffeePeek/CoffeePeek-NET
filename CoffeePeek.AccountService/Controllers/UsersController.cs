@@ -2,6 +2,9 @@ using CoffeePeek.Account.Application.Features.Auth.CheckUserExistsByEmail;
 using CoffeePeek.Account.Application.Features.Auth.Email.ConfirmEmail;
 using CoffeePeek.Account.Application.Features.Auth.Email.ResendEmailConfirmation;
 using CoffeePeek.Account.Application.Features.Auth.Email.ResendEmailConfirmationByEmail;
+using CoffeePeek.Account.Application.Features.Auth.Password.ChangePassword;
+using CoffeePeek.Account.Application.Features.Auth.Password.ForgotPassword;
+using CoffeePeek.Account.Application.Features.Auth.Password.ResetPassword;
 using CoffeePeek.Account.Application.Features.Auth.RegisterUser;
 using CoffeePeek.Account.Application.Features.User.DeleteUser;
 using CoffeePeek.Account.Application.Features.User.GetProfile;
@@ -186,6 +189,51 @@ public class UsersController(IMessageBus bus, IUserContext userContext) : Contro
         var request = new DeleteUserCommand(userContext.GetUserIdOrThrow());
         var response = await bus.InvokeAsync<Response<bool>>(request, cancellationToken);
         
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Change password for the current user
+    /// </summary>
+    [HttpPut("me/password")]
+    [Authorize]
+    [ProducesResponseType<Response>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand request,
+        CancellationToken cancellationToken)
+    {
+        var command = request with { UserId = userContext.GetUserIdOrThrow() };
+        var response = await bus.InvokeAsync<Response>(command, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Request a password reset email (public, no auth required)
+    /// </summary>
+    [HttpPost("password/forgot")]
+    [AllowAnonymous]
+    [ProducesResponseType<Response>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command,
+        CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<Response>(command, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Reset password using a reset token (public, no auth required)
+    /// </summary>
+    [HttpPost("password/reset")]
+    [AllowAnonymous]
+    [ProducesResponseType<Response>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command,
+        CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<Response>(command, cancellationToken);
         return Ok(response);
     }
 

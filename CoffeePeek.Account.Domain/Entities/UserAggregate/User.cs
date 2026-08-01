@@ -119,6 +119,16 @@ public class User : AggregateRoot<Guid>
 
     public void RevokeAllSessions() => _refreshTokens.ForEach(t => t.Revoke());
 
+    public bool RevokeSession(Guid sessionId)
+    {
+        var session = _refreshTokens.FirstOrDefault(t => t.Id == sessionId);
+        if (session is null)
+            return false;
+
+        session.Revoke();
+        return true;
+    }
+
     public void Logout(string tokenValue) =>
         _refreshTokens.FirstOrDefault(t => t.Token == tokenValue)?.Revoke();
 
@@ -189,5 +199,21 @@ public class User : AggregateRoot<Guid>
 
         Credentials = Credentials.ConfirmEmail(token);
         AddDomainEvent(new EmailConfirmedInternalEvent());
+    }
+
+    public void ChangePassword(string newHash)
+    {
+        Credentials = Credentials.ChangePassword(newHash);
+    }
+
+    public void BeginPasswordReset()
+    {
+        Credentials.BeginPasswordReset();
+    }
+
+    public void ResetPassword(string token, string newHash)
+    {
+        Credentials = Credentials.CompletePasswordReset(token, newHash);
+        RevokeAllSessions();
     }
 }

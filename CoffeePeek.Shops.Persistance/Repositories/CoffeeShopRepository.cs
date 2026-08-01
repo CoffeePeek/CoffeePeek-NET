@@ -11,6 +11,7 @@ public class CoffeeShopRepository(ShopsDbContext dbContext) : ICoffeeShopReposit
     {
         return dbContext.Shops
             .Include(s => s.ShopPhotos)
+            .Include(s => s.ShopTags)
             .FirstOrDefaultAsync(s => s.Id == id, ct);
     }
 

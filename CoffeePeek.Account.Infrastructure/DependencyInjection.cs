@@ -1,4 +1,4 @@
-п»їusing CoffeePeek.Account.Application.Common.Interfaces;
+using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Application.Features.Admin.Stats;
 using CoffeePeek.Account.Infrastructure.Admin;
 using CoffeePeek.Account.Infrastructure.Media;
@@ -22,7 +22,7 @@ public static class DependencyInjection
 
         services.AddScoped<IMediaUrlProvider, MediaUrlProvider>();
             
-        // 1. Domain Services (СЂРµР°Р»РёР·Р°С†РёРё РёРЅС‚РµСЂС„РµР№СЃРѕРІ РёР· Domain)
+        // 1. Domain Services (реализации интерфейсов из Domain)
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();
         services.AddScoped<IJWTTokenService, JWTTokenService>();
 
@@ -31,6 +31,8 @@ public static class DependencyInjection
         services.AddScoped<ReviewAddedHandler>();
         services.AddScoped<ModerationShopApprovedAccountHandler>();
         services.AddScoped<UserPhotoUploadedHandler>();
+        services.AddScoped<UserRegisteredEventHandler>();
+        services.AddScoped<PasswordResetRequestedEventHandler>();
 
         // 3 Email Service
         services.AddHttpClient<ResendClient>();

@@ -2,6 +2,7 @@
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.Review.CanCreateCoffeeShopReview;
 using CoffeePeek.Shops.Application.Features.Review.DeleteReviewFromCoffeeShop;
+using CoffeePeek.Shops.Application.Features.Review.GetReviewById;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
@@ -14,6 +15,21 @@ namespace CoffeePeek.ShopsService.Controllers;
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class CoffeeShopReviewsController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
+    /// <summary>
+    /// Get review by ID
+    /// </summary>
+    [HttpGet("{reviewId:guid}")]
+    [ProducesResponseType(typeof(Response<GetReviewByIdResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetReviewById(Guid reviewId)
+    {
+        var response = await bus.InvokeAsync<Response<GetReviewByIdResponse>>(
+            new GetReviewByIdQuery(reviewId));
+
+        return response.IsSuccess ? Ok(response) : NotFound(response);
+    }
+
     /// <summary>
     /// Check if user can create review for coffee shop
     /// </summary>

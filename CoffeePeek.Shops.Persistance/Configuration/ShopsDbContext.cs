@@ -1,7 +1,7 @@
 using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
-using CoffeePeek.Shops.Domain.Aggregates.UserFavoriteAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
@@ -21,7 +21,6 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     
     public virtual DbSet<Roaster> Roasters { get; set; }
     
-    public virtual DbSet<UserFavorite> UserFavorites { get; set; }
     public virtual DbSet<CoffeeShop> Shops { get; set; }
     
     public virtual DbSet<ShopPhoto> ShopPhotos { get; set; }
@@ -31,12 +30,17 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     public virtual DbSet<EquipmentCategory> EquipmentCategories { get; set; }
     public virtual DbSet<Equipment> Equipments { get; set; }
 
+    public virtual DbSet<ShopTag> ShopTags { get; set; }
+    public virtual DbSet<CoffeeShopTag> CoffeeShopTags { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension("pg_trgm");
         modelBuilder.ApplyConfiguration(new CoffeeShopConfiguration());
         modelBuilder.ApplyConfiguration(new ShopPhotoConfiguration());
+        modelBuilder.ApplyConfiguration(new ShopTagConfiguration());
+        modelBuilder.ApplyConfiguration(new CoffeeShopTagConfiguration());
         
         modelBuilder.Entity<Review>(entity =>
         {
@@ -83,18 +87,6 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
                 .OnDelete(DeleteBehavior.SetNull);
             
             entity.OwnsOne<Rating>(r => r.Rating);
-        });
-
-        modelBuilder.Entity<UserFavorite>(entity =>
-        {
-            entity.HasIndex(f => new { f.UserId, f.CoffeeShopId }).IsUnique();
-
-            entity.HasIndex(f => f.UserId);
-
-            entity.HasIndex(f => f.CoffeeShopId);
-
-            entity.Property(f => f.UserId).IsRequired();
-            entity.Property(f => f.CoffeeShopId).IsRequired();
         });
 
         modelBuilder.Entity<Equipment>(entity =>

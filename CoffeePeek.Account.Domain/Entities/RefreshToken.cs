@@ -19,7 +19,8 @@ public sealed class RefreshToken : Entity<Guid>
     internal RefreshToken(Guid userId, string token, TimeSpan ttl, string deviceName, string ipAddress)
     {
         if (string.IsNullOrWhiteSpace(token)) throw new ArgumentException("Token is required");
-        
+
+        Id = Guid.NewGuid();
         UserId = userId;
         Token = token;
         ExpiryDate = DateTime.UtcNow.Add(ttl);

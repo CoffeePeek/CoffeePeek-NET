@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.Shared.Domain.Entities;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Entities;
 using FluentResults;
@@ -36,6 +37,9 @@ public sealed class CoffeeShop : Entity<Guid>
 
     private readonly List<BrewMethod> _brewMethods = [];
     public IReadOnlyCollection<BrewMethod> BrewMethods => _brewMethods.AsReadOnly();
+
+    private readonly List<CoffeeShopTag> _shopTags = [];
+    public IReadOnlyCollection<CoffeeShopTag> ShopTags => _shopTags.AsReadOnly();
 
     // ReSharper disable once UnusedMember.Local
     private CoffeeShop()
@@ -205,6 +209,33 @@ public sealed class CoffeeShop : Entity<Guid>
     public void AddSchedule(List<ShopSchedule> schedule)
     {
         _schedules.AddRange(schedule);
+    }
+
+    /// <summary>
+    /// Replaces the shop's tag set. Tag IDs are deduplicated; max
+    /// <see cref="BusinessConstants.MaxShopTagsPerShop"/> enforced.
+    /// </summary>
+    public void SetTags(IReadOnlyList<Guid> tagIds, Guid assignedByUserId)
+    {
+        ArgumentNullException.ThrowIfNull(tagIds);
+
+        if (assignedByUserId == Guid.Empty)
+            throw new DomainException("AssignedByUserId is required.");
+
+        var distinct = tagIds.Distinct().ToList();
+        if (distinct.Count > BusinessConstants.MaxShopTagsPerShop)
+            throw new DomainException(
+                $"A shop cannot have more than {BusinessConstants.MaxShopTagsPerShop} tags.");
+
+        _shopTags.Clear();
+        var now = DateTime.UtcNow;
+        foreach (var tagId in distinct)
+        {
+            if (tagId == Guid.Empty)
+                throw new DomainException("TagId cannot be empty.");
+
+            _shopTags.Add(new CoffeeShopTag(Id, tagId, assignedByUserId, now));
+        }
     }
     
     #endregion

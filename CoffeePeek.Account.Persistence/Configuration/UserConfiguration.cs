@@ -38,6 +38,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             cb.Property(c => c.ProviderId).HasColumnName(nameof(UserCredential.ProviderId)).HasMaxLength(BusinessConstants.MaxIdProviderLength);
             cb.Property(c => c.EmailConfirmationToken).HasColumnName(nameof(UserCredential.EmailConfirmationToken)).HasMaxLength(BusinessConstants.MaxEmailConfirmationTokenLength);
             cb.Property(c => c.EmailConfirmationExpiresAt).HasColumnName(nameof(UserCredential.EmailConfirmationExpiresAt));
+            cb.Property(c => c.PasswordResetToken).HasColumnName(nameof(UserCredential.PasswordResetToken)).HasMaxLength(BusinessConstants.MaxPasswordResetTokenLength);
+            cb.Property(c => c.PasswordResetExpiresAt).HasColumnName(nameof(UserCredential.PasswordResetExpiresAt));
             
             cb.HasIndex(c => c.Email).IsUnique();
         });

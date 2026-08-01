@@ -11,6 +11,10 @@ public record SearchCoffeeShopsQuery(
     Guid[]? Equipments = null,
     Guid[]? Beans = null,
     Guid[]? BrewMethods = null,
+    Guid[]? Tags = null,
+    bool? IsOpen = null,
+    bool? IsNew = null,
+    bool? IsVisited = null,
     PriceRange? PriceRange = null,
     [Range(0, 5)]
     decimal? MinRating = null,

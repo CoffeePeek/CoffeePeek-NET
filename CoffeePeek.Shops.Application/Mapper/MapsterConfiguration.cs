@@ -28,12 +28,12 @@ public static class MapsterConfiguration
             .Map(dest => dest.Photos, src => src.ShopPhotos.OrderBy(p => p.SortIndex).ThenBy(p => p.CreatedAtUtc))
             .Map(dest => dest.ShopContact, src => src.Contact)
             .Map(dest => dest.Beans, src => src.CoffeeBeans)
-            // IsOpen uses Schedules which can't be translated to SQL — mark as not open; set in handler if needed
-            .Map(dest => dest.IsOpen, src => false)
+            // IsOpen/IsNew patched after materialize in CoffeeShopQueries (Schedules not in ProjectTo)
+            .Ignore(dest => dest.IsOpen)
+            .Ignore(dest => dest.IsNew)
             // Rating and ReviewCount are set manually in handlers via repository
             .Ignore(dest => dest.Rating)
             .Ignore(dest => dest.ReviewCount)
-            .Ignore(dest => dest.IsFavorite)
             .Ignore(dest => dest.IsVisited);
 
         config.NewConfig<ShopPhoto, ShortPhotoMetadataDto>()
@@ -59,6 +59,8 @@ public static class MapsterConfiguration
             .Map(d => d.Schedules, s => s.Schedules)
             .Map(dest => dest.IsOpen, src => src.IsOpen)
             .Map(dest => dest.IsNew, src => src.IsNew)
+            // Tags loaded separately in CoffeeShopQueries.GetDetailsById
+            .Ignore(dest => dest.Tags)
             // Rating, ReviewCount and Reviews are set manually in handlers via repository
             .Ignore(dest => dest.Rating)
             .Ignore(dest => dest.ReviewCount)

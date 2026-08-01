@@ -26,6 +26,9 @@ public class CoffeeShopConfiguration : IEntityTypeConfiguration<CoffeeShop>
         var navigationSchedules = builder.Metadata.FindNavigation(nameof(CoffeeShop.Schedules));
         navigationSchedules?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
+        var navigationShopTags = builder.Metadata.FindNavigation(nameof(CoffeeShop.ShopTags));
+        navigationShopTags?.SetPropertyAccessMode(PropertyAccessMode.Field);
+
         #region Value-objects
 
         builder.OwnsOne(e => e.Contact, contact =>

@@ -237,6 +237,15 @@ namespace CoffeePeek.Account.Persistence.Migrations
                                 .HasColumnType("text")
                                 .HasColumnName("PasswordHash");
 
+                            b1.Property<DateTime?>("PasswordResetExpiresAt")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("PasswordResetExpiresAt");
+
+                            b1.Property<string>("PasswordResetToken")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("PasswordResetToken");
+
                             b1.Property<string>("ProviderId")
                                 .HasMaxLength(255)
                                 .HasColumnType("character varying(255)")

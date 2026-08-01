@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture Overview
 
-CoffeePeek is a .NET 10 microservices platform with these backend services:
+CoffeePeek is a **backend-only** .NET 10 microservices platform (no in-repo client) with these services:
 
 - **API Gateway** (YARP): Routes requests, enforces JWT authentication, handles CORS, rate limiting, response caching
 - **Account Service**: User accounts, email + Google OAuth, JWT token generation
@@ -14,8 +14,6 @@ CoffeePeek is a .NET 10 microservices platform with these backend services:
 
 Each service follows **layered DDD**:
 - **Domain** → **Application** (CQRS with Wolverine) → **Infrastructure** → **Persistence** (EF Core)
-
-There is also a **multi-platform Avalonia client** (Desktop, Browser, Android) with MVVM and Autofac DI.
 
 ## Project Structure
 
@@ -38,13 +36,6 @@ There is also a **multi-platform Avalonia client** (Desktop, Browser, Android) w
 - `CoffePeek.AppHost` — Aspire orchestration (note: typo in folder name)
 - `CoffePeek.ServiceDefaults` — Health checks, OpenTelemetry, service discovery defaults
 
-**Client** (Avalonia MVVM):
-- `CoffeePeek.Client.App` — Core UI, XAML resources, views, view models
-- `CoffeePeek.Client.App.Core` — Execution abstractions, session, settings
-- `CoffeePeek.Client.App.Infrastructure` — Configuration, local settings, Autofac modules
-- `CoffeePeek.Client.App.Infrastructure.HTTP` — HTTP pipeline, token refresh, web clients
-- `CoffeePeek.Client.App.Desktop/Browser/Android` — Platform entry points
-
 ## Key Technologies
 
 | Concern | Technology |
@@ -59,8 +50,6 @@ There is also a **multi-platform Avalonia client** (Desktop, Browser, Android) w
 | Object Storage | MinIO SDK |
 | Email | Resend |
 | OAuth | Google Auth SDK |
-| Client UI | Avalonia 12, CommunityToolkit.Mvvm |
-| Client DI | Autofac 9.1 |
 | Testing | xUnit v3, FluentAssertions, Moq, coverlet |
 
 Central package management via `Directory.Packages.props` (`ManagePackageVersionsCentrally=true`).
@@ -184,15 +173,6 @@ Routes and clusters are defined in `appsettings.json` under `ReverseProxy` — n
 
 JWT validation happens at the edge. Downstream services extract claims via `ClaimsPrincipalExtensions` from `CoffeePeek.Shared.Auth`.
 
-## Client Architecture (Avalonia MVVM)
-
-- **ViewModels** inherit `ViewModelBase`, use `[ObservableProperty]` and `[RelayCommand]` from CommunityToolkit.Mvvm
-- **Views** use `x:DataType` compiled bindings in XAML
-- **View Locator** resolves ViewModel → View by replacing `"ViewModel"` with `"View"` in the full type name — parallel namespace/folder structure between `Views/` and `ViewModels/` is required
-- **DI** bootstrapped in `Bootstrapper.BuildContainer()` with modules: `ApplicationModule`, `InfrastructureModule`, `HttpModule`, `UiServiceModule`
-- **Navigation** via `INavigationService.NavigateTo<TViewModel>()`
-- **Resources**: `Resources/Themes/` (Light/Dark), `Resources/Styles/`, `Resources.resx` + `Resources.ru.resx` (localization)
-
 ## Known Naming Inconsistencies
 
 These typos exist in folder/project names and are accepted as-is:
@@ -230,8 +210,7 @@ CoffeePeek — это .NET 10 микросервисная платформа д
 ## Technology Stack
 
 ## Languages
-- C# 14 — all backend services, shared libraries, Avalonia client
-- XML/XAML — Avalonia UI layouts
+- C# 14 — all backend services and shared libraries
 - SQL — EF Core migrations (PostgreSQL dialect)
 ## Runtime
 - .NET 10 (SDK 10.0.100, `rollForward: latestMajor`, allows pre-release)
@@ -248,10 +227,6 @@ CoffeePeek — это .NET 10 микросервисная платформа д
 - `Scalar.AspNetCore` 2.13.22 — OpenAPI UI served at the Gateway (`/scalar`)
 - `Microsoft.AspNetCore.Authentication.JwtBearer` 10.0.5 — JWT validation at the Gateway (`CoffeePeek.Shared.Auth`)
 - Rate limiting — built-in ASP.NET Core sliding window, configured in `CoffeePeek.Gateway/Extensions/RateLimitingExtensions.cs`
-- Avalonia 12 — cross-platform XAML UI (Desktop, Browser, Android)
-- CommunityToolkit.Mvvm — `[ObservableProperty]` / `[RelayCommand]` source generators
-- `Xaml.Behaviors.Avalonia` 12.0.0 — XAML behavior support
-- Autofac 9.1.0 — DI container for the Avalonia client
 - xUnit v3 3.2.2 — test runner
 - FluentAssertions 8.9.0 — assertion library
 - Moq 4.20.72 — mocking framework
@@ -290,7 +265,7 @@ CoffeePeek — это .NET 10 микросервисная платформа д
 ## Platform Requirements
 - .NET 10 SDK (10.0.100+)
 - Docker Desktop (for Aspire-managed PostgreSQL 17, RabbitMQ, Redis containers)
-- `dotnet workload restore CoffeePeek.slnx` required before first build (Aspire + Android workloads)
+- `dotnet workload restore CoffeePeek.slnx` required before first build (Aspire workload)
 - Deployment target: VPS via Docker Compose (`deploy/docker-compose.yml`); Gateway clusters default to Aspire service discovery names
 - Container images pushed to Docker Hub via GitHub Actions (`docker.io/<DOCKER_HUB_USERNAME>/coffeepeek.*`)
 - Target OS: Linux (`DockerDefaultTargetOS=Linux` in all service `.csproj` files)
@@ -414,13 +389,6 @@ CoffeePeek — это .NET 10 микросервисная платформа д
 | `CoffeePeek.Shared.Auth` | JWT bearer, `HeaderAuthenticationHandler`, `ClaimsPrincipalExtensions` |
 | `CoffeePeek.Shared.Web` | OpenAPI, API versioning, CORS, exception handling, Serilog/Sentry |
 | `CoffeePeek.Contract` | Shared DTOs and event contracts |
-## Client Architecture (Avalonia MVVM)
-- ViewModels: `ViewModelBase`, `[ObservableProperty]`, `[RelayCommand]` (CommunityToolkit.Mvvm)
-- Views: `x:DataType` compiled bindings
-- View Locator: replaces `"ViewModel"` → `"View"` in type name
-- DI: Autofac via `Bootstrapper.BuildContainer()` with modules
-- Navigation: `INavigationService.NavigateTo<TViewModel>()`
-- Platform entry points: Desktop, Browser, Android
 <!-- GSD:architecture-end -->
 
 <!-- GSD:skills-start source:skills/ -->

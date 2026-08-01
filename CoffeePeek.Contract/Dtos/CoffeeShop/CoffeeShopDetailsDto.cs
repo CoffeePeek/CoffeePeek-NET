@@ -18,7 +18,6 @@ public record CoffeeShopDetailsDto
     public ReviewDto[] Reviews { get; init; }
 
 
-    public bool IsFavorite { get; init; }
     public bool IsVisited { get; init; }
     public bool? CanCreateReview { get; init; }
     /// <summary>
@@ -36,4 +35,5 @@ public record CoffeeShopDetailsDto
     public BrewMethodDto[]? BrewMethods { get; init; }
     public ShopContactDto? ShopContact { get; init; }
     public List<ScheduleDto>? Schedules { get; init; }
+    public ShopTagDto[] Tags { get; init; } = [];
 }
