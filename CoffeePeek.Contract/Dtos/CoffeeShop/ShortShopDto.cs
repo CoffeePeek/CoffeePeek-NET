@@ -16,8 +16,8 @@ public class ShortShopDto
     public int ReviewCount { get; init; }
 
     public bool IsVisited { get; set; }
-    public bool IsNew { get; init; }
-    public bool IsOpen { get; init; }
+    public bool IsNew { get; set; }
+    public bool IsOpen { get; set; }
     
     public PriceRange PriceRange { get; init; }
     

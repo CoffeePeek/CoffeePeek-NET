@@ -41,6 +41,15 @@ public static class BusinessConstants
 
     #endregion
 
+    #region ShopTag
+
+    public const int MaxShopTagSlugLength = 50;
+    public const int MaxShopTagNameLength = 100;
+    public const int MaxShopTagDescriptionLength = 500;
+    public const int MaxShopTagsPerShop = 20;
+
+    #endregion
+
     #region Visits
 
     public const int MaxVisitNoteLength = 500;

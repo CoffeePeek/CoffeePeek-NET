@@ -48,7 +48,7 @@ public class SearchCoffeeShopsHandler
         return Response<GetCoffeeShopsResponse>.Success(cachedResponse);
     }
 
-    private static string CreateSearchHash(SearchCoffeeShopsQuery query)
+    public static string CreateSearchHash(SearchCoffeeShopsQuery query)
     {
         var keyBuilder = new StringBuilder();
 
@@ -85,6 +85,26 @@ public class SearchCoffeeShopsHandler
         {
             var brewMethodsHash = ComputeHash(string.Join(",", query.BrewMethods.OrderBy(x => x)));
             keyBuilder.Append($"brew:{brewMethodsHash}:");
+        }
+
+        if (query.Tags is { Length: > 0 })
+        {
+            var tagsHash = ComputeHash(string.Join(",", query.Tags.OrderBy(x => x)));
+            keyBuilder.Append($"tags:{tagsHash}:");
+        }
+
+        if (query.IsOpen.HasValue)
+            keyBuilder.Append($"open:{query.IsOpen.Value}:");
+
+        if (query.IsNew.HasValue)
+            keyBuilder.Append($"new:{query.IsNew.Value}:");
+
+        if (query.IsVisited.HasValue)
+        {
+            keyBuilder.Append($"visited:{query.IsVisited.Value}:");
+            // Visited filter is user-specific — must include userId for cache correctness
+            if (query.UserId.HasValue)
+                keyBuilder.Append($"uid:{query.UserId.Value}:");
         }
 
         if (query.PriceRange.HasValue)

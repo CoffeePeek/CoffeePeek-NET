@@ -1,5 +1,7 @@
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
+using CoffeePeek.Shared.Kernel.Exceptions;
+using CoffeePeek.Shops.Domain;
 using FluentAssertions;
 using JetBrains.Annotations;
 
@@ -146,5 +148,45 @@ public class CoffeeShopTests
         shop.AddEquipment(e2);
 
         shop.Equipments.Count.Should().Be(1);
+    }
+
+    [Fact]
+    public void SetTags_ReplacesDistinctTags()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
+        var adminId = Guid.NewGuid();
+        var tag1 = Guid.NewGuid();
+        var tag2 = Guid.NewGuid();
+
+        shop.SetTags([tag1, tag2, tag1], adminId);
+
+        shop.ShopTags.Should().HaveCount(2);
+        shop.ShopTags.Select(t => t.TagId).Should().BeEquivalentTo([tag1, tag2]);
+        shop.ShopTags.Should().OnlyContain(t => t.AssignedByUserId == adminId && t.ShopId == shop.Id);
+    }
+
+    [Fact]
+    public void SetTags_ExceedingMax_Throws()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
+        var tooMany = Enumerable.Range(0, BusinessConstants.MaxShopTagsPerShop + 1)
+            .Select(_ => Guid.NewGuid())
+            .ToArray();
+
+        var act = () => shop.SetTags(tooMany, Guid.NewGuid());
+
+        act.Should().Throw<DomainException>()
+            .WithMessage($"*{BusinessConstants.MaxShopTagsPerShop}*");
+    }
+
+    [Fact]
+    public void SetTags_EmptyList_ClearsTags()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
+        shop.SetTags([Guid.NewGuid()], Guid.NewGuid());
+
+        shop.SetTags([], Guid.NewGuid());
+
+        shop.ShopTags.Should().BeEmpty();
     }
 }

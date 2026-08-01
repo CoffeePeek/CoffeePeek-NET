@@ -35,4 +35,5 @@ public record CoffeeShopDetailsDto
     public BrewMethodDto[]? BrewMethods { get; init; }
     public ShopContactDto? ShopContact { get; init; }
     public List<ScheduleDto>? Schedules { get; init; }
+    public ShopTagDto[] Tags { get; init; } = [];
 }

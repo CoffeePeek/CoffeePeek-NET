@@ -1,6 +1,7 @@
 using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Review = CoffeePeek.Shops.Domain.Aggregates.ReviewAggregate.Review;
@@ -29,12 +30,17 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     public virtual DbSet<EquipmentCategory> EquipmentCategories { get; set; }
     public virtual DbSet<Equipment> Equipments { get; set; }
 
+    public virtual DbSet<ShopTag> ShopTags { get; set; }
+    public virtual DbSet<CoffeeShopTag> CoffeeShopTags { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension("pg_trgm");
         modelBuilder.ApplyConfiguration(new CoffeeShopConfiguration());
         modelBuilder.ApplyConfiguration(new ShopPhotoConfiguration());
+        modelBuilder.ApplyConfiguration(new ShopTagConfiguration());
+        modelBuilder.ApplyConfiguration(new CoffeeShopTagConfiguration());
         
         modelBuilder.Entity<Review>(entity =>
         {

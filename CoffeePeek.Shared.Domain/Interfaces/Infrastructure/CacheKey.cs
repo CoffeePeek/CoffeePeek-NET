@@ -101,6 +101,14 @@ public record CacheKey(
             Service: "ShopsService");
         
         public static string SearchPattern() => "shop:search:*";
+
+        public static CacheKey TagsCatalog() => new(
+            Key: "shop:tags:catalog",
+            DefaultTtl: TimeSpan.FromHours(1),
+            Description: "Active shop filter tags catalog",
+            Service: "ShopsService");
+
+        public static string TagsCatalogPattern() => "shop:tags:*";
     }
     
     public static class City
@@ -204,7 +212,7 @@ public record CacheKey(
             private static readonly Dictionary<string, string[]> Patterns = new()
             {
                 [Dictionaries] = [City.ListPattern(), Equipment.ListPattern(), CoffeeBean.ListPattern(), 
-                                   Roaster.ListPattern(), BrewMethod.ListPattern()],
+                                   Roaster.ListPattern(), BrewMethod.ListPattern(), Shop.TagsCatalogPattern()],
                 [Lists] = [Shop.ListPattern()],
                 [Details] = [Shop.DetailPattern()],
                 [Search] = [Shop.SearchPattern()]

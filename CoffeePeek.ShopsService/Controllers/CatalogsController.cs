@@ -4,6 +4,7 @@ using CoffeePeek.Shops.Application.Features.Catalogs.GetAllBrewMethods;
 using CoffeePeek.Shops.Application.Features.Catalogs.GetAllCities;
 using CoffeePeek.Shops.Application.Features.Catalogs.GetAllEquipment;
 using CoffeePeek.Shops.Application.Features.Catalogs.GetAllRoasters;
+using CoffeePeek.Shops.Application.Features.Catalogs.GetShopTags;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 
@@ -67,6 +68,16 @@ public class CatalogsController(IMessageBus bus) : ControllerBase
     {
         var response = await bus.InvokeAsync<Response<GetAllBrewMethodsResponse>>(new GetAllBrewMethodsCommand());
         
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+
+    [HttpGet("shop-tags")]
+    [ProducesResponseType(typeof(Response<GetShopTagsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetShopTags(CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<GetShopTagsResponse>>(new GetShopTagsCommand(), ct);
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 }

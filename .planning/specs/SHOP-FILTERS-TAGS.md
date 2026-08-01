@@ -1,8 +1,8 @@
 # SPEC: Admin-managed shop filters / tags
 
-**Status:** design only — not implemented  
+**Status:** implemented  
 **Depends on:** Tier 0 complete (favorites removed; discovery search stable)  
-**Out of scope here:** Favorite-as-filter, client UI
+**Out of scope here:** Favorite-as-filter, client UI, owner self-serve tag suggestions
 
 ## Problem
 
@@ -14,21 +14,29 @@ Legacy client chips (Open / New / Favorite / Visited) mixed three different conc
 | Visited | Derived from check-ins | System |
 | New | Derived from shop age | System |
 | Open | Derived from schedules | System |
-| Specialty / laptop / pet / … | Curated attributes | **Missing** — need admin (and maybe owner) |
+| Specialty / laptop / pet / … | Curated attributes | **Admin catalog** |
 
 Hardcoding more chips without a catalog will not scale. Filters must be data-driven.
 
 ## Goals
 
 1. Admin can create/edit/deactivate **filter tags** (global catalog).
-2. Admin (and optionally owner via moderation later) can **assign tags to shops**.
-3. Public search accepts `tags` query param alongside existing catalog filters.
+2. Admin can **assign tags to shops**.
+3. Public search accepts `tags` query param alongside computed filters (`isOpen`, `isNew`, `isVisited`).
 4. Computed filters stay separate from curated tags (no Favorite on server).
+
+## Locked decisions
+
+1. **Slug immutable after create** — PATCH updates `Name`, `Description`, `SortOrder`, `IsActive` only.
+2. **Max tags per shop = 20** (`BusinessConstants.MaxShopTagsPerShop`).
+3. **Shop detail DTO includes assigned active tags** (`CoffeeShopDetailsDto.Tags`).
+4. **Owner suggestion = out of scope** (later moderation flow).
+5. **Seed starter tags in migration** `AddShopTags`: `laptop_friendly`, `specialty`, `pet_friendly`, `pour_over`, `quiet_work`.
 
 ## Non-goals (v1 of this feature)
 
 - User-created tags
-- Multi-language tag UI beyond `Name` + optional `NameRu`
+- Multi-language tag UI beyond `Name`
 - Owner self-serve tag assignment without moderation (phase 2)
 - Map clustering / PostGIS
 
@@ -51,9 +59,7 @@ CoffeeShopTag (join)
   AssignedAtUtc: DateTime
 ```
 
-Seed optional starter tags via migration or admin seed (not hardcoded in search handler).
-
-## API sketch
+## API
 
 ### Admin (Authorization: Admin)
 
@@ -61,71 +67,37 @@ Seed optional starter tags via migration or admin seed (not hardcoded in search 
 |--------|------|---------|
 | GET | `/api/admin/shop-tags` | List all tags (incl. inactive) |
 | POST | `/api/admin/shop-tags` | Create tag |
-| PATCH | `/api/admin/shop-tags/{id}` | Update name/slug/sort/active |
-| DELETE | `/api/admin/shop-tags/{id}` | Soft-deactivate (prefer) or hard-delete if unused |
+| PATCH | `/api/admin/shop-tags/{id}` | Update name/description/sort/active (not slug) |
+| DELETE | `/api/admin/shop-tags/{id}` | Soft-deactivate |
 | PUT | `/api/admin/shops/{shopId}/tags` | Replace tag set on shop |
 
 ### Public / catalogs
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| GET | `/api/Catalogs/shop-tags` | Active tags only (for filter UI) |
+| GET | `/api/Catalogs/shop-tags` | Active tags only (cached) |
 
 ### Search
 
-Extend `SearchCoffeeShopsQuery`:
+`GET /api/CoffeeShops` query params:
 
 ```
-Guid[]? Tags = null   // AND semantics by default: shop must have all listed tags
-bool? IsOpen = null   // computed from schedules at query time
-bool? IsNew = null    // CreatedAt within BusinessConstants.ItNewEntityInDays
-bool? IsVisited = null // only when UserId present; filter to shops user checked into
+tags: Guid[]        // AND semantics
+isOpen: bool?       // computed from schedules at UTC query time
+isNew: bool?        // CreatedAt within BusinessConstants.ItNewEntityInDays
+isVisited: bool?    // only when UserId present; ignored for anonymous
 ```
-
-**AND vs OR for tags:** v1 = AND (narrowing). Document clearly; OR can be a later `tagMode` if needed.
-
-## Computed filters (not tags)
-
-Implement as query flags, not `ShopTag` rows:
-
-- **IsOpen** — evaluate `Schedules` against UTC/local city time in query layer (must fix list Mapster stub that maps `IsOpen => false`).
-- **IsNew** — `CreatedAtUtc >= UtcNow - N days`.
-- **IsVisited** — join/exists on CheckIns for current user; ignore flag if anonymous.
-
-## Who assigns tags
-
-| Actor | v1 | Later |
-|-------|----|-------|
-| Admin | Yes — assign on published shops | — |
-| Owner | No | Suggest tags → moderation queue |
-| Moderator | No | Approve owner suggestions |
-| System | No for curated tags | Auto-`new_arrival` optional job — prefer computed IsNew instead |
-
-## Gateway
-
-- Route `/api/admin/shop-tags` under existing shops-admin or dedicated admin shops cluster with Admin policy.
-- Catalogs route already on shops cluster.
 
 ## Caching
 
-- Catalog tags: short TTL or invalidate on admin write (`city:list`-style pattern `shop:tags:*`).
-- Search cache key must include `tags`, `isOpen`, `isNew`, `isVisited`.
+- Catalog: `CacheKey.Shop.TagsCatalog()` / pattern `shop:tags:*`
+- Search cache hash includes `tags`, `isOpen`, `isNew`, `isVisited` (+ `userId` when visited filter used)
+- Invalidate tags catalog + search (+ shop detail on SetShopTags) on admin writes
 
-## Acceptance criteria (when implementing)
+## Acceptance criteria
 
 1. Admin CRUD tags; inactive tags hidden from public catalog.
 2. Assigning tags to shop reflected in `GET /api/CoffeeShops?tags=...`.
 3. Search with multiple tags uses AND.
 4. `IsOpen` / `IsNew` / `IsVisited` work without Favorite.
-5. Tests: domain join uniqueness; search filter; admin authorize.
-
-## Open questions for `/gsd-discuss-phase`
-
-1. Slug immutability after create?
-2. Max tags per shop?
-3. Should shop detail DTO return assigned tags?
-4. Owner suggestion flow in same milestone or later?
-
-## Suggested next command
-
-`/gsd-discuss-phase` or `/gsd-spec-phase` for “Admin shop tags” once Tier 0 is merged; then `/gsd-plan-phase`.
+5. Tests: domain SetTags max/distinct; admin handlers; search hash includes filters.

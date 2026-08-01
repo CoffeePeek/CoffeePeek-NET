@@ -119,4 +119,38 @@ public class SearchCoffeeShopsHandlerTests
         result.IsSuccess.Should().BeFalse();
         result.Message.Should().Contain("Failed to retrieve");
     }
+
+    [Fact]
+    public void CreateSearchHash_IncludesTagsAndComputedFilters()
+    {
+        var tagA = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        var tagB = Guid.Parse("22222222-2222-2222-2222-222222222222");
+        var userId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+
+        var hash = SearchCoffeeShopsHandler.CreateSearchHash(new SearchCoffeeShopsQuery(
+            UserId: userId,
+            Tags: [tagB, tagA],
+            IsOpen: true,
+            IsNew: false,
+            IsVisited: true));
+
+        hash.Should().Contain("tags:");
+        hash.Should().Contain("open:True");
+        hash.Should().Contain("new:False");
+        hash.Should().Contain("visited:True");
+        hash.Should().Contain($"uid:{userId}");
+    }
+
+    [Fact]
+    public void CreateSearchHash_WithoutVisited_OmitsUserId()
+    {
+        var userId = Guid.NewGuid();
+        var hash = SearchCoffeeShopsHandler.CreateSearchHash(new SearchCoffeeShopsQuery(
+            UserId: userId,
+            IsOpen: true));
+
+        hash.Should().Contain("open:True");
+        hash.Should().NotContain("uid:");
+        hash.Should().NotContain("visited:");
+    }
 }

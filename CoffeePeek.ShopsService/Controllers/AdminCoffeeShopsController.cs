@@ -1,7 +1,9 @@
+using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.Admin.Shops;
 using CoffeePeek.Shops.Application.Features.Admin.Shops.ReorderPhotos;
+using CoffeePeek.Shops.Application.Features.Admin.Shops.SetShopTags;
 using CoffeePeek.ShopsService.Controllers.Admin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +18,7 @@ namespace CoffeePeek.ShopsService.Controllers;
 [Authorize(Policy = RoleConsts.Admin)]
 [Tags("Admin")]
 [ProducesErrorResponseType(typeof(ErrorResponse))]
-public class AdminCoffeeShopsController(IMessageBus bus) : ControllerBase
+public class AdminCoffeeShopsController(IMessageBus bus, IUserContext userContext) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType<Response<GetAdminCoffeeShopsResponse>>(StatusCodes.Status200OK)]
@@ -104,6 +106,32 @@ public class AdminCoffeeShopsController(IMessageBus bus) : ControllerBase
         var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
             new ReorderAdminCoffeeShopPhotosCommand(id, request.PhotoIds), ct);
 
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return response.StatusCode switch
+        {
+            StatusCodes.Status404NotFound => NotFound(response),
+            _ => BadRequest(response)
+        };
+    }
+
+    /// <summary>Replace the full set of filter tags assigned to a shop.</summary>
+    [HttpPut("{shopId:guid}/tags")]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SetTags(
+        Guid shopId,
+        [FromBody] SetCoffeeShopTagsRequest request,
+        CancellationToken ct)
+    {
+        var command = new SetShopTagsCommand(
+            shopId,
+            request.TagIds ?? [],
+            userContext.GetUserIdOrThrow());
+
+        var response = await bus.InvokeAsync<Response>(command, ct);
         if (response.IsSuccess)
             return Ok(response);
 
