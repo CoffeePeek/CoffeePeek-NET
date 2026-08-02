@@ -93,7 +93,7 @@ public class ModerationReviewsController(IMessageBus bus, IUserContext userConte
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> ChangeStatusModerationReview(
-        ChangeStatusModerationReviewCommand command)
+        [FromBody] ChangeStatusModerationReviewCommand command)
     {
         var commandWithUser = command with { UserId = userContext.GetUserIdOrThrow() };
         var response = await bus.InvokeAsync<UpdateEntityResponse<ModerationStatus>>(commandWithUser);
