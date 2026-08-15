@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shops.Application.Features.Public.Stats;
+using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate;
 using Microsoft.Extensions.Logging;
@@ -37,7 +38,7 @@ public class CreateShopFromImportService(
             item.CandidateId);
 
         shop.SetLocation(item.CityId, item.Address, item.Latitude, item.Longitude);
-        shop.SetContact(item.Instagram, email: null, item.Website, item.Phone);
+        shop.SetContact(item.Instagram, email: null, item.Website, FirstPhone(item.Phone));
         shop.SetCoffeeFocus((CoffeeFocus)(int)item.CoffeeFocus);
 
         if (item.TemporarilyClosed)
@@ -66,5 +67,20 @@ public class CreateShopFromImportService(
             item.CandidateId);
 
         return shop.Id;
+    }
+
+    private static string? FirstPhone(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+            return null;
+
+        var first = phone.Split(';', 2, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(first))
+            return null;
+
+        return first.Length <= BusinessConstants.MaxShopContactPhoneNumberLength
+            ? first
+            : first[..BusinessConstants.MaxShopContactPhoneNumberLength];
     }
 }

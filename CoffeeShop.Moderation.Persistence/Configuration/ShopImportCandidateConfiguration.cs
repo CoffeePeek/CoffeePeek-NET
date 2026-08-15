@@ -16,16 +16,16 @@ public class ShopImportCandidateConfiguration : IEntityTypeConfiguration<ShopImp
         entity.HasKey(e => e.Id);
 
         entity.Property(e => e.ExternalId).HasMaxLength(64).IsRequired();
-        entity.Property(e => e.Name).HasMaxLength(200);
-        entity.Property(e => e.Address).HasMaxLength(500);
-        entity.Property(e => e.Phone).HasMaxLength(40);
-        entity.Property(e => e.Website).HasMaxLength(2048);
-        entity.Property(e => e.Instagram).HasMaxLength(255);
-        entity.Property(e => e.OpeningHours).HasMaxLength(500);
-        entity.Property(e => e.Cuisine).HasMaxLength(200);
-        entity.Property(e => e.Brand).HasMaxLength(200);
-        entity.Property(e => e.CheckDate).HasMaxLength(32);
-        entity.Property(e => e.GoogleMapsUri).HasMaxLength(2048);
+        entity.Property(e => e.Name).HasMaxLength(ShopImportCandidate.MaxNameLength);
+        entity.Property(e => e.Address).HasMaxLength(ShopImportCandidate.MaxAddressLength);
+        entity.Property(e => e.Phone).HasMaxLength(ShopImportCandidate.MaxPhoneLength);
+        entity.Property(e => e.Website).HasMaxLength(ShopImportCandidate.MaxWebsiteLength);
+        entity.Property(e => e.Instagram).HasMaxLength(ShopImportCandidate.MaxInstagramLength);
+        entity.Property(e => e.OpeningHours).HasMaxLength(ShopImportCandidate.MaxOpeningHoursLength);
+        entity.Property(e => e.Cuisine).HasMaxLength(ShopImportCandidate.MaxCuisineLength);
+        entity.Property(e => e.Brand).HasMaxLength(ShopImportCandidate.MaxBrandLength);
+        entity.Property(e => e.CheckDate).HasMaxLength(ShopImportCandidate.MaxCheckDateLength);
+        entity.Property(e => e.GoogleMapsUri).HasMaxLength(ShopImportCandidate.MaxGoogleMapsUriLength);
         entity.Property(e => e.Latitude).HasPrecision(18, 10);
         entity.Property(e => e.Longitude).HasPrecision(18, 10);
 

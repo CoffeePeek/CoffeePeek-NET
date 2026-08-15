@@ -5,6 +5,7 @@
 | ID | Slug | Status | Date |
 |----|------|--------|------|
 | 260801-erp | remove-community-social-layer-feed-posts | complete | 2026-08-01 |
+| 260815-fast | widen-import-candidate-phone | complete | 2026-08-15 |
 
 ## Milestone Progress
 

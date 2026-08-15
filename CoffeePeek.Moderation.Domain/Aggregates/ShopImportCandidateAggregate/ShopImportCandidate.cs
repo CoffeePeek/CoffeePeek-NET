@@ -8,6 +8,16 @@ namespace CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
 public sealed class ShopImportCandidate : Entity<Guid>
 {
     public const int GoogleCacheDays = 30;
+    public const int MaxNameLength = 200;
+    public const int MaxAddressLength = 500;
+    public const int MaxPhoneLength = 200;
+    public const int MaxWebsiteLength = 2048;
+    public const int MaxInstagramLength = 255;
+    public const int MaxOpeningHoursLength = 2000;
+    public const int MaxCuisineLength = 200;
+    public const int MaxBrandLength = 200;
+    public const int MaxCheckDateLength = 32;
+    public const int MaxGoogleMapsUriLength = 2048;
 
     public ImportSource Source { get; private set; }
     public string ExternalId { get; private set; } = null!;
@@ -126,7 +136,9 @@ public sealed class ShopImportCandidate : Entity<Guid>
         DateTimeOffset fetchedAt)
     {
         GoogleBusinessStatus = status;
-        GoogleMapsUri = string.IsNullOrWhiteSpace(mapsUri) ? GoogleMapsUri : mapsUri.Trim();
+        GoogleMapsUri = string.IsNullOrWhiteSpace(mapsUri)
+            ? GoogleMapsUri
+            : Clip(mapsUri, MaxGoogleMapsUriLength);
         GoogleFetchedAtUtc = fetchedAt;
     }
 
@@ -163,21 +175,23 @@ public sealed class ShopImportCandidate : Entity<Guid>
     {
         var (bucket, signals, _) = OsmCafeClassifier.Classify(snapshot.Tags, snapshot.OsmUpdatedAt, now);
 
-        Name = snapshot.Name;
-        Address = snapshot.Address;
+        Name = Clip(snapshot.Name, MaxNameLength);
+        Address = Clip(snapshot.Address, MaxAddressLength);
         Latitude = snapshot.Latitude;
         Longitude = snapshot.Longitude;
-        Phone = snapshot.Phone;
-        Website = snapshot.Website;
-        Instagram = snapshot.Instagram ?? OsmCafeClassifier.InstagramUrl(snapshot.Tags, snapshot.Website);
-        OpeningHours = snapshot.OpeningHours;
-        Cuisine = snapshot.Cuisine;
-        Brand = snapshot.Brand;
+        Phone = Clip(snapshot.Phone, MaxPhoneLength);
+        Website = Clip(snapshot.Website, MaxWebsiteLength);
+        Instagram = Clip(
+            snapshot.Instagram ?? OsmCafeClassifier.InstagramUrl(snapshot.Tags, snapshot.Website),
+            MaxInstagramLength);
+        OpeningHours = Clip(snapshot.OpeningHours, MaxOpeningHoursLength);
+        Cuisine = Clip(snapshot.Cuisine, MaxCuisineLength);
+        Brand = Clip(snapshot.Brand, MaxBrandLength);
         OsmUpdatedAt = snapshot.OsmUpdatedAt;
         OsmAgeDays = snapshot.OsmUpdatedAt.HasValue
             ? (int)(now - snapshot.OsmUpdatedAt.Value).TotalDays
             : null;
-        CheckDate = snapshot.CheckDate;
+        CheckDate = Clip(snapshot.CheckDate, MaxCheckDateLength);
         Signals = signals.ToList();
         CollectorBucket = bucket;
     }
@@ -197,6 +211,15 @@ public sealed class ShopImportCandidate : Entity<Guid>
             slugs.Remove("specialty");
 
         return slugs;
+    }
+
+    private static string? Clip(string? value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        var trimmed = value.Trim();
+        return trimmed.Length <= maxLength ? trimmed : trimmed[..maxLength];
     }
 
     private (string Type, string Id) ParseExternalId()

@@ -95,4 +95,36 @@ public class CreateShopFromImportServiceTests
         shopId.Should().Be(existing);
         _shopRepo.Verify(r => r.Add(It.IsAny<CoffeeShop>()), Times.Never);
     }
+
+    [Fact]
+    public async Task Create_WithOsmMultiPhone_KeepsFirstNumber()
+    {
+        _shopRepo.Setup(r => r.GetIdByModerationId(It.IsAny<Guid>(), _ct)).ReturnsAsync((Guid?)null);
+        _tagRepo
+            .Setup(r => r.GetActiveBySlugsAsync(It.IsAny<IReadOnlyCollection<string>>(), _ct))
+            .ReturnsAsync([]);
+
+        CoffeeShop? added = null;
+        _shopRepo.Setup(r => r.Add(It.IsAny<CoffeeShop>())).Callback<CoffeeShop>(s => added = s);
+
+        var item = new ImportCandidatePublishedItem(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Coffe Joy",
+            "Немига 5",
+            53.9152m,
+            27.5847m,
+            CitiesConsts.MinskId,
+            "+375 29 111-22-33; +375 17 200-00-00",
+            null,
+            null,
+            Contract.Enums.CoffeeFocus.Cafe,
+            [],
+            false);
+
+        await CreateSut().CreateShopFromImportAsync(item, _ct);
+
+        added.Should().NotBeNull();
+        added!.Contact.PhoneNumber.Should().Be("+375 29 111-22-33");
+    }
 }

@@ -20,6 +20,34 @@ public class ShopImportCandidateTests
     }
 
     [Fact]
+    public void FromOsm_ClipsPhoneLongerThanColumn()
+    {
+        var phone = string.Join("; ", Enumerable.Repeat("+375 29 111-22-33", 12));
+        phone.Length.Should().BeGreaterThan(ShopImportCandidate.MaxPhoneLength);
+
+        var snapshot = new OsmCandidateSnapshot(
+            "node/1",
+            "Cafe",
+            "Немига 5, Минск",
+            53.9152m,
+            27.5847m,
+            phone,
+            null,
+            null,
+            null,
+            null,
+            null,
+            Now.AddMonths(-1),
+            null,
+            new Dictionary<string, string> { ["amenity"] = "cafe", ["name"] = "Cafe" });
+
+        var candidate = ShopImportCandidate.FromOsm(snapshot, Now);
+
+        candidate.Phone.Should().Be(phone[..ShopImportCandidate.MaxPhoneLength]);
+        candidate.Phone!.Length.Should().Be(ShopImportCandidate.MaxPhoneLength);
+    }
+
+    [Fact]
     public void FromOsm_StaleObject_GoesToStaleBucket()
     {
         var snapshot = Snapshot("node/1", "Old Cafe", osmUpdatedAt: Now.AddYears(-6));
