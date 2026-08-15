@@ -20,57 +20,76 @@ public class AdminStatsClient(
     IOptions<GatewayAuthOptions> gatewayAuthOptions,
     ILogger<AdminStatsClient> logger) : IAdminStatsClient
 {
-    public async Task<AdminServiceStatsDto> GetPlatformStatsAsync(CancellationToken cancellationToken = default)
+    public async Task<AdminPlatformStatsSnapshot> GetPlatformStatsAsync(CancellationToken cancellationToken = default)
     {
-        var shopsStats = await FetchStatsAsync(
+        var shopsTask = TryFetchAsync(
             options.Value.ShopsServiceUrl,
             AppResources.ShopsService,
             cancellationToken);
-
-        var moderationStats = await FetchStatsAsync(
+        var moderationTask = TryFetchAsync(
             options.Value.ModerationServiceUrl,
             AppResources.ModerationService,
             cancellationToken);
 
-        return new AdminServiceStatsDto(
-            TotalCoffeeShops: shopsStats.TotalCoffeeShops,
-            TotalReviews: shopsStats.TotalReviews,
-            NewCoffeeShopsToday: shopsStats.NewCoffeeShopsToday,
-            NewReviewsToday: shopsStats.NewReviewsToday,
-            PendingModerationShops: moderationStats.PendingModerationShops,
-            PendingModerationReviews: moderationStats.PendingModerationReviews);
+        await Task.WhenAll(shopsTask, moderationTask);
+
+        var shops = await shopsTask;
+        var moderation = await moderationTask;
+
+        return new AdminPlatformStatsSnapshot(
+            TotalCoffeeShops: shops?.TotalCoffeeShops ?? 0,
+            TotalReviews: shops?.TotalReviews ?? 0,
+            NewCoffeeShopsToday: shops?.NewCoffeeShopsToday ?? 0,
+            NewReviewsToday: shops?.NewReviewsToday ?? 0,
+            PendingModerationShops: moderation?.PendingModerationShops ?? 0,
+            PendingModerationReviews: moderation?.PendingModerationReviews ?? 0,
+            ImportPending: moderation?.ImportPending ?? 0,
+            ImportPublished: moderation?.ImportPublished ?? 0,
+            ImportRejected: moderation?.ImportRejected ?? 0,
+            ImportSkipped: moderation?.ImportSkipped ?? 0,
+            ShopsAvailable: shops is not null,
+            ModerationAvailable: moderation is not null);
     }
 
-    private async Task<AdminServiceStatsDto> FetchStatsAsync(
+    private async Task<AdminServiceStatsDto?> TryFetchAsync(
         string? configuredBaseUrl,
         string aspireServiceName,
         CancellationToken cancellationToken)
     {
         var baseUrl = ResolveBaseUrl(configuredBaseUrl, aspireServiceName);
-        var client = httpClientFactory.CreateClient("admin-stats");
-        using var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            $"{baseUrl}/api/admin/stats/summary");
-        request.AddGatewayAuthHeader(gatewayAuthOptions.Value.SecretKey);
-        ForwardAuthHeaders(request);
-
-        using var response = await client.SendAsync(request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            logger.LogWarning(
-                "Admin stats request to {BaseUrl} failed with {StatusCode}",
-                baseUrl,
-                response.StatusCode);
-            throw new HttpRequestException($"Admin stats request to {baseUrl} failed with {response.StatusCode}");
+            var client = httpClientFactory.CreateClient("admin-stats");
+            using var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"{baseUrl}/api/admin/stats/summary");
+            request.AddGatewayAuthHeader(gatewayAuthOptions.Value.SecretKey);
+            ForwardAuthHeaders(request);
+
+            using var response = await client.SendAsync(request, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogWarning(
+                    "Admin stats request to {BaseUrl} failed with {StatusCode}",
+                    baseUrl,
+                    response.StatusCode);
+                return null;
+            }
+
+            var payload = await response.Content.ReadFromJsonAsync<Response<AdminServiceStatsDto>>(
+                cancellationToken: cancellationToken);
+
+            if (payload is { IsSuccess: true, Data: not null })
+                return payload.Data;
+
+            logger.LogWarning("Admin stats request to {BaseUrl} returned an invalid payload", baseUrl);
+            return null;
         }
-
-        var payload = await response.Content.ReadFromJsonAsync<Response<AdminServiceStatsDto>>(
-            cancellationToken: cancellationToken);
-
-        if (payload is not { IsSuccess: true, Data: not null })
-            throw new InvalidOperationException($"Admin stats request to {baseUrl} returned an invalid payload.");
-
-        return payload.Data;
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Admin stats request to {BaseUrl} failed", baseUrl);
+            return null;
+        }
     }
 
     private static string ResolveBaseUrl(string? configuredBaseUrl, string aspireServiceName)
@@ -78,7 +97,6 @@ public class AdminStatsClient(
         if (!string.IsNullOrWhiteSpace(configuredBaseUrl))
             return configuredBaseUrl.TrimEnd('/');
 
-        // Local Aspire: service discovery resolves this logical name inside the dev network.
         return $"http://{aspireServiceName}";
     }
 

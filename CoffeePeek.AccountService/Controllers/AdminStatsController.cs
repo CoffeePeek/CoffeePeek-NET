@@ -16,18 +16,13 @@ namespace CoffeePeek.AccountService.Controllers;
 [ProducesErrorResponseType(typeof(ErrorResponse))]
 public class AdminStatsController(IMessageBus bus) : ControllerBase
 {
-    /// <summary>Returns platform-wide overview statistics aggregated from all services.</summary>
+    /// <summary>Returns platform-wide overview statistics. Always 200; missing services report 0.</summary>
     [HttpGet("overview")]
     [ProducesResponseType<Response<AdminOverviewStatsDto>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> GetOverview(CancellationToken cancellationToken)
     {
         var response = await bus.InvokeAsync<Response<AdminOverviewStatsDto>>(
             new GetAdminOverviewStatsQuery(), cancellationToken);
-
-        if (!response.IsSuccess && response.StatusCode == StatusCodes.Status503ServiceUnavailable)
-            return StatusCode(StatusCodes.Status503ServiceUnavailable, response);
-
         return Ok(response);
     }
 }
