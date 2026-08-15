@@ -61,6 +61,7 @@
       cursor: pointer;
     }
     .research a.ig { background: #7a3e6b; }
+    .research a.gmaps { background: #3d6b4f; }
     .research a.maps { background: #8a5a2b; }
     .research a.img { background: #5a4a7a; }
     .signals { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
@@ -207,9 +208,18 @@
       };
     }
 
+    function googleSearchUrl(c) {
+      const q = encodeURIComponent(`${c.name} Минск`);
+      if (c.lat && c.lon) {
+        return `https://www.google.com/maps/search/${q}/@${c.lat},${c.lon},17z`;
+      }
+      return `https://www.google.com/maps/search/?api=1&query=${q}`;
+    }
+
     function researchButtons(c) {
       const L = c.links || {};
       const parts = [];
+      parts.push(`<a class="gmaps" id="googleOpen" href="${googleSearchUrl(c)}" target="_blank" rel="noreferrer">Открыть в Google</a>`);
       if (L.instagram) parts.push(`<a class="ig" href="${L.instagram}" target="_blank" rel="noreferrer">Instagram</a>`);
       else if (L.instagramSearch) parts.push(`<a class="ig" href="${L.instagramSearch}" target="_blank" rel="noreferrer">Найти Instagram</a>`);
       if (L.yandexMaps) parts.push(`<a class="maps" href="${L.yandexMaps}" target="_blank" rel="noreferrer">Яндекс · фото карточки</a>`);
@@ -239,6 +249,11 @@
             return;
           }
           const b = p.best;
+          const gBtn = document.getElementById("googleOpen");
+          if (gBtn && b?.mapsUrl) {
+            gBtn.href = b.mapsUrl;
+            gBtn.textContent = "Открыть в Google · карточка";
+          }
           if (p.verdict === "closed") {
             box.classList.add("closed");
             box.textContent = `Google: закрыто навсегда — ${b?.name || c.name}. В выборку не берём.`;
