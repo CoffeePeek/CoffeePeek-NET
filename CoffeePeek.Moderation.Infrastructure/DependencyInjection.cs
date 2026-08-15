@@ -38,7 +38,7 @@ public static class DependencyInjection
         {
             options.AttemptTimeout.Timeout = attemptTimeout;
             options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(150);
-            options.Retry.MaxRetryAttempts = 0;
+            options.Retry.MaxRetryAttempts = 1;
             options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(300);
             options.CircuitBreaker.MinimumThroughput = 100;
         });
