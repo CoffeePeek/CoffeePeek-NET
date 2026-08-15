@@ -65,14 +65,17 @@ public class User : AggregateRoot<Guid>
         return user;
     }
 
-    public static User CreateExternal(string invalidEmail, string provider, string providerId)
+    public static User CreateExternal(string invalidEmail, string provider, string providerId, string? usernameOverride = null)
     {
         var email = Email.Create(invalidEmail);
         var userId = Guid.NewGuid();
+        var username = usernameOverride is null
+            ? SanitizeUsernameFromEmail(email.Value)
+            : usernameOverride;
         return new User
         {
             Id = userId,
-            Username = Username.Create(SanitizeUsernameFromEmail(email.Value)),
+            Username = Username.Create(username),
             Credentials = UserCredential.CreateExternal(email, provider, providerId),
             Statistics = UserStatistics.Empty()
         };
@@ -204,6 +207,7 @@ public class User : AggregateRoot<Guid>
     public void ChangePassword(string newHash)
     {
         Credentials = Credentials.ChangePassword(newHash);
+        RevokeAllSessions();
     }
 
     public void BeginPasswordReset()

@@ -32,13 +32,13 @@ public class UsersController(IMessageBus bus, IUserContext userContext) : Contro
     /// Get user profile by id or current user profile
     /// </summary>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType<Response<UserProfileResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Response<PublicUserProfileResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById(Guid? id)
     {
         var command = new GetPublicUserProfileCommand(id ?? userContext.GetUserIdOrThrow());
-        var response = await bus.InvokeAsync<Response<UserProfileResponse>>(command);
+        var response = await bus.InvokeAsync<Response<PublicUserProfileResponse>>(command);
         return Ok(response);
     }
 
@@ -46,14 +46,13 @@ public class UsersController(IMessageBus bus, IUserContext userContext) : Contro
     /// Check if user exists by email
     /// </summary>
     [HttpGet("exists")]
-    [ProducesResponseType<Response>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Response<bool>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CheckUser([FromQuery] string email)
     {
         var request = new CheckUserExistsByEmailCommand(email);
 
-        var response = await bus.InvokeAsync<Response>(request);
+        var response = await bus.InvokeAsync<Response<bool>>(request);
 
         return Ok(response);
     }
@@ -83,7 +82,7 @@ public class UsersController(IMessageBus bus, IUserContext userContext) : Contro
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById()
     {
-        var request = new GetPublicUserProfileCommand(userContext.GetUserIdOrThrow());
+        var request = new GetProfileCommand(userContext.GetUserIdOrThrow());
         var response = await bus.InvokeAsync<Response<UserProfileResponse>>(request);
         return Ok(response);
     }
@@ -183,13 +182,14 @@ public class UsersController(IMessageBus bus, IUserContext userContext) : Contro
     [HttpDelete("me")]
     [Authorize]
     [ProducesResponseType<Response<bool>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteUser(CancellationToken cancellationToken)
     {
         var request = new DeleteUserCommand(userContext.GetUserIdOrThrow());
         var response = await bus.InvokeAsync<Response<bool>>(request, cancellationToken);
-        
-        return Ok(response);
+
+        return response.IsSuccess ? Ok(response) : NotFound(response);
     }
 
     /// <summary>

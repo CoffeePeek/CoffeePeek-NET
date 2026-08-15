@@ -12,7 +12,7 @@ public class UserRegisteredEventHandler(
     IEmailTemplateService templateService,
     ILogger<UserRegisteredEventHandler> logger)
 {
-    public async Task Handle(UserRegisteredInternalEvent @event)
+    public async Task Handle(UserRegisteredInternalEvent @event, CancellationToken ct)
     {
         // Query param is read by the SPA; hash-only links remain supported on the frontend.
         var confirmationUrl =
@@ -28,7 +28,7 @@ public class UserRegisteredEventHandler(
 
         try
         {
-            await resend.EmailSendAsync(message);
+            await resend.EmailSendAsync(message, ct);
             logger.LogInformation("Confirmation email sent to {Email}", @event.Email);
         }
         catch (ResendException e)

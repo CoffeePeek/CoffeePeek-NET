@@ -86,6 +86,29 @@ public class UserTests
     }
 
     [Fact]
+    public void CreateExternal_WithUsernameOverride_ShouldUseOverride()
+    {
+        var user = User.CreateExternal("test@example.com", "google", "google_123", "customuser");
+
+        user.Username.Value.Should().Be("customuser");
+        user.Credentials.Email.Value.Should().Be("test@example.com");
+    }
+
+    [Fact]
+    public void ChangePassword_ShouldRevokeAllRefreshSessions()
+    {
+        var user = User.Register("test@example.com", "testuser", "old_hash", Role.Create("User"));
+        user.AddSession("refresh1", TimeSpan.FromHours(1), "device", "127.0.0.1");
+        user.AddSession("refresh2", TimeSpan.FromHours(1), "device", "127.0.0.1");
+
+        user.ChangePassword("new_hash");
+
+        user.Credentials.PasswordHash.Should().Be("new_hash");
+        user.RefreshTokens.Should().OnlyContain(t => !t.IsActive);
+        user.RefreshTokens.Should().HaveCount(2);
+    }
+
+    [Fact]
     public void AddSession_ShouldAddRefreshToken()
     {
         // Arrange

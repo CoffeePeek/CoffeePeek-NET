@@ -61,6 +61,9 @@ public class TokensController(
 
         var response = await bus.InvokeAsync<Response<GoogleLoginResponse>>(command);
 
+        if (!response.IsSuccess)
+            return StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response);
+
         if (response.IsSuccess && response.Data is not null)
             Response.Cookies.Append("refreshToken", response.Data.RefreshToken, CreateRefreshTokenCookieOptions());
 

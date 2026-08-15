@@ -69,7 +69,7 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task LoginAsync_WithNonExistentEmail_ThrowsNotFoundException()
+    public async Task LoginAsync_WithNonExistentEmail_ThrowsUnauthorizedException()
     {
         // Arrange
         _userRepoMock.Setup(r => r.GetByEmail(It.IsAny<string>(), _ct)).ReturnsAsync((DomainUser?)null);
@@ -78,7 +78,7 @@ public class AuthServiceTests
         Func<Task> act = () => CreateSut().LoginAsync("nobody@example.com", "pass", "device", "ip");
 
         // Assert
-        await act.Should().ThrowAsync<NotFoundException>().WithMessage("User not found");
+        await act.Should().ThrowAsync<UnauthorizedException>().WithMessage("Invalid credentials");
     }
 
     [Fact]

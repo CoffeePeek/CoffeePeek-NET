@@ -32,6 +32,18 @@ public static class MapsterConfiguration
                     src.PhotoMetadata!.StorageKey)
                 : null);
 
+        config.NewConfig<User, PublicUserProfileResponse>()
+            .Map(d => d.UserName, s => s.Username.Value)
+            .Map(dest => dest.ReviewCount, src => src.Statistics.ReviewCount)
+            .Map(dest => dest.CheckInCount, src => src.Statistics.CheckInCount)
+            .Map(dest => dest.AddedShopsCount, src => src.Statistics.AddedShopsCount)
+            .Map(dest => dest.AvatarUrl, src => src.PhotoMetadata != null
+                ? MediaStorageUrlBuilder.BuildPublicUrl(
+                    mediaOptions.PublicEndpoint,
+                    mediaOptions.AvatarBucketName,
+                    src.PhotoMetadata!.StorageKey)
+                : null);
+
         return config;
     }
 }

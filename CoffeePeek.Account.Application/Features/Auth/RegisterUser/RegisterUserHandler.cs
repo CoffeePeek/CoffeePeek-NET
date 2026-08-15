@@ -20,8 +20,11 @@ public static class RegisterUserHandler
         IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
-        if (emailExistenceFilter.MightExist(request.Email) || !await userRepository.IsEmailUnique(request.Email, ct))
+        if (!await userRepository.IsEmailUnique(request.Email, ct))
             throw new DomainException("Email already exists");
+
+        if (!await userRepository.IsUsernameUnique(request.UserName, ct))
+            throw new DomainException("Username already exists");
 
         if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Length < 8)
             throw new DomainException("Password must be at least 8 characters long");

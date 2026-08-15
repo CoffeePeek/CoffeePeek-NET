@@ -30,6 +30,7 @@ public class RegisterUserHandlerTests
     public RegisterUserHandlerTests()
     {
         _queryRepoMock.Setup(r => r.IsEmailUnique(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _queryRepoMock.Setup(r => r.IsUsernameUnique(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _roleRepoMock.Setup(r => r.GetRoleAsync(RoleConsts.User)).ReturnsAsync(Role.Create(RoleConsts.User));
         _hasherMock.Setup(h => h.HashPassword(It.IsAny<string>())).Returns("hashed_password");
     }
@@ -59,13 +60,22 @@ public class RegisterUserHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenEmailInBloomFilter_ThrowsDomainException()
+    public async Task Handle_WhenEmailInBloomFilter_StillChecksUniquenessAndSucceeds()
     {
         const string email = "taken@example.com";
         _filter.Add(email);
-        Func<Task> act = () => RegisterUserHandler.Handle(CreateCommand(email: email), _queryRepoMock.Object, _roleRepoMock.Object, _hasherMock.Object, _filter, _unitOfWorkMock.Object, _ct);
-        await act.Should().ThrowAsync<DomainException>().WithMessage("Email already exists");
-        _queryRepoMock.Verify(r => r.IsEmailUnique(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        var (response, @event) = await RegisterUserHandler.Handle(CreateCommand(email: email), _queryRepoMock.Object, _roleRepoMock.Object, _hasherMock.Object, _filter, _unitOfWorkMock.Object, _ct);
+        response.IsSuccess.Should().BeTrue();
+        @event.Email.Should().Be(email);
+        _queryRepoMock.Verify(r => r.IsEmailUnique(email, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WhenUsernameNotUniqueInDb_ThrowsDomainException()
+    {
+        _queryRepoMock.Setup(r => r.IsUsernameUnique(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
+        Func<Task> act = () => RegisterUserHandler.Handle(CreateCommand(), _queryRepoMock.Object, _roleRepoMock.Object, _hasherMock.Object, _filter, _unitOfWorkMock.Object, _ct);
+        await act.Should().ThrowAsync<DomainException>().WithMessage("Username already exists");
     }
 
     [Fact]

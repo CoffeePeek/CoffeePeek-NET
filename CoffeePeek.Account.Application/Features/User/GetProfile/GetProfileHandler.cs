@@ -1,4 +1,5 @@
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
 
@@ -12,12 +13,11 @@ public class GetProfileHandler
 
         if (user == null)
         {
-            return Response<UserProfileResponse>.Error("User not found.");
+            throw new NotFoundException("User not found");
         }
-        
-        
+
         var result = mapper.Map<UserProfileResponse>(user);
-        
+
         return Response<UserProfileResponse>.Success(result);
     }
 }
