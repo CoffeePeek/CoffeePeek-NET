@@ -58,6 +58,7 @@ Browser event log (load / yes / no / skip / export) is shown in the sidebar and 
 7. Address present on 528/1576 — formatted address is optional; coords are enough to start.
 8. `ModerationShop` requires `UserId` and models owner submissions — import needs a separate `ShopImportCandidate`.
 9. Binary yes/no was wrong: good non-specialty shops still belong in the feed. Queue now labels Kind: Specialty / GoodCoffee / Cafe / ToGo / Reject.
+10. Location is not enough to judge coffee attention. OSM has **1 image** and Instagram on **193/1576** (76 in priority). Queue now exposes Instagram / Yandex org photos / Yandex images / website og:image preview. Do not review all 1500 — start with priority (~380).
 
 ## Results
 

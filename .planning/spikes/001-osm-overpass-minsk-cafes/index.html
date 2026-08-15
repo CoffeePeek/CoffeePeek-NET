@@ -16,10 +16,7 @@
       --togo: #8a7040;
       --no: #b24a3c;
       --skip: #6b5c4d;
-      --priority: #d4a017;
-      --specialty: #7ecf8a;
-      --noise: #c9844a;
-      --reject: #8a6a6a;
+      --link: #3d5a80;
     }
     * { box-sizing: border-box; }
     body {
@@ -28,10 +25,7 @@
       background: var(--bg);
       color: var(--ink);
     }
-    header {
-      padding: 20px 24px 8px;
-      border-bottom: 1px solid #3a3128;
-    }
+    header { padding: 20px 24px 8px; border-bottom: 1px solid #3a3128; }
     h1 { margin: 0 0 6px; font-size: 1.4rem; font-weight: 600; }
     .sub { color: var(--muted); font-size: 0.95rem; }
     .stats { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 24px; }
@@ -43,18 +37,34 @@
       color: var(--muted);
     }
     .chip.active { background: #3d3429; color: var(--ink); }
-    main { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; padding: 8px 24px 32px; }
-    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
-    .card {
+    main { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 20px; padding: 8px 24px 32px; }
+    @media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+    .card, .side {
       background: var(--card);
       border-radius: 16px;
-      padding: 24px;
-      min-height: 360px;
+      padding: 20px;
     }
-    .name { font-size: 1.8rem; margin: 0 0 8px; }
+    .name { font-size: 1.7rem; margin: 8px 0; }
     .meta { color: var(--muted); margin: 4px 0; }
+    .desc { margin: 10px 0; line-height: 1.4; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; margin: 12px 0; color: var(--muted); font-size: 0.92rem; }
+    .research { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+    .research a, .research button.linkish {
+      display: inline-block;
+      text-decoration: none;
+      background: var(--link);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 14px;
+      border: 0;
+      font: inherit;
+      cursor: pointer;
+    }
+    .research a.ig { background: #7a3e6b; }
+    .research a.maps { background: #8a5a2b; }
+    .research a.img { background: #5a4a7a; }
     .signals { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
-    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
     button {
       font: inherit;
       border: 0;
@@ -69,8 +79,17 @@
     .cat-to_go { background: var(--togo); }
     .cat-reject { background: var(--no); }
     .skip { background: var(--skip); }
-    iframe { width: 100%; height: 360px; border: 0; border-radius: 16px; }
-    .log { max-height: 220px; overflow: auto; font-size: 0.85rem; color: var(--muted); }
+    .preview {
+      width: 100%;
+      min-height: 180px;
+      max-height: 280px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #2a221c;
+    }
+    .preview-miss { color: var(--muted); font-size: 0.9rem; padding: 12px 0; }
+    iframe { width: 100%; height: 280px; border: 0; border-radius: 12px; }
+    .log { max-height: 160px; overflow: auto; font-size: 0.85rem; color: var(--muted); white-space: pre-wrap; }
     a { color: #e8c38a; }
     .empty { color: var(--muted); padding: 40px 0; }
   </style>
@@ -78,13 +97,15 @@
 <body>
   <header>
     <h1>Очередь импорта кофеен</h1>
-    <p class="sub">Spike 001 · OSM Минск · категория = пропуск в ленту. Specialty — один из типов, не единственный.</p>
+    <p class="sub">Смотри Instagram и фото на Яндексе с карточки. Не разбирай все 1500 — начни с «кофе-сигнал» (~380).</p>
   </header>
   <div class="stats" id="stats"></div>
   <main>
     <section class="card" id="card"></section>
-    <aside>
-      <iframe id="map" title="OSM map"></iframe>
+    <aside class="side">
+      <img class="preview" id="photo" alt="" hidden />
+      <p class="preview-miss" id="photoMiss">Превью сайта подгрузится, если есть своя страница.</p>
+      <iframe id="map" title="Yandex map"></iframe>
       <p class="log" id="log"></p>
     </aside>
   </main>
@@ -110,8 +131,8 @@
 
     function log(cat, msg, extra) {
       events.push({ t: new Date().toISOString(), cat, msg, extra });
-      const el = document.getElementById("log");
-      el.textContent = events.slice(-12).map(e => `${e.t.slice(11,19)} ${e.cat} ${e.msg}`).join("\n");
+      document.getElementById("log").textContent =
+        events.slice(-12).map(e => `${e.t.slice(11,19)} ${e.cat} ${e.msg}`).join("\n");
     }
 
     function normalizeDecision(value) {
@@ -131,12 +152,17 @@
     function saveDecisions(d) { localStorage.setItem(KEY, JSON.stringify(d)); }
 
     let data = null;
-    let filter = "likely_specialty";
+    let filter = "priority";
     let index = 0;
     let decisions = loadDecisions();
+    let previewToken = 0;
 
     function queue() {
       return data.candidates.filter(c => c.bucket === filter && !decisions[c.externalId]);
+    }
+
+    function fact(label, value) {
+      return value ? `<div><strong>${label}</strong> ${value}</div>` : "";
     }
 
     function renderStats() {
@@ -144,13 +170,13 @@
       const decided = Object.values(decisions);
       const catCounts = Object.fromEntries(CATEGORIES.map(c => [c.id, decided.filter(x => x === c.id).length]));
       const inFeed = decided.filter(x => IN_FEED.includes(x)).length;
-      const html = BUCKET_ORDER.map(b =>
-        `<button class="chip ${filter===b?"active":""}" data-b="${b}">${LABELS[b]} · ${counts[b]||0}</button>`
-      ).join("") + CATEGORIES.map(c =>
-        `<span class="chip">${c.label} · ${catCounts[c.id]||0}</span>`
-      ).join("") + `<span class="chip">в ленте ${inFeed}</span>
-        <button class="chip" id="export">экспорт JSON</button>`;
-      document.getElementById("stats").innerHTML = html;
+      document.getElementById("stats").innerHTML =
+        BUCKET_ORDER.map(b =>
+          `<button class="chip ${filter===b?"active":""}" data-b="${b}">${LABELS[b]} · ${counts[b]||0}</button>`
+        ).join("") + CATEGORIES.map(c =>
+          `<span class="chip">${c.label} · ${catCounts[c.id]||0}</span>`
+        ).join("") + `<span class="chip">в ленте ${inFeed}</span>
+          <button class="chip" id="export">экспорт JSON</button>`;
       document.querySelectorAll("[data-b]").forEach(btn => {
         btn.onclick = () => { filter = btn.dataset.b; index = 0; render(); };
       });
@@ -160,16 +186,66 @@
         a.href = URL.createObjectURL(blob);
         a.download = "import-decisions.json";
         a.click();
-        log("export", `inFeed=${inFeed} reject=${catCounts.reject||0}`);
+        log("export", `inFeed=${inFeed}`);
       };
+    }
+
+    function researchButtons(c) {
+      const L = c.links || {};
+      const parts = [];
+      if (L.instagram) parts.push(`<a class="ig" href="${L.instagram}" target="_blank" rel="noreferrer">Instagram</a>`);
+      else if (L.instagramSearch) parts.push(`<a class="ig" href="${L.instagramSearch}" target="_blank" rel="noreferrer">Найти Instagram</a>`);
+      if (L.yandexMaps) parts.push(`<a class="maps" href="${L.yandexMaps}" target="_blank" rel="noreferrer">Яндекс · фото карточки</a>`);
+      if (L.yandexImages) parts.push(`<a class="img" href="${L.yandexImages}" target="_blank" rel="noreferrer">Яндекс · картинки</a>`);
+      if (L.website && !(L.instagram && L.website.includes("instagram"))) {
+        parts.push(`<a href="${L.website}" target="_blank" rel="noreferrer">Сайт</a>`);
+      }
+      if (c.facebook) parts.push(`<a href="${c.facebook}" target="_blank" rel="noreferrer">Facebook</a>`);
+      if (c.vk) parts.push(`<a href="${c.vk}" target="_blank" rel="noreferrer">VK</a>`);
+      if (L.osm) parts.push(`<a href="${L.osm}" target="_blank" rel="noreferrer">OSM</a>`);
+      return parts.join("");
+    }
+
+    function loadPreview(c) {
+      const photo = document.getElementById("photo");
+      const miss = document.getElementById("photoMiss");
+      photo.hidden = true;
+      photo.removeAttribute("src");
+      const token = ++previewToken;
+      const url = c.website && !String(c.website).includes("instagram") ? c.website : null;
+      if (!url) {
+        miss.textContent = c.instagram
+          ? "Фото в OSM нет. Открой Instagram — там видно, насколько место про кофе."
+          : "Фото в OSM почти никогда нет. Открой Яндекс · фото карточки или картинки.";
+        return;
+      }
+      miss.textContent = "Гружу превью сайта…";
+      fetch("/preview?url=" + encodeURIComponent(url))
+        .then(r => r.json())
+        .then(p => {
+          if (token !== previewToken) return;
+          if (p.ok && p.image) {
+            photo.src = p.image;
+            photo.hidden = false;
+            miss.textContent = [p.title, p.description].filter(Boolean).join(" — ");
+            log("preview", p.title || "image");
+          } else {
+            miss.textContent = "Сайт не отдал картинку. Смотри Instagram / Яндекс.";
+          }
+        })
+        .catch(() => {
+          if (token !== previewToken) return;
+          miss.textContent = "Превью не загрузилось. Смотри Instagram / Яндекс.";
+        });
     }
 
     function renderCard() {
       const q = queue();
       const card = document.getElementById("card");
       if (!q.length) {
-        card.innerHTML = `<p class="empty">В бакете «${LABELS[filter]}» всё разобрано. Выбери другой фильтр.</p>`;
+        card.innerHTML = `<p class="empty">В бакете «${LABELS[filter]}» всё разобрано. Возьми следующий — все 1500 смотреть не нужно.</p>`;
         document.getElementById("map").src = "";
+        document.getElementById("photo").hidden = true;
         return;
       }
       if (index >= q.length) index = 0;
@@ -177,23 +253,32 @@
       card.innerHTML = `
         <p class="chip">${LABELS[c.bucket]} · ${index+1}/${q.length}</p>
         <h2 class="name">${c.name}</h2>
-        <p class="meta">${c.address || "адреса в OSM нет"}</p>
-        <p class="meta">${[c.amenity, c.shop, c.cuisine, c.brand].filter(Boolean).join(" · ")}</p>
-        <p class="meta">${c.openingHours || "часы не указаны"}</p>
-        <p class="meta">${c.phone || ""} ${c.website ? `<a href="${c.website}" target="_blank">сайт</a>` : ""}</p>
+        ${c.description ? `<p class="desc">${c.description}</p>` : ""}
+        <div class="facts">
+          ${fact("адрес", c.address || "нет в OSM")}
+          ${fact("кухня", [c.cuisine, c.shop, c.brand].filter(Boolean).join(" · "))}
+          ${fact("часы", c.openingHours)}
+          ${fact("телефон", c.phone)}
+          ${fact("терраса", c.outdoorSeating)}
+          ${fact("с собой", c.takeaway)}
+          ${fact("wifi", c.internetAccess)}
+        </div>
+        <div class="research">${researchButtons(c)}</div>
         <div class="signals">${(c.signals||[]).map(s => `<span class="chip">${s}</span>`).join("")}</div>
-        <p class="meta"><a href="https://www.openstreetmap.org/${c.externalId}" target="_blank">${c.externalId}</a></p>
         <div class="actions">
           ${CATEGORIES.map(cat => `<button class="cat-${cat.id}" data-cat="${cat.id}">${cat.label}</button>`).join("")}
           <button class="skip" id="skip">Позже</button>
         </div>
       `;
-      document.getElementById("map").src =
-        `https://www.openstreetmap.org/export/embed.html?bbox=${c.lon-0.01},${c.lat-0.006},${c.lon+0.01},${c.lat+0.006}&layer=mapnik&marker=${c.lat},${c.lon}`;
+      const lon = c.lon, lat = c.lat;
+      document.getElementById("map").src = lon && lat
+        ? `https://yandex.ru/map-widget/v1/?ll=${lon},${lat}&z=16&pt=${lon},${lat},pm2rdm`
+        : "";
       card.querySelectorAll("[data-cat]").forEach(btn => {
         btn.onclick = () => decide(c, btn.dataset.cat);
       });
       document.getElementById("skip").onclick = () => { index++; render(); log("skip", c.name); };
+      loadPreview(c);
     }
 
     function decide(c, verdict) {
@@ -210,13 +295,12 @@
       .then(payload => {
         data = payload;
         log("load", `${payload.total} кандидатов`);
-        const first = BUCKET_ORDER.find(b => (payload.counts[b] || 0) > 0) || "review";
-        filter = first;
+        filter = (payload.counts.priority || 0) > 0 ? "priority" : "likely_specialty";
         render();
       })
       .catch(err => {
         document.getElementById("card").innerHTML =
-          `<p class="empty">Не удалось загрузить candidates-ui.json. Запусти <code>python3 serve.py</code> из этой папки.</p>`;
+          `<p class="empty">Не удалось загрузить candidates-ui.json. Запусти <code>python3 serve.py</code>.</p>`;
         log("error", String(err));
       });
   </script>

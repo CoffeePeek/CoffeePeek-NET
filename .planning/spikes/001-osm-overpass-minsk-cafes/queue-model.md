@@ -60,6 +60,18 @@ Unique index: `(Source, ExternalId)`.
 | website / phone / hours | partial | copy if present |
 | specialty? | almost never tagged | **human decision** |
 
+## Research payload on the review card
+
+The human decision is “how much attention they pay to coffee”. OSM cannot answer that. The card must open the same places the curator already uses:
+
+- Instagram (`contact:instagram` or search fallback)
+- Yandex Maps org card (photos) — **link out**, do not scrape/store
+- Yandex Images by name
+- Website `og:image` preview (lazy, optional)
+- OSM description / cuisine / hours
+
+Do not expect to label 1576 cards. Default queue = `priority` (~380). Autofilter comes after ~50–100 labeled dossiers.
+
 ## Do not
 
 - Reuse `ModerationShop.Create(userId, ...)` for imports.

@@ -79,6 +79,35 @@ def coords(el: dict) -> tuple[float | None, float | None]:
     return center.get("lat"), center.get("lon")
 
 
+def instagram_url(tags: dict, website: str | None) -> str | None:
+    raw = tags.get("contact:instagram") or tags.get("instagram")
+    if not raw and website and "instagram.com" in website.lower():
+        raw = website
+    if not raw:
+        return None
+    raw = raw.strip().replace("instgram.com", "instagram.com")
+    if raw.startswith("http"):
+        return raw
+    return f"https://www.instagram.com/{raw.lstrip('@')}/"
+
+
+def research_links(name: str, lat: float | None, lon: float | None, instagram: str | None, website: str | None) -> dict:
+    q = urllib.parse.quote(f"{name} Минск")
+    q_coffee = urllib.parse.quote(f"{name} Минск кофейня")
+    ll = f"{lon},{lat}" if lat is not None and lon is not None else ""
+    maps = f"https://yandex.by/maps/?text={q}&z=17"
+    if ll:
+        maps += f"&ll={ll}"
+    return {
+        "instagram": instagram,
+        "instagramSearch": None if instagram else f"https://www.google.com/search?q={urllib.parse.quote(name + ' Минск instagram')}",
+        "website": website,
+        "yandexMaps": maps,
+        "yandexImages": f"https://yandex.by/images/search?text={q_coffee}",
+        "osm": None,
+    }
+
+
 def address(tags: dict) -> str | None:
     parts = [
         tags.get("addr:street"),
@@ -152,6 +181,10 @@ def normalize(raw: dict) -> dict:
         lat, lon = coords(el)
         bucket, reasons = classify(tags)
         name = tags.get("name") or tags.get("name:ru") or tags.get("name:en") or "(unnamed)"
+        website = tags.get("website") or tags.get("contact:website")
+        instagram = instagram_url(tags, website)
+        links = research_links(name, lat, lon, instagram, website)
+        links["osm"] = f"https://www.openstreetmap.org/{key}"
         candidates.append(
             {
                 "source": "osm",
@@ -161,13 +194,22 @@ def normalize(raw: dict) -> dict:
                 "lon": lon,
                 "address": address(tags),
                 "phone": tags.get("phone") or tags.get("contact:phone"),
-                "website": tags.get("website") or tags.get("contact:website"),
+                "website": website,
+                "instagram": instagram,
+                "facebook": tags.get("contact:facebook") or tags.get("facebook"),
+                "vk": tags.get("contact:vk"),
+                "description": tags.get("description") or tags.get("description:ru"),
                 "openingHours": tags.get("opening_hours"),
                 "amenity": tags.get("amenity"),
                 "shop": tags.get("shop"),
                 "cuisine": tags.get("cuisine"),
                 "brand": tags.get("brand"),
                 "operator": tags.get("operator"),
+                "outdoorSeating": tags.get("outdoor_seating"),
+                "indoorSeating": tags.get("indoor_seating"),
+                "takeaway": tags.get("takeaway"),
+                "internetAccess": tags.get("internet_access"),
+                "links": links,
                 "bucket": bucket,
                 "signals": reasons,
                 "tags": tags,
@@ -209,8 +251,10 @@ def main() -> None:
         "candidates": [
             {k: c[k] for k in (
                 "externalId", "name", "lat", "lon", "address", "phone",
-                "website", "openingHours", "amenity", "shop", "cuisine",
-                "brand", "bucket", "signals",
+                "website", "instagram", "facebook", "vk", "description",
+                "openingHours", "amenity", "shop", "cuisine", "brand",
+                "outdoorSeating", "indoorSeating", "takeaway", "internetAccess",
+                "links", "bucket", "signals",
             )}
             for c in payload["candidates"]
         ],
