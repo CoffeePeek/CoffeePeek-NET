@@ -47,6 +47,7 @@ public class ShopImportCandidateConfiguration : IEntityTypeConfiguration<ShopImp
         entity.HasIndex(e => e.QueueStatus);
         entity.HasIndex(e => e.CollectorBucket);
         entity.HasIndex(e => e.CoffeeFocus);
+        entity.HasIndex(e => e.RejectReason);
     }
 
     private static ValueComparer<List<string>> StringListComparer() =>

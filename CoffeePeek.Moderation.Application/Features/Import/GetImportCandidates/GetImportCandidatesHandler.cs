@@ -4,6 +4,7 @@ using CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
 using CoffeePeek.Shared.Kernel.Response;
 using ContractBucket = CoffeePeek.Contract.Enums.ImportCollectorBucket;
 using ContractStatus = CoffeePeek.Contract.Enums.ImportQueueStatus;
+using ContractRejectReason = CoffeePeek.Contract.Enums.ImportRejectReason;
 
 namespace CoffeePeek.Moderation.Application.Features.Import.GetImportCandidates;
 
@@ -11,6 +12,7 @@ public record GetImportCandidatesQuery(
     ContractStatus? Status = ContractStatus.Pending,
     ContractBucket? Bucket = null,
     CoffeeFocus? Focus = null,
+    ContractRejectReason? RejectReason = null,
     string? Search = null,
     int Page = 1,
     int PageSize = 20);
@@ -37,6 +39,7 @@ public static class GetImportCandidatesHandler
             query.Status is null ? null : ShopImportCandidateMapper.ToDomain(query.Status.Value),
             query.Bucket is null ? null : ShopImportCandidateMapper.ToDomain(query.Bucket.Value),
             query.Focus is null ? null : ShopImportCandidateMapper.ToDomain(query.Focus.Value),
+            query.RejectReason is null ? null : ShopImportCandidateMapper.ToDomain(query.RejectReason.Value),
             query.Search,
             excludeStale,
             page,

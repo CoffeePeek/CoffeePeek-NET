@@ -15,6 +15,7 @@ public interface IShopImportCandidateRepository
         ImportQueueStatus? status,
         ImportCollectorBucket? bucket,
         ImportCoffeeFocus? focus,
+        ImportRejectReason? rejectReason,
         string? search,
         bool excludeStale,
         int page,
@@ -30,4 +31,11 @@ public sealed record ImportCandidateStats(
     int Published,
     int Rejected,
     IReadOnlyDictionary<ImportCoffeeFocus, int> ByFocus,
-    IReadOnlyDictionary<ImportCollectorBucket, int> ByBucket);
+    IReadOnlyDictionary<ImportCollectorBucket, int> ByBucket,
+    ImportRejectedByReasonStats RejectedByReason);
+
+public sealed record ImportRejectedByReasonStats(
+    int Closed,
+    int Invalid,
+    int NotCoffee,
+    int Unspecified);

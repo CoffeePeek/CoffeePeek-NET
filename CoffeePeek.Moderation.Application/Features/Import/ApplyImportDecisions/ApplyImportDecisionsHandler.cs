@@ -65,7 +65,8 @@ public static class ApplyImportDecisionsHandler
                     mapped.Value.TagSlugs,
                     command.ReviewerUserId,
                     command.OverrideClosed,
-                    now);
+                    now,
+                    mapped.Value.RejectReason);
             }
             catch (DomainException)
             {

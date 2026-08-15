@@ -30,4 +30,5 @@ public record ShopImportCandidateDto(
     Guid? ReviewedByUserId,
     DateTimeOffset? ReviewedAtUtc,
     Guid? ResultingShopId,
+    ImportRejectReason? RejectReason,
     ImportResearchLinksDto Research);

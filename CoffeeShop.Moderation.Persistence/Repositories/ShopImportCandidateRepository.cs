@@ -30,6 +30,7 @@ public class ShopImportCandidateRepository(ModerationDbContext dbContext) : ISho
         ImportQueueStatus? status,
         ImportCollectorBucket? bucket,
         ImportCoffeeFocus? focus,
+        ImportRejectReason? rejectReason,
         string? search,
         bool excludeStale,
         int page,
@@ -48,6 +49,9 @@ public class ShopImportCandidateRepository(ModerationDbContext dbContext) : ISho
 
         if (focus.HasValue)
             query = query.Where(c => c.CoffeeFocus == focus.Value);
+
+        if (rejectReason.HasValue)
+            query = query.Where(c => c.RejectReason == rejectReason.Value);
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -73,18 +77,25 @@ public class ShopImportCandidateRepository(ModerationDbContext dbContext) : ISho
     {
         var rows = await dbContext.ShopImportCandidates
             .AsNoTracking()
-            .Select(c => new { c.QueueStatus, c.CoffeeFocus, c.CollectorBucket })
+            .Select(c => new { c.QueueStatus, c.CoffeeFocus, c.CollectorBucket, c.RejectReason })
             .ToListAsync(ct);
+
+        var rejected = rows.Where(r => r.QueueStatus == ImportQueueStatus.Rejected).ToList();
 
         return new ImportCandidateStats(
             rows.Count(r => r.QueueStatus == ImportQueueStatus.Pending),
             rows.Count(r => r.QueueStatus == ImportQueueStatus.Skipped),
             rows.Count(r => r.QueueStatus == ImportQueueStatus.Published),
-            rows.Count(r => r.QueueStatus == ImportQueueStatus.Rejected),
+            rejected.Count,
             rows.Where(r => r.CoffeeFocus.HasValue)
                 .GroupBy(r => r.CoffeeFocus!.Value)
                 .ToDictionary(g => g.Key, g => g.Count()),
             rows.GroupBy(r => r.CollectorBucket)
-                .ToDictionary(g => g.Key, g => g.Count()));
+                .ToDictionary(g => g.Key, g => g.Count()),
+            new ImportRejectedByReasonStats(
+                rejected.Count(r => r.RejectReason == ImportRejectReason.Closed),
+                rejected.Count(r => r.RejectReason == ImportRejectReason.Invalid),
+                rejected.Count(r => r.RejectReason == ImportRejectReason.NotCoffee),
+                rejected.Count(r => r.RejectReason is null)));
     }
 }

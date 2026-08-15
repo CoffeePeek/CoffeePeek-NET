@@ -5,6 +5,8 @@ using DomainBucket = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidate
 using DomainFocus = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportCoffeeFocus;
 using DomainGoogle = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportGoogleBusinessStatus;
 using DomainStatus = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportQueueStatus;
+using DomainRejectReason = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportRejectReason;
+using ContractRejectReason = CoffeePeek.Contract.Enums.ImportRejectReason;
 
 namespace CoffeePeek.Moderation.Application.Features.Import;
 
@@ -43,6 +45,9 @@ public static class ShopImportCandidateMapper
             candidate.ReviewedByUserId,
             candidate.ReviewedAtUtc,
             candidate.ResultingShopId,
+            candidate.RejectReason is null
+                ? null
+                : (ContractRejectReason)(int)candidate.RejectReason.Value,
             new ImportResearchLinksDto(
                 links.Instagram,
                 links.InstagramSearch,
@@ -57,4 +62,7 @@ public static class ShopImportCandidateMapper
     public static DomainFocus ToDomain(CoffeeFocus focus) => (DomainFocus)(int)focus;
 
     public static DomainBucket ToDomain(Contract.Enums.ImportCollectorBucket bucket) => (DomainBucket)(int)bucket;
+
+    public static DomainRejectReason ToDomain(ContractRejectReason reason) =>
+        (DomainRejectReason)(int)reason;
 }

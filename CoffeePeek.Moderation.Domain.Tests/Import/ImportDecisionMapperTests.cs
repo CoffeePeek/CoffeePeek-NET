@@ -36,13 +36,28 @@ public class ImportDecisionMapperTests
     [Theory]
     [InlineData("no")]
     [InlineData("reject")]
-    public void FromSpike_RejectKeys_MapToRejected(string raw)
+    [InlineData("invalid")]
+    public void FromSpike_RejectKeys_MapToRejectedInvalid(string raw)
     {
         var mapped = ImportDecisionMapper.FromSpike(raw);
 
         mapped.Should().NotBeNull();
         mapped!.Value.Status.Should().Be(ImportQueueStatus.Rejected);
         mapped.Value.Focus.Should().BeNull();
+        mapped.Value.RejectReason.Should().Be(ImportRejectReason.Invalid);
+    }
+
+    [Theory]
+    [InlineData("closed", ImportRejectReason.Closed)]
+    [InlineData("not_coffee", ImportRejectReason.NotCoffee)]
+    [InlineData("notcoffee", ImportRejectReason.NotCoffee)]
+    public void FromSpike_TypedRejectKeys_MapReason(string raw, ImportRejectReason reason)
+    {
+        var mapped = ImportDecisionMapper.FromSpike(raw);
+
+        mapped.Should().NotBeNull();
+        mapped!.Value.Status.Should().Be(ImportQueueStatus.Rejected);
+        mapped.Value.RejectReason.Should().Be(reason);
     }
 
     [Theory]

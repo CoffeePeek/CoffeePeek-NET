@@ -7,4 +7,11 @@ public record ImportStatsDto(
     int Rejected,
     int InFeed,
     IReadOnlyDictionary<string, int> ByFocus,
-    IReadOnlyDictionary<string, int> ByBucket);
+    IReadOnlyDictionary<string, int> ByBucket,
+    ImportRejectedByReasonDto RejectedByReason);
+
+public record ImportRejectedByReasonDto(
+    int Closed,
+    int Invalid,
+    int NotCoffee,
+    int Unspecified);

@@ -104,14 +104,53 @@ public class ShopImportCandidateTests
     }
 
     [Fact]
+    public void Decide_RejectedWithoutReason_Throws()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Varka"), Now);
+
+        var act = () => candidate.Decide(
+            ImportQueueStatus.Rejected, null, [], Reviewer, false, Now, rejectReason: null);
+
+        act.Should().Throw<DomainException>().WithMessage("*Reject reason*");
+    }
+
+    [Fact]
+    public void Decide_RejectedWithReason_SetsReason()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Varka"), Now);
+
+        candidate.Decide(
+            ImportQueueStatus.Rejected, null, [], Reviewer, false, Now, ImportRejectReason.NotCoffee);
+
+        candidate.QueueStatus.Should().Be(ImportQueueStatus.Rejected);
+        candidate.RejectReason.Should().Be(ImportRejectReason.NotCoffee);
+    }
+
+    [Fact]
+    public void Decide_Published_ClearsRejectReason()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Varka"), Now);
+        candidate.Decide(
+            ImportQueueStatus.Rejected, null, [], Reviewer, false, Now, ImportRejectReason.Closed);
+
+        candidate.Decide(
+            ImportQueueStatus.Published, ImportCoffeeFocus.Cafe, [], Reviewer, false, Now);
+
+        candidate.QueueStatus.Should().Be(ImportQueueStatus.Published);
+        candidate.RejectReason.Should().BeNull();
+    }
+
+    [Fact]
     public void RefreshFromOsm_DoesNotResurrectRejected()
     {
         var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Varka"), Now);
-        candidate.Decide(ImportQueueStatus.Rejected, null, [], Reviewer, false, Now);
+        candidate.Decide(
+            ImportQueueStatus.Rejected, null, [], Reviewer, false, Now, ImportRejectReason.Invalid);
 
         candidate.RefreshFromOsm(Snapshot("node/1", "Varka Coffee"), Now.AddDays(1));
 
         candidate.QueueStatus.Should().Be(ImportQueueStatus.Rejected);
+        candidate.RejectReason.Should().Be(ImportRejectReason.Invalid);
         candidate.Name.Should().Be("Varka Coffee");
     }
 

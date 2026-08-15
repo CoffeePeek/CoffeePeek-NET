@@ -5,7 +5,8 @@ namespace CoffeePeek.Moderation.Domain.Import;
 public readonly record struct MappedImportDecision(
     ImportQueueStatus Status,
     ImportCoffeeFocus? Focus,
-    IReadOnlyList<string> TagSlugs);
+    IReadOnlyList<string> TagSlugs,
+    ImportRejectReason? RejectReason = null);
 
 public static class ImportDecisionMapper
 {
@@ -24,8 +25,12 @@ public static class ImportDecisionMapper
                 ImportQueueStatus.Published, ImportCoffeeFocus.Cafe, []),
             "to_go" => new MappedImportDecision(
                 ImportQueueStatus.Published, ImportCoffeeFocus.CoffeeBar, ["to_go"]),
-            "no" or "reject" => new MappedImportDecision(
-                ImportQueueStatus.Rejected, null, []),
+            "no" or "reject" or "invalid" => new MappedImportDecision(
+                ImportQueueStatus.Rejected, null, [], ImportRejectReason.Invalid),
+            "closed" => new MappedImportDecision(
+                ImportQueueStatus.Rejected, null, [], ImportRejectReason.Closed),
+            "not_coffee" or "notcoffee" => new MappedImportDecision(
+                ImportQueueStatus.Rejected, null, [], ImportRejectReason.NotCoffee),
             "skip" or "later" => new MappedImportDecision(
                 ImportQueueStatus.Skipped, null, []),
             _ => null

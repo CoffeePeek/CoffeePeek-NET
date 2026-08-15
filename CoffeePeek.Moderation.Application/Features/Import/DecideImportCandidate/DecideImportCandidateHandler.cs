@@ -4,6 +4,7 @@ using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
 using ContractStatus = CoffeePeek.Contract.Enums.ImportQueueStatus;
+using ContractRejectReason = CoffeePeek.Contract.Enums.ImportRejectReason;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Response;
@@ -16,7 +17,8 @@ public record DecideImportCandidateCommand(
     CoffeeFocus? CoffeeFocus,
     string[]? TagSlugs,
     bool OverrideClosed,
-    Guid ReviewerUserId);
+    Guid ReviewerUserId,
+    ContractRejectReason? RejectReason = null);
 
 public static class DecideImportCandidateHandler
 {
@@ -38,7 +40,10 @@ public static class DecideImportCandidateHandler
                 command.TagSlugs,
                 command.ReviewerUserId,
                 command.OverrideClosed,
-                DateTimeOffset.UtcNow);
+                DateTimeOffset.UtcNow,
+                command.RejectReason is null
+                    ? null
+                    : ShopImportCandidateMapper.ToDomain(command.RejectReason.Value));
         }
         catch (DomainException ex)
         {

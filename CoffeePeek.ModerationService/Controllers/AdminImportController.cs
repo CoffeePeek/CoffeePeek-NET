@@ -68,13 +68,14 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
         [FromQuery] ImportQueueStatus? status = ImportQueueStatus.Pending,
         [FromQuery] ImportCollectorBucket? bucket = null,
         [FromQuery] CoffeeFocus? focus = null,
+        [FromQuery] ImportRejectReason? rejectReason = null,
         [FromQuery] string? search = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         CancellationToken ct = default)
     {
         var response = await bus.InvokeAsync<Response<GetImportCandidatesResponse>>(
-            new GetImportCandidatesQuery(status, bucket, focus, search, page, pageSize), ct);
+            new GetImportCandidatesQuery(status, bucket, focus, rejectReason, search, page, pageSize), ct);
 
         if (response.IsSuccess && response.Data is not null)
         {
@@ -131,7 +132,8 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
             request.CoffeeFocus,
             request.TagSlugs,
             request.OverrideClosed,
-            userContext.GetUserIdOrThrow());
+            userContext.GetUserIdOrThrow(),
+            request.RejectReason);
 
         var response = await bus.InvokeAsync<Response<ShopImportCandidateDto>>(command, ct);
         if (response.IsSuccess)
@@ -157,4 +159,5 @@ public record DecideImportCandidateRequest(
     ImportQueueStatus Status,
     CoffeeFocus? CoffeeFocus,
     string[]? TagSlugs,
-    bool OverrideClosed = false);
+    bool OverrideClosed = false,
+    ImportRejectReason? RejectReason = null);

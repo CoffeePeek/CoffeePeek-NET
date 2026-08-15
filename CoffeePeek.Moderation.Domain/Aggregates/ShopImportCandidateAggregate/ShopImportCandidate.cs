@@ -45,6 +45,7 @@ public sealed class ShopImportCandidate : Entity<Guid>
     public Guid? ReviewedByUserId { get; private set; }
     public DateTimeOffset? ReviewedAtUtc { get; private set; }
     public Guid? ResultingShopId { get; private set; }
+    public ImportRejectReason? RejectReason { get; private set; }
 
     // ReSharper disable once UnusedMember.Local
     private ShopImportCandidate()
@@ -96,10 +97,17 @@ public sealed class ShopImportCandidate : Entity<Guid>
         IReadOnlyList<string>? tagSlugs,
         Guid reviewerId,
         bool overrideClosed,
-        DateTimeOffset now)
+        DateTimeOffset now,
+        ImportRejectReason? rejectReason = null)
     {
         if (reviewerId == Guid.Empty)
             throw new DomainException("Reviewer is required.");
+
+        if (status == ImportQueueStatus.Rejected)
+        {
+            if (rejectReason is null)
+                throw new DomainException("Reject reason is required when rejecting a candidate.");
+        }
 
         if (status == ImportQueueStatus.Published)
         {
@@ -117,6 +125,7 @@ public sealed class ShopImportCandidate : Entity<Guid>
         QueueStatus = status;
         CoffeeFocus = status == ImportQueueStatus.Published ? focus : focus ?? CoffeeFocus;
         TagSlugs = NormalizeTagSlugs(tagSlugs, CoffeeFocus);
+        RejectReason = status == ImportQueueStatus.Rejected ? rejectReason : null;
         ReviewedByUserId = reviewerId;
         ReviewedAtUtc = now;
     }

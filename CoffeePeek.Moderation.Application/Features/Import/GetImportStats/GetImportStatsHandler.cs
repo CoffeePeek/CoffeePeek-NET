@@ -21,6 +21,11 @@ public static class GetImportStatsHandler
             stats.Rejected,
             stats.Published,
             stats.ByFocus.ToDictionary(kv => kv.Key.ToString(), kv => kv.Value),
-            stats.ByBucket.ToDictionary(kv => kv.Key.ToString(), kv => kv.Value)));
+            stats.ByBucket.ToDictionary(kv => kv.Key.ToString(), kv => kv.Value),
+            new ImportRejectedByReasonDto(
+                stats.RejectedByReason.Closed,
+                stats.RejectedByReason.Invalid,
+                stats.RejectedByReason.NotCoffee,
+                stats.RejectedByReason.Unspecified)));
     }
 }
