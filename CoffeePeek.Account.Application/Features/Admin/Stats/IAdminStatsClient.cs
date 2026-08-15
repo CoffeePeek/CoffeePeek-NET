@@ -16,5 +16,6 @@ public sealed record AdminPlatformStatsSnapshot(
     int ImportPublished,
     int ImportRejected,
     int ImportSkipped,
+    int ImportInFeed,
     bool ShopsAvailable,
     bool ModerationAvailable);

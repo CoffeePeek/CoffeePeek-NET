@@ -10,11 +10,11 @@ public class ModerationShopApprovedAccountHandler(
     IUnitOfWork unitOfWork,
     ILogger<ModerationShopApprovedAccountHandler> logger)
 {
-    public async Task Handle(ModerationShopApprovedEvent message)
+    public async Task Handle(ModerationShopApprovedEvent message, CancellationToken ct)
     {
         logger.LogInformation("Received ModerationShopApprovedEvent for UserId: {UserId}", message.UserId);
 
-        var user = await userRepository.GetById(message.UserId)
+        var user = await userRepository.GetById(message.UserId, ct)
                    ?? throw new InvalidOperationException("User not found");
 
         user.Statistics.IncrementAddedShops();
@@ -22,6 +22,6 @@ public class ModerationShopApprovedAccountHandler(
         logger.LogInformation("Updated UserStatistics for UserId: {UserId}. New AddedShopsCount: {AddedShopsCount}",
             message.UserId, user.Statistics.AddedShopsCount);
 
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

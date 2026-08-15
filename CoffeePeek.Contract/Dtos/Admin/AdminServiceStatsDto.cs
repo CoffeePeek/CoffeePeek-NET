@@ -10,4 +10,5 @@ public record AdminServiceStatsDto(
     int ImportPending = 0,
     int ImportPublished = 0,
     int ImportRejected = 0,
-    int ImportSkipped = 0);
+    int ImportSkipped = 0,
+    int ImportInFeed = 0);

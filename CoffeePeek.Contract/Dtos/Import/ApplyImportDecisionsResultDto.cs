@@ -6,4 +6,5 @@ public record ApplyImportDecisionsResultDto(
     int Rejected,
     int Skipped,
     int Unknown,
-    int Missing);
+    int Missing,
+    int Failed = 0);

@@ -40,6 +40,7 @@ public static class ApplyImportDecisionsHandler
         var skipped = 0;
         var unknown = 0;
         var missing = 0;
+        var failed = 0;
         var publishItems = new List<ImportCandidatePublishedItem>();
 
         foreach (var (externalId, raw) in decisions)
@@ -70,7 +71,7 @@ public static class ApplyImportDecisionsHandler
             }
             catch (DomainException)
             {
-                unknown++;
+                failed++;
                 continue;
             }
 
@@ -98,7 +99,7 @@ public static class ApplyImportDecisionsHandler
             : new ImportCandidatePublishedEvent(publishItems);
 
         return (Response<ApplyImportDecisionsResultDto>.Success(
-            new ApplyImportDecisionsResultDto(applied, published, rejected, skipped, unknown, missing)), outbound);
+            new ApplyImportDecisionsResultDto(applied, published, rejected, skipped, unknown, missing, failed)), outbound);
     }
 
     private static Dictionary<string, string> ExtractDecisions(ApplyImportDecisionsCommand command)

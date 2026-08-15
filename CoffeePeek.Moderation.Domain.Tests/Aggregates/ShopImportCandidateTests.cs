@@ -141,6 +141,33 @@ public class ShopImportCandidateTests
     }
 
     [Fact]
+    public void Decide_AlreadyPublishedToCatalog_Throws()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Varka"), Now);
+        candidate.Decide(ImportQueueStatus.Published, ImportCoffeeFocus.Cafe, [], Reviewer, false, Now);
+        candidate.AttachPublishedShop(Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"));
+
+        var act = () => candidate.Decide(
+            ImportQueueStatus.Published, ImportCoffeeFocus.Cafe, [], Reviewer, false, Now);
+
+        act.Should().Throw<DomainException>().WithMessage("Candidate is already published to the catalog.");
+    }
+
+    [Fact]
+    public void Decide_StuckPublishedWithoutShopId_AllowsRetry()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Varka"), Now);
+        candidate.Decide(ImportQueueStatus.Published, ImportCoffeeFocus.Cafe, [], Reviewer, false, Now);
+        candidate.ResultingShopId.Should().BeNull();
+
+        candidate.Decide(ImportQueueStatus.Published, ImportCoffeeFocus.Specialty, ["to_go"], Reviewer, false, Now);
+
+        candidate.QueueStatus.Should().Be(ImportQueueStatus.Published);
+        candidate.CoffeeFocus.Should().Be(ImportCoffeeFocus.Specialty);
+        candidate.ResultingShopId.Should().BeNull();
+    }
+
+    [Fact]
     public void RefreshFromOsm_DoesNotResurrectRejected()
     {
         var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Varka"), Now);
@@ -152,6 +179,42 @@ public class ShopImportCandidateTests
         candidate.QueueStatus.Should().Be(ImportQueueStatus.Rejected);
         candidate.RejectReason.Should().Be(ImportRejectReason.Invalid);
         candidate.Name.Should().Be("Varka Coffee");
+    }
+
+    [Fact]
+    public void RefreshFromOsm_DoesNotOverwritePublishedName()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Varka"), Now);
+        candidate.Decide(ImportQueueStatus.Published, ImportCoffeeFocus.Cafe, [], Reviewer, false, Now);
+        var address = candidate.Address;
+        var latitude = candidate.Latitude;
+        var longitude = candidate.Longitude;
+
+        candidate.RefreshFromOsm(Snapshot("node/1", "Varka Coffee"), Now.AddDays(1));
+
+        candidate.Name.Should().Be("Varka");
+        candidate.Address.Should().Be(address);
+        candidate.Latitude.Should().Be(latitude);
+        candidate.Longitude.Should().Be(longitude);
+        candidate.QueueStatus.Should().Be(ImportQueueStatus.Published);
+    }
+
+    [Fact]
+    public void RefreshFromOsm_DoesNotOverwriteSkippedName()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Varka"), Now);
+        candidate.Decide(ImportQueueStatus.Skipped, null, [], Reviewer, false, Now);
+        var address = candidate.Address;
+        var latitude = candidate.Latitude;
+        var longitude = candidate.Longitude;
+
+        candidate.RefreshFromOsm(Snapshot("node/1", "Varka Coffee"), Now.AddDays(1));
+
+        candidate.Name.Should().Be("Varka");
+        candidate.Address.Should().Be(address);
+        candidate.Latitude.Should().Be(latitude);
+        candidate.Longitude.Should().Be(longitude);
+        candidate.QueueStatus.Should().Be(ImportQueueStatus.Skipped);
     }
 
     [Fact]

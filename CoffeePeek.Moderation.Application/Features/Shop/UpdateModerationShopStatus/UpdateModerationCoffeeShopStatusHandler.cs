@@ -22,7 +22,7 @@ public static class UpdateModerationCoffeeShopStatusHandler
         var shop = await repository.GetByIdAsync(command.Id, ct);
 
         if (shop == null)
-            return (Response.Error("CoffeeShop not found"), null);
+            return (Response.Error(404, "CoffeeShop not found"), null);
 
         object? outboundEvent = null;
         string? auditComment = null;
@@ -30,12 +30,14 @@ public static class UpdateModerationCoffeeShopStatusHandler
 
         if (command.ModerationStatus == ModerationStatus.Approved)
         {
-            shop.Approve();
-            auditAction = ModerationAuditAction.Approved;
-            
-            outboundEvent = new ModerationShopApprovedEvent(
-                shop.UserId,
-                mapper.Map<ShopDto>(shop));
+            // Re-approve is a no-op: skip event + audit so consumers stay idempotent.
+            if (shop.Approve())
+            {
+                auditAction = ModerationAuditAction.Approved;
+                outboundEvent = new ModerationShopApprovedEvent(
+                    shop.UserId,
+                    mapper.Map<ShopDto>(shop));
+            }
         }
         else if (command.ModerationStatus == ModerationStatus.Rejected)
         {
@@ -45,6 +47,10 @@ public static class UpdateModerationCoffeeShopStatusHandler
             shop.Reject(rejectReason);
             auditAction = ModerationAuditAction.Rejected;
             auditComment = rejectReason;
+        }
+        else
+        {
+            return (Response.Error(400, "Moderation status can only be set to Approved or Rejected"), null);
         }
 
         if (auditAction.HasValue)

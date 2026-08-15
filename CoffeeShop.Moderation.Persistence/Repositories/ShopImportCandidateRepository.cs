@@ -75,27 +75,51 @@ public class ShopImportCandidateRepository(ModerationDbContext dbContext) : ISho
 
     public async Task<ImportCandidateStats> GetStatsAsync(CancellationToken ct = default)
     {
-        var rows = await dbContext.ShopImportCandidates
-            .AsNoTracking()
-            .Select(c => new { c.QueueStatus, c.CoffeeFocus, c.CollectorBucket, c.RejectReason })
+        var query = dbContext.ShopImportCandidates.AsNoTracking();
+
+        var statusCounts = await query
+            .GroupBy(c => c.QueueStatus)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
             .ToListAsync(ct);
 
-        var rejected = rows.Where(r => r.QueueStatus == ImportQueueStatus.Rejected).ToList();
+        int CountOf(ImportQueueStatus status) =>
+            statusCounts.FirstOrDefault(x => x.Status == status)?.Count ?? 0;
+
+        var inFeed = await query.CountAsync(c => c.ResultingShopId != null, ct);
+
+        var byFocusRows = await query
+            .Where(c => c.CoffeeFocus != null)
+            .GroupBy(c => c.CoffeeFocus)
+            .Select(g => new { Focus = g.Key, Count = g.Count() })
+            .ToListAsync(ct);
+
+        var byFocus = byFocusRows
+            .Where(x => x.Focus.HasValue)
+            .ToDictionary(x => x.Focus!.Value, x => x.Count);
+
+        var byBucket = await query
+            .GroupBy(c => c.CollectorBucket)
+            .Select(g => new { Bucket = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Bucket, x => x.Count, ct);
+
+        var rejectedReasons = await query
+            .Where(c => c.QueueStatus == ImportQueueStatus.Rejected)
+            .GroupBy(c => c.RejectReason)
+            .Select(g => new { Reason = g.Key, Count = g.Count() })
+            .ToListAsync(ct);
 
         return new ImportCandidateStats(
-            rows.Count(r => r.QueueStatus == ImportQueueStatus.Pending),
-            rows.Count(r => r.QueueStatus == ImportQueueStatus.Skipped),
-            rows.Count(r => r.QueueStatus == ImportQueueStatus.Published),
-            rejected.Count,
-            rows.Where(r => r.CoffeeFocus.HasValue)
-                .GroupBy(r => r.CoffeeFocus!.Value)
-                .ToDictionary(g => g.Key, g => g.Count()),
-            rows.GroupBy(r => r.CollectorBucket)
-                .ToDictionary(g => g.Key, g => g.Count()),
+            CountOf(ImportQueueStatus.Pending),
+            CountOf(ImportQueueStatus.Skipped),
+            CountOf(ImportQueueStatus.Published),
+            CountOf(ImportQueueStatus.Rejected),
+            inFeed,
+            byFocus,
+            byBucket,
             new ImportRejectedByReasonStats(
-                rejected.Count(r => r.RejectReason == ImportRejectReason.Closed),
-                rejected.Count(r => r.RejectReason == ImportRejectReason.Invalid),
-                rejected.Count(r => r.RejectReason == ImportRejectReason.NotCoffee),
-                rejected.Count(r => r.RejectReason is null)));
+                rejectedReasons.Where(r => r.Reason == ImportRejectReason.Closed).Sum(r => r.Count),
+                rejectedReasons.Where(r => r.Reason == ImportRejectReason.Invalid).Sum(r => r.Count),
+                rejectedReasons.Where(r => r.Reason == ImportRejectReason.NotCoffee).Sum(r => r.Count),
+                rejectedReasons.Where(r => r.Reason is null).Sum(r => r.Count)));
     }
 }

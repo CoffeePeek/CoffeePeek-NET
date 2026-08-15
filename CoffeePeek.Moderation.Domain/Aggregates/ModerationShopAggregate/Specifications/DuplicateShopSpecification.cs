@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using CoffeePeek.Moderation.Domain.Common.Enums;
 using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 
 namespace CoffeePeek.Moderation.Domain.Aggregates;
@@ -9,7 +10,8 @@ public class DuplicateShopSpecification : ISpecification<ModerationShop>
     {
         Criteria = shop =>
 #pragma warning disable CA1862
-            shop.Name.ToLower() == name.ToLower() && shop.Location!.Address.ToLower() == address.ToLower();
+            shop.Name.ToLower() == name.ToLower() && shop.Location!.Address.ToLower() == address.ToLower()
+            && shop.ModerationStatus != ModerationStatus.Rejected;
 #pragma warning restore CA1862
     }
 

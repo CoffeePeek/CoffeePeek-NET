@@ -47,6 +47,7 @@ public class AdminStatsClient(
             ImportPublished: moderation?.ImportPublished ?? 0,
             ImportRejected: moderation?.ImportRejected ?? 0,
             ImportSkipped: moderation?.ImportSkipped ?? 0,
+            ImportInFeed: moderation?.ImportInFeed ?? 0,
             ShopsAvailable: shops is not null,
             ModerationAvailable: moderation is not null);
     }

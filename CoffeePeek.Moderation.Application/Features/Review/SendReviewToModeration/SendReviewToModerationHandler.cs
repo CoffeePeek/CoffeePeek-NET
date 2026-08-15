@@ -24,9 +24,7 @@ public static class SendReviewToModerationHandler
             throw new ValidationException(validationResult.ErrorMessage!);
 
         var moderationShop = await moderationShopRepository.GetByPublishedShopId(command.ShopId, ct);
-
-        if (moderationShop == null)
-            throw new NotFoundException("Coffee shop not found");
+        Guid? moderationShopId = moderationShop?.Id;
 
         var photos = new List<PhotoMetadata>();
         if (command.Photos != null && command.Photos.Count != 0)
@@ -38,14 +36,14 @@ public static class SendReviewToModerationHandler
                     x.StorageKey, 
                     x.Size, 
                     command.UserId, 
-                    moderationShop.Id))
+                    moderationShopId))
                 .ToList();
         }
 
         var review = ModerationReview.Create(
             command.UserId,
             command.ShopId,
-            moderationShop.Id,
+            moderationShopId,
             command.UserName,
             command.Header,
             command.Comment,

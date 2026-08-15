@@ -36,6 +36,7 @@ public class GetAdminOverviewStatsHandlerTests
             ImportPublished: 0,
             ImportRejected: 0,
             ImportSkipped: 0,
+            ImportInFeed: 0,
             ShopsAvailable: false,
             ModerationAvailable: false));
 
@@ -72,6 +73,7 @@ public class GetAdminOverviewStatsHandlerTests
             ImportPublished: 8,
             ImportRejected: 4,
             ImportSkipped: 1,
+            ImportInFeed: 5,
             ShopsAvailable: true,
             ModerationAvailable: true));
 
@@ -86,7 +88,7 @@ public class GetAdminOverviewStatsHandlerTests
         response.Data.PendingModerationReviews.Should().Be(5);
         response.Data.Import.Pending.Should().Be(120);
         response.Data.Import.Published.Should().Be(8);
-        response.Data.Import.InFeed.Should().Be(8);
+        response.Data.Import.InFeed.Should().Be(5);
         response.Data.ShopsAvailable.Should().BeTrue();
         response.Data.ModerationAvailable.Should().BeTrue();
     }

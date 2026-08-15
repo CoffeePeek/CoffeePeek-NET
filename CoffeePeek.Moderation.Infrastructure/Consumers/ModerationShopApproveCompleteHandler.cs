@@ -1,21 +1,27 @@
 ﻿using CoffeePeek.Contract.Responses;
 using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Shared.Kernel;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeePeek.Moderation.Infrastructure.Consumers;
 
-public static class ModerationShopApproveCompleteHandler
+public class ModerationShopApproveCompleteHandler(
+    IModerationShopRepository repository,
+    IUnitOfWork unitOfWork,
+    ILogger<ModerationShopApproveCompleteHandler> logger)
 {
-    public static async Task Handle(
-        ModerationShopApproveCompleteResponse message,
-        IModerationShopRepository repository,
-        IUnitOfWork unitOfWork,
-        CancellationToken ct)
+    public async Task Handle(ModerationShopApproveCompleteResponse message, CancellationToken ct)
     {
-        var moderationShop = await repository.GetByIdWithOutDetails(message.ModerationShopId);
+        var moderationShop = await repository.GetByIdWithOutDetails(message.ModerationShopId, ct);
 
         if (moderationShop == null)
+        {
+            logger.LogWarning(
+                "Moderation shop {ModerationShopId} not found when completing approve for published shop {ShopId}",
+                message.ModerationShopId,
+                message.ShopId);
             return;
+        }
 
         moderationShop.AddShopId(message.ShopId);
 

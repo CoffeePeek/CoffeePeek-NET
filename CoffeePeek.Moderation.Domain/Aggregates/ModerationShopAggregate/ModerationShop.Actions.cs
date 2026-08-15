@@ -97,14 +97,16 @@ public sealed partial class ModerationShop
             e => e.BrewMethodId);
     }
     
-    public void Approve()
+    public bool Approve()
     {
-        if (ModerationStatus == ModerationStatus.Approved) return;
+        if (ModerationStatus == ModerationStatus.Approved)
+            return false;
 
-        if (!Location!.IsAddressValidated)
+        if (Location is null || !Location.IsAddressValidated)
             throw new DomainException("Cannot approve shop with unvalidated address.");
 
         ModerationStatus = ModerationStatus.Approved;
+        return true;
     }
 
     public void Reject(string reason)

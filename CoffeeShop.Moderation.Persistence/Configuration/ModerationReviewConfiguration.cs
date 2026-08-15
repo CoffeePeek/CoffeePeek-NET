@@ -12,7 +12,11 @@ public class ModerationReviewConfiguration : IEntityTypeConfiguration<Moderation
     {
         entity.UsePropertyAccessMode(PropertyAccessMode.Field);
         entity.HasKey(mr => mr.Id);
-        entity.HasOne(mr => mr.ModerationShop);
+        entity.HasOne(mr => mr.ModerationShop)
+            .WithMany()
+            .HasForeignKey(mr => mr.ModerationShopId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
             
         entity.HasIndex(mr => mr.ShopId);
         entity.HasIndex(mr => mr.UserId);
