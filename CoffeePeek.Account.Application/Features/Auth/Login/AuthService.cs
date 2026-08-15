@@ -19,14 +19,9 @@ public class AuthService(
         var user = await userRepository.GetByEmail(email, cancellationToken);
 
         if (user == null)
-        {
-            throw new NotFoundException("User not found");
-        }
-
-        if (!user.Credentials.ValidatePassword(password, passwordHasher))
-        {
             throw new UnauthorizedException("Invalid credentials");
-        }
+        if (!user.Credentials.ValidatePassword(password, passwordHasher))
+            throw new UnauthorizedException("Invalid credentials");
 
         if (!user.Credentials.EmailConfirmed)
         {

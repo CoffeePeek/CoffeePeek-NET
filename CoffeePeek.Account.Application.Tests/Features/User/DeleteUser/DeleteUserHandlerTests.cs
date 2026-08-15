@@ -43,6 +43,19 @@ public class DeleteUserHandlerTests
     }
 
     [Fact]
+    public async Task Handle_WhenUserHasActiveSession_RevokesAllSessions()
+    {
+        var user = CreateUser();
+        user.AddSession("token", TimeSpan.FromDays(7), "dev", "127.0.0.1");
+        _userRepoMock.Setup(r => r.GetById(user.Id, _ct)).ReturnsAsync(user);
+
+        await DeleteUserHandler.Handle(new DeleteUserCommand(user.Id), _userRepoMock.Object, _unitOfWorkMock.Object, _ct);
+
+        user.RefreshTokens.Should().OnlyContain(t => !t.IsActive);
+        user.IsSoftDelete.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task Handle_WhenUserExists_CallsUpdateAndSaveChanges()
     {
         var user = CreateUser();

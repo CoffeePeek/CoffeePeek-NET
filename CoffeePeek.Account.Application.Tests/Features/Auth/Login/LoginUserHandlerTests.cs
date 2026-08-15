@@ -57,27 +57,27 @@ public class LoginUserHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WhenAuthServiceThrows_PropagatesException()
+    public async Task Handle_WhenAuthServiceThrowsUnauthorized_PropagatesException()
     {
         // Arrange
         var command = CreateCommand();
         _authServiceMock.Setup(s => s.LoginAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-            .ThrowsAsync(new NotFoundException("User not found"));
+            .ThrowsAsync(new UnauthorizedException("Invalid credentials"));
 
         // Act
         Func<Task> act = () => LoginUserHandler.Handle(command, _authServiceMock.Object, _filter, _ct);
 
         // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
+        await act.Should().ThrowAsync<UnauthorizedException>().WithMessage("Invalid credentials");
     }
 
     [Fact]
-    public async Task Handle_WhenAuthServiceThrows_DoesNotAddEmailToFilter()
+    public async Task Handle_WhenAuthServiceThrowsUnauthorized_DoesNotAddEmailToFilter()
     {
         // Arrange
         var command = CreateCommand("ghost@example.com");
         _authServiceMock.Setup(s => s.LoginAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-            .ThrowsAsync(new NotFoundException("User not found"));
+            .ThrowsAsync(new UnauthorizedException("Invalid credentials"));
 
         // Act
         try { await LoginUserHandler.Handle(command, _authServiceMock.Object, _filter, _ct); } catch { }

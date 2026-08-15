@@ -12,7 +12,7 @@ public class PasswordResetRequestedEventHandler(
     IEmailTemplateService templateService,
     ILogger<PasswordResetRequestedEventHandler> logger)
 {
-    public async Task Handle(PasswordResetRequestedInternalEvent @event)
+    public async Task Handle(PasswordResetRequestedInternalEvent @event, CancellationToken ct)
     {
         var resetUrl =
             $"{config["WebClientUrl"]}/reset-password?token={Uri.EscapeDataString(@event.ResetToken)}";
@@ -27,7 +27,7 @@ public class PasswordResetRequestedEventHandler(
 
         try
         {
-            await resend.EmailSendAsync(message);
+            await resend.EmailSendAsync(message, ct);
             logger.LogInformation("Password reset email sent to {Email}", @event.Email);
         }
         catch (ResendException e)

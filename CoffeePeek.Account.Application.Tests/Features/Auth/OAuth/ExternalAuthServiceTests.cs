@@ -23,6 +23,8 @@ public class ExternalAuthServiceTests
     public ExternalAuthServiceTests()
     {
         _roleRepoMock.Setup(r => r.GetRoleAsync(RoleConsts.User)).ReturnsAsync(Role.Create(RoleConsts.User));
+        _queryRepoMock.Setup(r => r.IsUsernameUnique(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
     }
 
     [Fact]
@@ -84,5 +86,38 @@ public class ExternalAuthServiceTests
         _queryRepoMock.Setup(r => r.GetByEmail(It.IsAny<string>(), _ct)).ReturnsAsync((DomainUser?)null);
         var result = await CreateSut().GetOrCreate("user@google.com", "google", "id", _ct);
         result.Credentials.EmailConfirmed.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetOrCreate_WhenUsernameTaken_AllocatesUniqueSuffix()
+    {
+        _queryRepoMock.Setup(r => r.GetByProvider(It.IsAny<string>(), It.IsAny<string>(), _ct)).ReturnsAsync((DomainUser?)null);
+        _queryRepoMock.Setup(r => r.GetByEmail(It.IsAny<string>(), _ct)).ReturnsAsync((DomainUser?)null);
+        _queryRepoMock.SetupSequence(r => r.IsUsernameUnique(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false)
+            .ReturnsAsync(true);
+
+        var result = await CreateSut().GetOrCreate("newuser@google.com", "google", "new_id", _ct);
+
+        result.Username.Value.Should().StartWith("newuser");
+        result.Username.Value.Length.Should().BeInRange(3, 30);
+        char.IsLetter(result.Username.Value[0]).Should().BeTrue();
+        result.Username.Value.Should().NotBe("newuser");
+        _queryRepoMock.Verify(r => r.Add(result, _ct), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetOrCreate_WhenUsernameCannotBeAllocated_ThrowsDomainException()
+    {
+        _queryRepoMock.Setup(r => r.GetByProvider(It.IsAny<string>(), It.IsAny<string>(), _ct)).ReturnsAsync((DomainUser?)null);
+        _queryRepoMock.Setup(r => r.GetByEmail(It.IsAny<string>(), _ct)).ReturnsAsync((DomainUser?)null);
+        _queryRepoMock.Setup(r => r.IsUsernameUnique(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        Func<Task> act = () => CreateSut().GetOrCreate("newuser@google.com", "google", "new_id", _ct);
+
+        await act.Should().ThrowAsync<DomainException>()
+            .WithMessage("Could not allocate a unique username");
+        _queryRepoMock.Verify(r => r.Add(It.IsAny<DomainUser>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

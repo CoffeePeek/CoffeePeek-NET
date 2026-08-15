@@ -7,9 +7,9 @@ namespace CoffeePeek.Account.Infrastructure.Consumers;
 
 public class UserPhotoUploadedHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
 {
-    public async Task Handle(PhotoUploadedEvent message)
+    public async Task Handle(PhotoUploadedEvent message, CancellationToken ct)
     {
-        var user = await userRepository.GetById(message.OwnerId);
+        var user = await userRepository.GetById(message.OwnerId, ct);
 
         if (user == null) return;
 
@@ -21,6 +21,6 @@ public class UserPhotoUploadedHandler(IUserRepository userRepository, IUnitOfWor
             
         user.UpdateAvatar(photo);
 
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

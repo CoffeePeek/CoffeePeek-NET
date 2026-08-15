@@ -23,6 +23,9 @@ public static class GoogleLoginHandler
         if (payload is null)
             return Response<GoogleLoginResponse>.Error("Invalid token");
 
+        if (payload.EmailVerified is not true)
+            return Response<GoogleLoginResponse>.Error(System.Net.HttpStatusCode.BadRequest, "Google email is not verified.");
+
         var user = await externalAuthService.GetOrCreate(
             payload.Email,
             ProviderConsts.GoogleProvider,

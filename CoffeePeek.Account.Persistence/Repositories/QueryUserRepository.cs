@@ -39,4 +39,9 @@ public class QueryUserRepository(AccountDbContext dbContext) : IQueryUserReposit
     {
         return !await _repository.AnyAsync(c => c.Credentials.Email == email, ct);
     }
+
+    public async Task<bool> IsUsernameUnique(string username, CancellationToken ct)
+    {
+        return !await _repository.AnyAsync(u => u.Username == username, ct);
+    }
 }

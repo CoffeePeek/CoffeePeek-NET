@@ -8,4 +8,5 @@ public interface IQueryUserRepository
     Task<User?> GetByProvider(string provider, string providerId, CancellationToken ct);
     Task<User?> GetByEmail(string email, CancellationToken ct);
     Task<bool> IsEmailUnique(string requestEmail, CancellationToken ct);
+    Task<bool> IsUsernameUnique(string username, CancellationToken ct);
 }

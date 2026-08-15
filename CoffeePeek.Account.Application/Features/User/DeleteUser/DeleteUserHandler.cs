@@ -20,6 +20,7 @@ public class DeleteUserHandler
             return Response<bool>.Error("User not found");
         }
 
+        user.RevokeAllSessions();
         user.SetSoftDelete();
 
         await userRepository.Update(user, cancellationToken);
