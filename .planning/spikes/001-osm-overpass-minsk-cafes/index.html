@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CoffeePeek — очередь импорта (spike)</title>
+  <style>
+    :root {
+      --bg: #16120e;
+      --card: #221c16;
+      --ink: #f4ece3;
+      --muted: #b8a898;
+      --yes: #3d8b5a;
+      --no: #b24a3c;
+      --skip: #6b5c4d;
+      --priority: #d4a017;
+      --specialty: #7ecf8a;
+      --noise: #c9844a;
+      --reject: #8a6a6a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    header {
+      padding: 20px 24px 8px;
+      border-bottom: 1px solid #3a3128;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.4rem; font-weight: 600; }
+    .sub { color: var(--muted); font-size: 0.95rem; }
+    .stats { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 24px; }
+    .chip {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      background: #2c241c;
+      color: var(--muted);
+    }
+    .chip.active { background: #3d3429; color: var(--ink); }
+    main { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; padding: 8px 24px 32px; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px;
+      min-height: 360px;
+    }
+    .name { font-size: 1.8rem; margin: 0 0 8px; }
+    .meta { color: var(--muted); margin: 4px 0; }
+    .signals { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+    .actions { display: flex; gap: 10px; margin-top: 24px; }
+    button {
+      font: inherit;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 18px;
+      cursor: pointer;
+      color: #fff;
+    }
+    .yes { background: var(--yes); }
+    .no { background: var(--no); }
+    .skip { background: var(--skip); }
+    iframe { width: 100%; height: 360px; border: 0; border-radius: 16px; }
+    .log { max-height: 220px; overflow: auto; font-size: 0.85rem; color: var(--muted); }
+    a { color: #e8c38a; }
+    .empty { color: var(--muted); padding: 40px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Очередь импорта specialty-кофеен</h1>
+    <p class="sub">Spike 001 · OSM Минск · да/нет остаётся в этом браузере</p>
+  </header>
+  <div class="stats" id="stats"></div>
+  <main>
+    <section class="card" id="card"></section>
+    <aside>
+      <iframe id="map" title="OSM map"></iframe>
+      <p class="log" id="log"></p>
+    </aside>
+  </main>
+  <script>
+    const BUCKET_ORDER = ["likely_specialty", "priority", "review", "likely_noise", "auto_reject"];
+    const LABELS = {
+      likely_specialty: "похоже на specialty",
+      priority: "кофе-сигнал",
+      review: "просто cafe",
+      likely_noise: "шум / сети / столовые",
+      auto_reject: "автоматы",
+    };
+    const KEY = "cp-spike-001-decisions";
+    const events = [];
+
+    function log(cat, msg, extra) {
+      events.push({ t: new Date().toISOString(), cat, msg, extra });
+      const el = document.getElementById("log");
+      el.textContent = events.slice(-12).map(e => `${e.t.slice(11,19)} ${e.cat} ${e.msg}`).join("\n");
+    }
+
+    function loadDecisions() {
+      try { return JSON.parse(localStorage.getItem(KEY) || "{}"); }
+      catch { return {}; }
+    }
+    function saveDecisions(d) { localStorage.setItem(KEY, JSON.stringify(d)); }
+
+    let data = null;
+    let filter = "likely_specialty";
+    let index = 0;
+    let decisions = loadDecisions();
+
+    function queue() {
+      return data.candidates.filter(c => c.bucket === filter && !decisions[c.externalId]);
+    }
+
+    function renderStats() {
+      const counts = { ...data.counts };
+      const decided = Object.values(decisions);
+      const yes = decided.filter(x => x === "yes").length;
+      const no = decided.filter(x => x === "no").length;
+      const html = BUCKET_ORDER.map(b =>
+        `<button class="chip ${filter===b?"active":""}" data-b="${b}">${LABELS[b]} · ${counts[b]||0}</button>`
+      ).join("") + `<span class="chip">да ${yes}</span><span class="chip">нет ${no}</span>
+        <button class="chip" id="export">экспорт JSON</button>`;
+      document.getElementById("stats").innerHTML = html;
+      document.querySelectorAll("[data-b]").forEach(btn => {
+        btn.onclick = () => { filter = btn.dataset.b; index = 0; render(); };
+      });
+      document.getElementById("export").onclick = () => {
+        const blob = new Blob([JSON.stringify({ decisions, events }, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "import-decisions.json";
+        a.click();
+        log("export", `yes=${yes} no=${no}`);
+      };
+    }
+
+    function renderCard() {
+      const q = queue();
+      const card = document.getElementById("card");
+      if (!q.length) {
+        card.innerHTML = `<p class="empty">В бакете «${LABELS[filter]}» всё разобрано. Выбери другой фильтр.</p>`;
+        document.getElementById("map").src = "";
+        return;
+      }
+      if (index >= q.length) index = 0;
+      const c = q[index];
+      card.innerHTML = `
+        <p class="chip">${LABELS[c.bucket]} · ${index+1}/${q.length}</p>
+        <h2 class="name">${c.name}</h2>
+        <p class="meta">${c.address || "адреса в OSM нет"}</p>
+        <p class="meta">${[c.amenity, c.shop, c.cuisine, c.brand].filter(Boolean).join(" · ")}</p>
+        <p class="meta">${c.openingHours || "часы не указаны"}</p>
+        <p class="meta">${c.phone || ""} ${c.website ? `<a href="${c.website}" target="_blank">сайт</a>` : ""}</p>
+        <div class="signals">${(c.signals||[]).map(s => `<span class="chip">${s}</span>`).join("")}</div>
+        <p class="meta"><a href="https://www.openstreetmap.org/${c.externalId}" target="_blank">${c.externalId}</a></p>
+        <div class="actions">
+          <button class="yes" id="yes">Да · specialty</button>
+          <button class="no" id="no">Нет</button>
+          <button class="skip" id="skip">Позже</button>
+        </div>
+      `;
+      document.getElementById("map").src =
+        `https://www.openstreetmap.org/export/embed.html?bbox=${c.lon-0.01},${c.lat-0.006},${c.lon+0.01},${c.lat+0.006}&layer=mapnik&marker=${c.lat},${c.lon}`;
+      document.getElementById("yes").onclick = () => decide(c, "yes");
+      document.getElementById("no").onclick = () => decide(c, "no");
+      document.getElementById("skip").onclick = () => { index++; render(); log("skip", c.name); };
+    }
+
+    function decide(c, verdict) {
+      decisions[c.externalId] = verdict;
+      saveDecisions(decisions);
+      log(verdict, c.name, { id: c.externalId, bucket: c.bucket });
+      render();
+    }
+
+    function render() { renderStats(); renderCard(); }
+
+    fetch("./candidates-ui.json")
+      .then(r => r.json())
+      .then(payload => {
+        data = payload;
+        log("load", `${payload.total} кандидатов`);
+        const first = BUCKET_ORDER.find(b => (payload.counts[b] || 0) > 0) || "review";
+        filter = first;
+        render();
+      })
+      .catch(err => {
+        document.getElementById("card").innerHTML =
+          `<p class="empty">Не удалось загрузить candidates-ui.json. Запусти <code>python3 serve.py</code> из этой папки.</p>`;
+        log("error", String(err));
+      });
+  </script>
+</body>
+</html>
