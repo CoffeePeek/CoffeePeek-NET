@@ -13,6 +13,7 @@
 ## Specs / next
 
 - Shop filters & tags SPEC written at `.planning/specs/SHOP-FILTERS-TAGS.md`.
+- Catalog ingest + admin queue SPEC: `.planning/specs/SHOP-IMPORT-ADMIN.md` (backend vs frontend handoff).
 
 ## Accumulated Context
 

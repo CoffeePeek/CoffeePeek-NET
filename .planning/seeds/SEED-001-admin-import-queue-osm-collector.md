@@ -1,6 +1,6 @@
 ---
 id: SEED-001
-status: dormant
+status: ready
 planted: 2026-08-15
 planted_during: tech-debt / post Tier-0 catalog bootstrap
 trigger_when: when starting catalog content bootstrap or a "shops data / import" milestone
