@@ -6,7 +6,7 @@ namespace CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
 
 public partial class ModerationReview
 {
-    public static ModerationReview Create(Guid userId, Guid shopId, Guid moderationShopId, string userName, string header, string comment,
+    public static ModerationReview Create(Guid userId, Guid shopId, Guid? moderationShopId, string userName, string header, string comment,
         int ratingPlace, int ratingService, int ratingCoffee, List<PhotoMetadata> photos)
     {
         if (shopId == Guid.Empty)
@@ -14,9 +14,6 @@ public partial class ModerationReview
 
         if (userId == Guid.Empty)
             throw new DomainException($"{nameof(userId)} cannot be empty.");
-        
-        if (moderationShopId == Guid.Empty)
-            throw new DomainException($"{nameof(moderationShopId)} cannot be empty.");
 
         if (string.IsNullOrWhiteSpace(header))
             throw new DomainException("Review header is required.");

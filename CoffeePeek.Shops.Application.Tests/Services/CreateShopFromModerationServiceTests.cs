@@ -58,8 +58,8 @@ public class CreateShopFromModerationServiceTests
     {
         // Arrange
         _shopRepoMock
-            .Setup(r => r.ExistsByModerationId(It.IsAny<Guid>(), _ct))
-            .ReturnsAsync(false);
+            .Setup(r => r.GetIdByModerationId(It.IsAny<Guid>(), _ct))
+            .ReturnsAsync((Guid?)null);
 
         var sut = CreateSut();
 
@@ -80,24 +80,25 @@ public class CreateShopFromModerationServiceTests
     }
 
     [Fact]
-    public async Task CreateShopFromApprovedEventAsync_WhenModerationIdAlreadyExists_ThrowsAndDoesNotAddOrSave()
+    public async Task CreateShopFromApprovedEventAsync_WhenModerationIdAlreadyExists_ReturnsExistingIdAndDoesNotAddOrSave()
     {
         // Arrange
+        var existingId = Guid.NewGuid();
         _shopRepoMock
-            .Setup(r => r.ExistsByModerationId(It.IsAny<Guid>(), _ct))
-            .ReturnsAsync(true);
+            .Setup(r => r.GetIdByModerationId(It.IsAny<Guid>(), _ct))
+            .ReturnsAsync(existingId);
 
         var sut = CreateSut();
 
         // Act
-        Func<Task> act = () => sut.CreateShopFromApprovedEventAsync(
+        var result = await sut.CreateShopFromApprovedEventAsync(
             CreateMinimalShopDto(),
             Guid.NewGuid(),
             Guid.NewGuid(),
             _ct);
 
-        // Assert — duplicate guard must throw before Add or SaveChangesAsync are reached
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        // Assert — duplicate guard returns the existing shop id without Add or SaveChangesAsync
+        result.Should().Be(existingId);
         _shopRepoMock.Verify(r => r.Add(It.IsAny<CoffeeShop>()), Times.Never);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }

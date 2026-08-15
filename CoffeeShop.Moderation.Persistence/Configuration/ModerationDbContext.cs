@@ -27,6 +27,11 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
         {
             entity.UsePropertyAccessMode(PropertyAccessMode.Field);
             entity.HasKey(e => e.Id);
+            entity.HasOne<ModerationShop>()
+                .WithMany(s => s.ShopPhotos)
+                .HasForeignKey(e => e.ModerationShopId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
         });
         
         modelBuilder.Entity<ModerationShopEquipment>(entity =>

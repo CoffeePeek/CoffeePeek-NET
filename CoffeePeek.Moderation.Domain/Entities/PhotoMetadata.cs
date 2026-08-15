@@ -9,13 +9,13 @@ public sealed class PhotoMetadata : Entity<Guid>
     public string StorageKey { get; private set; } 
     public long SizeBytes { get; private set; }
     public Guid OwnerId { get; private set; } 
-    public Guid ModerationShopId { get; private set; }
+    public Guid? ModerationShopId { get; private set; }
 
     // ReSharper disable once UnusedMember.Local
     private PhotoMetadata() { }
 
     private PhotoMetadata(string fileName, string contentType, string storageKey, long sizeBytes, Guid ownerId,
-        Guid moderationShopId)
+        Guid? moderationShopId)
     {
         Id = Guid.NewGuid();
         FileName = fileName;
@@ -23,10 +23,12 @@ public sealed class PhotoMetadata : Entity<Guid>
         StorageKey = storageKey;
         SizeBytes = sizeBytes;
         OwnerId = ownerId;
-        ModerationShopId = moderationShopId;
+        ModerationShopId = moderationShopId is null || moderationShopId == Guid.Empty
+            ? null
+            : moderationShopId;
     }
     
-    public static PhotoMetadata Create(string fileName, string contentType, string storageKey, long sizeBytes, Guid ownerId, Guid moderationShopId)
+    public static PhotoMetadata Create(string fileName, string contentType, string storageKey, long sizeBytes, Guid ownerId, Guid? moderationShopId)
     {
         return new PhotoMetadata(fileName, contentType, storageKey, sizeBytes, ownerId, moderationShopId);
     }

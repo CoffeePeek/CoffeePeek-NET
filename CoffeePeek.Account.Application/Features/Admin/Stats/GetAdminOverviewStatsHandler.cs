@@ -31,7 +31,7 @@ public static class GetAdminOverviewStatsHandler
                 platform.ImportPublished,
                 platform.ImportRejected,
                 platform.ImportSkipped,
-                platform.ImportPublished),
+                platform.ImportInFeed),
             ShopsAvailable: platform.ShopsAvailable,
             ModerationAvailable: platform.ModerationAvailable));
     }

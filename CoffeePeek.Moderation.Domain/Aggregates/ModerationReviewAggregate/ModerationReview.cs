@@ -11,7 +11,7 @@ public partial class ModerationReview : Entity<Guid>
     public Guid UserId { get; private set; }
     public string UserName { get; private set; }
     public Guid ShopId { get; private set; }
-    public Guid ModerationShopId { get; private set; }
+    public Guid? ModerationShopId { get; private set; }
 
     public Rating Rating { get; private set; }
 
@@ -33,13 +33,15 @@ public partial class ModerationReview : Entity<Guid>
     {
     }
 
-    internal ModerationReview(Guid userId, Guid shopId, Guid moderationShopId, string userName, string header, string comment,
+    internal ModerationReview(Guid userId, Guid shopId, Guid? moderationShopId, string userName, string header, string comment,
         Rating rating, List<PhotoMetadata> photos)
     {
         Id = Guid.NewGuid();
         UserId = userId;
         ShopId = shopId;
-        ModerationShopId = moderationShopId;
+        ModerationShopId = moderationShopId is null || moderationShopId == Guid.Empty
+            ? null
+            : moderationShopId;
         UserName = userName;
         Header = header;
         Comment = comment;

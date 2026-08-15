@@ -53,7 +53,9 @@ public static class DecideImportCandidateHandler
         await unitOfWork.SaveChangesAsync(ct);
 
         object? outbound = null;
-        if (command.Status == ContractStatus.Published && candidate.CoffeeFocus.HasValue)
+        if (command.Status == ContractStatus.Published
+            && candidate.CoffeeFocus.HasValue
+            && candidate.ResultingShopId is null)
         {
             outbound = new ImportCandidatePublishedEvent(
             [

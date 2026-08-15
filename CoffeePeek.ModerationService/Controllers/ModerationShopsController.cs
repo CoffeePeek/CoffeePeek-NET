@@ -52,6 +52,7 @@ public class ModerationShopsController(IMessageBus bus, IUserContext userContext
     }
 
     [HttpPost]
+    [Authorize]
     [Description("Adds a new coffee shop to moderation")]
     [ProducesResponseType<Response<SendCoffeeShopToModerationResponse>>(StatusCodes.Status201Created)]
     [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
@@ -80,7 +81,7 @@ public class ModerationShopsController(IMessageBus bus, IUserContext userContext
         var command = new UpdateModerationCoffeeShopCommand(dto, userId, isPrivilegedModerator);
 
         var response = await bus.InvokeAsync<UpdateEntityResponse<ModerationShopDto>>(command, ct);
-        return Ok(response);
+        return response.IsSuccess ? Ok(response) : NotFound(response);
     }
 
     [HttpPut("status")]
@@ -95,6 +96,8 @@ public class ModerationShopsController(IMessageBus bus, IUserContext userContext
             userContext.GetUserIdOrThrow(), id, status, comment);
 
         var response = await bus.InvokeAsync<Response>(request, ct);
-        return Ok(response);
+        return response.IsSuccess
+            ? Ok(response)
+            : StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response);
     }
 }

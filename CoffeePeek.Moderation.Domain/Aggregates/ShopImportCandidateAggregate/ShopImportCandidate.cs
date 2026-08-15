@@ -88,6 +88,9 @@ public sealed class ShopImportCandidate : Entity<Guid>
     public void RefreshFromOsm(OsmCandidateSnapshot snapshot, DateTimeOffset now)
     {
         ArgumentNullException.ThrowIfNull(snapshot);
+        if (QueueStatus is ImportQueueStatus.Published or ImportQueueStatus.Skipped)
+            return;
+
         ApplyOsmFields(snapshot, now);
     }
 
@@ -102,6 +105,9 @@ public sealed class ShopImportCandidate : Entity<Guid>
     {
         if (reviewerId == Guid.Empty)
             throw new DomainException("Reviewer is required.");
+
+        if (ResultingShopId is not null && status == ImportQueueStatus.Published)
+            throw new DomainException("Candidate is already published to the catalog.");
 
         if (status == ImportQueueStatus.Rejected)
         {

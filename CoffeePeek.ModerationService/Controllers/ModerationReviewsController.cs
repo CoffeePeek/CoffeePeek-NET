@@ -58,7 +58,8 @@ public class ModerationReviewsController(IMessageBus bus, IUserContext userConte
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-    public async Task<IActionResult> SendReviewToModeration([FromBody] SendReviewToModerationCommand command)
+    public async Task<IActionResult> SendReviewToModeration(
+        [FromBody] SendReviewToModerationCommand command, CancellationToken ct)
     {
         command = command with
         {
@@ -66,24 +67,29 @@ public class ModerationReviewsController(IMessageBus bus, IUserContext userConte
             UserName = userContext.GetUsernameOrThrow()
         };
 
-        var response = await bus.InvokeAsync<CreateEntityResponse>(command);
+        var response = await bus.InvokeAsync<CreateEntityResponse>(command, ct);
 
-        return Ok(response);
+        return response.IsSuccess
+            ? Ok(response)
+            : StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response);
     }
 
     [HttpPut("{reviewId:guid}")]
+    [Authorize]
     [ProducesResponseType(typeof(Response<UpdateCoffeeShopReviewResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateReview(
-        [FromBody] UpdateCoffeeShopReviewCommand command, Guid reviewId)
+        [FromBody] UpdateCoffeeShopReviewCommand command, Guid reviewId, CancellationToken ct)
     {
         command = command with { UserId = userContext.GetUserIdOrThrow(), ReviewId = reviewId };
-        var response = await bus.InvokeAsync<Response<UpdateCoffeeShopReviewResponse>>(command);
+        var response = await bus.InvokeAsync<Response<UpdateCoffeeShopReviewResponse>>(command, ct);
 
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+        return response.IsSuccess
+            ? Ok(response)
+            : StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response);
     }
 
     [HttpPut]
@@ -93,10 +99,12 @@ public class ModerationReviewsController(IMessageBus bus, IUserContext userConte
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> ChangeStatusModerationReview(
-        [FromBody] ChangeStatusModerationReviewCommand command)
+        [FromBody] ChangeStatusModerationReviewCommand command, CancellationToken ct)
     {
         var commandWithUser = command with { UserId = userContext.GetUserIdOrThrow() };
-        var response = await bus.InvokeAsync<UpdateEntityResponse<ModerationStatus>>(commandWithUser);
-        return Ok(response);
+        var response = await bus.InvokeAsync<UpdateEntityResponse<ModerationStatus>>(commandWithUser, ct);
+        return response.IsSuccess
+            ? Ok(response)
+            : StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response);
     }
 }

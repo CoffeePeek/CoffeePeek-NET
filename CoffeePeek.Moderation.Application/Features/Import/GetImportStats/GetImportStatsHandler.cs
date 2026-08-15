@@ -19,7 +19,7 @@ public static class GetImportStatsHandler
             stats.Skipped,
             stats.Published,
             stats.Rejected,
-            stats.Published,
+            stats.InFeed,
             stats.ByFocus.ToDictionary(kv => kv.Key.ToString(), kv => kv.Value),
             stats.ByBucket.ToDictionary(kv => kv.Key.ToString(), kv => kv.Value),
             new ImportRejectedByReasonDto(

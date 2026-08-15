@@ -36,6 +36,18 @@ public record Rating
     
     public void UpdateRating(int place, int service, int coffee)
     {
+        if (place is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
+            throw new DomainException(
+                $"{nameof(place)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
+
+        if (service is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
+            throw new DomainException(
+                $"{nameof(service)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
+
+        if (coffee is < BusinessConstants.MinReviewRate or > BusinessConstants.MaxReviewRate)
+            throw new DomainException(
+                $"{nameof(coffee)} must be between {BusinessConstants.MinReviewRate} and {BusinessConstants.MaxReviewRate}.");
+
         Place = place;
         Service = service;
         Coffee = coffee;

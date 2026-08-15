@@ -24,6 +24,7 @@ public static class GetAdminModerationStatsHandler
             ImportPending: import.Pending,
             ImportPublished: import.Published,
             ImportRejected: import.Rejected,
-            ImportSkipped: import.Skipped));
+            ImportSkipped: import.Skipped,
+            ImportInFeed: import.InFeed));
     }
 }

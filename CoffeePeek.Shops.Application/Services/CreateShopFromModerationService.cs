@@ -20,11 +20,14 @@ public class CreateShopFromModerationService(
 {
     public async Task<Guid> CreateShopFromApprovedEventAsync(ShopDto shopDto, Guid creatorId, Guid moderationId, CancellationToken cancellationToken = default)
     {
-        var exists = await shopRepository.ExistsByModerationId(moderationId, cancellationToken);
-        if (exists)
+        var existingId = await shopRepository.GetIdByModerationId(moderationId, cancellationToken);
+        if (existingId.HasValue)
         {
-            logger.LogInformation("Shop with ModerationId {ModerationId} already exists, skipping creation", moderationId);
-            throw new InvalidOperationException($"Shop with ModerationId {moderationId} already exists");
+            logger.LogInformation(
+                "Shop {ShopId} already exists for moderation {ModerationId}",
+                existingId.Value,
+                moderationId);
+            return existingId.Value;
         }
 
         var shop = new CoffeeShop(creatorId, shopDto.Name, shopDto.Description, (PriceRange)shopDto.PriceRange, moderationId);
