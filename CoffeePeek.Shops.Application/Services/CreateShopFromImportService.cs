@@ -1,6 +1,8 @@
+using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shops.Application.Features.Public.Stats;
 using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
@@ -12,6 +14,7 @@ namespace CoffeePeek.Shops.Application.Services;
 public class CreateShopFromImportService(
     IQueryCoffeeShopRepository shopRepository,
     IQueryShopTagRepository tagRepository,
+    IQueryCityRepository cityRepository,
     IUnitOfWork unitOfWork,
     ICacheService cacheService,
     ILogger<CreateShopFromImportService> logger) : ICreateShopFromImportService
@@ -30,6 +33,8 @@ public class CreateShopFromImportService(
             return existingId.Value;
         }
 
+        var cityId = await ResolveCityId(item.CityId, cancellationToken);
+
         var shop = new CoffeeShop(
             item.CreatorId,
             item.Name,
@@ -37,7 +42,7 @@ public class CreateShopFromImportService(
             PriceRange.Moderate,
             item.CandidateId);
 
-        shop.SetLocation(item.CityId, item.Address, item.Latitude, item.Longitude);
+        shop.SetLocation(cityId, item.Address, item.Latitude, item.Longitude);
         shop.SetContact(item.Instagram, email: null, item.Website, FirstPhone(item.Phone));
         shop.SetCoffeeFocus((CoffeeFocus)(int)item.CoffeeFocus);
 
@@ -67,6 +72,24 @@ public class CreateShopFromImportService(
             item.CandidateId);
 
         return shop.Id;
+    }
+
+    private async Task<Guid> ResolveCityId(Guid requestedCityId, CancellationToken ct)
+    {
+        if (await cityRepository.Exists(requestedCityId, ct))
+            return requestedCityId;
+
+        var cityName = CitiesConsts.Cities.GetValueOrDefault(requestedCityId) ?? "Минск";
+        var city = await cityRepository.GetByName(cityName, ct)
+                   ?? throw new DomainException($"City '{cityName}' not found. OSM import cannot publish without a matching Cities row.");
+
+        logger.LogWarning(
+            "Import CityId {RequestedCityId} is not in Cities; using {CityId} ({CityName}) instead",
+            requestedCityId,
+            city.Id,
+            city.Name);
+
+        return city.Id;
     }
 
     private static string? FirstPhone(string? phone)

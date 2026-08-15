@@ -15,4 +15,8 @@ public class QueryCityRepository(ShopsDbContext dbContext) : IQueryCityRepositor
 
     public Task<bool> Exists(Guid cityId, CancellationToken ct = default) =>
         _repository.AsNoTracking().AnyAsync(c => c.Id == cityId, ct);
+
+    public Task<City?> GetByName(string name, CancellationToken ct = default) =>
+        _repository.AsNoTracking()
+            .FirstOrDefaultAsync(c => EF.Functions.ILike(c.Name, name), ct);
 }
