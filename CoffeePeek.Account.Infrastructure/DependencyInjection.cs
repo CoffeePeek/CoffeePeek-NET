@@ -44,7 +44,8 @@ public static class DependencyInjection
         services.AddTransient<IResend, ResendClient>();
 
         // 4. OAuth
-        services.AddValidateOptions<OAuthGoogleOptions>();
+        services.AddOptions<OAuthGoogleOptions>()
+            .BindConfiguration(nameof(OAuthGoogleOptions));
         services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
         services.AddOptions<AdminStatsOptions>()
