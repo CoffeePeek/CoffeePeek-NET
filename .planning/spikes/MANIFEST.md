@@ -2,13 +2,16 @@
 
 ## Idea
 
-Bootstrap CoffeePeek with specialty coffee shops in Minsk. Collect candidates from OSM (Overpass), review them in an admin yes/no queue, then promote only approved shops into the catalog. Beans come later. Yandex is geocoder-only.
+Bootstrap CoffeePeek with coffee shops in Minsk. Collect candidates from OSM (Overpass), review them in an admin queue that assigns a **Kind** (not binary specialty), then promote approved shops into the feed. Beans come later. Yandex is geocoder-only.
 
 ## Requirements
 
 - Source v1: OSM + lists. Do not persist Yandex Places organization payloads.
 - Yandex Geocoder may be used later for coordinates only.
-- Admin review queue in CoffeePeek (yes/no), not a spreadsheet.
+- Admin review queue in CoffeePeek, not a spreadsheet.
+- Import decision is a **category**, not yes/no specialty. Feed includes every approved Kind.
+- ShopKind v1: `Specialty` | `GoodCoffee` | `Cafe` | `ToGo`. Reject stays out of the feed.
+- Existing ShopTag `specialty` is a filter chip, assigned only when Kind=Specialty. Do not reuse amenity tags (laptop, pet) as Kind.
 - Manual labeling on a small sample first, then autofilter from those patterns.
 - Scope v1: shops only, not beans.
 

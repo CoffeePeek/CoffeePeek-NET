@@ -57,6 +57,7 @@ Browser event log (load / yes / no / skip / export) is shown in the sidebar and 
 6. Refined buckets: specialty 2 · priority 380 · review 818 · noise 280 · vending 96.
 7. Address present on 528/1576 — formatted address is optional; coords are enough to start.
 8. `ModerationShop` requires `UserId` and models owner submissions — import needs a separate `ShopImportCandidate`.
+9. Binary yes/no was wrong: good non-specialty shops still belong in the feed. Queue now labels Kind: Specialty / GoodCoffee / Cafe / ToGo / Reject.
 
 ## Results
 

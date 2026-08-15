@@ -24,10 +24,20 @@ public sealed class ShopImportCandidate : Entity<Guid>
     public IReadOnlyList<string> Signals { get; }
     public string RawTagsJson { get; }
     public ImportDecision Decision { get; }      // Pending, Approved, Rejected, Skipped
+    public ShopKind? Kind { get; }               // set on approve
     public Guid? ReviewedByUserId { get; }
     public DateTimeOffset? ReviewedAtUtc { get; }
     public Guid? ResultingShopId { get; }
 }
+
+public enum ShopKind
+{
+    Specialty = 1,   // third wave / roastery — also assign existing ShopTag `specialty`
+    GoodCoffee = 2,  // decent coffee, not claiming specialty — still in the feed
+    Cafe = 3,        // food-first place with coffee worth listing
+    ToGo = 4,        // takeaway / chain with drinkable espresso
+}
+// Reject is Decision=Rejected, not a Kind. Only Kind values go to the feed.
 ```
 
 Unique index: `(Source, ExternalId)`.
@@ -35,8 +45,8 @@ Unique index: `(Source, ExternalId)`.
 ## Flow
 
 1. Collector upserts OSM snapshot → `Pending`.
-2. Admin yes/no on the queue (start with `LikelySpecialty` + `Priority`).
-3. **Approve** creates a `CoffeeShop` (system actor), stores `ResultingShopId`. Do not invent a fake shop owner.
+2. Admin assigns a **Kind** (or reject) on the queue. Start with `LikelySpecialty` + `Priority`.
+3. **Approve** creates a `CoffeeShop` with that `Kind` (system actor), stores `ResultingShopId`. Do not invent a fake shop owner. `specialty` ShopTag is assigned only when Kind=Specialty. Other amenity tags (laptop, pet) stay orthogonal.
 4. **Reject** stays out of the catalog; keep the row so re-fetch does not resurrect it.
 5. After ~50–100 manual labels, train/tune autofilter from `Signals` + `Decision`.
 

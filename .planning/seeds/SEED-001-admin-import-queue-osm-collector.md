@@ -11,7 +11,7 @@ scope: medium — Moderation admin queue + OSM collector + approve→Shops path
 
 ## Why This Matters
 
-Без specialty-кофеен в БД CoffeePeek пустой. Нужен контролируемый bootstrap: широкий сбор кандидатов (OSM + списки) → админ-очередь да/нет → в каталог только specialty. Ручной этап на малой выборке, затем автофильтр.
+Без кофеен в БД CoffeePeek пустой. Нужен контролируемый bootstrap: широкий сбор кандидатов (OSM + списки) → админ-очередь с категорией Kind → в ленту все одобренные (не только specialty). Ручной этап на малой выборке, затем автофильтр.
 
 ## When to Surface
 
