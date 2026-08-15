@@ -170,7 +170,23 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
                 t.Tag.SortOrder))
             .ToArrayAsync(ct);
 
-        return dto with { Tags = tags };
+        var state = await context.Shops
+            .AsNoTracking()
+            .Where(s => s.Id == id)
+            .Select(s => new { s.CreatedAtUtc, s.Schedules })
+            .FirstOrDefaultAsync(ct);
+
+        var now = DateTime.UtcNow;
+        var isNew = state is not null && state.CreatedAtUtc >= now.AddDays(-BusinessConstants.ItNewEntityInDays);
+        var isOpen = state is null || ComputeIsOpen(state.Schedules, now);
+
+        return dto with
+        {
+            Tags = tags,
+            Photos = dto.Photos ?? [],
+            IsNew = isNew,
+            IsOpen = isOpen
+        };
     }
 
     public Task<MapShopDto[]> GetShopsInBounds(GetShopsInBoundsQuery query, CancellationToken ct = default)

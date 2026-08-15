@@ -8,6 +8,7 @@ using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate;
@@ -22,13 +23,19 @@ public class CreateShopFromImportServiceTests
 {
     private readonly Mock<IQueryCoffeeShopRepository> _shopRepo = new();
     private readonly Mock<IQueryShopTagRepository> _tagRepo = new();
+    private readonly Mock<IQueryCityRepository> _cityRepo = new();
     private readonly Mock<IUnitOfWork> _uow = new();
     private readonly Mock<ICacheService> _cache = new();
     private readonly Mock<ILogger<CreateShopFromImportService>> _logger = new();
     private readonly CancellationToken _ct = CancellationToken.None;
 
     private CreateShopFromImportService CreateSut() =>
-        new(_shopRepo.Object, _tagRepo.Object, _uow.Object, _cache.Object, _logger.Object);
+        new(_shopRepo.Object, _tagRepo.Object, _cityRepo.Object, _uow.Object, _cache.Object, _logger.Object);
+
+    public CreateShopFromImportServiceTests()
+    {
+        _cityRepo.Setup(r => r.Exists(It.IsAny<Guid>(), _ct)).ReturnsAsync(true);
+    }
 
     [Fact]
     public async Task Create_WhenNew_AddsShopWithFocusAndSpecialtyTag()
@@ -126,5 +133,67 @@ public class CreateShopFromImportServiceTests
 
         added.Should().NotBeNull();
         added!.Contact.PhoneNumber.Should().Be("+375 29 111-22-33");
+    }
+
+    [Fact]
+    public async Task Create_WhenConstCityIdMissing_UsesCityRowByName()
+    {
+        var minsk = new City("Минск");
+        _cityRepo.Setup(r => r.Exists(CitiesConsts.MinskId, _ct)).ReturnsAsync(false);
+        _cityRepo.Setup(r => r.GetByName("Минск", _ct)).ReturnsAsync(minsk);
+        _shopRepo.Setup(r => r.GetIdByModerationId(It.IsAny<Guid>(), _ct)).ReturnsAsync((Guid?)null);
+        _tagRepo.Setup(r => r.GetActiveBySlugsAsync(It.IsAny<IReadOnlyCollection<string>>(), _ct)).ReturnsAsync([]);
+
+        CoffeeShop? added = null;
+        _shopRepo.Setup(r => r.Add(It.IsAny<CoffeeShop>())).Callback<CoffeeShop>(s => added = s);
+
+        var item = new ImportCandidatePublishedItem(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Coffe Joy",
+            "Немига 5",
+            53.9152m,
+            27.5847m,
+            CitiesConsts.MinskId,
+            null,
+            null,
+            null,
+            Contract.Enums.CoffeeFocus.Cafe,
+            [],
+            false);
+
+        await CreateSut().CreateShopFromImportAsync(item, _ct);
+
+        added.Should().NotBeNull();
+        added!.Location.CityId.Should().Be(minsk.Id);
+        added.Location.CityId.Should().NotBe(CitiesConsts.MinskId);
+    }
+
+    [Fact]
+    public async Task Create_WhenCityCannotBeResolved_ThrowsDomainException()
+    {
+        _cityRepo.Setup(r => r.Exists(It.IsAny<Guid>(), _ct)).ReturnsAsync(false);
+        _cityRepo.Setup(r => r.GetByName(It.IsAny<string>(), _ct)).ReturnsAsync((City?)null);
+        _shopRepo.Setup(r => r.GetIdByModerationId(It.IsAny<Guid>(), _ct)).ReturnsAsync((Guid?)null);
+
+        var item = new ImportCandidatePublishedItem(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Coffe Joy",
+            "Немига 5",
+            53.9152m,
+            27.5847m,
+            CitiesConsts.MinskId,
+            null,
+            null,
+            null,
+            Contract.Enums.CoffeeFocus.Cafe,
+            [],
+            false);
+
+        var act = () => CreateSut().CreateShopFromImportAsync(item, _ct);
+
+        await act.Should().ThrowAsync<DomainException>().WithMessage("*Минск*");
+        _shopRepo.Verify(r => r.Add(It.IsAny<CoffeeShop>()), Times.Never);
     }
 }

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using CoffeePeek.Account.Application.Common.Interfaces;
@@ -105,5 +106,26 @@ public class GoogleLoginHandlerTests
         response.Data.User.Email.Should().Be("user@gmail.com");
         user.RefreshTokens.Should().ContainSingle(t => t.IsActive && t.Token == "refresh");
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(_ct), Times.Once);
+    }
+
+    [Fact]
+    public void GoogleLoginResponse_SerializesWithoutRefreshToken()
+    {
+        var payload = new GoogleLoginResponse(
+            "access",
+            "secret-refresh",
+            new GoogleLoginUser
+            {
+                Email = "user@gmail.com",
+                Username = "user",
+                AvatarUrl = "https://example.com/a.png"
+            });
+        var response = Response<GoogleLoginResponse>.Success(payload);
+
+        var json = JsonSerializer.Serialize(response, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+        json.Should().Contain("access");
+        json.Should().Contain("user@gmail.com");
+        json.Should().NotContain("secret-refresh");
     }
 }

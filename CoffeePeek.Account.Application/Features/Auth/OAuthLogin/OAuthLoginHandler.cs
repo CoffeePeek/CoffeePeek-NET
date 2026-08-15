@@ -59,16 +59,14 @@ public static class GoogleLoginHandler
             await unitOfWork.SaveChangesAsync(ct);
         }
 
-        return Response<GoogleLoginResponse>.Success(new GoogleLoginResponse
-        {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken,
-            User = new GoogleLoginUser
+        return Response<GoogleLoginResponse>.Success(new GoogleLoginResponse(
+            accessToken,
+            refreshToken,
+            new GoogleLoginUser
             {
                 Email = user.Credentials.Email,
                 AvatarUrl = payload.Picture ?? string.Empty,
                 Username = user.Username
-            }
-        });
+            }));
     }
 }

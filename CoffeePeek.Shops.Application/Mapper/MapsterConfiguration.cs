@@ -60,8 +60,9 @@ public static class MapsterConfiguration
             .Map(d => d.Photos, s => s.ShopPhotos.OrderBy(p => p.SortIndex).ThenBy(p => p.CreatedAtUtc))
             .Map(d => d.ShopContact, s => s.Contact)
             .Map(d => d.Schedules, s => s.Schedules)
-            .Map(dest => dest.IsOpen, src => src.IsOpen)
-            .Map(dest => dest.IsNew, src => src.IsNew)
+            // IsOpen/IsNew patched after materialize in CoffeeShopQueries (computed props are not ProjectTo-safe)
+            .Ignore(dest => dest.IsOpen)
+            .Ignore(dest => dest.IsNew)
             .Map(dest => dest.CoffeeFocus, src => src.CoffeeFocus == null
                 ? (Contract.Enums.CoffeeFocus?)null
                 : (Contract.Enums.CoffeeFocus)(int)src.CoffeeFocus.Value)
