@@ -158,8 +158,8 @@ services:
       MinIOOptions__AccessKey: ${MINIO_ROOT_USER}
       MinIOOptions__SecretKey: ${MINIO_ROOT_PASSWORD}
       MinIOOptions__BucketName: coffeepeek.avatars
-      OAuthGoogleOptions__ClientId: ${GOOGLE_CLIENT_ID}
-      OAuthGoogleOptions__ClientSecret: ${GOOGLE_CLIENT_SECRET}
+      OAuthGoogleOptions__ClientId: ${GOOGLE_CLIENT_ID:-770099870632-5eeebr3eqdrma4reson9mv02j4lro583.apps.googleusercontent.com}
+      OAuthGoogleOptions__ClientSecret: ${GOOGLE_CLIENT_SECRET:-}
       ResendClientOptions__ApiToken: ${RESEND_API_TOKEN}
       WebClientUrl: ${WEB_CLIENT_URL}
       AdminStatsOptions__ShopsServiceUrl: http://shops

@@ -21,8 +21,9 @@ public class QueryUserRepository(AccountDbContext dbContext) : IQueryUserReposit
     public Task<User?> GetByProvider(string provider, string providerId, CancellationToken ct)
     {
         return _repository
-            .AsNoTracking()
             .Include(x => x.Credentials)
+            .Include(x => x.Roles)
+            .Include(x => x.RefreshTokens)
             .FirstOrDefaultAsync(x => x.Credentials.OAuthProvider == provider && x.Credentials.ProviderId == providerId, cancellationToken: ct);
     }
 
@@ -31,7 +32,7 @@ public class QueryUserRepository(AccountDbContext dbContext) : IQueryUserReposit
         return _repository
             .AsNoTracking()
             .Include(x => x.Credentials)
-            .FirstOrDefaultAsync(x => x.Credentials.Email.Value == email, cancellationToken: ct);
+            .FirstOrDefaultAsync(x => x.Credentials.Email == email, cancellationToken: ct);
     }
 
     public async Task<bool> IsEmailUnique(string email, CancellationToken ct)
