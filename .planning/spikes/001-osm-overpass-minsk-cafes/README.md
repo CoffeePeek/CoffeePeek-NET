@@ -60,6 +60,7 @@ Browser event log (load / yes / no / skip / export) is shown in the sidebar and 
 9. Binary yes/no was wrong: good non-specialty shops still belong in the feed. Queue now labels Kind: Specialty / GoodCoffee / Cafe / ToGo / Reject.
 10. Location is not enough to judge coffee attention. OSM has **1 image** and Instagram on **193/1576** (76 in priority). Queue now exposes Instagram / Yandex org photos / Yandex images / website og:image preview. Do not review all 1500 — start with priority (~380).
 11. Overpass `out meta`: last OSM edit timestamp. **162 / 1581** objects untouched >5 years dropped from the queue (stale / likely closed or wrong). Card shows last edit + history link.
+12. Live Yandex Places check on the card (name+coords → open/closed). Key stays in gitignored `secrets.local.json`. Current key returns **403 Limit is exceeded** — org-search tile is blocked, no quota. We do not persist Yandex org payloads into the catalog.
 
 ## Results
 

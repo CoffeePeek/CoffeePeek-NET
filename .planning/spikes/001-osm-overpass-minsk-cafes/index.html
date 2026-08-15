@@ -92,6 +92,10 @@
     .log { max-height: 160px; overflow: auto; font-size: 0.85rem; color: var(--muted); white-space: pre-wrap; }
     a { color: #e8c38a; }
     .empty { color: var(--muted); padding: 40px 0; }
+    .yandex-box { margin: 12px 0; padding: 12px 14px; border-radius: 12px; background: #2a221c; }
+    .yandex-box.closed { background: #3a1f1c; }
+    .yandex-box.open { background: #1f2a20; }
+    .yandex-box.blocked { background: #3a2f18; }
   </style>
 </head>
 <body>
@@ -105,6 +109,7 @@
     <aside class="side">
       <img class="preview" id="photo" alt="" hidden />
       <p class="preview-miss" id="photoMiss">Превью сайта подгрузится, если есть своя страница.</p>
+      <div class="yandex-box" id="yandexBox">Яндекс: жду статус…</div>
       <iframe id="map" title="Yandex map"></iframe>
       <p class="log" id="log"></p>
     </aside>
@@ -218,6 +223,44 @@
       return parts.join("");
     }
 
+    function loadYandex(c) {
+      const box = document.getElementById("yandexBox");
+      box.className = "yandex-box";
+      box.textContent = "Яндекс: проверяю, жива ли точка…";
+      const q = new URLSearchParams({ name: c.name, lat: c.lat, lon: c.lon });
+      fetch("/yandex-status?" + q.toString())
+        .then(r => r.json())
+        .then(p => {
+          if (!p.ok) {
+            box.classList.add("blocked");
+            box.textContent = p.hint || p.error || "Яндекс Places недоступен";
+            log("yandex", p.error || "fail");
+            return;
+          }
+          const b = p.best;
+          if (p.verdict === "closed") {
+            box.classList.add("closed");
+            box.textContent = `Яндекс: закрыто — ${b?.name || c.name}. В выборку не берём.`;
+          } else if (p.verdict === "not_found") {
+            box.classList.add("blocked");
+            box.textContent = "Яндекс: организацию рядом не нашёл. Смотри карточку вручную.";
+          } else if (p.verdict === "far") {
+            box.classList.add("blocked");
+            box.textContent = "Яндекс: есть тёзки, но далеко от OSM-точки.";
+          } else if (b) {
+            box.classList.add("open");
+            box.textContent = `Яндекс: ${b.name} · ${b.hours || "часы не указаны"} · ${b.address || ""}`;
+          } else {
+            box.textContent = "Яндекс: ответ пустой.";
+          }
+          log("yandex", p.verdict);
+        })
+        .catch(() => {
+          box.classList.add("blocked");
+          box.textContent = "Яндекс: запрос не дошёл.";
+        });
+    }
+
     function loadPreview(c) {
       const photo = document.getElementById("photo");
       const miss = document.getElementById("photoMiss");
@@ -294,6 +337,7 @@
       });
       document.getElementById("skip").onclick = () => { index++; render(); log("skip", c.name); };
       loadPreview(c);
+      loadYandex(c);
     }
 
     function decide(c, verdict) {

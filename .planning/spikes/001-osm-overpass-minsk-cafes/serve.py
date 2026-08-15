@@ -14,6 +14,8 @@ from pathlib import Path
 DIR = Path(__file__).resolve().parent
 PORT = 8765
 CACHE_PATH = DIR / "preview-cache.json"
+YANDEX_CACHE_PATH = DIR / "yandex-cache.json"
+SECRETS_PATH = DIR / "secrets.local.json"
 OG_IMAGE = re.compile(r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', re.I)
 OG_IMAGE_REV = re.compile(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']', re.I)
 OG_TITLE = re.compile(r'<meta[^>]+property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\']', re.I)
@@ -88,6 +90,118 @@ def fetch_preview(url: str) -> dict:
     return result
 
 
+def places_key() -> str:
+    if not SECRETS_PATH.exists():
+        return ""
+    return json.loads(SECRETS_PATH.read_text(encoding="utf-8")).get("yandexPlacesApiKey") or ""
+
+
+def load_yandex_cache() -> dict:
+    if YANDEX_CACHE_PATH.exists():
+        return json.loads(YANDEX_CACHE_PATH.read_text(encoding="utf-8"))
+    return {}
+
+
+def save_yandex_cache(cache: dict) -> None:
+    YANDEX_CACHE_PATH.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    from math import atan2, cos, radians, sin, sqrt
+
+    r = 6371000
+    p1, p2 = radians(lat1), radians(lat2)
+    dphi = radians(lat2 - lat1)
+    dl = radians(lon2 - lon1)
+    a = sin(dphi / 2) ** 2 + cos(p1) * cos(p2) * sin(dl / 2) ** 2
+    return 2 * r * atan2(sqrt(a), sqrt(1 - a))
+
+
+def summarize_place(feature: dict, lat: float | None, lon: float | None) -> dict:
+    props = feature.get("properties") or {}
+    meta = props.get("CompanyMetaData") or {}
+    hours = meta.get("Hours") or {}
+    geom = (feature.get("geometry") or {}).get("coordinates") or [None, None]
+    plat, plon = (geom[1], geom[0]) if len(geom) == 2 else (None, None)
+    dist = None
+    if lat is not None and lon is not None and plat is not None and plon is not None:
+        dist = round(haversine_m(lat, lon, float(plat), float(plon)))
+    hours_text = hours.get("text") or ""
+    state = "open"
+    lowered = hours_text.lower()
+    if any(x in lowered for x in ("закрыто навсегда", "closed permanently", "больше не работает")):
+        state = "closed"
+    elif hours.get("Availabilities") == [] or "временно закрыт" in lowered:
+        state = "maybe_closed"
+    categories = [c.get("name") for c in (meta.get("Categories") or []) if c.get("name")]
+    return {
+        "name": props.get("name") or meta.get("name"),
+        "address": meta.get("address") or props.get("description"),
+        "hours": hours_text or None,
+        "url": meta.get("url"),
+        "phones": [p.get("formatted") for p in (meta.get("Phones") or []) if p.get("formatted")],
+        "categories": categories,
+        "distanceM": dist,
+        "state": state,
+    }
+
+
+def yandex_status(name: str, lat: float | None, lon: float | None) -> dict:
+    key = places_key()
+    if not key:
+        return {"ok": False, "error": "no-key", "hint": "Положи ключ в secrets.local.json"}
+    cache_key = f"{name}|{lat}|{lon}"
+    cache = load_yandex_cache()
+    if cache_key in cache:
+        return cache[cache_key]
+    params = {
+        "apikey": key,
+        "text": name,
+        "lang": "ru_RU",
+        "type": "biz",
+        "results": "5",
+    }
+    if lat is not None and lon is not None:
+        params["ll"] = f"{lon},{lat}"
+        params["spn"] = "0.02,0.02"
+        params["rspn"] = "1"
+    url = "https://search-maps.yandex.ru/v1/?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"User-Agent": "CoffeePeekSpike/001"})
+    try:
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        return {
+            "ok": False,
+            "error": f"http-{exc.code}",
+            "hint": "Places ключ принят, но тариф заблокирован / лимит 0. В кабинете плитка «Поиск по организациям» должна быть не с замком." if exc.code == 403 else body[:200],
+        }
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
+        return {"ok": False, "error": str(exc)}
+
+    features = data.get("features") or []
+    matches = [summarize_place(f, lat, lon) for f in features]
+    best = matches[0] if matches else None
+    if best and best.get("distanceM") is not None and best["distanceM"] > 250:
+        best = None
+    result = {
+        "ok": True,
+        "found": bool(matches),
+        "best": best,
+        "matches": matches[:3],
+        "verdict": (
+            "closed" if best and best["state"] == "closed"
+            else "not_found" if not matches
+            else "far" if matches and not best
+            else best["state"] if best else "unknown"
+        ),
+    }
+    cache[cache_key] = result
+    save_yandex_cache(cache)
+    return result
+
+
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(DIR), **kwargs)
@@ -97,14 +211,26 @@ class Handler(SimpleHTTPRequestHandler):
         if parsed.path == "/preview":
             qs = urllib.parse.parse_qs(parsed.query)
             url = (qs.get("url") or [""])[0]
-            body = json.dumps(fetch_preview(url), ensure_ascii=False).encode("utf-8")
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Cache-Control", "no-store")
-            self.end_headers()
-            self.wfile.write(body)
-            return
-        return super().do_GET()
+            payload = fetch_preview(url)
+        elif parsed.path == "/yandex-status":
+            qs = urllib.parse.parse_qs(parsed.query)
+            name = (qs.get("name") or [""])[0]
+            lat = qs.get("lat", [None])[0]
+            lon = qs.get("lon", [None])[0]
+            payload = yandex_status(
+                name,
+                float(lat) if lat else None,
+                float(lon) if lon else None,
+            )
+        else:
+            return super().do_GET()
+        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(body)
+        return
 
 
 if __name__ == "__main__":
