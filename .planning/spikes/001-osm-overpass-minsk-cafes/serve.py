@@ -15,6 +15,7 @@ DIR = Path(__file__).resolve().parent
 PORT = 8765
 CACHE_PATH = DIR / "preview-cache.json"
 YANDEX_CACHE_PATH = DIR / "yandex-cache.json"
+GOOGLE_CACHE_PATH = DIR / "google-cache.json"
 SECRETS_PATH = DIR / "secrets.local.json"
 OG_IMAGE = re.compile(r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', re.I)
 OG_IMAGE_REV = re.compile(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']', re.I)
@@ -90,10 +91,18 @@ def fetch_preview(url: str) -> dict:
     return result
 
 
-def places_key() -> str:
+def secrets() -> dict:
     if not SECRETS_PATH.exists():
-        return ""
-    return json.loads(SECRETS_PATH.read_text(encoding="utf-8")).get("yandexPlacesApiKey") or ""
+        return {}
+    return json.loads(SECRETS_PATH.read_text(encoding="utf-8"))
+
+
+def places_key() -> str:
+    return secrets().get("yandexPlacesApiKey") or ""
+
+
+def google_key() -> str:
+    return secrets().get("googlePlacesApiKey") or ""
 
 
 def load_yandex_cache() -> dict:
@@ -202,6 +211,89 @@ def yandex_status(name: str, lat: float | None, lon: float | None) -> dict:
     return result
 
 
+def google_status(name: str, lat: float | None, lon: float | None) -> dict:
+    key = google_key()
+    if not key:
+        return {"ok": False, "error": "no-key", "hint": "Нет googlePlacesApiKey в secrets.local.json"}
+    cache_key = f"{name}|{lat}|{lon}"
+    cache = {}
+    if GOOGLE_CACHE_PATH.exists():
+        cache = json.loads(GOOGLE_CACHE_PATH.read_text(encoding="utf-8"))
+    if cache_key in cache:
+        return cache[cache_key]
+    payload = {
+        "textQuery": name,
+        "languageCode": "ru",
+        "regionCode": "BY",
+        "maxResultCount": 5,
+    }
+    if lat is not None and lon is not None:
+        payload["locationBias"] = {
+            "circle": {
+                "center": {"latitude": lat, "longitude": lon},
+                "radius": 400.0,
+            }
+        }
+    req = urllib.request.Request(
+        "https://places.googleapis.com/v1/places:searchText",
+        data=json.dumps(payload).encode("utf-8"),
+        method="POST",
+        headers={
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": key,
+            "X-Goog-FieldMask": (
+                "places.displayName,places.formattedAddress,places.businessStatus,"
+                "places.location,places.googleMapsUri,places.websiteUri,places.types"
+            ),
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        return {"ok": False, "error": f"http-{exc.code}", "hint": body[:240]}
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
+        return {"ok": False, "error": str(exc)}
+
+    matches = []
+    for place in data.get("places") or []:
+        loc = place.get("location") or {}
+        plat, plon = loc.get("latitude"), loc.get("longitude")
+        dist = None
+        if lat is not None and lon is not None and plat is not None and plon is not None:
+            dist = round(haversine_m(lat, lon, float(plat), float(plon)))
+        status = place.get("businessStatus") or "UNKNOWN"
+        name_text = ((place.get("displayName") or {}).get("text")) or name
+        matches.append(
+            {
+                "name": name_text,
+                "address": place.get("formattedAddress"),
+                "status": status,
+                "mapsUrl": place.get("googleMapsUri"),
+                "website": place.get("websiteUri"),
+                "types": place.get("types") or [],
+                "distanceM": dist,
+            }
+        )
+    best = matches[0] if matches else None
+    if best and best.get("distanceM") is not None and best["distanceM"] > 250:
+        best = None
+    status = (best or {}).get("status")
+    verdict = (
+        "closed" if status == "CLOSED_PERMANENTLY"
+        else "temp_closed" if status == "CLOSED_TEMPORARILY"
+        else "open" if status == "OPERATIONAL"
+        else "not_found" if not matches
+        else "far" if matches and not best
+        else "unknown"
+    )
+    result = {"ok": True, "found": bool(matches), "best": best, "matches": matches[:3], "verdict": verdict}
+    cache[cache_key] = result
+    GOOGLE_CACHE_PATH.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
+    return result
+
+
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(DIR), **kwargs)
@@ -212,6 +304,16 @@ class Handler(SimpleHTTPRequestHandler):
             qs = urllib.parse.parse_qs(parsed.query)
             url = (qs.get("url") or [""])[0]
             payload = fetch_preview(url)
+        elif parsed.path == "/google-status":
+            qs = urllib.parse.parse_qs(parsed.query)
+            name = (qs.get("name") or [""])[0]
+            lat = qs.get("lat", [None])[0]
+            lon = qs.get("lon", [None])[0]
+            payload = google_status(
+                name,
+                float(lat) if lat else None,
+                float(lon) if lon else None,
+            )
         elif parsed.path == "/yandex-status":
             qs = urllib.parse.parse_qs(parsed.query)
             name = (qs.get("name") or [""])[0]

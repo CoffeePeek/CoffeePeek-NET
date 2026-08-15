@@ -109,6 +109,7 @@
     <aside class="side">
       <img class="preview" id="photo" alt="" hidden />
       <p class="preview-miss" id="photoMiss">Превью сайта подгрузится, если есть своя страница.</p>
+      <div class="yandex-box" id="googleBox">Google: жду статус…</div>
       <div class="yandex-box" id="yandexBox">Яндекс: жду статус…</div>
       <iframe id="map" title="Yandex map"></iframe>
       <p class="log" id="log"></p>
@@ -221,6 +222,48 @@
       if (L.osmHistory) parts.push(`<a href="${L.osmHistory}" target="_blank" rel="noreferrer">История OSM</a>`);
       else if (L.osm) parts.push(`<a href="${L.osm}" target="_blank" rel="noreferrer">OSM</a>`);
       return parts.join("");
+    }
+
+    function loadGoogle(c) {
+      const box = document.getElementById("googleBox");
+      box.className = "yandex-box";
+      box.textContent = "Google: проверяю, жива ли точка…";
+      const q = new URLSearchParams({ name: c.name, lat: c.lat, lon: c.lon });
+      fetch("/google-status?" + q.toString())
+        .then(r => r.json())
+        .then(p => {
+          if (!p.ok) {
+            box.classList.add("blocked");
+            box.textContent = "Google: " + (p.hint || p.error);
+            log("google", p.error || "fail");
+            return;
+          }
+          const b = p.best;
+          if (p.verdict === "closed") {
+            box.classList.add("closed");
+            box.textContent = `Google: закрыто навсегда — ${b?.name || c.name}. В выборку не берём.`;
+          } else if (p.verdict === "temp_closed") {
+            box.classList.add("blocked");
+            box.textContent = `Google: временно закрыто — ${b?.name || c.name}`;
+          } else if (p.verdict === "open") {
+            box.classList.add("open");
+            const maps = b?.mapsUrl ? ` · ${b.mapsUrl}` : "";
+            box.innerHTML = `Google: работает — <strong>${b.name}</strong> · ${b.address || ""}`;
+          } else if (p.verdict === "not_found") {
+            box.classList.add("blocked");
+            box.textContent = "Google: рядом не нашёл. Смотри карточку вручную.";
+          } else if (p.verdict === "far") {
+            box.classList.add("blocked");
+            box.textContent = "Google: есть тёзки, но далеко от OSM-точки.";
+          } else {
+            box.textContent = "Google: статус неясен.";
+          }
+          log("google", p.verdict);
+        })
+        .catch(() => {
+          box.classList.add("blocked");
+          box.textContent = "Google: запрос не дошёл.";
+        });
     }
 
     function loadYandex(c) {
@@ -337,6 +380,7 @@
       });
       document.getElementById("skip").onclick = () => { index++; render(); log("skip", c.name); };
       loadPreview(c);
+      loadGoogle(c);
       loadYandex(c);
     }
 
