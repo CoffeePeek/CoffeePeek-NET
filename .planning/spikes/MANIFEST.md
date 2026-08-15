@@ -14,6 +14,7 @@ Bootstrap CoffeePeek with coffee shops in Minsk. Collect candidates from OSM (Ov
 - Existing ShopTag `specialty` is a filter chip, assigned only when Kind=Specialty. Do not reuse amenity tags (laptop, pet) as Kind.
 - Manual labeling on a small sample first, then autofilter from those patterns.
 - Scope v1: shops only, not beans.
+- Drop OSM objects not edited in **5+ years**. Show last OSM edit date on the review card.
 
 ## Spikes
 

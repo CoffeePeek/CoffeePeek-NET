@@ -26,8 +26,10 @@ QUERY = f"""
   nwr[shop=coffee]({BBOX[0]},{BBOX[1]},{BBOX[2]},{BBOX[3]});
   nwr[amenity=vending_machine][vending=coffee]({BBOX[0]},{BBOX[1]},{BBOX[2]},{BBOX[3]});
 );
-out center tags;
+out center meta;
 """
+
+STALE_YEARS = 5
 
 SPECIALTY_NAME = re.compile(
     r"specialty|спеш[еа]лти|third.?wave|thirdwave|обжар|roaster|brew bar|brewbar",
@@ -118,6 +120,15 @@ def address(tags: dict) -> str | None:
     return line or tags.get("addr:full")
 
 
+def parse_osm_timestamp(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
 def classify(tags: dict) -> tuple[str, list[str]]:
     reasons: list[str] = []
     amenity = tags.get("amenity")
@@ -179,12 +190,20 @@ def normalize(raw: dict) -> dict:
         seen.add(key)
         tags = el.get("tags") or {}
         lat, lon = coords(el)
+        osm_updated = parse_osm_timestamp(el.get("timestamp"))
+        now = datetime.now(timezone.utc)
+        age_days = (now - osm_updated).days if osm_updated else None
+        stale = age_days is not None and age_days > STALE_YEARS * 365
         bucket, reasons = classify(tags)
+        if stale:
+            reasons.append(f"osm:stale>{STALE_YEARS}y")
+            bucket = "stale"
         name = tags.get("name") or tags.get("name:ru") or tags.get("name:en") or "(unnamed)"
         website = tags.get("website") or tags.get("contact:website")
         instagram = instagram_url(tags, website)
         links = research_links(name, lat, lon, instagram, website)
         links["osm"] = f"https://www.openstreetmap.org/{key}"
+        links["osmHistory"] = f"https://www.openstreetmap.org/{key}/history"
         candidates.append(
             {
                 "source": "osm",
@@ -210,6 +229,11 @@ def normalize(raw: dict) -> dict:
                 "takeaway": tags.get("takeaway"),
                 "internetAccess": tags.get("internet_access"),
                 "links": links,
+                "osmUpdatedAt": osm_updated.isoformat() if osm_updated else None,
+                "osmVersion": el.get("version"),
+                "osmAgeDays": age_days,
+                "checkDate": tags.get("check_date") or tags.get("survey:date"),
+                "stale": stale,
                 "bucket": bucket,
                 "signals": reasons,
                 "tags": tags,
@@ -244,25 +268,39 @@ def main() -> None:
     (out_dir / "candidates.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
     )
+    fresh = [c for c in payload["candidates"] if not c["stale"]]
+    stale_n = payload["total"] - len(fresh)
+    ui_counts: dict[str, int] = {}
+    for c in fresh:
+        ui_counts[c["bucket"]] = ui_counts.get(c["bucket"], 0) + 1
     ui = {
         "fetchedAtUtc": payload["fetchedAtUtc"],
-        "total": payload["total"],
-        "counts": payload["counts"],
+        "total": len(fresh),
+        "droppedStale": stale_n,
+        "staleYears": STALE_YEARS,
+        "counts": ui_counts,
         "candidates": [
             {k: c[k] for k in (
                 "externalId", "name", "lat", "lon", "address", "phone",
                 "website", "instagram", "facebook", "vk", "description",
                 "openingHours", "amenity", "shop", "cuisine", "brand",
                 "outdoorSeating", "indoorSeating", "takeaway", "internetAccess",
-                "links", "bucket", "signals",
+                "links", "osmUpdatedAt", "osmAgeDays", "osmVersion",
+                "checkDate", "bucket", "signals",
             )}
-            for c in payload["candidates"]
+            for c in fresh
         ],
     }
     (out_dir / "candidates-ui.json").write_text(
         json.dumps(ui, ensure_ascii=False), encoding="utf-8"
     )
-    print(json.dumps({"total": payload["total"], "counts": payload["counts"]}, ensure_ascii=False))
+    print(json.dumps({
+        "total": payload["total"],
+        "fresh": len(fresh),
+        "droppedStale": stale_n,
+        "counts": payload["counts"],
+        "uiCounts": ui_counts,
+    }, ensure_ascii=False))
 
 
 if __name__ == "__main__":

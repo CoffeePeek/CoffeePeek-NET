@@ -72,6 +72,8 @@ The human decision is “how much attention they pay to coffee”. OSM cannot an
 
 Do not expect to label 1576 cards. Default queue = `priority` (~380). Autofilter comes after ~50–100 labeled dossiers.
 
+Drop candidates whose OSM element `timestamp` is older than **5 years** — data is too stale to trust. Keep them out of the admin queue (store as `stale` for audit only). Show last edit date + `/history` on remaining cards. `check_date` is extra signal, not the drop rule.
+
 ## Do not
 
 - Reuse `ModerationShop.Create(userId, ...)` for imports.

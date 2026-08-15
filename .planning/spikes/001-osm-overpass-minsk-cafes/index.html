@@ -97,7 +97,7 @@
 <body>
   <header>
     <h1>Очередь импорта кофеен</h1>
-    <p class="sub">Смотри Instagram и фото на Яндексе с карточки. Не разбирай все 1500 — начни с «кофе-сигнал» (~380).</p>
+    <p class="sub" id="intro">Смотри Instagram и фото на Яндексе. Объекты без правок OSM больше 5 лет из очереди убраны.</p>
   </header>
   <div class="stats" id="stats"></div>
   <main>
@@ -165,6 +165,16 @@
       return value ? `<div><strong>${label}</strong> ${value}</div>` : "";
     }
 
+    function osmAgeLabel(c) {
+      if (!c.osmUpdatedAt) return "нет даты правки";
+      const days = c.osmAgeDays;
+      const date = c.osmUpdatedAt.slice(0, 10);
+      if (days == null) return date;
+      if (days < 60) return `${date} · ${days} дн. назад`;
+      const years = (days / 365).toFixed(1);
+      return `${date} · ${years} лет назад`;
+    }
+
     function renderStats() {
       const counts = { ...data.counts };
       const decided = Object.values(decisions);
@@ -175,8 +185,9 @@
           `<button class="chip ${filter===b?"active":""}" data-b="${b}">${LABELS[b]} · ${counts[b]||0}</button>`
         ).join("") + CATEGORIES.map(c =>
           `<span class="chip">${c.label} · ${catCounts[c.id]||0}</span>`
-        ).join("") + `<span class="chip">в ленте ${inFeed}</span>
-          <button class="chip" id="export">экспорт JSON</button>`;
+        ).join("") + `<span class="chip">в ленте ${inFeed}</span>`
+        + (data.droppedStale ? `<span class="chip">выброшено stale &gt;${data.staleYears || 5}л · ${data.droppedStale}</span>` : "")
+        + `<button class="chip" id="export">экспорт JSON</button>`;
       document.querySelectorAll("[data-b]").forEach(btn => {
         btn.onclick = () => { filter = btn.dataset.b; index = 0; render(); };
       });
@@ -202,7 +213,8 @@
       }
       if (c.facebook) parts.push(`<a href="${c.facebook}" target="_blank" rel="noreferrer">Facebook</a>`);
       if (c.vk) parts.push(`<a href="${c.vk}" target="_blank" rel="noreferrer">VK</a>`);
-      if (L.osm) parts.push(`<a href="${L.osm}" target="_blank" rel="noreferrer">OSM</a>`);
+      if (L.osmHistory) parts.push(`<a href="${L.osmHistory}" target="_blank" rel="noreferrer">История OSM</a>`);
+      else if (L.osm) parts.push(`<a href="${L.osm}" target="_blank" rel="noreferrer">OSM</a>`);
       return parts.join("");
     }
 
@@ -262,6 +274,9 @@
           ${fact("терраса", c.outdoorSeating)}
           ${fact("с собой", c.takeaway)}
           ${fact("wifi", c.internetAccess)}
+          ${fact("OSM обновлён", osmAgeLabel(c))}
+          ${fact("check_date", c.checkDate)}
+          ${fact("версия OSM", c.osmVersion)}
         </div>
         <div class="research">${researchButtons(c)}</div>
         <div class="signals">${(c.signals||[]).map(s => `<span class="chip">${s}</span>`).join("")}</div>
@@ -294,7 +309,12 @@
       .then(r => r.json())
       .then(payload => {
         data = payload;
-        log("load", `${payload.total} кандидатов`);
+        log("load", `${payload.total} в очереди, stale ${payload.droppedStale || 0}`);
+        const intro = document.getElementById("intro");
+        if (intro && payload.droppedStale) {
+          intro.textContent =
+            `В очереди ${payload.total}. Выброшено ${payload.droppedStale} без правок OSM больше ${payload.staleYears || 5} лет.`;
+        }
         filter = (payload.counts.priority || 0) > 0 ? "priority" : "likely_specialty";
         render();
       })
