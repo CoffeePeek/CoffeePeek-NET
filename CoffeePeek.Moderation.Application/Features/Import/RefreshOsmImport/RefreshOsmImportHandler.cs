@@ -17,7 +17,17 @@ public static class RefreshOsmImportHandler
         IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
-        var snapshots = await overpassClient.FetchMinskCafesAsync(ct);
+        IReadOnlyList<OsmCandidateSnapshot> snapshots;
+        try
+        {
+            snapshots = await overpassClient.FetchMinskCafesAsync(ct);
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or HttpRequestException or TaskCanceledException)
+        {
+            return Response<OsmRefreshResultDto>.Error(
+                System.Net.HttpStatusCode.GatewayTimeout,
+                $"OSM Overpass refresh failed: {ex.Message}");
+        }
         var now = DateTimeOffset.UtcNow;
         var existing = await repository.GetByExternalIdsAsync(
             ImportSource.Osm,

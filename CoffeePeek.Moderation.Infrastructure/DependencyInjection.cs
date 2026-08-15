@@ -2,6 +2,7 @@
 using CoffeePeek.Moderation.Infrastructure.Services;
 using CoffeePeek.Shared.Kernel.Extentions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http.Resilience;
 
 namespace CoffeePeek.Moderation.Infrastructure;
 
@@ -24,9 +25,22 @@ public static class DependencyInjection
             client.Timeout = TimeSpan.FromSeconds(Math.Clamp(options.TimeoutSeconds, 5, 60));
         });
 
+        // Aspire AddStandardResilienceHandler() defaults to 30s total timeout and overrides HttpClient.Timeout.
+        // Overpass QL for Minsk is declared as [timeout:90] — replace the default pipeline for this client only.
+        var attemptTimeout = TimeSpan.FromSeconds(120);
         services.AddHttpClient<IOverpassClient, OverpassClient>(client =>
         {
-            client.Timeout = TimeSpan.FromSeconds(120);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("CoffeePeek/1.0 (https://coffeepeek.by; osm-import)");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+        })
+        .RemoveAllResilienceHandlers()
+        .AddStandardResilienceHandler(options =>
+        {
+            options.AttemptTimeout.Timeout = attemptTimeout;
+            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(150);
+            options.Retry.MaxRetryAttempts = 0;
+            options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(300);
+            options.CircuitBreaker.MinimumThroughput = 100;
         });
         
         return services;

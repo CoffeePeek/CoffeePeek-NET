@@ -29,7 +29,10 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
     public async Task<IActionResult> RefreshOsm(CancellationToken ct)
     {
         var response = await bus.InvokeAsync<Response<OsmRefreshResultDto>>(new RefreshOsmImportCommand(), ct);
-        return Ok(response);
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return StatusCode(response.StatusCode ?? StatusCodes.Status504GatewayTimeout, response);
     }
 
     [HttpPost("decisions")]

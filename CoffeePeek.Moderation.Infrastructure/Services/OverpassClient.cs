@@ -6,6 +6,7 @@ using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
 using CoffeePeek.Moderation.Domain.Import;
 using Microsoft.Extensions.Logging;
+using Polly.Timeout;
 
 namespace CoffeePeek.Moderation.Infrastructure.Services;
 
@@ -14,7 +15,8 @@ public class OverpassClient(HttpClient httpClient, ILogger<OverpassClient> logge
     private static readonly string[] Endpoints =
     [
         "https://overpass-api.de/api/interpreter",
-        "https://overpass.kumi.systems/api/interpreter"
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://overpass.openstreetmap.fr/api/interpreter"
     ];
 
     private const double South = 53.824;
@@ -48,7 +50,11 @@ public class OverpassClient(HttpClient httpClient, ILogger<OverpassClient> logge
 
                 return Normalize(payload);
             }
-            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
+            catch (Exception ex) when (
+                ex is HttpRequestException
+                    or TaskCanceledException
+                    or JsonException
+                    or TimeoutRejectedException)
             {
                 lastError = ex;
                 logger.LogWarning(ex, "Overpass endpoint {Endpoint} failed", endpoint);
