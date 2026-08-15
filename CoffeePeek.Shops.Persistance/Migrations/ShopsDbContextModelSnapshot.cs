@@ -137,6 +137,9 @@ namespace CoffeePeek.Shops.Persistance.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int?>("CoffeeFocus")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 

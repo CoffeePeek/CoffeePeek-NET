@@ -28,6 +28,9 @@ public static class MapsterConfiguration
             .Map(dest => dest.Photos, src => src.ShopPhotos.OrderBy(p => p.SortIndex).ThenBy(p => p.CreatedAtUtc))
             .Map(dest => dest.ShopContact, src => src.Contact)
             .Map(dest => dest.Beans, src => src.CoffeeBeans)
+            .Map(dest => dest.CoffeeFocus, src => src.CoffeeFocus == null
+                ? (Contract.Enums.CoffeeFocus?)null
+                : (Contract.Enums.CoffeeFocus)(int)src.CoffeeFocus.Value)
             // IsOpen/IsNew patched after materialize in CoffeeShopQueries (Schedules not in ProjectTo)
             .Ignore(dest => dest.IsOpen)
             .Ignore(dest => dest.IsNew)
@@ -59,6 +62,9 @@ public static class MapsterConfiguration
             .Map(d => d.Schedules, s => s.Schedules)
             .Map(dest => dest.IsOpen, src => src.IsOpen)
             .Map(dest => dest.IsNew, src => src.IsNew)
+            .Map(dest => dest.CoffeeFocus, src => src.CoffeeFocus == null
+                ? (Contract.Enums.CoffeeFocus?)null
+                : (Contract.Enums.CoffeeFocus)(int)src.CoffeeFocus.Value)
             // Tags loaded separately in CoffeeShopQueries.GetDetailsById
             .Ignore(dest => dest.Tags)
             // Rating, ReviewCount and Reviews are set manually in handlers via repository

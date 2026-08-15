@@ -39,6 +39,15 @@ public class QueryCoffeeShopRepository(ShopsDbContext dbContext) : IQueryCoffeeS
         return _repository.AnyAsync(x => x.ModerationId == id, ct);
     }
 
+    public Task<Guid?> GetIdByModerationId(Guid id, CancellationToken ct = default)
+    {
+        return _repository
+            .AsNoTracking()
+            .Where(x => x.ModerationId == id)
+            .Select(x => (Guid?)x.Id)
+            .FirstOrDefaultAsync(ct);
+    }
+
     public async Task<Dictionary<Guid, string>> GetShopNamesByIdsAsync(IEnumerable<Guid> shopIds, CancellationToken ct = default)
     {
         var shopIdList = shopIds.ToList();

@@ -142,6 +142,15 @@ public class SearchCoffeeShopsHandlerTests
     }
 
     [Fact]
+    public void CreateSearchHash_IncludesCoffeeFocus()
+    {
+        var hash = SearchCoffeeShopsHandler.CreateSearchHash(new SearchCoffeeShopsQuery(
+            CoffeeFocus: CoffeePeek.Contract.Enums.CoffeeFocus.Specialty));
+
+        hash.Should().Contain("focus:1");
+    }
+
+    [Fact]
     public void CreateSearchHash_WithoutVisited_OmitsUserId()
     {
         var userId = Guid.NewGuid();

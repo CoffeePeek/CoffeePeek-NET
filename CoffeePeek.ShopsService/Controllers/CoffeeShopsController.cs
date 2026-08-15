@@ -42,6 +42,7 @@ public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : 
         [FromQuery] bool? isNew = null,
         [FromQuery] bool? isVisited = null,
         [FromQuery] Contract.Enums.PriceRange? priceRange = null,
+        [FromQuery] Contract.Enums.CoffeeFocus? coffeeFocus = null,
         [FromQuery][Range(0, 5)] decimal? minRating = null,
         [FromQuery][Range(1, int.MaxValue)] int page = 1,
         [FromQuery][Range(1, 100)] int pageSize = 10)
@@ -62,6 +63,7 @@ public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : 
             IsNew: isNew,
             IsVisited: isVisited,
             PriceRange: priceRange,
+            CoffeeFocus: coffeeFocus,
             MinRating: minRating,
             PageNumber: page,
             PageSize: pageSize);

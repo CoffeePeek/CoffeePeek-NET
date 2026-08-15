@@ -116,6 +116,19 @@ public class AdminCoffeeShopsController(IMessageBus bus, IUserContext userContex
         };
     }
 
+    [HttpPatch("{id:guid}/focus")]
+    [ProducesResponseType<Response<AdminPublishedShopDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SetFocus(
+        Guid id,
+        [FromBody] SetCoffeeShopFocusRequest request,
+        CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
+            new SetAdminCoffeeShopFocusCommand(id, request.CoffeeFocus, userContext.GetUserIdOrThrow()), ct);
+        return response.IsSuccess ? Ok(response) : NotFound(response);
+    }
+
     /// <summary>Replace the full set of filter tags assigned to a shop.</summary>
     [HttpPut("{shopId:guid}/tags")]
     [ProducesResponseType(typeof(Response), StatusCodes.Status200OK)]

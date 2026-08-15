@@ -15,6 +15,19 @@ public static class DependencyInjection
             client.BaseAddress = new Uri(yandexOptions.BaseUrl);
             client.Timeout = TimeSpan.FromSeconds(yandexOptions.TimeoutSeconds);
         });
+
+        services.AddOptions<GooglePlaces>().BindConfiguration(nameof(GooglePlaces));
+        services.AddHttpClient<IGooglePlacesLookup, GooglePlacesLookup>((sp, client) =>
+        {
+            var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<GooglePlaces>>().Value;
+            client.BaseAddress = new Uri(options.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(Math.Clamp(options.TimeoutSeconds, 5, 60));
+        });
+
+        services.AddHttpClient<IOverpassClient, OverpassClient>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(120);
+        });
         
         return services;
     }

@@ -17,3 +17,5 @@ public record AssignCoffeeShopOwnerRequest(Guid? OwnerUserId);
 public record ReorderCoffeeShopPhotosRequest(IReadOnlyList<Guid> PhotoIds);
 
 public record SetCoffeeShopTagsRequest(Guid[] TagIds);
+
+public record SetCoffeeShopFocusRequest(CoffeeFocus CoffeeFocus);

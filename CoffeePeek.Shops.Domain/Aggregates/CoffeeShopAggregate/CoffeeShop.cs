@@ -11,6 +11,7 @@ public sealed class CoffeeShop : Entity<Guid>
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
     public PriceRange PriceRange { get; private set; }
+    public CoffeeFocus? CoffeeFocus { get; private set; }
     public CoffeeShopStatus Status { get; private set; } = CoffeeShopStatus.Active;
 
     public Guid CreatorId { get; private set; }
@@ -100,6 +101,11 @@ public sealed class CoffeeShop : Entity<Guid>
     public void SetStatus(CoffeeShopStatus status)
     {
         Status = status;
+    }
+
+    public void SetCoffeeFocus(CoffeeFocus? focus)
+    {
+        CoffeeFocus = focus;
     }
 
     public void SetHidden(bool hidden)

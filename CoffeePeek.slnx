@@ -31,6 +31,9 @@
     <Project Path="CoffeePeek.ModerationService/CoffeePeek.ModerationService.csproj" />
     <Project Path="CoffeeShop.Moderation.Persistence/CoffeeShop.Moderation.Persistence.csproj" />
   </Folder>
+  <Folder Name="/CoffeePeek/CoffeePeek.Moderation/Tests/">
+    <Project Path="CoffeePeek.Moderation.Domain.Tests/CoffeePeek.Moderation.Domain.Tests.csproj" />
+  </Folder>
   <Folder Name="/CoffeePeek/CoffeePeek.Shops/">
     <Project Path="CoffeePeek.Shops.Application/CoffeePeek.Shops.Application.csproj" />
     <Project Path="CoffeePeek.Shops.Domain/CoffeePeek.Shops.Domain.csproj" />

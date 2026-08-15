@@ -1,0 +1,98 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using CoffeePeek.Contract.Constants;
+using CoffeePeek.Contract.Enums;
+using CoffeePeek.Contract.Events.Moderation;
+using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
+using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shops.Application.Services;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Moq;
+using DomainCoffeeFocus = CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeFocus;
+
+namespace CoffeePeek.Shops.Application.Tests.Services;
+
+public class CreateShopFromImportServiceTests
+{
+    private readonly Mock<IQueryCoffeeShopRepository> _shopRepo = new();
+    private readonly Mock<IQueryShopTagRepository> _tagRepo = new();
+    private readonly Mock<IUnitOfWork> _uow = new();
+    private readonly Mock<ICacheService> _cache = new();
+    private readonly Mock<ILogger<CreateShopFromImportService>> _logger = new();
+    private readonly CancellationToken _ct = CancellationToken.None;
+
+    private CreateShopFromImportService CreateSut() =>
+        new(_shopRepo.Object, _tagRepo.Object, _uow.Object, _cache.Object, _logger.Object);
+
+    [Fact]
+    public async Task Create_WhenNew_AddsShopWithFocusAndSpecialtyTag()
+    {
+        _shopRepo.Setup(r => r.GetIdByModerationId(It.IsAny<Guid>(), _ct)).ReturnsAsync((Guid?)null);
+        _tagRepo
+            .Setup(r => r.GetActiveBySlugsAsync(It.Is<IReadOnlyCollection<string>>(s => s.Contains("specialty")), _ct))
+            .ReturnsAsync([ShopTag.CreateWithId(ShopTagIds.Specialty, "specialty", "Specialty", null, 2)]);
+
+        CoffeeShop? added = null;
+        _shopRepo.Setup(r => r.Add(It.IsAny<CoffeeShop>())).Callback<CoffeeShop>(s => added = s);
+
+        var candidateId = Guid.NewGuid();
+        var creatorId = Guid.NewGuid();
+        var item = new ImportCandidatePublishedItem(
+            candidateId,
+            creatorId,
+            "Coffe Joy",
+            "Немига 5",
+            53.9152m,
+            27.5847m,
+            CitiesConsts.MinskId,
+            null,
+            null,
+            null,
+            Contract.Enums.CoffeeFocus.Specialty,
+            ["to_go"],
+            TemporarilyClosed: false);
+
+        var shopId = await CreateSut().CreateShopFromImportAsync(item, _ct);
+
+        shopId.Should().NotBe(Guid.Empty);
+        added.Should().NotBeNull();
+        added!.CoffeeFocus.Should().Be(DomainCoffeeFocus.Specialty);
+        added.ShopTags.Select(t => t.TagId).Should().Contain(ShopTagIds.Specialty);
+        added.ModerationId.Should().Be(candidateId);
+        added.OwnerUserId.Should().BeNull();
+        _uow.Verify(u => u.SaveChangesAsync(_ct), Times.Once);
+    }
+
+    [Fact]
+    public async Task Create_WhenAlreadyExists_ReturnsExistingId()
+    {
+        var existing = Guid.NewGuid();
+        _shopRepo.Setup(r => r.GetIdByModerationId(It.IsAny<Guid>(), _ct)).ReturnsAsync(existing);
+
+        var item = new ImportCandidatePublishedItem(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Coffe Joy",
+            "Немига 5",
+            53.9152m,
+            27.5847m,
+            CitiesConsts.MinskId,
+            null,
+            null,
+            null,
+            Contract.Enums.CoffeeFocus.Cafe,
+            [],
+            false);
+
+        var shopId = await CreateSut().CreateShopFromImportAsync(item, _ct);
+
+        shopId.Should().Be(existing);
+        _shopRepo.Verify(r => r.Add(It.IsAny<CoffeeShop>()), Times.Never);
+    }
+}

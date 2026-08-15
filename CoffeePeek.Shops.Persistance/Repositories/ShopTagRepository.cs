@@ -35,6 +35,23 @@ public class QueryShopTagRepository(ShopsDbContext dbContext) : IQueryShopTagRep
             .ThenBy(t => t.Name)
             .ToArrayAsync(ct);
 
+    public Task<ShopTag[]> GetActiveBySlugsAsync(IReadOnlyCollection<string> slugs, CancellationToken ct = default)
+    {
+        if (slugs.Count == 0)
+            return Task.FromResult(Array.Empty<ShopTag>());
+
+        var normalized = slugs
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Select(ShopTag.NormalizeSlug)
+            .Distinct()
+            .ToArray();
+
+        return dbContext.ShopTags
+            .AsNoTracking()
+            .Where(t => t.IsActive && normalized.Contains(t.Slug))
+            .ToArrayAsync(ct);
+    }
+
     public async Task<bool> AllExistAndActiveAsync(IReadOnlyCollection<Guid> tagIds, CancellationToken ct = default)
     {
         if (tagIds.Count == 0)

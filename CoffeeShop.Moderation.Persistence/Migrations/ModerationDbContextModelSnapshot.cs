@@ -248,6 +248,126 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.ToTable("ModerationRoasterShops");
                 });
 
+            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ShopImportCandidate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Brand")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("CheckDate")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<int?>("CoffeeFocus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CollectorBucket")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Cuisine")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int?>("GoogleBusinessStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("GoogleFetchedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GoogleMapsUri")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.Property<string>("Instagram")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<decimal>("Latitude")
+                        .HasPrecision(18, 10)
+                        .HasColumnType("numeric(18,10)");
+
+                    b.Property<decimal>("Longitude")
+                        .HasPrecision(18, 10)
+                        .HasColumnType("numeric(18,10)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("OpeningHours")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int?>("OsmAgeDays")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("OsmUpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<int>("QueueStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("ResultingShopId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ReviewedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ReviewedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Signals")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<int>("Source")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TagSlugs")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CoffeeFocus");
+
+                    b.HasIndex("CollectorBucket");
+
+                    b.HasIndex("QueueStatus");
+
+                    b.HasIndex("Source", "ExternalId")
+                        .IsUnique();
+
+                    b.ToTable("ShopImportCandidates", (string)null);
+                });
+
             modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationAuditLog", b =>
                 {
                     b.Property<Guid>("Id")

@@ -112,6 +112,11 @@ public class SearchCoffeeShopsHandler
             keyBuilder.Append($"price:{(int)query.PriceRange.Value}:");
         }
 
+        if (query.CoffeeFocus.HasValue)
+        {
+            keyBuilder.Append($"focus:{(int)query.CoffeeFocus.Value}:");
+        }
+
         if (query.MinRating.HasValue)
         {
             keyBuilder.Append($"rating:{query.MinRating.Value}:");

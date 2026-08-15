@@ -189,4 +189,14 @@ public class CoffeeShopTests
 
         shop.ShopTags.Should().BeEmpty();
     }
+
+    [Fact]
+    public void SetCoffeeFocus_StoresValue()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Moderate, Guid.NewGuid());
+
+        shop.SetCoffeeFocus(CoffeeFocus.Specialty);
+
+        shop.CoffeeFocus.Should().Be(CoffeeFocus.Specialty);
+    }
 }

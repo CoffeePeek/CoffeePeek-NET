@@ -27,6 +27,7 @@ public record CoffeeShopDetailsDto
     public bool IsOpen { get; init; }
     public bool IsNew { get; init; }
     public PriceRange PriceRange { get; init; }
+    public CoffeeFocus? CoffeeFocus { get; init; }
 
     public LocationDto? Location { get; init; }
     public CoffeeBeansDto[]? CoffeeBeans { get; init; }

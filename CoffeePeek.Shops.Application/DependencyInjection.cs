@@ -28,6 +28,7 @@ public static class DependencyInjection
 
         // Application Services
         services.AddScoped<ICreateShopFromModerationService, CreateShopFromModerationService>();
+        services.AddScoped<ICreateShopFromImportService, CreateShopFromImportService>();
 
         return services;
     }

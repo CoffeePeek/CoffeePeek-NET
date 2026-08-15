@@ -1,0 +1,33 @@
+using CoffeePeek.Contract.Enums;
+
+namespace CoffeePeek.Contract.Dtos.Import;
+
+public record ShopImportCandidateDto(
+    Guid Id,
+    string Source,
+    string ExternalId,
+    string? Name,
+    string? Address,
+    decimal Latitude,
+    decimal Longitude,
+    string? Phone,
+    string? Website,
+    string? Instagram,
+    string? OpeningHours,
+    string? Cuisine,
+    string? Brand,
+    DateTimeOffset? OsmUpdatedAt,
+    int? OsmAgeDays,
+    string? CheckDate,
+    IReadOnlyList<string> Signals,
+    ImportCollectorBucket CollectorBucket,
+    ImportQueueStatus QueueStatus,
+    CoffeeFocus? CoffeeFocus,
+    IReadOnlyList<string> TagSlugs,
+    GoogleBusinessStatus? GoogleBusinessStatus,
+    DateTimeOffset? GoogleFetchedAtUtc,
+    bool SuggestReject,
+    Guid? ReviewedByUserId,
+    DateTimeOffset? ReviewedAtUtc,
+    Guid? ResultingShopId,
+    ImportResearchLinksDto Research);
