@@ -13,12 +13,10 @@ public static class GetAdminModerationStatsHandler
         IShopImportCandidateRepository importRepository,
         CancellationToken ct)
     {
-        var pendingTask = repository.GetStatsAsync(ct);
-        var importTask = importRepository.GetStatsAsync(ct);
-        await Task.WhenAll(pendingTask, importTask);
-
-        var (pendingShops, pendingReviews) = await pendingTask;
-        var import = await importTask;
+        // Sequential: both repositories share the same scoped ModerationDbContext.
+        // Parallel Task.WhenAll causes InvalidOperationException (concurrent DbContext use).
+        var (pendingShops, pendingReviews) = await repository.GetStatsAsync(ct);
+        var import = await importRepository.GetStatsAsync(ct);
 
         return Response<AdminServiceStatsDto>.Success(new AdminServiceStatsDto(
             PendingModerationShops: pendingShops,
