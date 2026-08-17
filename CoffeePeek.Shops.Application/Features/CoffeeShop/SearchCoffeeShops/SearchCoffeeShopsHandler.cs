@@ -29,13 +29,15 @@ public class SearchCoffeeShopsHandler
                 TotalItems = totalCount,
                 CurrentPage = queryRequest.PageNumber,
                 PageSize = queryRequest.PageSize,
-                TotalPages = queryRequest.PageSize <= 0
-                    ? 0
-                    : (int)Math.Ceiling(totalCount / (double)queryRequest.PageSize)
+                TotalPages = (int)Math.Ceiling(totalCount / (double)queryRequest.PageSize)
             };
         }, cancellationToken: ct);
         
         if (cachedResponse == null) return Response<GetCoffeeShopsResponse>.Error("Failed to retrieve coffee shop search results");
+
+        // Old cache entries omitted PageSize (defaulted to 0). Echo the requested size so
+        // clients never paginate with pageSize=0.
+        cachedResponse.PageSize = queryRequest.PageSize;
 
         if (queryRequest.UserId.HasValue)
         {

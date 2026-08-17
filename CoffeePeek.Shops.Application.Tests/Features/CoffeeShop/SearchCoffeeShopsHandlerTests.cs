@@ -152,6 +152,39 @@ public class SearchCoffeeShopsHandlerTests
     }
 
     [Fact]
+    public async Task Handle_WhenCachedResponseOmitsPageSize_CopiesItFromQuery()
+    {
+        var shop = new ShortShopDto { Id = Guid.NewGuid(), Name = "Test Shop" };
+        var staleCache = new GetCoffeeShopsResponse
+        {
+            CoffeeShops = [shop],
+            TotalItems = 1,
+            CurrentPage = 1,
+            PageSize = 0,
+            TotalPages = 1
+        };
+
+        _cacheMock
+            .Setup(c => c.GetAsync(
+                It.IsAny<CacheKey>(),
+                It.IsAny<Func<CancellationToken, Task<GetCoffeeShopsResponse>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(staleCache);
+
+        var query = new SearchCoffeeShopsQuery(PageNumber: 1, PageSize: 10);
+        var result = await SearchCoffeeShopsHandler.Handle(
+            query,
+            _shopQueriesMock.Object,
+            _visitRepoMock.Object,
+            _cacheMock.Object,
+            _ct);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.PageSize.Should().Be(10);
+    }
+
+    [Fact]
     public void CreateSearchHash_IncludesTagsAndComputedFilters()
     {
         var tagA = Guid.Parse("11111111-1111-1111-1111-111111111111");
