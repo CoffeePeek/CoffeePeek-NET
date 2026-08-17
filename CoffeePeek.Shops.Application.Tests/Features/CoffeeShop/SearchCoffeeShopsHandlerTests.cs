@@ -33,6 +33,7 @@ public class SearchCoffeeShopsHandlerTests
             CoffeeShops = [shop],
             TotalItems = 1,
             CurrentPage = 1,
+            PageSize = 10,
             TotalPages = 1
         };
 
@@ -118,6 +119,36 @@ public class SearchCoffeeShopsHandlerTests
 
         result.IsSuccess.Should().BeFalse();
         result.Message.Should().Contain("Failed to retrieve");
+    }
+
+    [Fact]
+    public async Task Handle_WhenCacheMiss_SetsPageSizeOnResponse()
+    {
+        var shop = new ShortShopDto { Id = Guid.NewGuid(), Name = "Test Shop" };
+        _shopQueriesMock
+            .Setup(q => q.Search(It.IsAny<SearchCoffeeShopsQuery>(), _ct))
+            .ReturnsAsync(([shop], 1));
+
+        _cacheMock
+            .Setup(c => c.GetAsync(
+                It.IsAny<CacheKey>(),
+                It.IsAny<Func<CancellationToken, Task<GetCoffeeShopsResponse>>>(),
+                It.IsAny<TimeSpan?>(),
+                It.IsAny<CancellationToken>()))
+            .Returns((CacheKey _, Func<CancellationToken, Task<GetCoffeeShopsResponse>> factory, TimeSpan? _, CancellationToken ct) => factory(ct));
+
+        var query = new SearchCoffeeShopsQuery(PageNumber: 1, PageSize: 10);
+        var result = await SearchCoffeeShopsHandler.Handle(
+            query,
+            _shopQueriesMock.Object,
+            _visitRepoMock.Object,
+            _cacheMock.Object,
+            _ct);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Data.PageSize.Should().Be(10);
+        result.Data.CurrentPage.Should().Be(1);
+        result.Data.TotalItems.Should().Be(1);
     }
 
     [Fact]

@@ -28,7 +28,10 @@ public class SearchCoffeeShopsHandler
                 CoffeeShops = items,
                 TotalItems = totalCount,
                 CurrentPage = queryRequest.PageNumber,
-                TotalPages = (int)Math.Ceiling(totalCount / (double)queryRequest.PageSize)
+                PageSize = queryRequest.PageSize,
+                TotalPages = queryRequest.PageSize <= 0
+                    ? 0
+                    : (int)Math.Ceiling(totalCount / (double)queryRequest.PageSize)
             };
         }, cancellationToken: ct);
         
