@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 namespace CoffeeShop.Moderation.Persistence.Configuration;
 
@@ -24,7 +25,9 @@ public class ModerationDbContextFactory : IDesignTimeDbContextFactory<Moderation
             throw new InvalidOperationException("ConnectionString not found in environment variables.");
         }
 
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.UseNpgsql(
+            connectionString,
+            npgsql => npgsql.ConfigureDataSource(ds => ds.EnableDynamicJson()));
 
         return new ModerationDbContext(optionsBuilder.Options);
     }
