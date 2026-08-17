@@ -13,6 +13,7 @@ using FluentAssertions;
 using MapsterMapper;
 using Moq;
 using Wolverine;
+using DomainCheckIn = CoffeePeek.Shops.Domain.Aggregates.CheckInAggregate.CheckIn;
 
 namespace CoffeePeek.Shops.Application.Tests.Features.CheckIn.CreateCheckIn;
 
@@ -77,6 +78,10 @@ public class CreateCheckInHandlerTests
         _mapperMock.Setup(m => m.Map<CoffeePeek.Contract.Dtos.CoffeeShop.ReviewDto>(It.IsAny<object>()))
             .Returns(new CoffeePeek.Contract.Dtos.CoffeeShop.ReviewDto());
 
+        DomainCheckIn? saved = null;
+        _checkInRepoMock.Setup(r => r.Add(It.IsAny<DomainCheckIn>()))
+            .Callback<DomainCheckIn>(c => saved = c);
+
         var result = await CreateCheckInHandler.Handle(
             command,
             _checkInRepoMock.Object,
@@ -88,6 +93,10 @@ public class CreateCheckInHandlerTests
             _ct);
 
         result.IsSuccess.Should().BeTrue();
+        saved.Should().NotBeNull();
+        saved!.Rating.Place.Should().Be(3);
+        saved.Rating.Service.Should().Be(4);
+        saved.Rating.Coffee.Should().Be(5);
         _busMock.Verify(b => b.PublishAsync(It.IsAny<object>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(_ct), Times.Once);
     }

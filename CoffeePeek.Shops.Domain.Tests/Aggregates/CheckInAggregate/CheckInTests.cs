@@ -47,6 +47,19 @@ public class CheckInTests
     }
 
     [Fact]
+    public void AssignRating_WithValidScores_SetsOwnedRating()
+    {
+        var checkIn = CheckIn.Create(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddHours(-1));
+
+        checkIn.AssignRating(place: 5, service: 4, coffee: 3);
+
+        checkIn.Rating.Place.Should().Be(5);
+        checkIn.Rating.Service.Should().Be(4);
+        checkIn.Rating.Coffee.Should().Be(3);
+        checkIn.Rating.AverageRating.Should().Be(4m);
+    }
+
+    [Fact]
     public void UpdateNote_WithValue_SetsNote()
     {
         // Arrange
