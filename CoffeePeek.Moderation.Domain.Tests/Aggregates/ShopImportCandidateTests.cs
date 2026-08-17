@@ -241,6 +241,20 @@ public class ShopImportCandidateTests
         candidate.QueueStatus.Should().Be(ImportQueueStatus.Published);
     }
 
+    [Fact]
+    public void GetResearchLinks_WithUnicodeName_BuildsAbsoluteUrls()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/3032203937", "Кофейня «Ёлка» ☕"), Now);
+
+        var links = candidate.GetResearchLinks();
+
+        links.GoogleMaps.Should().StartWith("https://");
+        links.YandexMaps.Should().StartWith("https://");
+        links.YandexImages.Should().StartWith("https://");
+        links.OsmHistory.Should().Be("https://www.openstreetmap.org/node/3032203937/history");
+        links.InstagramSearch.Should().Contain("instagram");
+    }
+
     private static OsmCandidateSnapshot Snapshot(
         string externalId,
         string? name,

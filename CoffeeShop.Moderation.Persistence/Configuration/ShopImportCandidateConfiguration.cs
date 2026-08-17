@@ -1,4 +1,3 @@
-using System.Text.Json;
 using CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -8,8 +7,6 @@ namespace CoffeeShop.Moderation.Persistence.Configuration;
 
 public class ShopImportCandidateConfiguration : IEntityTypeConfiguration<ShopImportCandidate>
 {
-    private static readonly JsonSerializerOptions JsonOptions = new();
-
     public void Configure(EntityTypeBuilder<ShopImportCandidate> entity)
     {
         entity.ToTable("ShopImportCandidates");
@@ -29,18 +26,15 @@ public class ShopImportCandidateConfiguration : IEntityTypeConfiguration<ShopImp
         entity.Property(e => e.Latitude).HasPrecision(18, 10);
         entity.Property(e => e.Longitude).HasPrecision(18, 10);
 
-        entity.Property(e => e.Signals)
+        // Npgsql 10 maps List<string> + jsonb natively. Do not convert through string:
+        // reading jsonb as System.String requires EnableDynamicJson and aborts the reader
+        // when it is missing (Gateway then returns 502 for GET /api/admin/import/candidates).
+        entity.PrimitiveCollection(e => e.Signals)
             .HasColumnType("jsonb")
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, JsonOptions),
-                v => JsonSerializer.Deserialize<List<string>>(v, JsonOptions) ?? new List<string>())
             .Metadata.SetValueComparer(StringListComparer());
 
-        entity.Property(e => e.TagSlugs)
+        entity.PrimitiveCollection(e => e.TagSlugs)
             .HasColumnType("jsonb")
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, JsonOptions),
-                v => JsonSerializer.Deserialize<List<string>>(v, JsonOptions) ?? new List<string>())
             .Metadata.SetValueComparer(StringListComparer());
 
         entity.HasIndex(e => new { e.Source, e.ExternalId }).IsUnique();
@@ -53,6 +47,6 @@ public class ShopImportCandidateConfiguration : IEntityTypeConfiguration<ShopImp
     private static ValueComparer<List<string>> StringListComparer() =>
         new(
             (a, b) => a != null && b != null && a.SequenceEqual(b),
-            v => v.Aggregate(0, (hash, item) => HashCode.Combine(hash, item.GetHashCode())),
+            v => v.Aggregate(0, (hash, item) => HashCode.Combine(hash, item != null ? item.GetHashCode() : 0)),
             v => v.ToList());
 }

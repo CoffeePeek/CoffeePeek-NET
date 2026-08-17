@@ -45,7 +45,7 @@ public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : 
         [FromQuery] Contract.Enums.CoffeeFocus? coffeeFocus = null,
         [FromQuery][Range(0, 5)] decimal? minRating = null,
         [FromQuery][Range(1, int.MaxValue)] int page = 1,
-        [FromQuery][Range(1, 100)] int pageSize = 10)
+        [FromQuery][Range(0, 100)] int pageSize = 10)
     {
         page = Math.Max(1, page);
         pageSize = pageSize <= 0 ? 10 : Math.Min(pageSize, 100);
@@ -82,7 +82,7 @@ public class CoffeeShopsController(IMessageBus bus, IUserContext userContext) : 
             Response.Headers.TryAdd("X-Total-Count", data.TotalItems.ToString());
             Response.Headers.TryAdd("X-Total-Pages", data.TotalPages.ToString());
             Response.Headers.TryAdd("X-Current-Page", data.CurrentPage.ToString());
-            Response.Headers.TryAdd("X-Page-Size", data.PageSize.ToString());
+            Response.Headers.TryAdd("X-Page-Size", (data.PageSize > 0 ? data.PageSize : pageSize).ToString());
         }
     }
 
