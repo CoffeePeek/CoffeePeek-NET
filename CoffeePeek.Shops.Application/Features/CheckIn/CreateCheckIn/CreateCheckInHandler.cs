@@ -49,6 +49,9 @@ public static class CreateCheckInHandler
 
         if (command.IsPublic)
         {
+            // Owned Rating columns on CheckIns are NOT NULL — persist the public rating
+            // before SaveChanges or Postgres rejects the insert as a generic CONFLICT.
+            checkIn.AssignRating(command.Rating!.Place, command.Rating.Service, command.Rating.Coffee);
             queryCheckInRepository.Add(checkIn);
 
             try
@@ -62,7 +65,7 @@ public static class CreateCheckInHandler
                     command.UserName,
                     header: commentPreview,
                     comment: command.Note!,
-                    ratingPlace: command.Rating!.Place, 
+                    ratingPlace: command.Rating.Place, 
                     ratingService: command.Rating.Service, 
                     ratingCoffee: command.Rating.Coffee);
 

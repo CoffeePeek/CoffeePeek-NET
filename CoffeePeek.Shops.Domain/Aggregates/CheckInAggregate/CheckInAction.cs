@@ -13,6 +13,11 @@ public partial class CheckIn
         return new CheckIn(userId, shopId, visitedAt);
     }
 
+    public void AssignRating(int place, int service, int coffee)
+    {
+        Rating = Rating.Create(place, service, coffee);
+    }
+
     public void UpdateNote(string? newNote)
     {
         Note = newNote?.Trim();
