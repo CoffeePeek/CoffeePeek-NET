@@ -2,6 +2,7 @@ using CoffeePeek.Shared.Kernel.ErrorCodes;
 using CoffeePeek.Shared.Kernel.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json.Serialization;
 
 namespace CoffeePeek.Shared.Web.Extensions;
 
@@ -9,7 +10,12 @@ public static class ControllersModule
 {
     public static IServiceCollection AddControllersModule(this IServiceCollection services)
     {
-        services.AddControllers();
+        services
+            .AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
         services.AddEndpointsApiExplorer();
 
         // Map ASP.NET model binding / data annotation errors to our ErrorResponse format
