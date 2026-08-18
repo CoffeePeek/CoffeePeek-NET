@@ -1,6 +1,5 @@
 ﻿using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Kernel.Response;
-using CoffeePeek.Shops.Application.Features.Review.CanCreateCoffeeShopReview;
 using CoffeePeek.Shops.Application.Features.Review.DeleteReviewFromCoffeeShop;
 using CoffeePeek.Shops.Application.Features.Review.GetReviewById;
 using Microsoft.AspNetCore.Authorization;
@@ -28,27 +27,6 @@ public class CoffeeShopReviewsController(IMessageBus bus, IUserContext userConte
             new GetReviewByIdQuery(reviewId));
 
         return response.IsSuccess ? Ok(response) : NotFound(response);
-    }
-
-    /// <summary>
-    /// Check if user can create review for coffee shop
-    /// </summary>
-    /// <param name="shopId"></param>
-    /// <returns></returns>
-    [HttpGet("can-create")]
-    [ProducesResponseType(typeof(Response<CanCreateCoffeeShopReviewResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CanCreateReview([FromQuery] Guid shopId)
-    {
-        if (shopId == Guid.Empty)
-            return BadRequest(Response<CanCreateCoffeeShopReviewResponse>.Error("Invalid shop ID"));
-
-        var userId = userContext.GetUserIdOrThrow();
-        var query = new CanCreateCoffeeShopReviewQuery(userId, shopId);
-        var response = await bus.InvokeAsync<Response<CanCreateCoffeeShopReviewResponse>>(query);
-
-        return Ok(response);
     }
 
     /// <summary>
