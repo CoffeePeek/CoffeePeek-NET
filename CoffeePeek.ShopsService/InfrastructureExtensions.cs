@@ -40,10 +40,7 @@ public static class InfrastructureExtensions
         app.UseExceptionHandler();
         app.UseResponseCaching();
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.MapOpenApi();
-        }
+        app.MapOpenApi();
 
         app.MapDefaultEndpoints();
 
