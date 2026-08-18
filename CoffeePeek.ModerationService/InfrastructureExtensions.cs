@@ -41,10 +41,7 @@ public static class InfrastructureExtensions
         app.UseAuthentication();
         app.UseAuthorization();
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.MapOpenApi();
-        }
+        app.MapOpenApi();
 
         app.MapDefaultEndpoints();
 
