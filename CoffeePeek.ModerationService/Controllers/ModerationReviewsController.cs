@@ -22,8 +22,8 @@ public class ModerationReviewsController(IMessageBus bus, IUserContext userConte
     [HttpGet]
     [Authorize(Policy = RoleConsts.Moderator)]
     [ProducesResponseType(typeof(Response<GetAllModerationReviewsResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> GetAllModerationReviews(
         [FromQuery] GetAllModerationReviewsQuery query,
         CancellationToken cancellationToken)
@@ -44,7 +44,7 @@ public class ModerationReviewsController(IMessageBus bus, IUserContext userConte
     [HttpGet("{id:guid}")]
     [Authorize(Policy = RoleConsts.Moderator)]
     [ProducesResponseType<Response<ModerationReviewDto>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetModerationReviewById(Guid id, CancellationToken ct)
     {
         var response = await bus.InvokeAsync<Response<ModerationReviewDto>>(new GetModerationReviewByIdQuery(id), ct);
@@ -54,10 +54,10 @@ public class ModerationReviewsController(IMessageBus bus, IUserContext userConte
     [HttpPost]
     [Authorize]
     [ProducesResponseType(typeof(CreateEntityResponse), statusCode: StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> SendReviewToModeration(
         [FromBody] SendReviewToModerationCommand command, CancellationToken ct)
     {
@@ -77,10 +77,10 @@ public class ModerationReviewsController(IMessageBus bus, IUserContext userConte
     [HttpPut("{reviewId:guid}")]
     [Authorize]
     [ProducesResponseType(typeof(Response<UpdateCoffeeShopReviewResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateReview(
         [FromBody] UpdateCoffeeShopReviewCommand command, Guid reviewId, CancellationToken ct)
     {
@@ -95,9 +95,9 @@ public class ModerationReviewsController(IMessageBus bus, IUserContext userConte
     [HttpPut]
     [Authorize(Policy = RoleConsts.Moderator)]
     [ProducesResponseType<UpdateEntityResponse<ModerationStatus>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> ChangeStatusModerationReview(
         [FromBody] ChangeStatusModerationReviewCommand command, CancellationToken ct)
     {

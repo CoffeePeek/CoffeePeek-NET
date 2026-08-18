@@ -17,7 +17,6 @@ public static class DependencyInjection
         });
         
         services.AddControllersModule();
-        OpenApiDebugProbe.Run();
 
         services.AddHeaderUserContext(configuration);
 
