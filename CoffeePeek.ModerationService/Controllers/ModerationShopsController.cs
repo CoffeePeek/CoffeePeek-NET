@@ -25,7 +25,7 @@ public class ModerationShopsController(IMessageBus bus, IUserContext userContext
     [Authorize(Policy = RoleConsts.Moderator)]
     [Description("Get coffee shops for moderation with pagination and filters")]
     [ProducesResponseType<Response<GetAllModerationShopsResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllModerationShops([FromQuery] GetAllModerationShopsQuery request, CancellationToken ct)
     {
         var response = await bus.InvokeAsync<Response<GetAllModerationShopsResponse>>(request, ct);
@@ -44,7 +44,7 @@ public class ModerationShopsController(IMessageBus bus, IUserContext userContext
     [HttpGet("{id:guid}")]
     [Authorize(Policy = RoleConsts.Moderator)]
     [ProducesResponseType<Response<ModerationShopDto>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetModerationShopById(Guid id, CancellationToken ct)
     {
         var response = await bus.InvokeAsync<Response<ModerationShopDto>>(new GetModerationShopByIdQuery(id), ct);

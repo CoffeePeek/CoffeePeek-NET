@@ -90,7 +90,7 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
 
     [HttpGet("candidates/{id:guid}")]
     [ProducesResponseType<Response<ShopImportCandidateDto>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCandidate(Guid id, CancellationToken ct)
     {
         var response = await bus.InvokeAsync<Response<ShopImportCandidateDto>>(
