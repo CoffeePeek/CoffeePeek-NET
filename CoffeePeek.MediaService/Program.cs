@@ -15,12 +15,17 @@ using CoffeePeek.Shared.Persistence.Extensions;
 using CoffeePeek.Shared.Web;
 using CoffeePeek.Shared.Web.Handlers;
 using CoffeePeek.Shared.Web.Sentry;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseCoffeePeekSentry();
 var services = builder.Services;
 
-services.AddControllers();
+services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 services.AddProblemDetails();
 services.AddExceptionHandler<GlobalExceptionHandler>();
 services.AddHeaderUserContext(builder.Configuration);
