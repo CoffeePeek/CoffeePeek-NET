@@ -31,7 +31,7 @@ public record AdminPublishedShopDto(
     string Name,
     Guid CityId,
     DomainCoffeeShopStatus Status,
-    CoffeeFocus? CoffeeFocus,
+    CoffeeShopType? Type,
     Guid CreatorId,
     Guid? OwnerUserId,
     Guid? ModerationId,
@@ -59,7 +59,7 @@ public static class AdminPublishedShopMapper
         shop.Name,
         shop.Location.CityId,
         shop.Status,
-        shop.CoffeeFocus is null ? null : (CoffeeFocus)(int)shop.CoffeeFocus.Value,
+        shop.CoffeeFocus is null ? null : (CoffeeShopType)(int)shop.CoffeeFocus.Value,
         shop.CreatorId,
         shop.OwnerUserId,
         shop.ModerationId,
@@ -208,7 +208,7 @@ public static class AssignCoffeeShopOwnerHandler
     }
 }
 
-public record SetAdminCoffeeShopFocusCommand(Guid ShopId, CoffeeFocus CoffeeFocus, Guid AdminUserId);
+public record SetAdminCoffeeShopFocusCommand(Guid ShopId, CoffeeShopType Type, Guid AdminUserId);
 
 public static class SetAdminCoffeeShopFocusHandler
 {
@@ -224,10 +224,10 @@ public static class SetAdminCoffeeShopFocusHandler
         if (shop is null)
             return Response<AdminPublishedShopDto>.Error(System.Net.HttpStatusCode.NotFound, "Shop not found.");
 
-        shop.SetCoffeeFocus((Domain.Aggregates.CoffeeShopAggregate.CoffeeFocus)(int)command.CoffeeFocus);
+        shop.SetCoffeeFocus((Domain.Aggregates.CoffeeShopAggregate.CoffeeFocus)(int)command.Type);
 
         var tagIds = shop.ShopTags.Select(t => t.TagId).ToList();
-        if (command.CoffeeFocus == CoffeeFocus.Specialty)
+        if (command.Type == CoffeeShopType.Specialty)
         {
             if (!tagIds.Contains(ShopTagIds.Specialty))
                 tagIds.Add(ShopTagIds.Specialty);

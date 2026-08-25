@@ -33,10 +33,10 @@ public class CreateShopFromModerationService(
 
         var shop = new CoffeeShop(creatorId, shopDto.Name, shopDto.Description, (PriceRange)shopDto.PriceRange, moderationId);
 
-        if (shopDto.CoffeeFocus.HasValue)
+        if (shopDto.Type.HasValue)
         {
-            shop.SetCoffeeFocus((CoffeeFocus)(int)shopDto.CoffeeFocus.Value);
-            if (shopDto.CoffeeFocus.Value == CoffeePeek.Contract.Enums.CoffeeFocus.Specialty)
+            shop.SetCoffeeFocus((CoffeeFocus)(int)shopDto.Type.Value);
+            if (shopDto.Type.Value == CoffeePeek.Contract.Enums.CoffeeShopType.Specialty)
                 shop.SetTags([ShopTagIds.Specialty], creatorId);
         }
 

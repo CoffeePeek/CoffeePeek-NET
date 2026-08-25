@@ -35,7 +35,7 @@ public static class ShopImportCandidateMapper
             candidate.Signals,
             (Contract.Enums.ImportCollectorBucket)(int)candidate.CollectorBucket,
             (Contract.Enums.ImportQueueStatus)(int)candidate.QueueStatus,
-            candidate.CoffeeFocus is null ? null : (CoffeeFocus)(int)candidate.CoffeeFocus.Value,
+            candidate.CoffeeFocus is null ? null : (CoffeeShopType)(int)candidate.CoffeeFocus.Value,
             candidate.TagSlugs,
             candidate.GoogleBusinessStatus is null
                 ? null
@@ -59,7 +59,7 @@ public static class ShopImportCandidateMapper
 
     public static DomainStatus ToDomain(Contract.Enums.ImportQueueStatus status) => (DomainStatus)(int)status;
 
-    public static DomainFocus ToDomain(CoffeeFocus focus) => (DomainFocus)(int)focus;
+    public static DomainFocus ToDomain(CoffeeShopType type) => (DomainFocus)(int)type;
 
     public static DomainBucket ToDomain(Contract.Enums.ImportCollectorBucket bucket) => (DomainBucket)(int)bucket;
 

@@ -14,7 +14,7 @@ namespace CoffeePeek.Moderation.Application.Features.Import.DecideImportCandidat
 public record DecideImportCandidateCommand(
     Guid Id,
     ContractStatus Status,
-    CoffeeFocus? CoffeeFocus,
+    CoffeeShopType? Type,
     string[]? TagSlugs,
     bool OverrideClosed,
     Guid ReviewerUserId,
@@ -36,7 +36,7 @@ public static class DecideImportCandidateHandler
         {
             candidate.Decide(
                 ShopImportCandidateMapper.ToDomain(command.Status),
-                command.CoffeeFocus is null ? null : ShopImportCandidateMapper.ToDomain(command.CoffeeFocus.Value),
+                command.Type is null ? null : ShopImportCandidateMapper.ToDomain(command.Type.Value),
                 command.TagSlugs,
                 command.ReviewerUserId,
                 command.OverrideClosed,
@@ -85,7 +85,7 @@ public static class ImportPublishFactory
             candidate.Phone,
             candidate.Website,
             candidate.Instagram,
-            (CoffeeFocus)(int)candidate.CoffeeFocus!.Value,
+            (CoffeeShopType)(int)candidate.CoffeeFocus!.Value,
             candidate.TagSlugs.ToArray(),
             overrideClosed && candidate.GoogleBusinessStatus == ImportGoogleBusinessStatus.ClosedPermanently);
     }

@@ -22,7 +22,7 @@ public record ShopImportCandidateDto(
     IReadOnlyList<string> Signals,
     ImportCollectorBucket CollectorBucket,
     ImportQueueStatus QueueStatus,
-    CoffeeFocus? CoffeeFocus,
+    CoffeeShopType? Type,
     IReadOnlyList<string> TagSlugs,
     GoogleBusinessStatus? GoogleBusinessStatus,
     DateTimeOffset? GoogleFetchedAtUtc,

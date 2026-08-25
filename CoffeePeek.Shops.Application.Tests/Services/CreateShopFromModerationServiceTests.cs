@@ -115,7 +115,7 @@ public class CreateShopFromModerationServiceTests
             .Callback<CoffeeShop>(shop => added = shop);
 
         var dto = CreateMinimalShopDto();
-        dto.CoffeeFocus = CoffeePeek.Contract.Enums.CoffeeFocus.Specialty;
+        dto.Type = CoffeePeek.Contract.Enums.CoffeeShopType.Specialty;
 
         var result = await CreateSut().CreateShopFromApprovedEventAsync(
             dto,

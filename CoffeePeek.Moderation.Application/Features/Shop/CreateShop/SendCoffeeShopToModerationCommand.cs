@@ -17,7 +17,7 @@ public record SendCoffeeShopToModerationCommand
     
     public string? Description { get; init; }
     public PriceRange? PriceRange { get; init; }
-    public CoffeeFocus? CoffeeFocus { get; init; }
+    public CoffeeShopType? Type { get; init; }
     public ShopContactDto? ShopContact { get; init; }
     public List<ScheduleDto>? Schedules { get; init; }
     public List<Guid>? EquipmentIds { get; init; }

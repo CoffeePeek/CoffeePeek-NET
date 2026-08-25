@@ -7,5 +7,5 @@ public record GetAllModerationShopsQuery(
     [Range(1, int.MaxValue)] int Page = 1,
     [Range(1, 100)] int PageSize = 20,
     ModerationStatus? Status = null,
-    CoffeeFocus? CoffeeFocus = null,
+    CoffeeShopType? Type = null,
     [StringLength(100)] string? Search = null);

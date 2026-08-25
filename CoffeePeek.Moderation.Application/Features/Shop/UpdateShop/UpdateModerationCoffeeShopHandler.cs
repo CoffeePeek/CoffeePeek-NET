@@ -33,8 +33,8 @@ public static class UpdateModerationCoffeeShopHandler
         var domainPriceRange = moderationShopDto.PriceRange != null
             ? (DomainPriceRange?)moderationShopDto.PriceRange
             : null;
-        var domainCoffeeFocus = moderationShopDto.CoffeeFocus != null
-            ? (DomainCoffeeFocus?)moderationShopDto.CoffeeFocus
+        var domainCoffeeFocus = moderationShopDto.Type != null
+            ? (DomainCoffeeFocus?)moderationShopDto.Type
             : null;
         shop.UpdateInfo(
             moderationShopDto.Name,

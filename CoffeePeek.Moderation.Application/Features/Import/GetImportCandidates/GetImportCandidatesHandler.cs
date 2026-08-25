@@ -11,7 +11,7 @@ namespace CoffeePeek.Moderation.Application.Features.Import.GetImportCandidates;
 public record GetImportCandidatesQuery(
     ContractStatus? Status = ContractStatus.Pending,
     ContractBucket? Bucket = null,
-    CoffeeFocus? Focus = null,
+    CoffeeShopType? Type = null,
     ContractRejectReason? RejectReason = null,
     string? Search = null,
     int Page = 1,
@@ -38,7 +38,7 @@ public static class GetImportCandidatesHandler
         var (items, total) = await repository.SearchAsync(
             query.Status is null ? null : ShopImportCandidateMapper.ToDomain(query.Status.Value),
             query.Bucket is null ? null : ShopImportCandidateMapper.ToDomain(query.Bucket.Value),
-            query.Focus is null ? null : ShopImportCandidateMapper.ToDomain(query.Focus.Value),
+            query.Type is null ? null : ShopImportCandidateMapper.ToDomain(query.Type.Value),
             query.RejectReason is null ? null : ShopImportCandidateMapper.ToDomain(query.RejectReason.Value),
             query.Search,
             excludeStale,

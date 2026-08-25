@@ -44,13 +44,13 @@ public class CreateShopFromImportService(
 
         shop.SetLocation(cityId, item.Address, item.Latitude, item.Longitude);
         shop.SetContact(item.Instagram, email: null, item.Website, FirstPhone(item.Phone));
-        shop.SetCoffeeFocus((CoffeeFocus)(int)item.CoffeeFocus);
+        shop.SetCoffeeFocus((CoffeeFocus)(int)item.Type);
 
         if (item.TemporarilyClosed)
             shop.SetStatus(CoffeeShopStatus.TemporarilyClosed);
 
         var slugs = item.TagSlugs.ToList();
-        if (item.CoffeeFocus == Contract.Enums.CoffeeFocus.Specialty && !slugs.Contains("specialty"))
+        if (item.Type == Contract.Enums.CoffeeShopType.Specialty && !slugs.Contains("specialty"))
             slugs.Add("specialty");
 
         var tags = await tagRepository.GetActiveBySlugsAsync(slugs, cancellationToken);

@@ -58,10 +58,10 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
             query = query.Where(s => (int)s.PriceRange == priceRangeValue);
         }
 
-        if (request.CoffeeFocus.HasValue)
+        if (request.Type.HasValue)
         {
-            var focusValue = (CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeFocus)(int)request.CoffeeFocus.Value;
-            query = query.Where(s => s.CoffeeFocus == focusValue);
+            var typeValue = (CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeFocus)(int)request.Type.Value;
+            query = query.Where(s => s.CoffeeFocus == typeValue);
         }
         
         if (request.MinRating.HasValue)

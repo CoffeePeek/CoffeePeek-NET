@@ -125,7 +125,7 @@ public class AdminCoffeeShopsController(IMessageBus bus, IUserContext userContex
         CancellationToken ct)
     {
         var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
-            new SetAdminCoffeeShopFocusCommand(id, request.CoffeeFocus, userContext.GetUserIdOrThrow()), ct);
+            new SetAdminCoffeeShopFocusCommand(id, request.Type, userContext.GetUserIdOrThrow()), ct);
         return response.IsSuccess ? Ok(response) : NotFound(response);
     }
 
