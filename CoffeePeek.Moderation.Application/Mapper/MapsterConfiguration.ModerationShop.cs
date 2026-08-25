@@ -2,6 +2,7 @@
 using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Moderation.Domain.Aggregates;
 using Mapster;
+using ContractCoffeeFocus = CoffeePeek.Contract.Enums.CoffeeFocus;
 using ModerationShop = CoffeePeek.Moderation.Domain.Aggregates.ModerationShop;
 
 namespace CoffeePeek.Moderation.Application.Mapper;
@@ -13,6 +14,9 @@ public partial class MapsterConfiguration
         config.NewConfig<ModerationShop, ModerationShopDto>()
             .Map(dest => dest.Address, src => src.Location.Address)
             .Map(dest => dest.AddressIsValidated, src => src.Location.IsAddressValidated)
+            .Map(dest => dest.CoffeeFocus, src => src.CoffeeFocus == null
+                ? (ContractCoffeeFocus?)null
+                : (ContractCoffeeFocus)(int)src.CoffeeFocus.Value)
             .Map(dest => dest.ShopPhotos, src => src.ShopPhotos)
             .Map(dest => dest.ShopContact, src => src.Contact)
             .Map(d => d.EquipmentIds, s => s.ModerationShopEquipments.Select(x => x.EquipmentId))
@@ -25,6 +29,9 @@ public partial class MapsterConfiguration
             .Map(d => d.Rating, s => 0)
             .Map(d => d.ReviewCount, s => 0)
             .Map(d => d.IsOpen, s => true)
+            .Map(dest => dest.CoffeeFocus, src => src.CoffeeFocus == null
+                ? (ContractCoffeeFocus?)null
+                : (ContractCoffeeFocus)(int)src.CoffeeFocus.Value)
             .Map(d => d.CoffeeBeans, s => s.ModerationCoffeeBeanShops)
             .Map(d => d.Roasters, s => s.ModerationRoasterShops)
             .Map(d => d.Equipments, s => s.ModerationShopEquipments)

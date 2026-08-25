@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.Moderation.Domain.Aggregates;
+using CoffeePeek.Moderation.Domain.Aggregates.Enums;
 using CoffeePeek.Moderation.Domain.Common.Enums;
 using CoffeeShop.Moderation.Persistence.Configuration;
 using Microsoft.EntityFrameworkCore;
@@ -24,12 +25,16 @@ public class QueryModerationShopRepository(ModerationDbContext dbContext) : IQue
         int pageSize,
         ModerationStatus? status,
         string? search,
+        CoffeeFocus? coffeeFocus,
         CancellationToken ct = default)
     {
         var query = BuildReviewQuery();
 
         if (status.HasValue)
             query = query.Where(s => s.ModerationStatus == status.Value);
+
+        if (coffeeFocus.HasValue)
+            query = query.Where(s => s.CoffeeFocus == coffeeFocus.Value);
 
         if (!string.IsNullOrWhiteSpace(search))
         {

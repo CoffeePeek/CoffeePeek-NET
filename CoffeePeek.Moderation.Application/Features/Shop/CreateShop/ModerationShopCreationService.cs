@@ -1,6 +1,7 @@
 using CoffeePeek.Moderation.Application.Common.Models;
 using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Shared.Kernel;
+using DomainCoffeeFocus = CoffeePeek.Moderation.Domain.Aggregates.Enums.CoffeeFocus;
 using DomainPriceRange = CoffeePeek.Moderation.Domain.Aggregates.Enums.PriceRange;
 using ModerationShop = CoffeePeek.Moderation.Domain.Aggregates.ModerationShop;
 
@@ -18,7 +19,8 @@ public class ModerationShopCreationService(IModerationShopRepository shopReposit
             command.Name,
             command.UserId,
             command.CityId,
-            command.Description
+            command.Description,
+            command.CoffeeFocus is null ? null : (DomainCoffeeFocus)command.CoffeeFocus.Value
         );
 
         var location = geocodingResult != null

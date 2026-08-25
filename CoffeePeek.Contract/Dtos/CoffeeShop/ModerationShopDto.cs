@@ -14,6 +14,7 @@ public class ModerationShopDto
     public bool AddressIsValidated { get; set; }
     public string? Description { get; set; }
     public PriceRange PriceRange { get; set; }
+    public CoffeeFocus? CoffeeFocus { get; set; }
     public Guid? CityId { get; set; }
     public Guid UserId { get; set; }
     public ModerationStatus ModerationStatus { get; set; }

@@ -6,6 +6,7 @@ using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
 using Wolverine;
+using DomainCoffeeFocus = CoffeePeek.Moderation.Domain.Aggregates.Enums.CoffeeFocus;
 using DomainPriceRange = CoffeePeek.Moderation.Domain.Aggregates.Enums.PriceRange;
 
 namespace CoffeePeek.Moderation.Application.Features.Shop.UpdateShop;
@@ -32,7 +33,15 @@ public static class UpdateModerationCoffeeShopHandler
         var domainPriceRange = moderationShopDto.PriceRange != null
             ? (DomainPriceRange?)moderationShopDto.PriceRange
             : null;
-        shop.UpdateInfo(moderationShopDto.Name, moderationShopDto.Description, domainPriceRange, moderationShopDto.CityId);
+        var domainCoffeeFocus = moderationShopDto.CoffeeFocus != null
+            ? (DomainCoffeeFocus?)moderationShopDto.CoffeeFocus
+            : null;
+        shop.UpdateInfo(
+            moderationShopDto.Name,
+            moderationShopDto.Description,
+            domainPriceRange,
+            moderationShopDto.CityId,
+            domainCoffeeFocus);
 
         if (moderationShopDto.Address != null && moderationShopDto.Address != shop.Location?.Address)
         {

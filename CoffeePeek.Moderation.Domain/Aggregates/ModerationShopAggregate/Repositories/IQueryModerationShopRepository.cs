@@ -1,4 +1,5 @@
-﻿using CoffeePeek.Moderation.Domain.Common.Enums;
+﻿using CoffeePeek.Moderation.Domain.Aggregates.Enums;
+using CoffeePeek.Moderation.Domain.Common.Enums;
 
 namespace CoffeePeek.Moderation.Domain.Aggregates;
 
@@ -11,5 +12,6 @@ public interface IQueryModerationShopRepository
         int pageSize,
         ModerationStatus? status,
         string? search,
+        CoffeeFocus? coffeeFocus,
         CancellationToken cancellationToken = default);
 }

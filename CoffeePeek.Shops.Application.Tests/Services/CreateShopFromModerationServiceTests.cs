@@ -102,4 +102,31 @@ public class CreateShopFromModerationServiceTests
         _shopRepoMock.Verify(r => r.Add(It.IsAny<CoffeeShop>()), Times.Never);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
+
+    [Fact]
+    public async Task CreateShopFromApprovedEventAsync_CopiesCoffeeFocusAndSpecialtyTag()
+    {
+        CoffeeShop? added = null;
+        _shopRepoMock
+            .Setup(r => r.GetIdByModerationId(It.IsAny<Guid>(), _ct))
+            .ReturnsAsync((Guid?)null);
+        _shopRepoMock
+            .Setup(r => r.Add(It.IsAny<CoffeeShop>()))
+            .Callback<CoffeeShop>(shop => added = shop);
+
+        var dto = CreateMinimalShopDto();
+        dto.CoffeeFocus = CoffeePeek.Contract.Enums.CoffeeFocus.Specialty;
+
+        var result = await CreateSut().CreateShopFromApprovedEventAsync(
+            dto,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            _ct);
+
+        result.Should().NotBe(Guid.Empty);
+        added.Should().NotBeNull();
+        added!.CoffeeFocus.Should().Be(CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeFocus.Specialty);
+        added.ShopTags.Should().ContainSingle(t =>
+            t.TagId == CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate.ShopTagIds.Specialty);
+    }
 }

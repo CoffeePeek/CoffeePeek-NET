@@ -19,6 +19,7 @@ public class ModerationShopConfiguration : IEntityTypeConfiguration<ModerationSh
         entity.HasIndex(e => e.UserId);
         entity.HasIndex(e => e.ModerationStatus);
         entity.HasIndex(e => e.CityId);
+        entity.HasIndex(e => e.CoffeeFocus);
 
         entity.OwnsOne(e => e.Contact, contact =>
         {
