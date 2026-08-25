@@ -1,4 +1,5 @@
 using System.Net;
+using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 using CoffeePeek.Shared.Kernel;
@@ -14,6 +15,7 @@ public static class BlockUserHandler
         BlockUserCommand command,
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
+        ISessionTerminationNotifier sessionTerminationNotifier,
         CancellationToken ct)
     {
         var user = await userRepository.GetById(command.TargetUserId, ct);
@@ -27,6 +29,8 @@ public static class BlockUserHandler
 
         await userRepository.Update(user, ct);
         await unitOfWork.SaveChangesAsync(ct);
+        if (command.Blocked)
+            await sessionTerminationNotifier.NotifyForceLogoutAsync(user.Id, SessionTerminationReasons.UserBlocked, ct);
 
         return Response<bool>.Success(true);
     }

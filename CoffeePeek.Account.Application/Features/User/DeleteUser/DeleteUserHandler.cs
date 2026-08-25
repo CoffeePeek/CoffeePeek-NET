@@ -1,3 +1,4 @@
+using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 using CoffeePeek.Shared.Kernel;
@@ -11,6 +12,7 @@ public class DeleteUserHandler
     public static async Task<Response<bool>> Handle(DeleteUserCommand command, 
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
+        ISessionTerminationNotifier sessionTerminationNotifier,
         CancellationToken cancellationToken)
     {
         var user = await userRepository.GetById(command.UserId, cancellationToken);
@@ -26,6 +28,7 @@ public class DeleteUserHandler
         await userRepository.Update(user, cancellationToken);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        await sessionTerminationNotifier.NotifyForceLogoutAsync(user.Id, SessionTerminationReasons.UserDeleted, cancellationToken);
         
         return Response<bool>.Success(true);
     }

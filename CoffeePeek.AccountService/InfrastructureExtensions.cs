@@ -1,5 +1,6 @@
 ﻿using CoffeePeek.Account.Application;
 using CoffeePeek.Account.Application.Features.Auth.RegisterUser;
+using CoffeePeek.AccountService.Realtime;
 using CoffeePeek.Account.Infrastructure;
 using CoffeePeek.Account.Infrastructure.Consumers;
 using CoffeePeek.Account.Persistence;
@@ -46,6 +47,7 @@ public static class InfrastructureExtensions
         
         app.MapDefaultEndpoints();
 
+        app.MapHub<SessionHub>("/realtime/session");
         app.MapControllers();
     }
 }
