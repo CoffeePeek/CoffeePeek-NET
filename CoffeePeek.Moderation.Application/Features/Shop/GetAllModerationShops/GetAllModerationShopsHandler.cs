@@ -3,6 +3,7 @@ using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Moderation.Domain.Common.Enums;
 using CoffeePeek.Shared.Kernel.Response;
 using MapsterMapper;
+using DomainCoffeeFocus = CoffeePeek.Moderation.Domain.Aggregates.Enums.CoffeeFocus;
 
 namespace CoffeePeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 
@@ -18,11 +19,16 @@ public static class GetAllModerationShopsHandler
             ? (ModerationStatus?)query.Status.Value
             : null;
 
+        DomainCoffeeFocus? domainFocus = query.CoffeeFocus.HasValue
+            ? (DomainCoffeeFocus)(int)query.CoffeeFocus.Value
+            : null;
+
         var (items, totalCount) = await repository.GetPagedForReviewAsync(
             query.Page,
             query.PageSize,
             domainStatus,
             query.Search,
+            domainFocus,
             ct);
 
         var dtos = mapper.Map<ModerationShopDto[]>(items);

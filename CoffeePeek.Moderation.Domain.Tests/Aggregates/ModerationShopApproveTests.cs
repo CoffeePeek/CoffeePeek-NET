@@ -59,4 +59,32 @@ public class ModerationShopApproveTests
         changed.Should().BeFalse();
         shop.ModerationStatus.Should().Be(ModerationStatus.Approved);
     }
+
+    [Fact]
+    public void Create_StoresCoffeeFocus()
+    {
+        var shop = ModerationShop.Create(
+            "Specialty Cafe",
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            description: null,
+            CoffeePeek.Moderation.Domain.Aggregates.Enums.CoffeeFocus.Specialty);
+
+        shop.CoffeeFocus.Should().Be(CoffeePeek.Moderation.Domain.Aggregates.Enums.CoffeeFocus.Specialty);
+    }
+
+    [Fact]
+    public void UpdateInfo_ChangesCoffeeFocus()
+    {
+        var shop = CreatePendingShop();
+
+        shop.UpdateInfo(
+            name: null,
+            description: null,
+            priceRange: null,
+            cityId: null,
+            CoffeePeek.Moderation.Domain.Aggregates.Enums.CoffeeFocus.CoffeeBar);
+
+        shop.CoffeeFocus.Should().Be(CoffeePeek.Moderation.Domain.Aggregates.Enums.CoffeeFocus.CoffeeBar);
+    }
 }

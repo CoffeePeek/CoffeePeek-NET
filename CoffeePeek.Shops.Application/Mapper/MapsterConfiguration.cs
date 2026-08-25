@@ -49,6 +49,9 @@ public static class MapsterConfiguration
         config.NewConfig<CoffeeShop, ShopDto>()
             .Map(d => d.Photos, s => s.ShopPhotos.OrderBy(p => p.SortIndex).ThenBy(p => p.CreatedAtUtc))
             .Map(dest => dest.IsOpen, src => true)
+            .Map(dest => dest.CoffeeFocus, src => src.CoffeeFocus == null
+                ? (Contract.Enums.CoffeeFocus?)null
+                : (Contract.Enums.CoffeeFocus)(int)src.CoffeeFocus.Value)
             .Map(dest => dest.CoffeeBeans, src => src.CoffeeBeans)
             // Rating, ReviewCount and Reviews are set manually in handlers via repository
             .Ignore(dest => dest.Rating)

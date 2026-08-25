@@ -11,7 +11,8 @@ public sealed partial class ModerationShop
         string name,
         Guid userId,
         Guid cityId,
-        string? description)
+        string? description,
+        CoffeeFocus? coffeeFocus = null)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new DomainException("Name is required");
 
@@ -22,6 +23,7 @@ public sealed partial class ModerationShop
             UserId = userId,
             CityId = cityId,
             Description = description,
+            CoffeeFocus = coffeeFocus,
             ModerationStatus = ModerationStatus.Pending,
         };
     }
@@ -37,7 +39,12 @@ public sealed partial class ModerationShop
         _shopPhotos.Add(photo);
     }
     
-    public void UpdateInfo(string? name, string? description, PriceRange? priceRange, Guid? cityId)
+    public void UpdateInfo(
+        string? name,
+        string? description,
+        PriceRange? priceRange,
+        Guid? cityId,
+        CoffeeFocus? coffeeFocus)
     {
         if (name != null) 
             Name = name;
@@ -50,6 +57,9 @@ public sealed partial class ModerationShop
         
         if (cityId.HasValue) 
             CityId = cityId.Value;
+
+        if (coffeeFocus.HasValue)
+            CoffeeFocus = coffeeFocus.Value;
     }
 
     public void UpdateContacts(string? phone, string? instagram, string? email, string? site)
@@ -155,5 +165,10 @@ public sealed partial class ModerationShop
     public void AddPriceRange(PriceRange priceRange)
     {
         PriceRange = priceRange;
+    }
+
+    public void AddCoffeeFocus(CoffeeFocus coffeeFocus)
+    {
+        CoffeeFocus = coffeeFocus;
     }
 }
