@@ -47,6 +47,20 @@ public static class AuthExtensions
         {
             x.RequireHttpsMetadata = !environment.IsDevelopment();
             x.SaveToken = true;
+            x.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    if (!string.IsNullOrWhiteSpace(accessToken)
+                        && context.HttpContext.Request.Path.StartsWithSegments("/realtime/session"))
+                    {
+                        context.Token = accessToken;
+                    }
+
+                    return Task.CompletedTask;
+                }
+            };
             x.TokenValidationParameters = new TokenValidationParameters
             {
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOptions.SecretKey)),
