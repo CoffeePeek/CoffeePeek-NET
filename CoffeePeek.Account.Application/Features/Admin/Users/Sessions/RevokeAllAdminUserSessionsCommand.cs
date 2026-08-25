@@ -1,4 +1,5 @@
 using System.Net;
+using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Response;
@@ -13,6 +14,7 @@ public static class RevokeAllAdminUserSessionsHandler
         RevokeAllAdminUserSessionsCommand command,
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
+        ISessionTerminationNotifier sessionTerminationNotifier,
         CancellationToken ct)
     {
         var user = await userRepository.GetById(command.UserId, ct);
@@ -23,6 +25,7 @@ public static class RevokeAllAdminUserSessionsHandler
 
         await userRepository.Update(user, ct);
         await unitOfWork.SaveChangesAsync(ct);
+        await sessionTerminationNotifier.NotifyForceLogoutAsync(user.Id, SessionTerminationReasons.AllSessionsRevoked, ct);
 
         return Response<bool>.Success(true);
     }

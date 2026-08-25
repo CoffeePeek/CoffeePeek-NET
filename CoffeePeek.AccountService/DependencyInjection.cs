@@ -1,4 +1,6 @@
 ﻿using CoffeePeek.AccountService.Extensions;
+using CoffeePeek.AccountService.Realtime;
+using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Auth.Extensions;
 using CoffeePeek.Shared.Web;
@@ -18,6 +20,8 @@ public static class DependencyInjection
         });
 
         services.AddControllersModule();
+        services.AddSignalR();
+        services.AddScoped<ISessionTerminationNotifier, SignalRSessionTerminationNotifier>();
 
         services.AddHeaderUserContext(configuration);
 
