@@ -1,3 +1,4 @@
+using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Account.Domain.Services;
 using CoffeePeek.Shared.Kernel;
@@ -13,6 +14,7 @@ public static class ResetPasswordHandler
         IUserRepository userRepository,
         IPasswordHasherService passwordHasher,
         IUnitOfWork unitOfWork,
+        ISessionTerminationNotifier sessionTerminationNotifier,
         CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Length < 8)
@@ -26,6 +28,7 @@ public static class ResetPasswordHandler
 
         await userRepository.Update(user, ct);
         await unitOfWork.SaveChangesAsync(ct);
+        await sessionTerminationNotifier.NotifyForceLogoutAsync(user.Id, SessionTerminationReasons.PasswordReset, ct);
 
         return Response.Success(new { message = "Password reset successfully." });
     }

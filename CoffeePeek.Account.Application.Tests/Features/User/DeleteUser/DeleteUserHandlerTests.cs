@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Application.Features.User.DeleteUser;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
@@ -15,6 +16,7 @@ public class DeleteUserHandlerTests
 {
     private readonly Mock<IUserRepository> _userRepoMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<ISessionTerminationNotifier> _sessionNotifierMock = new();
     private readonly CancellationToken _ct = CancellationToken.None;
 
     private static DomainUser CreateUser()
@@ -28,7 +30,12 @@ public class DeleteUserHandlerTests
     {
         var user = CreateUser();
         _userRepoMock.Setup(r => r.GetById(user.Id, _ct)).ReturnsAsync(user);
-        var result = await DeleteUserHandler.Handle(new DeleteUserCommand(user.Id), _userRepoMock.Object, _unitOfWorkMock.Object, _ct);
+        var result = await DeleteUserHandler.Handle(
+            new DeleteUserCommand(user.Id),
+            _userRepoMock.Object,
+            _unitOfWorkMock.Object,
+            _sessionNotifierMock.Object,
+            _ct);
         result.IsSuccess.Should().BeTrue();
         result.Data.Should().BeTrue();
     }
@@ -38,7 +45,12 @@ public class DeleteUserHandlerTests
     {
         var user = CreateUser();
         _userRepoMock.Setup(r => r.GetById(user.Id, _ct)).ReturnsAsync(user);
-        await DeleteUserHandler.Handle(new DeleteUserCommand(user.Id), _userRepoMock.Object, _unitOfWorkMock.Object, _ct);
+        await DeleteUserHandler.Handle(
+            new DeleteUserCommand(user.Id),
+            _userRepoMock.Object,
+            _unitOfWorkMock.Object,
+            _sessionNotifierMock.Object,
+            _ct);
         user.IsSoftDelete.Should().BeTrue();
     }
 
@@ -49,7 +61,12 @@ public class DeleteUserHandlerTests
         user.AddSession("token", TimeSpan.FromDays(7), "dev", "127.0.0.1");
         _userRepoMock.Setup(r => r.GetById(user.Id, _ct)).ReturnsAsync(user);
 
-        await DeleteUserHandler.Handle(new DeleteUserCommand(user.Id), _userRepoMock.Object, _unitOfWorkMock.Object, _ct);
+        await DeleteUserHandler.Handle(
+            new DeleteUserCommand(user.Id),
+            _userRepoMock.Object,
+            _unitOfWorkMock.Object,
+            _sessionNotifierMock.Object,
+            _ct);
 
         user.RefreshTokens.Should().OnlyContain(t => !t.IsActive);
         user.IsSoftDelete.Should().BeTrue();
@@ -60,16 +77,29 @@ public class DeleteUserHandlerTests
     {
         var user = CreateUser();
         _userRepoMock.Setup(r => r.GetById(user.Id, _ct)).ReturnsAsync(user);
-        await DeleteUserHandler.Handle(new DeleteUserCommand(user.Id), _userRepoMock.Object, _unitOfWorkMock.Object, _ct);
+        await DeleteUserHandler.Handle(
+            new DeleteUserCommand(user.Id),
+            _userRepoMock.Object,
+            _unitOfWorkMock.Object,
+            _sessionNotifierMock.Object,
+            _ct);
         _userRepoMock.Verify(r => r.Update(user, _ct), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(_ct), Times.Once);
+        _sessionNotifierMock.Verify(
+            x => x.NotifyForceLogoutAsync(user.Id, SessionTerminationReasons.UserDeleted, _ct),
+            Times.Once);
     }
 
     [Fact]
     public async Task Handle_WhenUserNotFound_ReturnsErrorResponse()
     {
         _userRepoMock.Setup(r => r.GetById(It.IsAny<Guid>(), _ct)).ReturnsAsync((DomainUser?)null);
-        var result = await DeleteUserHandler.Handle(new DeleteUserCommand(Guid.NewGuid()), _userRepoMock.Object, _unitOfWorkMock.Object, _ct);
+        var result = await DeleteUserHandler.Handle(
+            new DeleteUserCommand(Guid.NewGuid()),
+            _userRepoMock.Object,
+            _unitOfWorkMock.Object,
+            _sessionNotifierMock.Object,
+            _ct);
         result.IsSuccess.Should().BeFalse();
     }
 
@@ -77,8 +107,16 @@ public class DeleteUserHandlerTests
     public async Task Handle_WhenUserNotFound_DoesNotCallUpdateOrSave()
     {
         _userRepoMock.Setup(r => r.GetById(It.IsAny<Guid>(), _ct)).ReturnsAsync((DomainUser?)null);
-        await DeleteUserHandler.Handle(new DeleteUserCommand(Guid.NewGuid()), _userRepoMock.Object, _unitOfWorkMock.Object, _ct);
+        await DeleteUserHandler.Handle(
+            new DeleteUserCommand(Guid.NewGuid()),
+            _userRepoMock.Object,
+            _unitOfWorkMock.Object,
+            _sessionNotifierMock.Object,
+            _ct);
         _userRepoMock.Verify(r => r.Update(It.IsAny<DomainUser>(), It.IsAny<CancellationToken>()), Times.Never);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        _sessionNotifierMock.Verify(
+            x => x.NotifyForceLogoutAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 }

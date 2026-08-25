@@ -1,3 +1,4 @@
+using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
 using CoffeePeek.Shared.Domain.Interfaces.Persistance;
 using CoffeePeek.Shared.Kernel;
@@ -13,6 +14,7 @@ public static class AdminDeleteUserHandler
         AdminDeleteUserCommand command,
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
+        ISessionTerminationNotifier sessionTerminationNotifier,
         CancellationToken ct)
     {
         var user = await userRepository.GetById(command.TargetUserId, ct);
@@ -24,6 +26,7 @@ public static class AdminDeleteUserHandler
 
         await userRepository.Update(user, ct);
         await unitOfWork.SaveChangesAsync(ct);
+        await sessionTerminationNotifier.NotifyForceLogoutAsync(user.Id, SessionTerminationReasons.UserDeleted, ct);
 
         return Response<bool>.Success(true);
     }

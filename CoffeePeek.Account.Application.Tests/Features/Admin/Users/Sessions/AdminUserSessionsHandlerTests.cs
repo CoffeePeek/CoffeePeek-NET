@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using CoffeePeek.Account.Application.Common.Interfaces;
 using CoffeePeek.Account.Application.Features.Admin.Users.Sessions;
 using CoffeePeek.Account.Domain.Entities.RoleAggregate;
 using CoffeePeek.Account.Domain.Entities.UserAggregate;
@@ -17,6 +18,7 @@ public class AdminUserSessionsHandlerTests
 {
     private readonly Mock<IUserRepository> _userRepoMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<ISessionTerminationNotifier> _sessionNotifierMock = new();
     private readonly CancellationToken _ct = CancellationToken.None;
 
     private static DomainUser CreateUserWithSessions()
@@ -72,12 +74,16 @@ public class AdminUserSessionsHandlerTests
             new RevokeAdminUserSessionCommand(user.Id, sessionId),
             _userRepoMock.Object,
             _unitOfWorkMock.Object,
+            _sessionNotifierMock.Object,
             _ct);
 
         response.IsSuccess.Should().BeTrue();
         user.RefreshTokens.Single(t => t.Id == sessionId).IsRevoked.Should().BeTrue();
         user.RefreshTokens.Count(t => t.IsActive).Should().Be(1);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(_ct), Times.Once);
+        _sessionNotifierMock.Verify(
+            x => x.NotifyForceLogoutAsync(user.Id, SessionTerminationReasons.SessionRevoked, _ct),
+            Times.Once);
     }
 
     [Fact]
@@ -90,6 +96,7 @@ public class AdminUserSessionsHandlerTests
             new RevokeAdminUserSessionCommand(user.Id, Guid.NewGuid()),
             _userRepoMock.Object,
             _unitOfWorkMock.Object,
+            _sessionNotifierMock.Object,
             _ct);
 
         response.IsSuccess.Should().BeFalse();
@@ -106,10 +113,14 @@ public class AdminUserSessionsHandlerTests
             new RevokeAllAdminUserSessionsCommand(user.Id),
             _userRepoMock.Object,
             _unitOfWorkMock.Object,
+            _sessionNotifierMock.Object,
             _ct);
 
         response.IsSuccess.Should().BeTrue();
         user.RefreshTokens.Should().OnlyContain(t => t.IsRevoked);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(_ct), Times.Once);
+        _sessionNotifierMock.Verify(
+            x => x.NotifyForceLogoutAsync(user.Id, SessionTerminationReasons.AllSessionsRevoked, _ct),
+            Times.Once);
     }
 }
