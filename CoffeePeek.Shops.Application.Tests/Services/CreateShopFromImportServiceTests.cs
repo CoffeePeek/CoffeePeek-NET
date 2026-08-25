@@ -61,7 +61,7 @@ public class CreateShopFromImportServiceTests
             null,
             null,
             null,
-            Contract.Enums.CoffeeFocus.Specialty,
+            Contract.Enums.CoffeeShopType.Specialty,
             ["to_go"],
             TemporarilyClosed: false);
 
@@ -93,7 +93,7 @@ public class CreateShopFromImportServiceTests
             null,
             null,
             null,
-            Contract.Enums.CoffeeFocus.Cafe,
+            Contract.Enums.CoffeeShopType.Cafe,
             [],
             false);
 
@@ -125,7 +125,7 @@ public class CreateShopFromImportServiceTests
             "+375 29 111-22-33; +375 17 200-00-00",
             null,
             null,
-            Contract.Enums.CoffeeFocus.Cafe,
+            Contract.Enums.CoffeeShopType.Cafe,
             [],
             false);
 
@@ -158,7 +158,7 @@ public class CreateShopFromImportServiceTests
             null,
             null,
             null,
-            Contract.Enums.CoffeeFocus.Cafe,
+            Contract.Enums.CoffeeShopType.Cafe,
             [],
             false);
 
@@ -187,7 +187,7 @@ public class CreateShopFromImportServiceTests
             null,
             null,
             null,
-            Contract.Enums.CoffeeFocus.Cafe,
+            Contract.Enums.CoffeeShopType.Cafe,
             [],
             false);
 

@@ -206,12 +206,12 @@ public class SearchCoffeeShopsHandlerTests
     }
 
     [Fact]
-    public void CreateSearchHash_IncludesCoffeeFocus()
+    public void CreateSearchHash_IncludesShopType()
     {
         var hash = SearchCoffeeShopsHandler.CreateSearchHash(new SearchCoffeeShopsQuery(
-            CoffeeFocus: CoffeePeek.Contract.Enums.CoffeeFocus.Specialty));
+            Type: CoffeePeek.Contract.Enums.CoffeeShopType.Specialty));
 
-        hash.Should().Contain("focus:1");
+        hash.Should().Contain("type:1");
     }
 
     [Fact]

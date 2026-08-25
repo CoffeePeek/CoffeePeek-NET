@@ -20,7 +20,7 @@ public class ModerationShopCreationService(IModerationShopRepository shopReposit
             command.UserId,
             command.CityId,
             command.Description,
-            command.CoffeeFocus is null ? null : (DomainCoffeeFocus)command.CoffeeFocus.Value
+            command.Type is null ? null : (DomainCoffeeFocus)command.Type.Value
         );
 
         var location = geocodingResult != null

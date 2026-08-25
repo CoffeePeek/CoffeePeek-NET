@@ -19,8 +19,8 @@ public static class GetAllModerationShopsHandler
             ? (ModerationStatus?)query.Status.Value
             : null;
 
-        DomainCoffeeFocus? domainFocus = query.CoffeeFocus.HasValue
-            ? (DomainCoffeeFocus)(int)query.CoffeeFocus.Value
+        DomainCoffeeFocus? domainFocus = query.Type.HasValue
+            ? (DomainCoffeeFocus)(int)query.Type.Value
             : null;
 
         var (items, totalCount) = await repository.GetPagedForReviewAsync(

@@ -67,7 +67,7 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
     public async Task<IActionResult> GetCandidates(
         [FromQuery] ImportQueueStatus? status = ImportQueueStatus.Pending,
         [FromQuery] ImportCollectorBucket? bucket = null,
-        [FromQuery] CoffeeFocus? focus = null,
+        [FromQuery] CoffeeShopType? type = null,
         [FromQuery] ImportRejectReason? rejectReason = null,
         [FromQuery] string? search = null,
         [FromQuery] int page = 1,
@@ -75,7 +75,7 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
         CancellationToken ct = default)
     {
         var response = await bus.InvokeAsync<Response<GetImportCandidatesResponse>>(
-            new GetImportCandidatesQuery(status, bucket, focus, rejectReason, search, page, pageSize), ct);
+            new GetImportCandidatesQuery(status, bucket, type, rejectReason, search, page, pageSize), ct);
 
         if (response.IsSuccess && response.Data is not null)
         {
@@ -129,7 +129,7 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
         var command = new DecideImportCandidateCommand(
             id,
             request.Status,
-            request.CoffeeFocus,
+            request.Type,
             request.TagSlugs,
             request.OverrideClosed,
             userContext.GetUserIdOrThrow(),
@@ -157,7 +157,7 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
 
 public record DecideImportCandidateRequest(
     ImportQueueStatus Status,
-    CoffeeFocus? CoffeeFocus,
+    CoffeeShopType? Type,
     string[]? TagSlugs,
     bool OverrideClosed = false,
     ImportRejectReason? RejectReason = null);

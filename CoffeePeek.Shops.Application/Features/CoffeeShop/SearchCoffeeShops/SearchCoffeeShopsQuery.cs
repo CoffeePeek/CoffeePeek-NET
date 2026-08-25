@@ -16,7 +16,7 @@ public record SearchCoffeeShopsQuery(
     bool? IsNew = null,
     bool? IsVisited = null,
     PriceRange? PriceRange = null,
-    CoffeeFocus? CoffeeFocus = null,
+    CoffeeShopType? Type = null,
     [Range(0, 5)]
     decimal? MinRating = null,
     [Range(1, int.MaxValue)]

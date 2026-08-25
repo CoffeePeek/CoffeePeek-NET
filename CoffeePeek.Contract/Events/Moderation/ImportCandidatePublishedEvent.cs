@@ -13,7 +13,7 @@ public record ImportCandidatePublishedItem(
     string? Phone,
     string? Website,
     string? Instagram,
-    CoffeeFocus CoffeeFocus,
+    CoffeeShopType Type,
     string[] TagSlugs,
     bool TemporarilyClosed);
 
