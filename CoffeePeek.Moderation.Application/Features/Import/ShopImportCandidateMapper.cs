@@ -1,6 +1,7 @@
 using CoffeePeek.Contract.Dtos.Import;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
+using CoffeePeek.Moderation.Domain.Import;
 using DomainBucket = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportCollectorBucket;
 using DomainFocus = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportCoffeeFocus;
 using DomainGoogle = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportGoogleBusinessStatus;
@@ -54,9 +55,21 @@ public static class ShopImportCandidateMapper
                 links.GoogleMaps,
                 links.YandexMaps,
                 links.YandexImages,
-                links.OsmHistory),
+                links.OsmHistory,
+                links.YandexEmbed,
+                links.GoogleEmbed,
+                links.StreetView,
+                links.StreetViewEmbed),
             candidate.CreatedAtUtc,
-            candidate.ImportedFromFile);
+            candidate.ImportedFromFile,
+            ToFacts(candidate),
+            candidate.GetSuggestedTags()
+                .Select(t => new SuggestedTagDto(t.Slug, t.Why))
+                .ToList(),
+            candidate.GetSuggestedFocus() is { } suggestedType
+                ? (CoffeeShopType)(int)suggestedType
+                : null,
+            ToGaps(candidate.GetGaps()));
     }
 
     public static ImportDuplicateCandidateDto ToDuplicateDto(ShopImportCandidate candidate) =>
@@ -98,4 +111,63 @@ public static class ShopImportCandidateMapper
 
     public static DomainRejectReason ToDomain(ContractRejectReason reason) =>
         (DomainRejectReason)(int)reason;
+
+    public static IReadOnlyList<string> ToFacts(ShopImportCandidate candidate)
+    {
+        var facts = new List<string>
+        {
+            candidate.Source switch
+            {
+                ImportSource.Osm => "Источник: OpenStreetMap",
+                ImportSource.File => "Источник: файл",
+                ImportSource.CoffeeMap => "Источник: CoffeeMap",
+                _ => $"Источник: {candidate.Source}"
+            }
+        };
+
+        if (candidate.GoogleBusinessStatus == DomainGoogle.ClosedPermanently)
+            facts.Add("Google: закрыто навсегда");
+        else if (candidate.GoogleBusinessStatus == DomainGoogle.ClosedTemporarily)
+            facts.Add("Google: временно закрыто");
+        else if (candidate.GoogleBusinessStatus == DomainGoogle.Operational)
+            facts.Add("Google: работает");
+        else if (candidate.GoogleBusinessStatus == DomainGoogle.NotFound)
+            facts.Add("Google: заведение не найдено");
+        else if (candidate.GoogleBusinessStatus == DomainGoogle.Far)
+            facts.Add("Google: ближайшее совпадение далеко от точки");
+
+        foreach (var signal in candidate.Signals)
+        {
+            if (signal.StartsWith("coffeemap:google-rating=", StringComparison.Ordinal))
+            {
+                facts.Add("Рейтинг Google " + signal["coffeemap:google-rating=".Length..]);
+                continue;
+            }
+
+            if (signal is "name:to-go-chain" or "name:chain")
+                facts.Add("Похоже на сеть «с собой»");
+            else if (signal is "osm:vending_machine" or "name:vending-like")
+                facts.Add("Похоже на автомат");
+            else if (signal is "name:canteen")
+                facts.Add("Похоже на столовую / буфет");
+        }
+
+        if (!string.IsNullOrWhiteSpace(candidate.Instagram))
+            facts.Add("Есть Instagram");
+        else if (!string.IsNullOrWhiteSpace(candidate.Website))
+            facts.Add("Есть сайт");
+
+        return facts;
+    }
+
+    public static ImportGapsDto ToGaps(ImportGaps gaps) =>
+        new(gaps.Instagram, gaps.Phone, gaps.Website, gaps.Hours, gaps.Photo);
+
+    public static ImportDossierHintsDto DossierHints() =>
+        new(ImportDossierAdvisor.YandexHints
+            .Select(h => new YandexTagHintDto(
+                h.Label,
+                h.Slug,
+                h.Focus is null ? null : (CoffeeShopType)(int)h.Focus.Value))
+            .ToList());
 }

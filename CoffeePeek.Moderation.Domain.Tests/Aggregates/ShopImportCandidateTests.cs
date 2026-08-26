@@ -242,17 +242,106 @@ public class ShopImportCandidateTests
     }
 
     [Fact]
-    public void GetResearchLinks_WithUnicodeName_BuildsAbsoluteUrls()
+    public void GetResearchLinks_UsesCoordinatesNotNameSearch()
     {
-        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/3032203937", "Кофейня «Ёлка» ☕"), Now);
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/3032203937", "Больше кофе"), Now);
 
         var links = candidate.GetResearchLinks();
 
-        links.GoogleMaps.Should().StartWith("https://");
-        links.YandexMaps.Should().StartWith("https://");
-        links.YandexImages.Should().StartWith("https://");
+        links.YandexMaps.Should().Contain("mode=whatshere");
+        links.YandexMaps.Should().Contain("27.5847");
+        links.YandexMaps.Should().NotContain("text=");
+        links.GoogleMaps.Should().Contain("/@");
+        links.GoogleMaps.Should().NotContain("Больше");
+        links.YandexEmbed.Should().Contain("map-widget");
+        links.GoogleEmbed.Should().Contain("output=embed");
+        links.InstagramSearch.Should().BeNull();
         links.OsmHistory.Should().Be("https://www.openstreetmap.org/node/3032203937/history");
-        links.InstagramSearch.Should().Contain("instagram");
+        links.YandexImages.Should().Contain("l=stv");
+        links.StreetViewEmbed.Should().Contain("cbll=53.9152,27.5847");
+        links.StreetViewEmbed.Should().Contain("output=embed");
+    }
+
+    [Fact]
+    public void PatchContacts_SetsNormalizedInstagram()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Cafe"), Now);
+
+        candidate.PatchContacts("@remarka.minsk", true, "+375 29 1", true, "https://remarka.by", true, "09-21", true);
+
+        candidate.Instagram.Should().Be("https://www.instagram.com/remarka.minsk/");
+        candidate.Phone.Should().Be("+375 29 1");
+        candidate.Website.Should().Be("https://remarka.by");
+        candidate.OpeningHours.Should().Be("09-21");
+    }
+
+    [Fact]
+    public void PatchContacts_EmptyString_ClearsField()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Cafe"), Now);
+        candidate.PatchContacts("https://instagram.com/a", true, "+375", true, "https://a.by", true, "09-21", true);
+
+        candidate.PatchContacts("", true, "", true, "", true, "", true);
+
+        candidate.Instagram.Should().BeNull();
+        candidate.Phone.Should().BeNull();
+        candidate.Website.Should().BeNull();
+        candidate.OpeningHours.Should().BeNull();
+    }
+
+    [Fact]
+    public void PatchContacts_OmittedField_Stays()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Cafe"), Now);
+        candidate.PatchContacts("@cafe", true, "+375", true, "https://a.by", true, "09-21", true);
+
+        candidate.PatchContacts(null, false, null, false, null, false, "10-22", true);
+
+        candidate.Instagram.Should().Be("https://www.instagram.com/cafe/");
+        candidate.Phone.Should().Be("+375");
+        candidate.OpeningHours.Should().Be("10-22");
+    }
+
+    [Fact]
+    public void PatchContacts_PublishedToCatalog_Throws()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Cafe"), Now);
+        candidate.Decide(ImportQueueStatus.Published, ImportCoffeeFocus.Cafe, [], Reviewer, false, Now);
+        candidate.AttachPublishedShop(Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"));
+
+        var act = () => candidate.PatchContacts("@x", true, null, false, null, false, null, false);
+
+        act.Should().Throw<DomainException>().WithMessage("*published*");
+    }
+
+    [Fact]
+    public void GetSuggestedTags_FromOsmSpecialtyName()
+    {
+        var tags = new Dictionary<string, string> { ["amenity"] = "cafe", ["name"] = "Roastery Brew Bar" };
+        var snapshot = new OsmCandidateSnapshot(
+            "node/1",
+            "Roastery Brew Bar",
+            "Немига 5, Минск",
+            53.9152m,
+            27.5847m,
+            null, null, null, null, null, null,
+            Now.AddMonths(-1),
+            null,
+            tags);
+        var candidate = ShopImportCandidate.FromOsm(snapshot, Now);
+
+        candidate.GetSuggestedTags().Should().Contain(t => t.Slug == "specialty");
+        candidate.GetSuggestedFocus().Should().Be(ImportCoffeeFocus.Specialty);
+    }
+
+    [Fact]
+    public void GetGaps_WithoutContacts_FlagsMissing()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Cafe"), Now);
+
+        var gaps = candidate.GetGaps();
+        gaps.Instagram.Should().BeTrue();
+        gaps.Photo.Should().BeTrue();
     }
 
     [Fact]

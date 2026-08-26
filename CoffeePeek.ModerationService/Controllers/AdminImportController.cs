@@ -5,12 +5,14 @@ using CoffeePeek.Moderation.Application.Features.Import.ApplyImportDecisions;
 using CoffeePeek.Moderation.Application.Features.Import.DecideImportCandidate;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportCandidateById;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportCandidates;
+using CoffeePeek.Moderation.Application.Features.Import.GetImportDossierHints;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportStats;
 using CoffeePeek.Moderation.Application.Features.Import.RefreshCoffeeMapImport;
 using CoffeePeek.Moderation.Application.Features.Import.IngestImportFile;
 using CoffeePeek.Moderation.Application.Features.Import.DecideImportDuplicate;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportDuplicates;
 using CoffeePeek.Moderation.Application.Features.Import.SuggestImportDuplicates;
+using CoffeePeek.Moderation.Application.Features.Import.PatchImportContacts;
 using CoffeePeek.Moderation.Application.Features.Import.RefreshGoogleStatus;
 using CoffeePeek.Moderation.Application.Features.Import.RefreshOsmImport;
 using CoffeePeek.Shared.Auth;
@@ -125,6 +127,34 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
         return response.IsSuccess ? Ok(response) : NotFound(response);
     }
 
+    [HttpPatch("candidates/{id:guid}")]
+    [ProducesResponseType<Response<ShopImportCandidateDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> PatchContacts(
+        Guid id,
+        [FromBody] PatchImportContactsRequest request,
+        CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<ShopImportCandidateDto>>(
+            new PatchImportContactsCommand(
+                id,
+                request.Instagram,
+                request.Phone,
+                request.Website,
+                request.OpeningHours),
+            ct);
+
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return response.StatusCode switch
+        {
+            StatusCodes.Status404NotFound => NotFound(response),
+            StatusCodes.Status400BadRequest => BadRequest(response),
+            _ => StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response)
+        };
+    }
+
     [HttpPost("candidates/{id:guid}/google-refresh")]
     [ProducesResponseType<Response<ShopImportCandidateDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> RefreshGoogle(
@@ -171,6 +201,15 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
             StatusCodes.Status404NotFound => NotFound(response),
             _ => BadRequest(response)
         };
+    }
+
+    [HttpGet("hints")]
+    [ProducesResponseType<Response<ImportDossierHintsDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetHints(CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<ImportDossierHintsDto>>(
+            new GetImportDossierHintsQuery(), ct);
+        return Ok(response);
     }
 
     [HttpGet("stats")]
@@ -241,3 +280,12 @@ public record DecideImportCandidateRequest(
     ImportRejectReason? RejectReason = null);
 
 public record DecideImportDuplicateRequest(bool Accept);
+
+/// <summary>
+/// Null / omitted field is left unchanged. Empty string clears the field.
+/// </summary>
+public record PatchImportContactsRequest(
+    string? Instagram = null,
+    string? Phone = null,
+    string? Website = null,
+    string? OpeningHours = null);

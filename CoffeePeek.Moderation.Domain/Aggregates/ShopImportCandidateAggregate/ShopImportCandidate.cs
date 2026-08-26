@@ -365,30 +365,59 @@ public sealed class ShopImportCandidate : Entity<Guid>
         GoogleFetchedAtUtc = fetchedAt;
     }
 
+    public void PatchContacts(
+        string? instagram,
+        bool patchInstagram,
+        string? phone,
+        bool patchPhone,
+        string? website,
+        bool patchWebsite,
+        string? openingHours,
+        bool patchOpeningHours)
+    {
+        if (ResultingShopId is not null)
+            throw new DomainException("Cannot edit contacts after the candidate is published to the catalog.");
+
+        if (patchInstagram)
+            Instagram = Clip(ImportContactNormalizer.Instagram(instagram), MaxInstagramLength);
+
+        if (patchPhone)
+            Phone = Clip(phone, MaxPhoneLength);
+
+        if (patchWebsite)
+            Website = Clip(ImportContactNormalizer.Website(website, MaxWebsiteLength), MaxWebsiteLength);
+
+        if (patchOpeningHours)
+            OpeningHours = Clip(openingHours, MaxOpeningHoursLength);
+    }
+
+    public IReadOnlyList<ImportSuggestedTag> GetSuggestedTags() =>
+        ImportDossierAdvisor.SuggestTags(Signals, Cuisine);
+
+    public ImportCoffeeFocus? GetSuggestedFocus() =>
+        ImportDossierAdvisor.SuggestFocus(Signals, CollectorBucket);
+
+    public ImportGaps GetGaps() =>
+        ImportDossierAdvisor.Gaps(Instagram, Phone, Website, OpeningHours);
+
     public ImportResearchLinks GetResearchLinks()
     {
-        var display = HasRealName ? Name!.Trim() : Brand?.Trim() ?? ExternalId;
-        var q = Uri.EscapeDataString($"{display} Минск");
-        var qCoffee = Uri.EscapeDataString($"{display} Минск кофейня");
         var lat = Latitude.ToString(CultureInfo.InvariantCulture);
         var lon = Longitude.ToString(CultureInfo.InvariantCulture);
-        var mapsQuery = Uri.EscapeDataString($"{display} {lat},{lon}");
-        var (osmType, osmId) = ParseExternalId();
-        var osmHistory = Source == ImportSource.Osm
-            ? $"https://www.openstreetmap.org/{osmType}/{osmId}/history"
-            : string.Empty;
-        var googleMaps = GoogleMapsUri
-                         ?? $"https://www.google.com/maps/search/?api=1&query={mapsQuery}";
 
         return new ImportResearchLinks(
             Instagram: Instagram,
-            InstagramSearch: Instagram is null
-                ? $"https://www.google.com/search?q={Uri.EscapeDataString($"{display} Минск instagram")}"
-                : null,
-            GoogleMaps: googleMaps,
-            YandexMaps: $"https://yandex.by/maps/?text={q}&z=17&ll={lon},{lat}",
-            YandexImages: $"https://yandex.by/images/search?text={qCoffee}",
-            OsmHistory: osmHistory);
+            InstagramSearch: null,
+            GoogleMaps: GoogleMapsUri ?? $"https://www.google.com/maps/@{lat},{lon},18z",
+            YandexMaps:
+                $"https://yandex.by/maps/?ll={lon},{lat}&z=18&mode=whatshere&whatshere[point]={lon},{lat}&whatshere[zoom]=18",
+            YandexImages: $"https://yandex.by/maps/?ll={lon},{lat}&z=18&l=stv",
+            OsmHistory: OsmHistoryUrl() ?? "",
+            YandexEmbed: $"https://yandex.ru/map-widget/v1/?ll={lon},{lat}&z=18&pt={lon},{lat},pm2rdm",
+            GoogleEmbed: $"https://maps.google.com/maps?q={lat},{lon}&z=18&output=embed",
+            StreetView: $"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint={lat},{lon}",
+            StreetViewEmbed:
+                $"https://maps.google.com/maps?q=&layer=c&cbll={lat},{lon}&cbp=11,0,0,0,0&output=embed");
     }
 
     public string PublishAddress()
@@ -473,9 +502,19 @@ public sealed class ShopImportCandidate : Entity<Guid>
         return trimmed.Length <= maxLength ? trimmed : trimmed[..maxLength];
     }
 
-    private (string Type, string Id) ParseExternalId()
+    private string? OsmHistoryUrl()
     {
+        if (Source != ImportSource.Osm)
+            return null;
+
         var parts = ExternalId.Split('/', 2, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length == 2 ? (parts[0], parts[1]) : ("node", ExternalId);
+        if (parts.Length != 2)
+            return null;
+
+        var type = parts[0];
+        if (type is not ("node" or "way" or "relation"))
+            return null;
+
+        return $"https://www.openstreetmap.org/{type}/{parts[1]}/history";
     }
 }
