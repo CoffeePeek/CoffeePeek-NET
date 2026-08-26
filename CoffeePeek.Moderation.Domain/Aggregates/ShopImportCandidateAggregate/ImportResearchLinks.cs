@@ -6,4 +6,8 @@ public readonly record struct ImportResearchLinks(
     string GoogleMaps,
     string YandexMaps,
     string YandexImages,
-    string OsmHistory);
+    string OsmHistory,
+    string YandexEmbed,
+    string GoogleEmbed,
+    string StreetView,
+    string StreetViewEmbed);

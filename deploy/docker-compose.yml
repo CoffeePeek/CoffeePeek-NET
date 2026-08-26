@@ -264,8 +264,8 @@ services:
       ReverseProxy__Clusters__media-cluster__Destinations__destination1__Address: http://media
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
       Sentry__Dsn: ${SENTRY_DSN_GATEWAY:-}
-    mem_limit: 512m
-    memswap_limit: 512m
+    mem_limit: 1024m
+    memswap_limit: 1024m
 
   caddy:
     profiles: [https]

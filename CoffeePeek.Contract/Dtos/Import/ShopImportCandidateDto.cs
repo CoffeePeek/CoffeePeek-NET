@@ -33,4 +33,8 @@ public record ShopImportCandidateDto(
     ImportRejectReason? RejectReason,
     ImportResearchLinksDto Research,
     DateTime CreatedAtUtc,
-    bool ImportedFromFile);
+    bool ImportedFromFile,
+    IReadOnlyList<string> Facts,
+    IReadOnlyList<SuggestedTagDto> SuggestedTags,
+    CoffeeShopType? SuggestedType,
+    ImportGapsDto Gaps);
