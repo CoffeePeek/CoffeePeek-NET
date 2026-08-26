@@ -19,6 +19,7 @@ public class CreateShopFromModerationServiceTests
     private readonly Mock<IQueryEquipmentRepository> _equipmentRepoMock = new();
     private readonly Mock<IQueryRoasterRepository> _roasterRepoMock = new();
     private readonly Mock<IQueryBrewMethodRepository> _brewMethodRepoMock = new();
+    private readonly Mock<IApplyShopMenuService> _applyMenuMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<ICacheService> _cacheServiceMock = new();
     private readonly Mock<ILogger<CreateShopFromModerationService>> _loggerMock = new();
@@ -31,6 +32,7 @@ public class CreateShopFromModerationServiceTests
             _equipmentRepoMock.Object,
             _roasterRepoMock.Object,
             _brewMethodRepoMock.Object,
+            _applyMenuMock.Object,
             _unitOfWorkMock.Object,
             _cacheServiceMock.Object,
             _loggerMock.Object);

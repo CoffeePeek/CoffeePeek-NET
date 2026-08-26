@@ -77,4 +77,32 @@ public sealed class ShopMenu : Entity<Guid>
         _photos.Clear();
         _photos.AddRange(photos);
     }
+
+    public void AddPhotos(IEnumerable<ShopMenuPhoto> photos)
+    {
+        foreach (var photo in photos)
+        {
+            if (_photos.Any(p => p.StorageKey == photo.StorageKey))
+                continue;
+            _photos.Add(photo);
+        }
+    }
+
+    public void ApplyManualItem(
+        Guid drinkDefinitionId,
+        MenuItemAvailability availability,
+        decimal? price,
+        int? volumeMl,
+        Guid? updatedByUserId)
+    {
+        var existing = _items.FirstOrDefault(i => i.DrinkDefinitionId == drinkDefinitionId);
+        if (existing is null)
+            _items.Add(ShopMenuItem.Create(drinkDefinitionId, availability, price, volumeMl, MenuItemSource.Manual));
+        else
+            existing.ApplyManual(availability, price, volumeMl);
+
+        UpdatedByUserId = updatedByUserId;
+        if (ParseStatus == MenuParseStatus.None)
+            ParseStatus = MenuParseStatus.Ready;
+    }
 }

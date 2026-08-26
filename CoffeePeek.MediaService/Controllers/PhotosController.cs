@@ -50,4 +50,20 @@ public class PhotosController(IMessageBus bus, IUserContext userContext) : Contr
         var response = await bus.InvokeAsync<Response<List<GenerateUploadUrlResponse>>>(command, ct);
         return Ok(response);
     }
+
+    /// <summary>
+    /// Generate presigned upload urls for menu photos (shop bucket, prefix menus/).
+    /// </summary>
+    [HttpPost("menu")]
+    [Description("Get urls for presigned upload menu photos")]
+    [ProducesResponseType<Response<List<GenerateUploadUrlResponse>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GenerateMenuUploadUrls([FromBody] List<PhotoRequest> requests, CancellationToken ct)
+    {
+        var ownerId = userContext.GetUserIdOrThrow();
+        var command = new GenerateShopPhotosCommand(requests, ownerId, "menus");
+        var response = await bus.InvokeAsync<Response<List<GenerateUploadUrlResponse>>>(command, ct);
+        return Ok(response);
+    }
 }

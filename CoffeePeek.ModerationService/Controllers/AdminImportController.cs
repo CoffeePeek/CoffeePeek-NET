@@ -1,5 +1,6 @@
 using System.Text.Json;
 using CoffeePeek.Contract.Dtos.Import;
+using CoffeePeek.Contract.Dtos.Menu;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Moderation.Application.Features.Import.ApplyImportDecisions;
 using CoffeePeek.Moderation.Application.Features.Import.DecideImportCandidate;
@@ -7,6 +8,7 @@ using CoffeePeek.Moderation.Application.Features.Import.GetImportCandidateById;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportCandidates;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportDossierHints;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportStats;
+using CoffeePeek.Moderation.Application.Features.Import.Menu;
 using CoffeePeek.Moderation.Application.Features.Import.RefreshCoffeeMapImport;
 using CoffeePeek.Moderation.Application.Features.Import.IngestImportFile;
 using CoffeePeek.Moderation.Application.Features.Import.DecideImportDuplicate;
@@ -200,6 +202,54 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
         {
             StatusCodes.Status404NotFound => NotFound(response),
             _ => BadRequest(response)
+        };
+    }
+
+    [HttpPost("candidates/{id:guid}/menu/photos")]
+    [ProducesResponseType<Response<ShopImportCandidateDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> AttachMenuPhotos(
+        Guid id,
+        [FromBody] AttachMenuPhotosRequest request,
+        CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<ShopImportCandidateDto>>(
+            new AttachImportCandidateMenuPhotosCommand(id, request.Photos, userContext.GetUserIdOrThrow()), ct);
+        return MenuActionResult(response);
+    }
+
+    [HttpPost("candidates/{id:guid}/menu/parse")]
+    [ProducesResponseType<Response<ShopImportCandidateDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ParseMenu(Guid id, CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<ShopImportCandidateDto>>(
+            new ParseImportCandidateMenuCommand(id, userContext.GetUserIdOrThrow()), ct);
+        return MenuActionResult(response);
+    }
+
+    [HttpPut("candidates/{id:guid}/menu")]
+    [ProducesResponseType<Response<ShopImportCandidateDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateMenu(
+        Guid id,
+        [FromBody] UpdateShopMenuRequest request,
+        CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<ShopImportCandidateDto>>(
+            new UpdateImportCandidateMenuCommand(
+                id, request.Items, request.ApplySuggestedPriceRange, userContext.GetUserIdOrThrow()),
+            ct);
+        return MenuActionResult(response);
+    }
+
+    private IActionResult MenuActionResult(Response<ShopImportCandidateDto> response)
+    {
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return response.StatusCode switch
+        {
+            StatusCodes.Status404NotFound => NotFound(response),
+            StatusCodes.Status400BadRequest => BadRequest(response),
+            _ => StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response)
         };
     }
 

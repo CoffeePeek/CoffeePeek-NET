@@ -1,7 +1,9 @@
 using CoffeePeek.Contract.Dtos.Import;
 using CoffeePeek.Contract.Enums;
+using CoffeePeek.Moderation.Application.Features.Menu;
 using CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
 using CoffeePeek.Moderation.Domain.Import;
+using CoffeePeek.Shared.Kernel.Options;
 using DomainSource = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportSource;
 using DomainBucket = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportCollectorBucket;
 using DomainFocus = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportCoffeeFocus;
@@ -14,7 +16,9 @@ namespace CoffeePeek.Moderation.Application.Features.Import;
 
 public static class ShopImportCandidateMapper
 {
-    public static ShopImportCandidateDto ToDto(ShopImportCandidate candidate)
+    public static ShopImportCandidateDto ToDto(
+        ShopImportCandidate candidate,
+        MediaPublicUrlOptions? mediaOptions = null)
     {
         var links = candidate.GetResearchLinks();
         return new ShopImportCandidateDto(
@@ -70,7 +74,8 @@ public static class ShopImportCandidateMapper
             candidate.GetSuggestedFocus() is { } suggestedType
                 ? (CoffeeShopType)(int)suggestedType
                 : null,
-            ToGaps(candidate.GetGaps()));
+            ToGaps(candidate.GetGaps()),
+            MenuDraftMapper.ToDto(candidate.Menu, mediaOptions ?? new MediaPublicUrlOptions()));
     }
 
     public static ImportDuplicateCandidateDto ToDuplicateDto(ShopImportCandidate candidate) =>

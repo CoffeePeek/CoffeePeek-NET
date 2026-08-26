@@ -38,4 +38,12 @@ public sealed class ShopMenuItem : Entity<Guid>
             Kind = CoffeeDrinkKind.Standard
         };
     }
+
+    public void ApplyManual(MenuItemAvailability availability, decimal? price, int? volumeMl)
+    {
+        Availability = availability;
+        Price = availability == MenuItemAvailability.Present ? price : null;
+        VolumeMl = volumeMl;
+        Source = MenuItemSource.Manual;
+    }
 }

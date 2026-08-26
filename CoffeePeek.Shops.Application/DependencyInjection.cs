@@ -36,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<ICreateShopFromModerationService, CreateShopFromModerationService>();
         services.AddScoped<ICreateShopFromImportService, CreateShopFromImportService>();
         services.AddScoped<IEnrichShopFromImportService, EnrichShopFromImportService>();
+        services.AddScoped<IApplyShopMenuService, ApplyShopMenuService>();
 
         return services;
     }

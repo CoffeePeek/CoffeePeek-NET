@@ -1,3 +1,4 @@
+using CoffeePeek.Moderation.Domain.Aggregates.MenuDraftAggregate;
 using CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using FluentAssertions;
@@ -518,5 +519,55 @@ public class ShopImportCandidateTests
             osmUpdatedAt ?? Now.AddMonths(-1),
             null,
             tags);
+    }
+
+    [Fact]
+    public void AttachMenuPhotos_SetsPendingAndCapturedAt()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Cafe"), Now);
+        var utc = new DateTime(2026, 8, 26, 18, 0, 0, DateTimeKind.Utc);
+
+        candidate.AttachMenuPhotos(
+            [("menu.jpg", "image/jpeg", "menus/a.jpg", 12)],
+            utc);
+
+        candidate.Menu.Should().NotBeNull();
+        candidate.Menu!.ParseStatus.Should().Be((int)MenuDraftParseStatus.Pending);
+        candidate.Menu.CapturedAtUtc.Should().Be(utc);
+        candidate.Menu.Photos.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public void ApplyMenuParseResult_Failure_KeepsPhotosAndSetsFailed()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Cafe"), Now);
+        candidate.AttachMenuPhotos(
+            [("menu.jpg", "image/jpeg", "menus/a.jpg", 12)],
+            DateTime.UtcNow);
+
+        candidate.ApplyMenuParseResult(false, "boom", null, [], [], DateTime.UtcNow);
+
+        candidate.Menu!.ParseStatus.Should().Be((int)MenuDraftParseStatus.Failed);
+        candidate.Menu.ParseError.Should().Be("boom");
+        candidate.Menu.Photos.Should().HaveCount(1);
+        candidate.Menu.Items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ReplaceMenuItems_MarksManualAndCanSetAbsent()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Cafe"), Now);
+        candidate.ReplaceMenuItems(
+        [
+            new MenuDraftItem
+            {
+                Slug = "cappuccino",
+                Availability = (int)MenuDraftAvailability.Absent,
+                Source = (int)MenuDraftItemSource.Manual
+            }
+        ], DateTime.UtcNow);
+
+        candidate.Menu!.Items.Should().ContainSingle(i =>
+            i.Slug == "cappuccino" && i.Availability == (int)MenuDraftAvailability.Absent);
     }
 }

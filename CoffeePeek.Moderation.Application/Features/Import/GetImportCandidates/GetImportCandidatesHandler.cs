@@ -52,7 +52,7 @@ public static class GetImportCandidatesHandler
                 : (Domain.Aggregates.ShopImportCandidateAggregate.ImportSource)(int)query.Source.Value);
 
         var totalPages = total == 0 ? 0 : (int)Math.Ceiling(total / (double)pageSize);
-        var dtos = items.Select(ShopImportCandidateMapper.ToDto).ToList();
+        var dtos = items.Select(c => ShopImportCandidateMapper.ToDto(c)).ToList();
 
         return Response<GetImportCandidatesResponse>.Success(
             new GetImportCandidatesResponse(dtos, total, totalPages, page, pageSize));

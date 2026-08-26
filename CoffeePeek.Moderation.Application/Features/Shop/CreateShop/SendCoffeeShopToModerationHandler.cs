@@ -1,6 +1,8 @@
+using CoffeePeek.Contract.Events.Menu;
 using CoffeePeek.Moderation.Application.Abstractions;
 using CoffeePeek.Moderation.Application.Common.Models;
 using CoffeePeek.Moderation.Application.ErrorCodes;
+using CoffeePeek.Moderation.Application.Features.Menu;
 using CoffeePeek.Moderation.Domain.Aggregates;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Exceptions;
@@ -12,7 +14,7 @@ namespace CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 
 public static class SendCoffeeShopToModerationHandler
 {
-    public static async Task<Response<SendCoffeeShopToModerationResponse>> Handle(
+    public static async Task<(Response<SendCoffeeShopToModerationResponse>, ParseMenuRequestedEvent?)> Handle(
         SendCoffeeShopToModerationCommand command,
         IModerationShopRepository repository,
         IModerationShopCreationService creationService,
@@ -54,7 +56,19 @@ public static class SendCoffeeShopToModerationHandler
             ? "The application has been accepted and will be reviewed by the moderator."
             : "The application has been accepted. Address coordinates could not be verified automatically and will be checked by a moderator.";
 
-        return Response<SendCoffeeShopToModerationResponse>.Success(responseData, message);
+        ParseMenuRequestedEvent? parseEvent = null;
+        if (command.MenuPhotos is { Count: > 0 })
+        {
+            var created = await repository.GetByIdAsync(shopId, ct);
+            parseEvent = MenuParseEvents.FromDraft(
+                MenuParseSourceKind.ModerationShop,
+                shopId,
+                null,
+                created?.Menu,
+                command.UserId);
+        }
+
+        return (Response<SendCoffeeShopToModerationResponse>.Success(responseData, message), parseEvent);
     }
 
     private static async Task<GeocodingResult?> TryGeocodeAsync(

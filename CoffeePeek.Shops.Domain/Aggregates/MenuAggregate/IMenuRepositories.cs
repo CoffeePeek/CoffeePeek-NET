@@ -9,3 +9,9 @@ public interface IQueryShopMenuRepository
 {
     Task<ShopMenu?> GetByShopIdAsync(Guid shopId, CancellationToken ct = default);
 }
+
+public interface IShopMenuRepository
+{
+    Task<ShopMenu?> GetTrackedByShopIdAsync(Guid shopId, CancellationToken ct = default);
+    void Add(ShopMenu menu);
+}

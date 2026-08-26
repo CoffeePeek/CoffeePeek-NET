@@ -20,7 +20,7 @@ public partial class MapsterConfiguration
         var config = new TypeAdapterConfig();
 
         ConfigureModerationReview(config);
-        ConfigureModerationShop(config);
+        ConfigureModerationShop(config, mediaOptions);
 
         config.NewConfig<PhotoMetadata, ShortPhotoMetadataDto>()
             .Map(d => d.FullUrl, s =>

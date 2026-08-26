@@ -71,6 +71,7 @@ public static class DependencyInjection
         services.AddScoped<IQueryShopTagRepository, QueryShopTagRepository>();
         services.AddScoped<IQueryCoffeeDrinkRepository, QueryCoffeeDrinkRepository>();
         services.AddScoped<IQueryShopMenuRepository, QueryShopMenuRepository>();
+        services.AddScoped<IShopMenuRepository, ShopMenuRepository>();
         services.AddCacheModule();
 
         return services;

@@ -25,3 +25,14 @@ public class QueryShopMenuRepository(ShopsDbContext dbContext) : IQueryShopMenuR
             .Include(m => m.Photos)
             .FirstOrDefaultAsync(m => m.CoffeeShopId == shopId, ct);
 }
+
+public class ShopMenuRepository(ShopsDbContext dbContext) : IShopMenuRepository
+{
+    public Task<ShopMenu?> GetTrackedByShopIdAsync(Guid shopId, CancellationToken ct = default) =>
+        dbContext.ShopMenus
+            .Include(m => m.Items)
+            .Include(m => m.Photos)
+            .FirstOrDefaultAsync(m => m.CoffeeShopId == shopId, ct);
+
+    public void Add(ShopMenu menu) => dbContext.ShopMenus.Add(menu);
+}

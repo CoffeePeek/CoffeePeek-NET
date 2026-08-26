@@ -99,6 +99,8 @@ public sealed class CoffeeShop : Entity<Guid>
         PriceRange = priceRange;
     }
 
+    public void SetPriceRange(PriceRange priceRange) => PriceRange = priceRange;
+
     public void SetStatus(CoffeeShopStatus status)
     {
         Status = status;

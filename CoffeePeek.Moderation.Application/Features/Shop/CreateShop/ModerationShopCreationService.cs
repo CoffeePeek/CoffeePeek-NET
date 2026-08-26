@@ -54,6 +54,13 @@ public class ModerationShopCreationService(IModerationShopRepository shopReposit
             }
         }
 
+        if (command.MenuPhotos is { Count: > 0 })
+        {
+            shop.AttachMenuPhotos(
+                command.MenuPhotos.Select(p => (p.FileName, p.ContentType, p.StorageKey, p.Size)).ToArray(),
+                DateTime.UtcNow);
+        }
+
         await shopRepository.AddAsync(shop);
 
         await unitOfWork.SaveChangesAsync(ct);

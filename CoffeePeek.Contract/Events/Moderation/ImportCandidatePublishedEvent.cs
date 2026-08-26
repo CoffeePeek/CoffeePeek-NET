@@ -1,3 +1,4 @@
+using CoffeePeek.Contract.Dtos.Menu;
 using CoffeePeek.Contract.Enums;
 
 namespace CoffeePeek.Contract.Events.Moderation;
@@ -16,6 +17,7 @@ public record ImportCandidatePublishedItem(
     CoffeeShopType Type,
     string[] TagSlugs,
     bool TemporarilyClosed,
-    bool ImportedFromFile = false);
+    bool ImportedFromFile = false,
+    ShopMenuSnapshot? Menu = null);
 
 public record ImportCandidatePublishedEvent(IReadOnlyList<ImportCandidatePublishedItem> Items);

@@ -65,5 +65,14 @@ public class ModerationShopConfiguration : IEntityTypeConfiguration<ModerationSh
             .WithOne(bm => bm.ModerationShop)
             .HasForeignKey(bm => bm.ShopId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        entity.OwnsOne(e => e.Menu, menu =>
+        {
+            menu.ToJson();
+            menu.OwnsMany(m => m.Items);
+            menu.OwnsMany(m => m.Photos);
+            menu.OwnsMany(m => m.Unmatched);
+        });
+        entity.Navigation(e => e.Menu).UsePropertyAccessMode(PropertyAccessMode.Property);
     }
 }

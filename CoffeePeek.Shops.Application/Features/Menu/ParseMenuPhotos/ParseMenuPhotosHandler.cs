@@ -6,6 +6,8 @@ using CoffeePeek.Shops.Application.Abstractions;
 using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Aggregates.MenuAggregate;
 using Microsoft.Extensions.Options;
+using ContractCategory = CoffeePeek.Contract.Enums.CoffeeDrinkCategory;
+using ContractPriceRange = CoffeePeek.Contract.Enums.PriceRange;
 
 namespace CoffeePeek.Shops.Application.Features.Menu.ParseMenuPhotos;
 
@@ -13,16 +15,10 @@ public record ParseMenuPhotoInput(string StorageKey, string ContentType, string?
 
 public record ParseMenuPhotosCommand(IReadOnlyList<ParseMenuPhotoInput> Photos);
 
-public record ParsedMenuItemDto(
-    string Slug,
-    decimal? Price,
-    int? VolumeMl,
-    string RawName);
-
 public record ParseMenuPhotosResponse(
     bool Success,
     string? Error,
-    PriceRange? SuggestedPriceRange,
+    ContractPriceRange? SuggestedPriceRange,
     IReadOnlyList<ParsedMenuItemDto> Items,
     IReadOnlyList<UnmatchedMenuItemDto> Unmatched);
 
@@ -74,7 +70,14 @@ public static class ParseMenuPhotosHandler
                 continue;
             }
 
-            matched[drink.Slug] = new ParsedMenuItemDto(drink.Slug, line.Price, line.VolumeMl, line.RawName);
+            matched[drink.Slug] = new ParsedMenuItemDto(
+                drink.Slug,
+                line.Price,
+                line.VolumeMl,
+                line.RawName,
+                drink.NameRu,
+                drink.NameEn,
+                (ContractCategory)(int)drink.Category);
         }
 
         var items = matched.Values.ToArray();
@@ -87,7 +90,7 @@ public static class ParseMenuPhotosHandler
         return Response<ParseMenuPhotosResponse>.Success(new ParseMenuPhotosResponse(
             true,
             null,
-            suggested is null ? null : (PriceRange)(int)suggested.Value,
+            suggested is null ? null : (ContractPriceRange)(int)suggested.Value,
             items,
             unmatched));
     }
