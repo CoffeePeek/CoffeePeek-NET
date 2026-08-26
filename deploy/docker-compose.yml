@@ -186,8 +186,8 @@ services:
       <<: [*dotnet-common, *rabbitmq-env, *redis-env, *media-public-env]
       PostgresCpOptions__ConnectionString: Host=postgres;Port=5432;Database=cpshopsdb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};SslMode=Disable;GSS Encryption Mode=Disable
       Sentry__Dsn: ${SENTRY_DSN_SHOPS:-}
-    mem_limit: 512m
-    memswap_limit: 512m
+    mem_limit: 1024m
+    memswap_limit: 1024m
 
   moderation:
     image: ${DOCKER_IMAGE_PREFIX}/coffeepeek.moderationservice:${IMAGE_TAG}
