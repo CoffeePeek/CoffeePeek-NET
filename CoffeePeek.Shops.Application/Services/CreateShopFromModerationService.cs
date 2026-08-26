@@ -1,4 +1,6 @@
 using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Dtos.Menu;
+using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shops.Application.Features.Public.Stats;
@@ -6,6 +8,7 @@ using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using DomainPriceRange = CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.PriceRange;
 
 namespace CoffeePeek.Shops.Application.Services;
 
@@ -15,6 +18,7 @@ public class CreateShopFromModerationService(
     IQueryEquipmentRepository equipmentRepository,
     IQueryRoasterRepository roasterRepository,
     IQueryBrewMethodRepository brewMethodRepository,
+    IApplyShopMenuService applyMenu,
     IUnitOfWork unitOfWork,
     ICacheService cacheService,
     ILogger<CreateShopFromModerationService> logger) : ICreateShopFromModerationService
@@ -31,7 +35,13 @@ public class CreateShopFromModerationService(
             return existingId.Value;
         }
 
-        var shop = new CoffeeShop(creatorId, shopDto.Name, shopDto.Description, (PriceRange)shopDto.PriceRange, moderationId);
+        var priceRange = shopDto.PriceRange != 0
+            ? (DomainPriceRange)shopDto.PriceRange
+            : shopDto.Menu?.SuggestedPriceRange is { } suggested
+                ? (DomainPriceRange)(int)suggested
+                : DomainPriceRange.Moderate;
+
+        var shop = new CoffeeShop(creatorId, shopDto.Name, shopDto.Description, priceRange, moderationId);
 
         if (shopDto.Type.HasValue)
         {
@@ -104,6 +114,16 @@ public class CreateShopFromModerationService(
         }
 
         shopRepository.Add(shop);
+        if (shopDto.Menu is not null)
+        {
+            await applyMenu.ApplySnapshotAsync(
+                shop.Id,
+                ToSnapshot(shopDto.Menu),
+                applySuggestedPriceRange: false,
+                creatorId,
+                cancellationToken);
+        }
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), cancellationToken);
@@ -117,5 +137,19 @@ public class CreateShopFromModerationService(
 
         return shop.Id;
     }
+
+    private static ShopMenuSnapshot ToSnapshot(ShopMenuDto menu) =>
+        new(
+            menu.CapturedAtUtc,
+            menu.Currency,
+            menu.SuggestedPriceRange,
+            menu.Items
+                .Where(i => i.Availability != MenuItemAvailability.Unknown)
+                .Select(i => new ShopMenuItemSnapshot(
+                    i.Slug, i.Availability, i.Price, i.VolumeMl, i.Source))
+                .ToArray(),
+            menu.Photos
+                .Select(p => new ShopMenuPhotoSnapshot(p.FileName, "image/jpeg", p.StorageKey, 0))
+                .ToArray());
 }
 

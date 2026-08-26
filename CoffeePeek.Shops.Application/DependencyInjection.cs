@@ -18,6 +18,12 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddOptions<GeminiOptions>()
+            .BindConfiguration(nameof(GeminiOptions));
+
+        services.AddOptions<MenuPriceRangeOptions>()
+            .BindConfiguration(nameof(MenuPriceRangeOptions));
+
         services.AddSingleton<TypeAdapterConfig>(sp =>
             MapsterConfiguration.CreateConfig(sp.GetRequiredService<IOptions<MediaPublicUrlOptions>>().Value));
 
@@ -30,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<ICreateShopFromModerationService, CreateShopFromModerationService>();
         services.AddScoped<ICreateShopFromImportService, CreateShopFromImportService>();
         services.AddScoped<IEnrichShopFromImportService, EnrichShopFromImportService>();
+        services.AddScoped<IApplyShopMenuService, ApplyShopMenuService>();
 
         return services;
     }

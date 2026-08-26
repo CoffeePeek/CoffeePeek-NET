@@ -38,6 +38,42 @@ public sealed partial class ModerationShop
         var photo = PhotoMetadata.Create(fileName, contentType, storageKey, length, UserId, Id);
         _shopPhotos.Add(photo);
     }
+
+    public void AttachMenuPhotos(
+        IReadOnlyList<(string FileName, string ContentType, string StorageKey, long SizeBytes)> photos,
+        DateTime utcNow)
+    {
+        Menu ??= MenuDraftAggregate.MenuDraft.CreateEmpty();
+        Menu.AttachPhotos(photos, utcNow);
+    }
+
+    public void RequestMenuParse()
+    {
+        if (Menu is null || Menu.Photos.Count == 0)
+            throw new DomainException("Attach menu photos before parsing.");
+
+        Menu.MarkParsePending();
+    }
+
+    public void ApplyMenuParseResult(
+        bool success,
+        string? error,
+        int? suggestedPriceRange,
+        IReadOnlyList<MenuDraftAggregate.MenuDraftItem> items,
+        IReadOnlyList<MenuDraftAggregate.MenuDraftUnmatched> unmatched,
+        DateTime utcNow)
+    {
+        Menu ??= MenuDraftAggregate.MenuDraft.CreateEmpty();
+        Menu.ApplyParseResult(success, error, suggestedPriceRange, items, unmatched, utcNow);
+    }
+
+    public void ReplaceMenuItems(
+        IReadOnlyList<MenuDraftAggregate.MenuDraftItem> items,
+        DateTime utcNow)
+    {
+        Menu ??= MenuDraftAggregate.MenuDraft.CreateEmpty();
+        Menu.ApplyManualItems(items, utcNow);
+    }
     
     public void UpdateInfo(
         string? name,
@@ -60,6 +96,11 @@ public sealed partial class ModerationShop
 
         if (coffeeFocus.HasValue)
             CoffeeFocus = coffeeFocus.Value;
+    }
+
+    public void ApplySuggestedPriceRange(PriceRange suggested)
+    {
+        PriceRange = suggested;
     }
 
     public void UpdateContacts(string? phone, string? instagram, string? email, string? site)

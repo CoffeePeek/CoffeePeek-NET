@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CoffeePeek.Contract.Constants;
+using CoffeePeek.Contract.Dtos.Menu;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
@@ -24,17 +25,26 @@ public class CreateShopFromImportServiceTests
     private readonly Mock<IQueryCoffeeShopRepository> _shopRepo = new();
     private readonly Mock<IQueryShopTagRepository> _tagRepo = new();
     private readonly Mock<IQueryCityRepository> _cityRepo = new();
+    private readonly Mock<IApplyShopMenuService> _applyMenu = new();
     private readonly Mock<IUnitOfWork> _uow = new();
     private readonly Mock<ICacheService> _cache = new();
     private readonly Mock<ILogger<CreateShopFromImportService>> _logger = new();
     private readonly CancellationToken _ct = CancellationToken.None;
 
     private CreateShopFromImportService CreateSut() =>
-        new(_shopRepo.Object, _tagRepo.Object, _cityRepo.Object, _uow.Object, _cache.Object, _logger.Object);
+        new(_shopRepo.Object, _tagRepo.Object, _cityRepo.Object, _applyMenu.Object, _uow.Object, _cache.Object, _logger.Object);
 
     public CreateShopFromImportServiceTests()
     {
         _cityRepo.Setup(r => r.Exists(It.IsAny<Guid>(), _ct)).ReturnsAsync(true);
+        _applyMenu
+            .Setup(a => a.ApplySnapshotAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<ShopMenuSnapshot>(),
+                It.IsAny<bool>(),
+                It.IsAny<Guid?>(),
+                _ct))
+            .Returns(Task.CompletedTask);
     }
 
     [Fact]
@@ -229,5 +239,52 @@ public class CreateShopFromImportServiceTests
 
         await act.Should().ThrowAsync<DomainException>().WithMessage("*Минск*");
         _shopRepo.Verify(r => r.Add(It.IsAny<CoffeeShop>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Create_WhenMenuSnapshotPresent_CopiesMenuAndUsesSuggestedPriceRange()
+    {
+        _shopRepo.Setup(r => r.GetIdByModerationId(It.IsAny<Guid>(), _ct)).ReturnsAsync((Guid?)null);
+        _tagRepo
+            .Setup(r => r.GetActiveBySlugsAsync(It.IsAny<IReadOnlyCollection<string>>(), _ct))
+            .ReturnsAsync([]);
+
+        CoffeeShop? added = null;
+        _shopRepo.Setup(r => r.Add(It.IsAny<CoffeeShop>())).Callback<CoffeeShop>(s => added = s);
+
+        var menu = new ShopMenuSnapshot(
+            DateTime.UtcNow,
+            "BYN",
+            Contract.Enums.PriceRange.Cheap,
+            [new ShopMenuItemSnapshot("cappuccino", MenuItemAvailability.Present, 6.5m, null, MenuItemSource.Parsed)],
+            [new ShopMenuPhotoSnapshot("menu.jpg", "image/jpeg", "menus/a.jpg", 10)]);
+
+        var item = new ImportCandidatePublishedItem(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Coffe Joy",
+            "Немига 5",
+            53.9152m,
+            27.5847m,
+            CitiesConsts.MinskId,
+            null,
+            null,
+            null,
+            Contract.Enums.CoffeeShopType.Cafe,
+            [],
+            false,
+            false,
+            menu);
+
+        await CreateSut().CreateShopFromImportAsync(item, _ct);
+
+        added.Should().NotBeNull();
+        added!.PriceRange.Should().Be(Domain.Aggregates.CoffeeShopAggregate.PriceRange.Cheap);
+        _applyMenu.Verify(a => a.ApplySnapshotAsync(
+            added.Id,
+            menu,
+            false,
+            item.CreatorId,
+            _ct), Times.Once);
     }
 }

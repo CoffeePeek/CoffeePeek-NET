@@ -1,18 +1,27 @@
 ﻿using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Shared.Kernel.Options;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetCoffeeShop;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
 using CoffeePeek.Shops.Application.Features.CoffeeShop.SearchCoffeeShops;
+using CoffeePeek.Shops.Application.Features.Menu;
 using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.MenuAggregate;
 using CoffeePeek.Shops.Persistance.Configuration;
 using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using CoffeeShopType = CoffeePeek.Contract.Enums.CoffeeShopType;
 
 namespace CoffeePeek.Shops.Persistance.Queries;
 
-public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffeeShopQueries
+public class CoffeeShopQueries(
+    ShopsDbContext context,
+    IMapper mapper,
+    IQueryCoffeeDrinkRepository drinkRepository,
+    IQueryShopMenuRepository menuRepository,
+    IOptions<MediaPublicUrlOptions> mediaOptions) : ICoffeeShopQueries
 {
     public async Task<(ShortShopDto[] Items, int TotalCount)> Search(SearchCoffeeShopsQuery request, CancellationToken ct)
     {
@@ -181,13 +190,17 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
         var isNew = state is not null && state.CreatedAtUtc >= now.AddDays(-BusinessConstants.ItNewEntityInDays);
         var isOpen = state is null || ComputeIsOpen(state.Schedules, now);
 
+        var catalog = await drinkRepository.GetActiveAsync(ct);
+        var menu = await menuRepository.GetByShopIdAsync(id, ct);
+
         return dto with
         {
             Tags = tags,
             Photos = dto.Photos ?? [],
             IsNew = isNew,
             IsOpen = isOpen,
-            Type = (CoffeeShopType?)(int?)state?.CoffeeFocus
+            Type = (CoffeeShopType?)(int?)state?.CoffeeFocus,
+            Menu = ShopMenuDtoFactory.FromShopMenu(menu, catalog, mediaOptions.Value)
         };
     }
 

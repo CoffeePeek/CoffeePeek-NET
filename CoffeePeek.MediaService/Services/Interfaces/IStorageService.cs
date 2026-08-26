@@ -5,7 +5,12 @@ namespace CoffeePeek.MediaService.Services;
 
 public interface IStorageService
 {
-    Task<PresignedPhotoMetaData> GetPresignedUploadUrl(string fileName, string contentType, BucketType bucketType, CancellationToken ct = default);
+    Task<PresignedPhotoMetaData> GetPresignedUploadUrl(
+        string fileName,
+        string contentType,
+        BucketType bucketType,
+        CancellationToken ct = default,
+        string? keyPrefix = null);
     
     Task MarkAsPermanent(string storageKey, BucketType bucketType, CancellationToken ct = default);
     Task<bool> Exists(string uploadedPhotoStorageKey, BucketType bucketType, CancellationToken ct = default);

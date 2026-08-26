@@ -15,6 +15,7 @@ public class CreateShopFromImportService(
     IQueryCoffeeShopRepository shopRepository,
     IQueryShopTagRepository tagRepository,
     IQueryCityRepository cityRepository,
+    IApplyShopMenuService applyMenu,
     IUnitOfWork unitOfWork,
     ICacheService cacheService,
     ILogger<CreateShopFromImportService> logger) : ICreateShopFromImportService
@@ -35,11 +36,15 @@ public class CreateShopFromImportService(
 
         var cityId = await ResolveCityId(item.CityId, cancellationToken);
 
+        var priceRange = item.Menu?.SuggestedPriceRange is { } suggested
+            ? (PriceRange)(int)suggested
+            : PriceRange.Moderate;
+
         var shop = new CoffeeShop(
             item.CreatorId,
             item.Name,
             description: null,
-            PriceRange.Moderate,
+            priceRange,
             item.CandidateId);
 
         shop.SetLocation(cityId, item.Address, item.Latitude, item.Longitude);
@@ -61,6 +66,16 @@ public class CreateShopFromImportService(
             shop.SetTags(tags.Select(t => t.Id).ToArray(), item.CreatorId);
 
         shopRepository.Add(shop);
+        if (item.Menu is not null)
+        {
+            await applyMenu.ApplySnapshotAsync(
+                shop.Id,
+                item.Menu,
+                applySuggestedPriceRange: false,
+                item.CreatorId,
+                cancellationToken);
+        }
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), cancellationToken);

@@ -31,9 +31,12 @@ public class MinIOStorageService : IStorageService, IDisposable
     }
 
     public async Task<PresignedPhotoMetaData> GetPresignedUploadUrl(string fileName,
-        string contentType, BucketType bucketType, CancellationToken ct = default)
+        string contentType, BucketType bucketType, CancellationToken ct = default, string? keyPrefix = null)
     {
-        var storageKey = $"{Guid.NewGuid()}{Path.GetExtension(fileName)}";
+        var ext = Path.GetExtension(fileName);
+        var storageKey = string.IsNullOrWhiteSpace(keyPrefix)
+            ? $"{Guid.NewGuid()}{ext}"
+            : $"{keyPrefix.Trim('/')}/{Guid.NewGuid()}{ext}";
 
         var args = new PresignedPutObjectArgs()
             .WithBucket(GetBucketName(bucketType))

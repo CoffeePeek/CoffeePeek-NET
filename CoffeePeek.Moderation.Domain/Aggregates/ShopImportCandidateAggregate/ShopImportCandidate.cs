@@ -1,4 +1,5 @@
 using System.Globalization;
+using CoffeePeek.Moderation.Domain.Aggregates.MenuDraftAggregate;
 using CoffeePeek.Moderation.Domain.Import;
 using CoffeePeek.Shared.Domain.Entities;
 using CoffeePeek.Shared.Domain.Places;
@@ -47,6 +48,7 @@ public sealed class ShopImportCandidate : Entity<Guid>
     public DateTimeOffset? ReviewedAtUtc { get; private set; }
     public Guid? ResultingShopId { get; private set; }
     public ImportRejectReason? RejectReason { get; private set; }
+    public MenuDraft? Menu { get; private set; }
 
     // ReSharper disable once UnusedMember.Local
     private ShopImportCandidate()
@@ -426,6 +428,42 @@ public sealed class ShopImportCandidate : Entity<Guid>
             return Address.Trim();
 
         return "Минск";
+    }
+
+    public void AttachMenuPhotos(
+        IReadOnlyList<(string FileName, string ContentType, string StorageKey, long SizeBytes)> photos,
+        DateTime utcNow)
+    {
+        Menu ??= MenuDraft.CreateEmpty();
+        Menu.AttachPhotos(photos, utcNow);
+    }
+
+    public void RequestMenuParse()
+    {
+        if (Menu is null || Menu.Photos.Count == 0)
+            throw new DomainException("Attach menu photos before parsing.");
+
+        Menu.MarkParsePending();
+    }
+
+    public void ApplyMenuParseResult(
+        bool success,
+        string? error,
+        int? suggestedPriceRange,
+        IReadOnlyList<MenuDraftItem> items,
+        IReadOnlyList<MenuDraftUnmatched> unmatched,
+        DateTime utcNow)
+    {
+        Menu ??= MenuDraft.CreateEmpty();
+        Menu.ApplyParseResult(success, error, suggestedPriceRange, items, unmatched, utcNow);
+    }
+
+    public void ReplaceMenuItems(
+        IReadOnlyList<MenuDraftItem> items,
+        DateTime utcNow)
+    {
+        Menu ??= MenuDraft.CreateEmpty();
+        Menu.ApplyManualItems(items, utcNow);
     }
 
     private void ApplyOsmFields(OsmCandidateSnapshot snapshot, DateTimeOffset now)

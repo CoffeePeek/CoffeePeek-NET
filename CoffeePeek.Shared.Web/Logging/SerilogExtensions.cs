@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Sentry.Serilog;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -26,6 +27,7 @@ public static class SerilogExtensions
             .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
             .MinimumLevel.Override("Yarp.ReverseProxy.Health", LogEventLevel.Warning)
             .WriteTo.Console(outputTemplate: DefaultTemplate, theme: theme)
+            .WriteTo.Sentry(SentrySerilogSink)
             .CreateLogger();
 
         builder.Host.UseSerilog();
@@ -46,6 +48,7 @@ public static class SerilogExtensions
             .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
             .MinimumLevel.Override("Yarp.ReverseProxy.Health", LogEventLevel.Warning)
             .WriteTo.Console(outputTemplate: DefaultTemplate, theme: theme)
+            .WriteTo.Sentry(SentrySerilogSink)
             .CreateLogger();
 
         builder.Services.AddLogging(logging =>
@@ -55,5 +58,16 @@ public static class SerilogExtensions
         });
 
         return builder;
+    }
+
+    /// <summary>
+    /// Forwards Serilog events into Sentry Logs. SDK is initialized by UseCoffeePeekSentry.
+    /// </summary>
+    private static void SentrySerilogSink(SentrySerilogOptions options)
+    {
+        options.InitializeSdk = false;
+        options.EnableLogs = true;
+        options.MinimumBreadcrumbLevel = LogEventLevel.Debug;
+        options.MinimumEventLevel = LogEventLevel.Warning;
     }
 }

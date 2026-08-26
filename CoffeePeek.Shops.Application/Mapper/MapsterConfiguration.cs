@@ -65,6 +65,7 @@ public static class MapsterConfiguration
             .Map(dest => dest.Type, src => (Contract.Enums.CoffeeShopType?)(int?)src.CoffeeFocus)
             // Tags loaded separately in CoffeeShopQueries.GetDetailsById
             .Ignore(dest => dest.Tags)
+            .Ignore(dest => dest.Menu)
             // Rating, ReviewCount and Reviews are set manually in handlers via repository
             .Ignore(dest => dest.Rating)
             .Ignore(dest => dest.ReviewCount)

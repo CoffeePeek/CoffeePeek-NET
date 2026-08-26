@@ -59,7 +59,7 @@ public record CacheKey(
     public static class Shop
     {
         public static CacheKey Detail(Guid shopId) => new(
-            Key: $"shop:detail:{shopId}",
+            Key: $"shop:detail:v2:{shopId}",
             DefaultTtl: TimeSpan.FromMinutes(3),
             Description: "Coffee shop entity (details)",
             Service: "ShopsService");
@@ -109,6 +109,12 @@ public record CacheKey(
             Service: "ShopsService");
 
         public static string TagsCatalogPattern() => "shop:tags:*";
+
+        public static CacheKey MenuDrinks() => new(
+            Key: "shop:menu:drinks",
+            DefaultTtl: TimeSpan.FromHours(6),
+            Description: "Standard coffee drink catalog",
+            Service: "ShopsService");
     }
     
     public static class City

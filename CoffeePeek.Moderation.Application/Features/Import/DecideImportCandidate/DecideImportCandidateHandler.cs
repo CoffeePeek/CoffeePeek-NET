@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Constants;
 using CoffeePeek.Contract.Dtos.Import;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Contract.Events.Moderation;
+using CoffeePeek.Moderation.Application.Features.Menu;
 using CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
 using ContractStatus = CoffeePeek.Contract.Enums.ImportQueueStatus;
 using ContractRejectReason = CoffeePeek.Contract.Enums.ImportRejectReason;
@@ -88,6 +89,7 @@ public static class ImportPublishFactory
             (CoffeeShopType)(int)candidate.CoffeeFocus!.Value,
             candidate.TagSlugs.ToArray(),
             overrideClosed && candidate.GoogleBusinessStatus == ImportGoogleBusinessStatus.ClosedPermanently,
-            candidate.ImportedFromFile);
+            candidate.ImportedFromFile,
+            MenuDraftMapper.ToSnapshot(candidate.Menu));
     }
 }

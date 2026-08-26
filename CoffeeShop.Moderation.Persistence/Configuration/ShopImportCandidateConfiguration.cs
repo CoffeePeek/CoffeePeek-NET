@@ -42,6 +42,14 @@ public class ShopImportCandidateConfiguration : IEntityTypeConfiguration<ShopImp
         entity.HasIndex(e => e.CollectorBucket);
         entity.HasIndex(e => e.CoffeeFocus);
         entity.HasIndex(e => e.RejectReason);
+
+        entity.OwnsOne(e => e.Menu, menu =>
+        {
+            menu.ToJson();
+            menu.OwnsMany(m => m.Items);
+            menu.OwnsMany(m => m.Photos);
+            menu.OwnsMany(m => m.Unmatched);
+        });
     }
 
     private static ValueComparer<List<string>> StringListComparer() =>

@@ -1,10 +1,12 @@
 using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Kernel.Response;
+using CoffeePeek.Shops.Application.Features.Admin.Menu;
 using CoffeePeek.Shops.Application.Features.Admin.Shops;
 using CoffeePeek.Shops.Application.Features.Admin.Shops.ReorderPhotos;
 using CoffeePeek.Shops.Application.Features.Admin.Shops.SetShopTags;
 using CoffeePeek.ShopsService.Controllers.Admin;
+using CoffeePeek.Contract.Dtos.Menu;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
@@ -153,6 +155,63 @@ public class AdminCoffeeShopsController(IMessageBus bus, IUserContext userContex
         {
             StatusCodes.Status404NotFound => NotFound(response),
             _ => BadRequest(response)
+        };
+    }
+
+    [HttpGet("{id:guid}/menu")]
+    [ProducesResponseType<Response<AdminShopMenuDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetMenu(Guid id, CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<AdminShopMenuDto>>(new GetAdminShopMenuQuery(id), ct);
+        return response.IsSuccess ? Ok(response) : NotFound(response);
+    }
+
+    [HttpPost("{id:guid}/menu/photos")]
+    [ProducesResponseType<Response<AdminShopMenuDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> AttachMenuPhotos(
+        Guid id,
+        [FromBody] AttachMenuPhotosRequest request,
+        CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<AdminShopMenuDto>>(
+            new AttachAdminShopMenuPhotosCommand(id, request.Photos, userContext.GetUserIdOrThrow()), ct);
+        return MenuActionResult(response);
+    }
+
+    [HttpPost("{id:guid}/menu/parse")]
+    [ProducesResponseType<Response<AdminShopMenuDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ParseMenu(Guid id, CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<AdminShopMenuDto>>(
+            new ParseAdminShopMenuCommand(id, userContext.GetUserIdOrThrow()), ct);
+        return MenuActionResult(response);
+    }
+
+    [HttpPut("{id:guid}/menu")]
+    [ProducesResponseType<Response<AdminShopMenuDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateMenu(
+        Guid id,
+        [FromBody] UpdateShopMenuRequest request,
+        CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<AdminShopMenuDto>>(
+            new UpdateAdminShopMenuCommand(
+                id, request.Items, request.ApplySuggestedPriceRange, userContext.GetUserIdOrThrow()),
+            ct);
+        return MenuActionResult(response);
+    }
+
+    private IActionResult MenuActionResult(Response<AdminShopMenuDto> response)
+    {
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return response.StatusCode switch
+        {
+            StatusCodes.Status404NotFound => NotFound(response),
+            StatusCodes.Status400BadRequest => BadRequest(response),
+            _ => StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response)
         };
     }
 }

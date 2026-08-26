@@ -1,4 +1,5 @@
 using CoffeePeek.Contract.Dtos.Contact;
+using CoffeePeek.Contract.Dtos.Menu;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Enums;
 
@@ -25,4 +26,5 @@ public class ModerationShopDto
     public List<Guid> RoasterIds { get; set; }
     public List<Guid> BrewMethodIds { get; set; }
     public List<ShortPhotoMetadataDto> ShopPhotos { get; set; }
+    public ShopMenuDto? Menu { get; set; }
 }

@@ -25,4 +25,5 @@ public record SendCoffeeShopToModerationCommand
     public List<Guid>? RoasterIds { get; init; }
     public List<Guid>? BrewMethodIds { get; init; }
     public List<UploadedPhotoDto>? ShopPhotos { get; init; }
+    public List<UploadedPhotoDto>? MenuPhotos { get; init; }
 }

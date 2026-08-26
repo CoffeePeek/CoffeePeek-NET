@@ -1,3 +1,4 @@
+using CoffeePeek.Contract.Dtos.Menu;
 using CoffeePeek.Contract.Enums;
 
 namespace CoffeePeek.Contract.Dtos.Import;
@@ -37,4 +38,5 @@ public record ShopImportCandidateDto(
     IReadOnlyList<string> Facts,
     IReadOnlyList<SuggestedTagDto> SuggestedTags,
     CoffeeShopType? SuggestedType,
-    ImportGapsDto Gaps);
+    ImportGapsDto Gaps,
+    ShopMenuDto? Menu = null);

@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using CoffeePeek.Contract.Dtos.CoffeeShop;
+using CoffeePeek.Contract.Dtos.Menu;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Moderation.Application.Features.Shop.CreateShop;
 using CoffeePeek.Moderation.Application.Features.Shop.GetAllModerationShops;
 using CoffeePeek.Moderation.Application.Features.Shop.GetModerationShopById;
+using CoffeePeek.Moderation.Application.Features.Shop.Menu;
 using CoffeePeek.Moderation.Application.Features.Shop.UpdateModerationShopStatus;
 using CoffeePeek.Moderation.Application.Features.Shop.UpdateShop;
 using CoffeePeek.Shared.Auth;
@@ -99,5 +101,56 @@ public class ModerationShopsController(IMessageBus bus, IUserContext userContext
         return response.IsSuccess
             ? Ok(response)
             : StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response);
+    }
+
+    [HttpPost("{id:guid}/menu/photos")]
+    [Authorize(Policy = RoleConsts.Moderator)]
+    [ProducesResponseType<Response<ModerationShopDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> AttachMenuPhotos(
+        Guid id,
+        [FromBody] AttachMenuPhotosRequest request,
+        CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<ModerationShopDto>>(
+            new AttachModerationShopMenuPhotosCommand(id, request.Photos, userContext.GetUserIdOrThrow()), ct);
+        return MenuActionResult(response);
+    }
+
+    [HttpPost("{id:guid}/menu/parse")]
+    [Authorize(Policy = RoleConsts.Moderator)]
+    [ProducesResponseType<Response<ModerationShopDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ParseMenu(Guid id, CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<ModerationShopDto>>(
+            new ParseModerationShopMenuCommand(id, userContext.GetUserIdOrThrow()), ct);
+        return MenuActionResult(response);
+    }
+
+    [HttpPut("{id:guid}/menu")]
+    [Authorize(Policy = RoleConsts.Moderator)]
+    [ProducesResponseType<Response<ModerationShopDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateMenu(
+        Guid id,
+        [FromBody] UpdateShopMenuRequest request,
+        CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<ModerationShopDto>>(
+            new UpdateModerationShopMenuCommand(
+                id, request.Items, request.ApplySuggestedPriceRange, userContext.GetUserIdOrThrow()),
+            ct);
+        return MenuActionResult(response);
+    }
+
+    private IActionResult MenuActionResult(Response<ModerationShopDto> response)
+    {
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return response.StatusCode switch
+        {
+            StatusCodes.Status404NotFound => NotFound(response),
+            StatusCodes.Status400BadRequest => BadRequest(response),
+            _ => StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response)
+        };
     }
 }

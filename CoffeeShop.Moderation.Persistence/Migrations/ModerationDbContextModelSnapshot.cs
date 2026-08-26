@@ -590,6 +590,127 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                                 .HasForeignKey("ModerationShopId");
                         });
 
+                    b.OwnsOne("CoffeePeek.Moderation.Domain.Aggregates.MenuDraftAggregate.MenuDraft", "Menu", b1 =>
+                        {
+                            b1.Property<Guid>("ModerationShopId");
+
+                            b1.Property<DateTime?>("CapturedAtUtc");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired();
+
+                            b1.Property<string>("ParseError");
+
+                            b1.Property<int>("ParseStatus");
+
+                            b1.Property<int?>("SuggestedPriceRange");
+
+                            b1.Property<DateTime?>("UpdatedAtUtc");
+
+                            b1.HasKey("ModerationShopId");
+
+                            b1.ToTable("ModerationShops");
+
+                            b1
+                                .ToJson("Menu")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ModerationShopId");
+
+                            b1.OwnsMany("CoffeePeek.Moderation.Domain.Aggregates.MenuDraftAggregate.MenuDraftItem", "Items", b2 =>
+                                {
+                                    b2.Property<Guid>("MenuDraftModerationShopId");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAdd();
+
+                                    b2.Property<int>("Availability");
+
+                                    b2.Property<int>("Category");
+
+                                    b2.Property<string>("NameEn")
+                                        .IsRequired();
+
+                                    b2.Property<string>("NameRu")
+                                        .IsRequired();
+
+                                    b2.Property<decimal?>("Price");
+
+                                    b2.Property<string>("Slug")
+                                        .IsRequired();
+
+                                    b2.Property<int>("Source");
+
+                                    b2.Property<int?>("VolumeMl");
+
+                                    b2.HasKey("MenuDraftModerationShopId", "__synthesizedOrdinal");
+
+                                    b2.ToTable("ModerationShops");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MenuDraftModerationShopId");
+                                });
+
+                            b1.OwnsMany("CoffeePeek.Moderation.Domain.Aggregates.MenuDraftAggregate.MenuDraftPhoto", "Photos", b2 =>
+                                {
+                                    b2.Property<Guid>("MenuDraftModerationShopId");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAdd();
+
+                                    b2.Property<string>("ContentType")
+                                        .IsRequired();
+
+                                    b2.Property<string>("FileName")
+                                        .IsRequired();
+
+                                    b2.Property<Guid>("Id");
+
+                                    b2.Property<Guid?>("MediaPhotoId");
+
+                                    b2.Property<long>("SizeBytes");
+
+                                    b2.Property<string>("StorageKey")
+                                        .IsRequired();
+
+                                    b2.HasKey("MenuDraftModerationShopId", "__synthesizedOrdinal");
+
+                                    b2.ToTable("ModerationShops");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MenuDraftModerationShopId");
+                                });
+
+                            b1.OwnsMany("CoffeePeek.Moderation.Domain.Aggregates.MenuDraftAggregate.MenuDraftUnmatched", "Unmatched", b2 =>
+                                {
+                                    b2.Property<Guid>("MenuDraftModerationShopId");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAdd();
+
+                                    b2.Property<double?>("Confidence");
+
+                                    b2.Property<decimal?>("Price");
+
+                                    b2.Property<string>("RawName")
+                                        .IsRequired();
+
+                                    b2.HasKey("MenuDraftModerationShopId", "__synthesizedOrdinal");
+
+                                    b2.ToTable("ModerationShops");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MenuDraftModerationShopId");
+                                });
+
+                            b1.Navigation("Items");
+
+                            b1.Navigation("Photos");
+
+                            b1.Navigation("Unmatched");
+                        });
+
                     b.OwnsOne("CoffeePeek.Moderation.Domain.Aggregates.ModerationShopContact", "Contact", b1 =>
                         {
                             b1.Property<Guid>("ModerationShopId")
@@ -680,6 +801,8 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.Navigation("Location")
                         .IsRequired();
 
+                    b.Navigation("Menu");
+
                     b.Navigation("Schedules");
                 });
 
@@ -714,6 +837,132 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("ModerationShop");
+                });
+
+            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ShopImportCandidate", b =>
+                {
+                    b.OwnsOne("CoffeePeek.Moderation.Domain.Aggregates.MenuDraftAggregate.MenuDraft", "Menu", b1 =>
+                        {
+                            b1.Property<Guid>("ShopImportCandidateId");
+
+                            b1.Property<DateTime?>("CapturedAtUtc");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired();
+
+                            b1.Property<string>("ParseError");
+
+                            b1.Property<int>("ParseStatus");
+
+                            b1.Property<int?>("SuggestedPriceRange");
+
+                            b1.Property<DateTime?>("UpdatedAtUtc");
+
+                            b1.HasKey("ShopImportCandidateId");
+
+                            b1.ToTable("ShopImportCandidates");
+
+                            b1
+                                .ToJson("Menu")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ShopImportCandidateId");
+
+                            b1.OwnsMany("CoffeePeek.Moderation.Domain.Aggregates.MenuDraftAggregate.MenuDraftItem", "Items", b2 =>
+                                {
+                                    b2.Property<Guid>("MenuDraftShopImportCandidateId");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAdd();
+
+                                    b2.Property<int>("Availability");
+
+                                    b2.Property<int>("Category");
+
+                                    b2.Property<string>("NameEn")
+                                        .IsRequired();
+
+                                    b2.Property<string>("NameRu")
+                                        .IsRequired();
+
+                                    b2.Property<decimal?>("Price");
+
+                                    b2.Property<string>("Slug")
+                                        .IsRequired();
+
+                                    b2.Property<int>("Source");
+
+                                    b2.Property<int?>("VolumeMl");
+
+                                    b2.HasKey("MenuDraftShopImportCandidateId", "__synthesizedOrdinal");
+
+                                    b2.ToTable("ShopImportCandidates");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MenuDraftShopImportCandidateId");
+                                });
+
+                            b1.OwnsMany("CoffeePeek.Moderation.Domain.Aggregates.MenuDraftAggregate.MenuDraftPhoto", "Photos", b2 =>
+                                {
+                                    b2.Property<Guid>("MenuDraftShopImportCandidateId");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAdd();
+
+                                    b2.Property<string>("ContentType")
+                                        .IsRequired();
+
+                                    b2.Property<string>("FileName")
+                                        .IsRequired();
+
+                                    b2.Property<Guid>("Id");
+
+                                    b2.Property<Guid?>("MediaPhotoId");
+
+                                    b2.Property<long>("SizeBytes");
+
+                                    b2.Property<string>("StorageKey")
+                                        .IsRequired();
+
+                                    b2.HasKey("MenuDraftShopImportCandidateId", "__synthesizedOrdinal");
+
+                                    b2.ToTable("ShopImportCandidates");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MenuDraftShopImportCandidateId");
+                                });
+
+                            b1.OwnsMany("CoffeePeek.Moderation.Domain.Aggregates.MenuDraftAggregate.MenuDraftUnmatched", "Unmatched", b2 =>
+                                {
+                                    b2.Property<Guid>("MenuDraftShopImportCandidateId");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAdd();
+
+                                    b2.Property<double?>("Confidence");
+
+                                    b2.Property<decimal?>("Price");
+
+                                    b2.Property<string>("RawName")
+                                        .IsRequired();
+
+                                    b2.HasKey("MenuDraftShopImportCandidateId", "__synthesizedOrdinal");
+
+                                    b2.ToTable("ShopImportCandidates");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MenuDraftShopImportCandidateId");
+                                });
+
+                            b1.Navigation("Items");
+
+                            b1.Navigation("Photos");
+
+                            b1.Navigation("Unmatched");
+                        });
+
+                    b.Navigation("Menu");
                 });
 
             modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.PhotoMetadata", b =>

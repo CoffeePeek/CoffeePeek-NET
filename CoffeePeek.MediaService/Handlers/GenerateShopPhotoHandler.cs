@@ -25,7 +25,12 @@ public static class GenerateShopPhotoHandler
         foreach (var request in command.Requests)
         {
             var presigned = await storageService
-                .GetPresignedUploadUrl(request.FileName, request.ContentType, BucketType.Shop, ct);
+                .GetPresignedUploadUrl(
+                    request.FileName,
+                    request.ContentType,
+                    BucketType.Shop,
+                    ct,
+                    command.StorageKeyPrefix);
 
             var metadata = PhotoMetadataFactory.Create(
                 request.FileName, request.ContentType, presigned.StorageKey,

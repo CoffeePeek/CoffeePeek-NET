@@ -37,5 +37,7 @@ public partial class ModerationShop : Entity<Guid>
     private readonly List<ModerationShopBrewMethod> _moderationShopBrewMethods = [];
     public IReadOnlyCollection<ModerationShopBrewMethod> ModerationShopBrewMethods => _moderationShopBrewMethods.AsReadOnly();
 
+    public MenuDraftAggregate.MenuDraft? Menu { get; private set; }
+
     private ModerationShop() { }
 }
