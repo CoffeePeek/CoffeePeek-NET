@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using CoffeePeek.Account.Application.Features.Admin.Stats;
 using CoffeePeek.Account.Infrastructure.Options;
 using CoffeePeek.Contract.Dtos.Admin;
@@ -78,7 +79,8 @@ public class AdminStatsClient(
             }
 
             var payload = await response.Content.ReadFromJsonAsync<Response<AdminServiceStatsDto>>(
-                cancellationToken: cancellationToken);
+                new JsonSerializerOptions(JsonSerializerDefaults.Web),
+                cancellationToken);
 
             if (payload is { IsSuccess: true, Data: not null })
                 return payload.Data;

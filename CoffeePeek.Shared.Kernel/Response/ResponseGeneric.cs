@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text.Json.Serialization;
 
 namespace CoffeePeek.Shared.Kernel.Response;
 
@@ -10,12 +11,13 @@ public class Response<TData> : Response
         init => base.Data = value;
     }
 
-    protected Response() : base(false, string.Empty, null)
+    [JsonConstructor]
+    public Response()
     {
     }
 
-    public Response(bool success, string message, TData data)
-        : base(success, message, data)
+    public Response(bool isSuccess, string message, TData data)
+        : base(isSuccess, message, data)
     {
     }
 
