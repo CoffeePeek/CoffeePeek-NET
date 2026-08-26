@@ -165,8 +165,8 @@ services:
       AdminStatsOptions__ShopsServiceUrl: http://shops
       AdminStatsOptions__ModerationServiceUrl: http://moderation
       Sentry__Dsn: ${SENTRY_DSN_ACCOUNT:-}
-    mem_limit: 512m
-    memswap_limit: 512m
+    mem_limit: 1024m
+    memswap_limit: 1024m
 
   shops:
     image: ${DOCKER_IMAGE_PREFIX}/coffeepeek.shopsservice:${IMAGE_TAG}
