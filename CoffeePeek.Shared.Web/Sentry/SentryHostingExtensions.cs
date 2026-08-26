@@ -7,7 +7,7 @@ namespace CoffeePeek.Shared.Web.Sentry;
 public static class SentryHostingExtensions
 {
     /// <summary>
-    /// Configures Sentry with metrics enabled for request popularity tracking.
+    /// Configures Sentry with structured logs and metrics enabled.
     /// </summary>
     public static IWebHostBuilder UseCoffeePeekSentry(
         this IWebHostBuilder builder,
@@ -15,6 +15,7 @@ public static class SentryHostingExtensions
     {
         return builder.UseSentry(options =>
         {
+            options.EnableLogs = true;
             options.EnableMetrics = true;
             options.SendDefaultPii = false;
             configure?.Invoke(options);

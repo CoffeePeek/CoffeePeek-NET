@@ -5,6 +5,7 @@ using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Abstractions;
 using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Aggregates.MenuAggregate;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ContractCategory = CoffeePeek.Contract.Enums.CoffeeDrinkCategory;
 using ContractPriceRange = CoffeePeek.Contract.Enums.PriceRange;
@@ -30,6 +31,7 @@ public static class ParseMenuPhotosHandler
         IQueryCoffeeDrinkRepository drinkRepository,
         IMenuPhotoDownloader photoDownloader,
         IOptions<MenuPriceRangeOptions> priceOptions,
+        ILogger logger,
         CancellationToken ct)
     {
         var photos = command.Photos
@@ -39,16 +41,25 @@ public static class ParseMenuPhotosHandler
             .ToArray();
 
         if (photos.Length == 0)
+        {
+            logger.LogWarning("Menu parse has no public photo URLs");
             return Response<ParseMenuPhotosResponse>.Success(Failed("No menu photo URLs to parse."));
+        }
 
         var downloaded = await photoDownloader.DownloadAsync(photos, ct);
 
         if (downloaded.Count == 0)
+        {
+            logger.LogError("Menu parse could not download any of {Count} photos", photos.Length);
             return Response<ParseMenuPhotosResponse>.Success(Failed("Could not download menu photos."));
+        }
 
         var vision = await parser.ParseAsync(downloaded, ct);
         if (!vision.Success)
+        {
+            logger.LogError("Menu vision parse failed: {Error}", vision.Error ?? "Parse failed.");
             return Response<ParseMenuPhotosResponse>.Success(Failed(vision.Error ?? "Parse failed."));
+        }
 
         var catalog = await drinkRepository.GetActiveAsync(ct);
         var matched = new Dictionary<string, ParsedMenuItemDto>(StringComparer.OrdinalIgnoreCase);
@@ -86,6 +97,12 @@ public static class ParseMenuPhotosHandler
             items.Where(i => i.Price.HasValue).Select(i => i.Price!.Value),
             settings.CheapBelow,
             settings.ExpensiveAbove);
+
+        logger.LogInformation(
+            "Menu parse matched {ItemCount} drinks, {UnmatchedCount} unmatched, suggested={Suggested}",
+            items.Length,
+            unmatched.Count,
+            suggested);
 
         return Response<ParseMenuPhotosResponse>.Success(new ParseMenuPhotosResponse(
             true,

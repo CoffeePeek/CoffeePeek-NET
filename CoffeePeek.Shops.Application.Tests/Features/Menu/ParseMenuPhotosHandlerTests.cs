@@ -6,6 +6,7 @@ using CoffeePeek.Shops.Application.Abstractions;
 using CoffeePeek.Shops.Application.Features.Menu.ParseMenuPhotos;
 using CoffeePeek.Shops.Domain.Aggregates.MenuAggregate;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 
@@ -53,6 +54,7 @@ public class ParseMenuPhotosHandlerTests
             _drinks.Object,
             _downloader.Object,
             _price,
+            NullLogger.Instance,
             _ct);
 
         result.IsSuccess.Should().BeTrue();
@@ -75,6 +77,7 @@ public class ParseMenuPhotosHandlerTests
             _drinks.Object,
             _downloader.Object,
             _price,
+            NullLogger.Instance,
             _ct);
 
         result.IsSuccess.Should().BeTrue();

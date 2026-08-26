@@ -3,13 +3,15 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CoffeePeek.Shared.Kernel.Options;
 using CoffeePeek.Shops.Application.Abstractions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.Shops.Infrastructure.Menu;
 
 public sealed class GeminiMenuVisionParser(
     IHttpClientFactory httpClientFactory,
-    IOptions<GeminiOptions> options) : IMenuVisionParser
+    IOptions<GeminiOptions> options,
+    ILogger<GeminiMenuVisionParser> logger) : IMenuVisionParser
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -22,10 +24,16 @@ public sealed class GeminiMenuVisionParser(
     {
         var settings = options.Value;
         if (string.IsNullOrWhiteSpace(settings.ApiKey))
+        {
+            logger.LogError("Menu parse skipped: Gemini API key is not configured (model {Model})", settings.Model);
             return new MenuVisionParseResult(false, "Gemini API key is not configured.", []);
+        }
 
         if (photos.Count == 0)
+        {
+            logger.LogWarning("Menu parse skipped: no menu photos supplied");
             return new MenuVisionParseResult(false, "No menu photos supplied.", []);
+        }
 
         var parts = new List<object>
         {
@@ -57,35 +65,62 @@ public sealed class GeminiMenuVisionParser(
         var url =
             $"{settings.BaseUrl.TrimEnd('/')}/models/{settings.Model}:generateContent?key={Uri.EscapeDataString(settings.ApiKey)}";
 
-        using var client = httpClientFactory.CreateClient("gemini");
-        using var response = await client.PostAsJsonAsync(url, payload, ct);
-        if (!response.IsSuccessStatusCode)
-        {
-            var body = await response.Content.ReadAsStringAsync(ct);
-            return new MenuVisionParseResult(false, $"Gemini HTTP {(int)response.StatusCode}: {Trim(body)}", []);
-        }
-
-        var gemini = await response.Content.ReadFromJsonAsync<GeminiResponse>(JsonOptions, ct);
-        var text = gemini?.Candidates?.FirstOrDefault()?.Content?.Parts?.FirstOrDefault()?.Text;
-        if (string.IsNullOrWhiteSpace(text))
-            return new MenuVisionParseResult(false, "Gemini returned an empty response.", []);
-
-        ParsedMenuJson? parsed;
         try
         {
-            parsed = JsonSerializer.Deserialize<ParsedMenuJson>(text, JsonOptions);
+            using var client = httpClientFactory.CreateClient("gemini");
+            using var response = await client.PostAsJsonAsync(url, payload, ct);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync(ct);
+                logger.LogError(
+                    "Gemini menu parse HTTP {StatusCode} for model {Model}: {Body}",
+                    (int)response.StatusCode,
+                    settings.Model,
+                    Trim(body));
+                return new MenuVisionParseResult(false, $"Gemini HTTP {(int)response.StatusCode}: {Trim(body)}", []);
+            }
+
+            var gemini = await response.Content.ReadFromJsonAsync<GeminiResponse>(JsonOptions, ct);
+            var text = gemini?.Candidates?.FirstOrDefault()?.Content?.Parts?.FirstOrDefault()?.Text;
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                logger.LogError("Gemini menu parse returned an empty response for model {Model}", settings.Model);
+                return new MenuVisionParseResult(false, "Gemini returned an empty response.", []);
+            }
+
+            ParsedMenuJson? parsed;
+            try
+            {
+                parsed = JsonSerializer.Deserialize<ParsedMenuJson>(text, JsonOptions);
+            }
+            catch (JsonException ex)
+            {
+                logger.LogError(ex, "Gemini menu parse JSON was invalid for model {Model}", settings.Model);
+                return new MenuVisionParseResult(false, $"Gemini JSON was invalid: {ex.Message}", []);
+            }
+
+            var drinks = (parsed?.Drinks ?? [])
+                .Where(d => !string.IsNullOrWhiteSpace(d.RawName))
+                .Select(d => new VisionDrinkLine(d.RawName!.Trim(), d.Price, d.VolumeMl, d.Confidence))
+                .ToArray();
+
+            logger.LogInformation(
+                "Gemini menu parse succeeded for model {Model}: {DrinkCount} drinks from {PhotoCount} photos",
+                settings.Model,
+                drinks.Length,
+                photos.Count);
+
+            return new MenuVisionParseResult(true, null, drinks);
         }
-        catch (JsonException ex)
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            return new MenuVisionParseResult(false, $"Gemini JSON was invalid: {ex.Message}", []);
+            throw;
         }
-
-        var drinks = (parsed?.Drinks ?? [])
-            .Where(d => !string.IsNullOrWhiteSpace(d.RawName))
-            .Select(d => new VisionDrinkLine(d.RawName!.Trim(), d.Price, d.VolumeMl, d.Confidence))
-            .ToArray();
-
-        return new MenuVisionParseResult(true, null, drinks);
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Gemini menu parse threw for model {Model}", settings.Model);
+            throw;
+        }
     }
 
     private static string Trim(string value) =>
