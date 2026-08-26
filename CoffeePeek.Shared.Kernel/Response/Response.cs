@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace CoffeePeek.Shared.Kernel.Response;
 
 public class Response
@@ -11,14 +13,15 @@ public class Response
     /// <summary>HTTP status when the error maps to a status code; null for non-HTTP failures.</summary>
     public int? StatusCode { get; init; }
 
-    protected Response()
+    [JsonConstructor]
+    public Response()
     {
         Message = string.Empty;
     }
 
-    public Response(bool success, string message, object? data)
+    public Response(bool isSuccess, string message, object? data)
     {
-        IsSuccess = success;
+        IsSuccess = isSuccess;
         Message = message;
         Data = data;
     }
