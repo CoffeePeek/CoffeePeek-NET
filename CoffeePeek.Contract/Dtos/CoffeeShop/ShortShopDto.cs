@@ -20,7 +20,7 @@ public class ShortShopDto
     public bool IsOpen { get; set; }
     
     public PriceRange PriceRange { get; init; }
-    public CoffeeShopType? Type { get; init; }
+    public CoffeeShopType? Type { get; set; }
     
     public LocationDto? Location { get; init; }
     public CoffeeBeansDto[]? Beans { get; init; }

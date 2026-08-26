@@ -89,7 +89,7 @@ public record CacheKey(
             Service: "ShopsService");
         
         public static CacheKey Search(string searchHash) => new(
-            Key: $"shop:search:{searchHash}",
+            Key: $"shop:search:v2:{searchHash}",
             DefaultTtl: TimeSpan.FromMinutes(5),
             Description: "Shop search results",
             Service: "ShopsService");
