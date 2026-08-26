@@ -6,8 +6,8 @@ public class UpdateEntityResponse<T> : Response<T>
 
     public UpdateEntityResponse() { }
 
-    public UpdateEntityResponse(bool success, string message, T data, T oldEntity = default)
-        : base(success, message, data)
+    public UpdateEntityResponse(bool isSuccess, string message, T data, T oldEntity = default)
+        : base(isSuccess, message, data)
     {
         OldEntity = oldEntity;
     }

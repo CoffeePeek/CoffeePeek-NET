@@ -14,7 +14,7 @@ public class ErrorResponse : Response
 #endif
 
     public ErrorResponse(string message, string? errorCode = null, Dictionary<string, string[]>? errors = null)
-        : base(success: false, message, null)
+        : base(isSuccess: false, message, null)
     {
         ErrorCode = errorCode;
         Errors = errors;
