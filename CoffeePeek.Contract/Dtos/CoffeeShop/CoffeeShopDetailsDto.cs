@@ -1,4 +1,5 @@
 ﻿using CoffeePeek.Contract.Dtos.Contact;
+using CoffeePeek.Contract.Dtos.Menu;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Contract.Enums;
@@ -37,4 +38,5 @@ public record CoffeeShopDetailsDto
     public ShopContactDto? ShopContact { get; init; }
     public List<ScheduleDto>? Schedules { get; init; }
     public ShopTagDto[] Tags { get; init; } = [];
+    public ShopMenuDto? Menu { get; init; }
 }

@@ -1,6 +1,7 @@
 using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.MenuAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,8 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
 
     public virtual DbSet<ShopTag> ShopTags { get; set; }
     public virtual DbSet<CoffeeShopTag> CoffeeShopTags { get; set; }
+    public virtual DbSet<CoffeeDrinkDefinition> CoffeeDrinkDefinitions { get; set; }
+    public virtual DbSet<ShopMenu> ShopMenus { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -41,6 +44,10 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
         modelBuilder.ApplyConfiguration(new ShopPhotoConfiguration());
         modelBuilder.ApplyConfiguration(new ShopTagConfiguration());
         modelBuilder.ApplyConfiguration(new CoffeeShopTagConfiguration());
+        modelBuilder.ApplyConfiguration(new CoffeeDrinkDefinitionConfiguration());
+        modelBuilder.ApplyConfiguration(new ShopMenuConfiguration());
+        modelBuilder.ApplyConfiguration(new ShopMenuItemConfiguration());
+        modelBuilder.ApplyConfiguration(new ShopMenuPhotoConfiguration());
         
         modelBuilder.Entity<Review>(entity =>
         {

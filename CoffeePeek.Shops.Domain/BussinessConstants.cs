@@ -67,4 +67,21 @@ public static class BusinessConstants
     #endregion
     
     public const int MaxEquipmentCategoryNameLength = 50;
+
+    #region Menu
+
+    public const int MaxCoffeeDrinkSlugLength = 50;
+    public const int MaxCoffeeDrinkNameLength = 100;
+    public const int MaxCoffeeDrinkAliasesLength = 500;
+    public const int MaxMenuCurrencyLength = 8;
+    public const int MaxMenuParseErrorLength = 1000;
+    public const int MaxMenuPhotoFileNameLength = 255;
+    public const int MaxMenuPhotoContentTypeLength = 100;
+    public const int MaxMenuPhotoStorageKeyLength = 500;
+    public const int MaxMenuPhotosPerParse = 4;
+    public const string DefaultMenuCurrency = "BYN";
+    public const decimal MenuCheapBelow = 7.00m;
+    public const decimal MenuExpensiveAbove = 9.00m;
+
+    #endregion
 }

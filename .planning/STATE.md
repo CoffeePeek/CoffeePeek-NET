@@ -16,6 +16,7 @@
 
 - Shop filters & tags SPEC written at `.planning/specs/SHOP-FILTERS-TAGS.md`.
 - Catalog ingest + admin queue SPEC: `.planning/specs/SHOP-IMPORT-ADMIN.md` (backend vs frontend handoff).
+- Coffee shop menu (catalog drinks + Gemini photo parse): `.planning/specs/SHOP-MENU.md`.
 
 ## Accumulated Context
 

@@ -18,6 +18,12 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddOptions<GeminiOptions>()
+            .BindConfiguration(nameof(GeminiOptions));
+
+        services.AddOptions<MenuPriceRangeOptions>()
+            .BindConfiguration(nameof(MenuPriceRangeOptions));
+
         services.AddSingleton<TypeAdapterConfig>(sp =>
             MapsterConfiguration.CreateConfig(sp.GetRequiredService<IOptions<MediaPublicUrlOptions>>().Value));
 
