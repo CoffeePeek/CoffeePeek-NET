@@ -18,7 +18,15 @@ public class GetShopsInBoundsHandlerTests
     public async Task Handle_WithValidQuery_ReturnsSuccessWithShops()
     {
         var shopId = Guid.NewGuid();
-        var shops = new MapShopDto[] { new MapShopDto { Id = shopId } };
+        var shops = new MapShopDto[]
+        {
+            new MapShopDto
+            {
+                Id = shopId,
+                Title = "Test",
+                Type = CoffeePeek.Contract.Enums.CoffeeShopType.Specialty
+            }
+        };
         var query = new GetShopsInBoundsQuery(55.0m, 37.0m, 55.5m, 37.5m);
 
         _shopQueriesMock.Setup(q => q.GetShopsInBounds(query, _ct)).ReturnsAsync(shops);
@@ -28,6 +36,7 @@ public class GetShopsInBoundsHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Data!.Shops.Should().HaveCount(1);
         result.Data.Shops[0].Id.Should().Be(shopId);
+        result.Data.Shops[0].Type.Should().Be(CoffeePeek.Contract.Enums.CoffeeShopType.Specialty);
     }
 
     [Fact]

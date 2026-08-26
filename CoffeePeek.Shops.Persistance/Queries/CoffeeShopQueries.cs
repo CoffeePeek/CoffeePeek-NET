@@ -8,6 +8,7 @@ using CoffeePeek.Shops.Persistance.Configuration;
 using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
+using CoffeeShopType = CoffeePeek.Contract.Enums.CoffeeShopType;
 
 namespace CoffeePeek.Shops.Persistance.Queries;
 
@@ -173,7 +174,7 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
         var state = await context.Shops
             .AsNoTracking()
             .Where(s => s.Id == id)
-            .Select(s => new { s.CreatedAtUtc, s.Schedules })
+            .Select(s => new { s.CreatedAtUtc, s.Schedules, s.CoffeeFocus })
             .FirstOrDefaultAsync(ct);
 
         var now = DateTime.UtcNow;
@@ -185,7 +186,8 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
             Tags = tags,
             Photos = dto.Photos ?? [],
             IsNew = isNew,
-            IsOpen = isOpen
+            IsOpen = isOpen,
+            Type = (CoffeeShopType?)(int?)state?.CoffeeFocus
         };
     }
 
@@ -204,7 +206,8 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
                 Id = s.Id,
                 Latitude = s.Location!.Latitude!.Value,
                 Longitude = s.Location!.Longitude!.Value,
-                Title = s.Name
+                Title = s.Name,
+                Type = (CoffeeShopType?)(int?)s.CoffeeFocus
             })
             .Take(500)
             .ToArrayAsync(ct);
@@ -222,7 +225,7 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
         var states = await context.Shops
             .AsNoTracking()
             .Where(s => ids.Contains(s.Id))
-            .Select(s => new { s.Id, s.CreatedAtUtc, s.Schedules })
+            .Select(s => new { s.Id, s.CreatedAtUtc, s.Schedules, s.CoffeeFocus })
             .ToListAsync(ct);
 
         var byId = states.ToDictionary(s => s.Id);
@@ -233,6 +236,7 @@ public class CoffeeShopQueries(ShopsDbContext context, IMapper mapper) : ICoffee
 
             item.IsNew = state.CreatedAtUtc >= newCutoff;
             item.IsOpen = ComputeIsOpen(state.Schedules, now);
+            item.Type = (CoffeeShopType?)(int?)state.CoffeeFocus;
         }
     }
 

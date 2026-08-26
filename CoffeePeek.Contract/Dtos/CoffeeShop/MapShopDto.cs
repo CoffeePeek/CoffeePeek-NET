@@ -1,3 +1,5 @@
+using CoffeePeek.Contract.Enums;
+
 namespace CoffeePeek.Contract.Dtos.CoffeeShop;
 
 public class MapShopDto
@@ -6,4 +8,5 @@ public class MapShopDto
     public decimal Latitude { get; set; }
     public decimal Longitude { get; set; }
     public string Title { get; set; } = string.Empty;
+    public CoffeeShopType? Type { get; set; }
 }
