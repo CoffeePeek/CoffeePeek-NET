@@ -24,6 +24,9 @@ public class ShopImportCandidateRepository(ModerationDbContext dbContext) : ISho
         return items.ToDictionary(c => c.ExternalId);
     }
 
+    public Task<List<ShopImportCandidate>> ListAllAsync(CancellationToken ct = default) =>
+        dbContext.ShopImportCandidates.ToListAsync(ct);
+
     public void Add(ShopImportCandidate candidate) => dbContext.ShopImportCandidates.Add(candidate);
 
     public async Task<(IReadOnlyList<ShopImportCandidate> Items, int TotalCount)> SearchAsync(

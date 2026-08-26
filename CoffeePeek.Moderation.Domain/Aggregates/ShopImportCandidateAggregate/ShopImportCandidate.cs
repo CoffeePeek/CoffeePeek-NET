@@ -1,6 +1,7 @@
 using System.Globalization;
 using CoffeePeek.Moderation.Domain.Import;
 using CoffeePeek.Shared.Domain.Entities;
+using CoffeePeek.Shared.Domain.Places;
 using CoffeePeek.Shared.Kernel.Exceptions;
 
 namespace CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
@@ -68,7 +69,10 @@ public sealed class ShopImportCandidate : Entity<Guid>
     public bool IsGoogleCacheFresh(DateTimeOffset now) =>
         GoogleFetchedAtUtc.HasValue && (now - GoogleFetchedAtUtc.Value).TotalDays <= GoogleCacheDays;
 
-    public static ShopImportCandidate FromOsm(OsmCandidateSnapshot snapshot, DateTimeOffset now)
+    public static ShopImportCandidate FromOsm(OsmCandidateSnapshot snapshot, DateTimeOffset now) =>
+        FromPlace(ImportSource.Osm, snapshot, now);
+
+    public static ShopImportCandidate FromPlace(ImportSource source, OsmCandidateSnapshot snapshot, DateTimeOffset now)
     {
         ArgumentNullException.ThrowIfNull(snapshot);
         if (string.IsNullOrWhiteSpace(snapshot.ExternalId))
@@ -77,13 +81,144 @@ public sealed class ShopImportCandidate : Entity<Guid>
         var candidate = new ShopImportCandidate
         {
             Id = Guid.NewGuid(),
-            Source = ImportSource.Osm,
-            ExternalId = snapshot.ExternalId.Trim(),
+            Source = source,
+            ExternalId = Clip(snapshot.ExternalId, 64)!,
             QueueStatus = ImportQueueStatus.Pending
         };
         candidate.ApplyOsmFields(snapshot, now);
         return candidate;
     }
+
+    public bool IsSamePlaceAs(OsmCandidateSnapshot snapshot) =>
+        ShopPlaceMatcher.IsSamePlace(
+            Name,
+            Latitude,
+            Longitude,
+            snapshot.Name,
+            snapshot.Latitude,
+            snapshot.Longitude,
+            Phone,
+            snapshot.Phone,
+            Instagram,
+            snapshot.Instagram);
+
+    /// <summary>
+    /// Fills missing/weaker fields from another dump of the same place.
+    /// Does not change queue status, so a pending OSM row stays pending for moderation.
+    /// </summary>
+    public bool EnrichFrom(OsmCandidateSnapshot snapshot, DateTimeOffset now, string? googleMapsUri = null)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        var changed = false;
+
+        var nextName = PreferName(Name, snapshot.Name);
+        if (nextName != Name)
+        {
+            Name = Clip(nextName, MaxNameLength);
+            changed = true;
+        }
+
+        var nextAddress = ShopPlaceMatcher.PreferRicherText(Address, snapshot.Address);
+        if (nextAddress != Address)
+        {
+            Address = Clip(nextAddress, MaxAddressLength);
+            changed = true;
+        }
+
+        var nextPhone = ShopPlaceMatcher.PreferRicherText(Phone, snapshot.Phone);
+        if (nextPhone != Phone)
+        {
+            Phone = Clip(nextPhone, MaxPhoneLength);
+            changed = true;
+        }
+
+        var nextWebsite = ShopPlaceMatcher.PreferRicherText(Website, snapshot.Website);
+        if (nextWebsite != Website)
+        {
+            Website = Clip(nextWebsite, MaxWebsiteLength);
+            changed = true;
+        }
+
+        var nextInstagram = ShopPlaceMatcher.PreferRicherText(Instagram, snapshot.Instagram)
+                            ?? OsmCafeClassifier.InstagramUrl(snapshot.Tags, snapshot.Website);
+        if (nextInstagram != Instagram && !string.IsNullOrWhiteSpace(nextInstagram))
+        {
+            Instagram = Clip(nextInstagram, MaxInstagramLength);
+            changed = true;
+        }
+
+        var nextHours = ShopPlaceMatcher.PreferRicherText(OpeningHours, snapshot.OpeningHours);
+        if (nextHours != OpeningHours)
+        {
+            OpeningHours = Clip(nextHours, MaxOpeningHoursLength);
+            changed = true;
+        }
+
+        var nextCuisine = ShopPlaceMatcher.PreferRicherText(Cuisine, snapshot.Cuisine);
+        if (nextCuisine != Cuisine)
+        {
+            Cuisine = Clip(nextCuisine, MaxCuisineLength);
+            changed = true;
+        }
+
+        var nextBrand = ShopPlaceMatcher.PreferRicherText(Brand, snapshot.Brand);
+        if (nextBrand != Brand)
+        {
+            Brand = Clip(nextBrand, MaxBrandLength);
+            changed = true;
+        }
+
+        if (string.IsNullOrWhiteSpace(GoogleMapsUri) && !string.IsNullOrWhiteSpace(googleMapsUri))
+        {
+            GoogleMapsUri = Clip(googleMapsUri, MaxGoogleMapsUriLength);
+            changed = true;
+        }
+
+        var classified = OsmCafeClassifier.Classify(snapshot.Tags, snapshot.OsmUpdatedAt, now);
+        var nextSignals = Signals
+            .Concat(classified.Signals)
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        if (nextSignals.Count != Signals.Count || nextSignals.Except(Signals, StringComparer.OrdinalIgnoreCase).Any())
+        {
+            Signals = nextSignals;
+            changed = true;
+        }
+
+        if (BucketRank(classified.Bucket) < BucketRank(CollectorBucket))
+        {
+            CollectorBucket = classified.Bucket;
+            changed = true;
+        }
+
+        if (changed && !Signals.Contains("import:merged", StringComparer.OrdinalIgnoreCase))
+            Signals.Add("import:merged");
+
+        return changed;
+    }
+
+    private static string? PreferName(string? current, string? incoming)
+    {
+        if (string.IsNullOrWhiteSpace(incoming))
+            return current;
+        if (string.IsNullOrWhiteSpace(current)
+            || current.Trim().Equals("(unnamed)", StringComparison.OrdinalIgnoreCase)
+            || current.Trim().Equals("без имени", StringComparison.OrdinalIgnoreCase))
+            return incoming.Trim();
+        return current;
+    }
+
+    private static int BucketRank(ImportCollectorBucket bucket) => bucket switch
+    {
+        ImportCollectorBucket.LikelySpecialty => 0,
+        ImportCollectorBucket.Priority => 1,
+        ImportCollectorBucket.Review => 2,
+        ImportCollectorBucket.LikelyNoise => 3,
+        ImportCollectorBucket.AutoReject => 4,
+        ImportCollectorBucket.Stale => 5,
+        _ => 9
+    };
 
     public void RefreshFromOsm(OsmCandidateSnapshot snapshot, DateTimeOffset now)
     {

@@ -85,4 +85,7 @@ public class QueryCoffeeShopRepository(ShopsDbContext dbContext) : IQueryCoffeeS
 
         return shopIds.ToHashSet();
     }
+
+    public Task<List<CoffeeShop>> ListAllForEnrichmentAsync(CancellationToken ct = default) =>
+        _repository.ToListAsync(ct);
 }

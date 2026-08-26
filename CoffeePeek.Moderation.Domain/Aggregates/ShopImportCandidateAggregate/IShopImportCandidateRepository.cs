@@ -9,6 +9,8 @@ public interface IShopImportCandidateRepository
         IReadOnlyCollection<string> externalIds,
         CancellationToken ct = default);
 
+    Task<List<ShopImportCandidate>> ListAllAsync(CancellationToken ct = default);
+
     void Add(ShopImportCandidate candidate);
 
     Task<(IReadOnlyList<ShopImportCandidate> Items, int TotalCount)> SearchAsync(

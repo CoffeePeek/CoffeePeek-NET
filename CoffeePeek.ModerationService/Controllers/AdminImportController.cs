@@ -6,6 +6,7 @@ using CoffeePeek.Moderation.Application.Features.Import.DecideImportCandidate;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportCandidateById;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportCandidates;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportStats;
+using CoffeePeek.Moderation.Application.Features.Import.IngestImportFile;
 using CoffeePeek.Moderation.Application.Features.Import.RefreshGoogleStatus;
 using CoffeePeek.Moderation.Application.Features.Import.RefreshOsmImport;
 using CoffeePeek.Shared.Auth;
@@ -59,6 +60,16 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
             userContext.GetUserIdOrThrow());
 
         var response = await bus.InvokeAsync<Response<ApplyImportDecisionsResultDto>>(command, ct);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+
+    [HttpPost("file")]
+    [RequestSizeLimit(32_000_000)]
+    [ProducesResponseType<Response<IngestImportFileResultDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> IngestFile([FromBody] JsonElement body, CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<IngestImportFileResultDto>>(
+            new IngestImportFileCommand(body), ct);
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 

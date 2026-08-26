@@ -9,4 +9,5 @@ public interface IQueryCoffeeShopRepository
     Task<Dictionary<Guid, string>> GetShopNamesByIdsAsync(IEnumerable<Guid> shopIds, CancellationToken ct = default);
     Task<HashSet<Guid>> GetShopIdsByCityIdAsync(Guid cityId, CancellationToken ct = default);
     Task<HashSet<Guid>> GetShopIdsByCityIdsAsync(IReadOnlyCollection<Guid> cityIds, CancellationToken ct = default);
+    Task<List<CoffeeShop>> ListAllForEnrichmentAsync(CancellationToken ct = default);
 }
