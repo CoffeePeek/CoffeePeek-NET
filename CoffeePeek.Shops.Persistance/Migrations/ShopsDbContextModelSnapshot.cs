@@ -150,6 +150,9 @@ namespace CoffeePeek.Shops.Persistance.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<DateTime?>("ImportedFromFileAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid?>("ModerationId")
                         .HasColumnType("uuid");
 
@@ -171,6 +174,8 @@ namespace CoffeePeek.Shops.Persistance.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ImportedFromFileAt");
 
                     b.HasIndex("Name")
                         .HasDatabaseName("IX_Shops_Name_GIN");

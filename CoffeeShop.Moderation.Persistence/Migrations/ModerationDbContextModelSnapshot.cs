@@ -378,6 +378,55 @@ namespace CoffeePeek.Moderation.Infrastructure.Migrations
                     b.ToTable("ShopImportCandidates", (string)null);
                 });
 
+            modelBuilder.Entity("CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ShopImportDuplicateSuggestion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("DistanceMeters")
+                        .HasColumnType("double precision");
+
+                    b.Property<Guid>("LeftCandidateId")
+                        .HasColumnType("uuid");
+
+                    b.PrimitiveCollection<string>("Reasons")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTimeOffset?>("ReviewedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ReviewedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RightCandidateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Score");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("LeftCandidateId", "RightCandidateId")
+                        .IsUnique();
+
+                    b.ToTable("ShopImportDuplicateSuggestions", (string)null);
+                });
+
             modelBuilder.Entity("CoffeePeek.Moderation.Domain.Entities.ModerationAuditLog", b =>
                 {
                     b.Property<Guid>("Id")

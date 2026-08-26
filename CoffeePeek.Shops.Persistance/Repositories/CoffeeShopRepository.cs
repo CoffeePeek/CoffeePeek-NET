@@ -30,7 +30,8 @@ public class AdminCoffeeShopQueryRepository(ShopsDbContext dbContext) : IAdminCo
         int pageSize,
         string? search,
         CoffeeShopStatus? status,
-        CancellationToken ct = default)
+        CancellationToken ct = default,
+        bool? importedFromFile = null)
     {
         var query = dbContext.Shops.AsNoTracking();
 
@@ -44,6 +45,11 @@ public class AdminCoffeeShopQueryRepository(ShopsDbContext dbContext) : IAdminCo
 
         if (status.HasValue)
             query = query.Where(s => s.Status == status.Value);
+
+        if (importedFromFile == true)
+            query = query.Where(s => s.ImportedFromFileAt != null);
+        else if (importedFromFile == false)
+            query = query.Where(s => s.ImportedFromFileAt == null);
 
         var totalCount = await query.CountAsync(ct);
         var items = await query

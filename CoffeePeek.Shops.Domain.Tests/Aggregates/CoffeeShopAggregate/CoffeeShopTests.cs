@@ -199,4 +199,51 @@ public class CoffeeShopTests
 
         shop.CoffeeFocus.Should().Be(CoffeeFocus.Specialty);
     }
+
+    [Fact]
+    public void TryEnrichFromImport_FillsEmptyContactAndKeepsExistingPhone()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Coffe Joy", null, PriceRange.Moderate, Guid.NewGuid());
+        shop.SetLocation(Guid.NewGuid(), "Минск", 53.9152m, 27.5847m);
+        shop.SetContact(null, null, null, "+375291112233");
+
+        var filled = shop.TryEnrichFromImport(
+            "Немига 5, Минск",
+            "https://instagram.com/coffejoy",
+            "https://coffejoy.by",
+            "+375 17 200-00-00");
+
+        filled.Should().BeTrue();
+        shop.Contact.PhoneNumber.Should().Be("+375291112233");
+        shop.Contact.InstagramLink.Should().Be("https://instagram.com/coffejoy");
+        shop.Contact.SiteLink.Should().Be("https://coffejoy.by");
+        shop.Location.Address.Should().Be("Немига 5, Минск");
+    }
+
+    [Fact]
+    public void TryEnrichFromImport_WhenNothingMissing_ReturnsFalse()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Coffe Joy", null, PriceRange.Moderate, Guid.NewGuid());
+        shop.SetLocation(Guid.NewGuid(), "Немига 5, Минск", 53.9152m, 27.5847m);
+        shop.SetContact("https://instagram.com/coffejoy", null, "https://coffejoy.by", "+375291112233");
+
+        var filled = shop.TryEnrichFromImport("Немига 5, Минск", "@other", "https://other.by", "+375000000000");
+
+        filled.Should().BeFalse();
+        shop.Contact.InstagramLink.Should().Be("https://instagram.com/coffejoy");
+        shop.Contact.PhoneNumber.Should().Be("+375291112233");
+    }
+
+    [Fact]
+    public void MarkImportedFromFile_SetsTimestampOnce()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Surf Coffee", null, PriceRange.Moderate, Guid.NewGuid());
+        var first = new DateTime(2026, 8, 26, 12, 0, 0, DateTimeKind.Utc);
+        var second = first.AddHours(2);
+
+        shop.MarkImportedFromFile(first);
+        shop.MarkImportedFromFile(second);
+
+        shop.ImportedFromFileAt.Should().Be(first);
+    }
 }

@@ -307,6 +307,104 @@ public class ShopImportCandidateTests
         candidate.QueueStatus.Should().Be(ImportQueueStatus.Published);
     }
 
+    [Fact]
+    public void EnrichFrom_FillsMissingFieldsWithoutChangingStatus()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Coffe Joy"), Now);
+        candidate.Phone.Should().BeNull();
+
+        var richer = new OsmCandidateSnapshot(
+            "node/1",
+            "Coffe Joy",
+            "Немига 5, Минск",
+            53.9152m,
+            27.5847m,
+            "+375 29 111-22-33",
+            "https://coffejoy.by",
+            "https://instagram.com/coffejoy",
+            "Mo-Fr 08:00-20:00",
+            "coffee_shop",
+            null,
+            Now.AddMonths(-1),
+            null,
+            new Dictionary<string, string>
+            {
+                ["amenity"] = "cafe",
+                ["name"] = "Coffe Joy",
+                ["cuisine"] = "coffee_shop"
+            });
+
+        var changed = candidate.EnrichFrom(richer, Now, "https://maps.google.com/?q=joy");
+
+        changed.Should().BeTrue();
+        candidate.QueueStatus.Should().Be(ImportQueueStatus.Pending);
+        candidate.Phone.Should().Be("+375 29 111-22-33");
+        candidate.Website.Should().Be("https://coffejoy.by");
+        candidate.Instagram.Should().Contain("coffejoy");
+        candidate.OpeningHours.Should().Be("Mo-Fr 08:00-20:00");
+        candidate.GoogleMapsUri.Should().Be("https://maps.google.com/?q=joy");
+        candidate.CollectorBucket.Should().Be(ImportCollectorBucket.Priority);
+        candidate.Signals.Should().Contain("import:merged");
+    }
+
+    [Fact]
+    public void EnrichFrom_DoesNotOverwriteExistingPhone()
+    {
+        var withPhone = new OsmCandidateSnapshot(
+            "node/1",
+            "Coffe Joy",
+            "Немига 5, Минск",
+            53.9152m,
+            27.5847m,
+            "+375 29 111-22-33",
+            null,
+            null,
+            null,
+            null,
+            null,
+            Now.AddMonths(-1),
+            null,
+            new Dictionary<string, string> { ["amenity"] = "cafe", ["name"] = "Coffe Joy" });
+        var candidate = ShopImportCandidate.FromOsm(withPhone, Now);
+
+        candidate.EnrichFrom(Snapshot("node/1", "Coffe Joy Other"), Now);
+
+        candidate.Phone.Should().Be("+375 29 111-22-33");
+        candidate.Name.Should().Be("Coffe Joy");
+    }
+
+    [Fact]
+    public void FromPlace_FileSource_SetsPending()
+    {
+        var candidate = ShopImportCandidate.FromPlace(ImportSource.File, Snapshot("file:abc", "Kitchen"), Now);
+
+        candidate.Source.Should().Be(ImportSource.File);
+        candidate.ExternalId.Should().Be("file:abc");
+        candidate.QueueStatus.Should().Be(ImportQueueStatus.Pending);
+        candidate.ImportedFromFile.Should().BeTrue();
+        candidate.Signals.Should().Contain("import:file");
+    }
+
+    [Fact]
+    public void ToSnapshot_RoundTripsContactFields()
+    {
+        var candidate = ShopImportCandidate.FromPlace(ImportSource.File, Snapshot("file:abc", "Kitchen"), Now);
+        var snapshot = candidate.ToSnapshot();
+
+        snapshot.Name.Should().Be("Kitchen");
+        snapshot.Address.Should().Be("Немига 5, Минск");
+        snapshot.Latitude.Should().Be(53.9152m);
+    }
+
+    [Fact]
+    public void IsSamePlaceAs_NearbySameName_True()
+    {
+        var candidate = ShopImportCandidate.FromOsm(Snapshot("node/1", "Coffe Joy"), Now);
+        var other = Snapshot("file:xyz", "Coffe Joy");
+
+        candidate.IsSamePlaceAs(other).Should().BeTrue();
+    }
+
     private static OsmCandidateSnapshot Snapshot(
         string externalId,
         string? name,

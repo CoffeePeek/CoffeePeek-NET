@@ -5,6 +5,7 @@ using CoffeePeek.Shared.Kernel.Response;
 using ContractBucket = CoffeePeek.Contract.Enums.ImportCollectorBucket;
 using ContractStatus = CoffeePeek.Contract.Enums.ImportQueueStatus;
 using ContractRejectReason = CoffeePeek.Contract.Enums.ImportRejectReason;
+using ContractSource = CoffeePeek.Contract.Enums.ImportSource;
 
 namespace CoffeePeek.Moderation.Application.Features.Import.GetImportCandidates;
 
@@ -16,7 +17,7 @@ public record GetImportCandidatesQuery(
     string? Search = null,
     int Page = 1,
     int PageSize = 20,
-    string? Source = null);
+    ContractSource? Source = null);
 
 public record GetImportCandidatesResponse(
     IReadOnlyList<ShopImportCandidateDto> Items,
@@ -36,13 +37,6 @@ public static class GetImportCandidatesHandler
         var pageSize = Math.Clamp(query.PageSize, 1, 100);
         var excludeStale = query.Status == ContractStatus.Pending && query.Bucket is null;
 
-        ImportSource? source = null;
-        if (!string.IsNullOrWhiteSpace(query.Source) &&
-            Enum.TryParse<ImportSource>(query.Source, ignoreCase: true, out var parsedSource))
-        {
-            source = parsedSource;
-        }
-
         var (items, total) = await repository.SearchAsync(
             query.Status is null ? null : ShopImportCandidateMapper.ToDomain(query.Status.Value),
             query.Bucket is null ? null : ShopImportCandidateMapper.ToDomain(query.Bucket.Value),
@@ -52,8 +46,10 @@ public static class GetImportCandidatesHandler
             excludeStale,
             page,
             pageSize,
-            source,
-            ct);
+            ct,
+            query.Source is null
+                ? null
+                : (Domain.Aggregates.ShopImportCandidateAggregate.ImportSource)(int)query.Source.Value);
 
         var totalPages = total == 0 ? 0 : (int)Math.Ceiling(total / (double)pageSize);
         var dtos = items.Select(ShopImportCandidateMapper.ToDto).ToList();

@@ -54,8 +54,41 @@ public static class ShopImportCandidateMapper
                 links.GoogleMaps,
                 links.YandexMaps,
                 links.YandexImages,
-                links.OsmHistory));
+                links.OsmHistory),
+            candidate.CreatedAtUtc,
+            candidate.ImportedFromFile);
     }
+
+    public static ImportDuplicateCandidateDto ToDuplicateDto(ShopImportCandidate candidate) =>
+        new(
+            candidate.Id,
+            candidate.Source.ToString(),
+            candidate.ExternalId,
+            candidate.Name,
+            candidate.Address,
+            candidate.Latitude,
+            candidate.Longitude,
+            candidate.Phone,
+            candidate.Website,
+            candidate.Instagram,
+            candidate.QueueStatus.ToString(),
+            candidate.ImportedFromFile,
+            candidate.ResultingShopId);
+
+    public static ImportDuplicateSuggestionDto ToDto(
+        ShopImportDuplicateSuggestion suggestion,
+        ShopImportCandidate left,
+        ShopImportCandidate right) =>
+        new(
+            suggestion.Id,
+            suggestion.Score,
+            suggestion.DistanceMeters,
+            suggestion.Reasons,
+            suggestion.Status.ToString(),
+            ToDuplicateDto(left),
+            ToDuplicateDto(right),
+            suggestion.ReviewedByUserId,
+            suggestion.ReviewedAtUtc);
 
     public static DomainStatus ToDomain(Contract.Enums.ImportQueueStatus status) => (DomainStatus)(int)status;
 

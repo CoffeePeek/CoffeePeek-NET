@@ -17,6 +17,7 @@ public sealed class CoffeeShop : Entity<Guid>
     public Guid CreatorId { get; private set; }
     public Guid? OwnerUserId { get; private set; }
     public Guid? ModerationId {get; private set; }
+    public DateTime? ImportedFromFileAt { get; private set; }
 
     public ShopContact Contact { get; private set; }
     public Location Location { get; private set; }
@@ -108,6 +109,11 @@ public sealed class CoffeeShop : Entity<Guid>
         CoffeeFocus = focus;
     }
 
+    public void MarkImportedFromFile(DateTime utcNow)
+    {
+        ImportedFromFileAt ??= utcNow;
+    }
+
     public void SetHidden(bool hidden)
     {
         Status = hidden ? CoffeeShopStatus.TemporarilyClosed : CoffeeShopStatus.Active;
@@ -126,6 +132,85 @@ public sealed class CoffeeShop : Entity<Guid>
     public void SetContact(string? instagramLink, string? email, string? siteLink, string? phoneNumber)
     {
         Contact = ShopContact.Create(instagramLink, email, siteLink, phoneNumber);
+    }
+
+    /// <summary>
+    /// Fills empty contact/address fields from an import dump. Never overwrites a non-empty value
+    /// with a weaker one, and never creates a second shop.
+    /// </summary>
+    public bool TryEnrichFromImport(
+        string? address,
+        string? instagram,
+        string? website,
+        string? phone)
+    {
+        var changed = false;
+        var current = Contact;
+        var nextInstagram = FirstNonEmpty(current?.InstagramLink, Clip(instagram, BusinessConstants.MaxShopContactInstagramLinkLength));
+        var nextWebsite = FirstNonEmpty(current?.SiteLink, Clip(website, BusinessConstants.MaxShopContactSiteLinkLength));
+        var nextPhone = FirstNonEmpty(current?.PhoneNumber, ClipPhone(phone));
+        var nextEmail = current?.Email;
+
+        if (nextInstagram != current?.InstagramLink
+            || nextWebsite != current?.SiteLink
+            || nextPhone != current?.PhoneNumber)
+        {
+            SetContact(nextInstagram, nextEmail, nextWebsite, nextPhone);
+            changed = true;
+        }
+
+        if (Location is not null)
+        {
+            var nextAddress = PreferRicherAddress(Location.Address, address);
+            if (!string.Equals(nextAddress, Location.Address, StringComparison.Ordinal)
+                && Location.Latitude is not null
+                && Location.Longitude is not null)
+            {
+                SetLocation(Location.CityId, nextAddress, Location.Latitude.Value, Location.Longitude.Value);
+                changed = true;
+            }
+        }
+
+        return changed;
+    }
+
+    private static string PreferRicherAddress(string current, string? incoming)
+    {
+        if (string.IsNullOrWhiteSpace(incoming))
+            return current;
+
+        var incomingTrim = incoming.Trim();
+        if (string.IsNullOrWhiteSpace(current)
+            || current.Equals("Минск", StringComparison.OrdinalIgnoreCase)
+            || current.Equals("Minsk", StringComparison.OrdinalIgnoreCase))
+            return incomingTrim;
+
+        if (incomingTrim.Length > current.Trim().Length
+            && incomingTrim.Contains(current.Trim(), StringComparison.OrdinalIgnoreCase))
+            return incomingTrim;
+
+        return current;
+    }
+
+    private static string? FirstNonEmpty(string? current, string? incoming) =>
+        string.IsNullOrWhiteSpace(current) ? incoming : current;
+
+    private static string? Clip(string? value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+        var trimmed = value.Trim();
+        return trimmed.Length <= maxLength ? trimmed : trimmed[..maxLength];
+    }
+
+    private static string? ClipPhone(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+            return null;
+
+        var first = phone.Split(';', 2, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault();
+        return Clip(first, BusinessConstants.MaxShopContactPhoneNumberLength);
     }
     
     public void AddPhotos(IEnumerable<ShopPhoto> photos)

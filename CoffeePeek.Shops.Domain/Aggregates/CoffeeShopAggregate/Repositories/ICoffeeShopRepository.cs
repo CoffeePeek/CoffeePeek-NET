@@ -15,7 +15,8 @@ public interface IAdminCoffeeShopQueryRepository
         int pageSize,
         string? search,
         CoffeeShopStatus? status,
-        CancellationToken ct = default);
+        CancellationToken ct = default,
+        bool? importedFromFile = null);
 
     Task<IReadOnlyList<CoffeeShop>> GetByOwnerUserIdAsync(Guid ownerUserId, CancellationToken ct = default);
 }

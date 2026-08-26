@@ -87,6 +87,7 @@ public static class ImportPublishFactory
             candidate.Instagram,
             (CoffeeShopType)(int)candidate.CoffeeFocus!.Value,
             candidate.TagSlugs.ToArray(),
-            overrideClosed && candidate.GoogleBusinessStatus == ImportGoogleBusinessStatus.ClosedPermanently);
+            overrideClosed && candidate.GoogleBusinessStatus == ImportGoogleBusinessStatus.ClosedPermanently,
+            candidate.ImportedFromFile);
     }
 }
