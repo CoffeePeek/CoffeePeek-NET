@@ -13,6 +13,7 @@ public static class RefreshOsmImportHandler
     public static async Task<Response<OsmRefreshResultDto>> Handle(
         RefreshOsmImportCommand command,
         IOverpassClient overpassClient,
+        ICoffeeMapCatalog coffeeMapCatalog,
         IShopImportCandidateRepository repository,
         IUnitOfWork unitOfWork,
         CancellationToken ct)
@@ -51,7 +52,34 @@ public static class RefreshOsmImportHandler
             }
         }
 
+        var coffeeMap = await coffeeMapCatalog.GetCafesAsync(ct);
+        var existingCoffeeMap = await repository.GetByExternalIdsAsync(
+            ImportSource.CoffeeMap,
+            coffeeMap.Select(s => s.ExternalId).ToArray(),
+            ct);
+        var coffeeMapInserted = 0;
+        var coffeeMapUpdated = 0;
+        foreach (var snapshot in coffeeMap)
+        {
+            if (existingCoffeeMap.TryGetValue(snapshot.ExternalId, out var candidate))
+            {
+                candidate.RefreshFromCoffeeMap(snapshot, now);
+                coffeeMapUpdated++;
+            }
+            else
+            {
+                repository.Add(ShopImportCandidate.FromCoffeeMap(snapshot, now));
+                coffeeMapInserted++;
+            }
+        }
+
         await unitOfWork.SaveChangesAsync(ct);
-        return Response<OsmRefreshResultDto>.Success(new OsmRefreshResultDto(snapshots.Count, inserted, updated));
+        return Response<OsmRefreshResultDto>.Success(new OsmRefreshResultDto(
+            snapshots.Count,
+            inserted,
+            updated,
+            coffeeMap.Count,
+            coffeeMapInserted,
+            coffeeMapUpdated));
     }
 }

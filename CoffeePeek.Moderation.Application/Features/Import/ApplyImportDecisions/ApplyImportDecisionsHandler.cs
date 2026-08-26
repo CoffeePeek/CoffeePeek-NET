@@ -32,7 +32,13 @@ public static class ApplyImportDecisionsHandler
                 "No decisions provided."), null);
         }
 
-        var existing = await repository.GetByExternalIdsAsync(ImportSource.Osm, decisions.Keys.ToArray(), ct);
+        var keys = decisions.Keys.ToArray();
+        var existing = new Dictionary<string, ShopImportCandidate>(StringComparer.Ordinal);
+        foreach (var source in new[] { ImportSource.Osm, ImportSource.CoffeeMap })
+        {
+            foreach (var pair in await repository.GetByExternalIdsAsync(source, keys, ct))
+                existing[pair.Key] = pair.Value;
+        }
         var now = DateTimeOffset.UtcNow;
         var applied = 0;
         var published = 0;

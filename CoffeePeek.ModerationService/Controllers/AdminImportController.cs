@@ -6,6 +6,7 @@ using CoffeePeek.Moderation.Application.Features.Import.DecideImportCandidate;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportCandidateById;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportCandidates;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportStats;
+using CoffeePeek.Moderation.Application.Features.Import.RefreshCoffeeMapImport;
 using CoffeePeek.Moderation.Application.Features.Import.RefreshGoogleStatus;
 using CoffeePeek.Moderation.Application.Features.Import.RefreshOsmImport;
 using CoffeePeek.Shared.Auth;
@@ -33,6 +34,15 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
             return Ok(response);
 
         return StatusCode(response.StatusCode ?? StatusCodes.Status504GatewayTimeout, response);
+    }
+
+    [HttpPost("coffeemap/refresh")]
+    [ProducesResponseType<Response<CoffeeMapRefreshResultDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> RefreshCoffeeMap(CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<CoffeeMapRefreshResultDto>>(
+            new RefreshCoffeeMapImportCommand(), ct);
+        return response.IsSuccess ? Ok(response) : StatusCode(response.StatusCode ?? StatusCodes.Status500InternalServerError, response);
     }
 
     [HttpPost("decisions")]
@@ -70,12 +80,15 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
         [FromQuery] CoffeeShopType? type = null,
         [FromQuery] ImportRejectReason? rejectReason = null,
         [FromQuery] string? search = null,
+        [FromQuery] string? name = null,
+        [FromQuery] string? source = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         CancellationToken ct = default)
     {
+        var term = string.IsNullOrWhiteSpace(search) ? name : search;
         var response = await bus.InvokeAsync<Response<GetImportCandidatesResponse>>(
-            new GetImportCandidatesQuery(status, bucket, type, rejectReason, search, page, pageSize), ct);
+            new GetImportCandidatesQuery(status, bucket, type, rejectReason, term, page, pageSize, source), ct);
 
         if (response.IsSuccess && response.Data is not null)
         {

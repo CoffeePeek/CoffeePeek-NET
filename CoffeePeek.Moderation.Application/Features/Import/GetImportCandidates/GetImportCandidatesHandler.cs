@@ -15,7 +15,8 @@ public record GetImportCandidatesQuery(
     ContractRejectReason? RejectReason = null,
     string? Search = null,
     int Page = 1,
-    int PageSize = 20);
+    int PageSize = 20,
+    string? Source = null);
 
 public record GetImportCandidatesResponse(
     IReadOnlyList<ShopImportCandidateDto> Items,
@@ -35,6 +36,13 @@ public static class GetImportCandidatesHandler
         var pageSize = Math.Clamp(query.PageSize, 1, 100);
         var excludeStale = query.Status == ContractStatus.Pending && query.Bucket is null;
 
+        ImportSource? source = null;
+        if (!string.IsNullOrWhiteSpace(query.Source) &&
+            Enum.TryParse<ImportSource>(query.Source, ignoreCase: true, out var parsedSource))
+        {
+            source = parsedSource;
+        }
+
         var (items, total) = await repository.SearchAsync(
             query.Status is null ? null : ShopImportCandidateMapper.ToDomain(query.Status.Value),
             query.Bucket is null ? null : ShopImportCandidateMapper.ToDomain(query.Bucket.Value),
@@ -44,6 +52,7 @@ public static class GetImportCandidatesHandler
             excludeStale,
             page,
             pageSize,
+            source,
             ct);
 
         var totalPages = total == 0 ? 0 : (int)Math.Ceiling(total / (double)pageSize);

@@ -20,6 +20,7 @@ public interface IShopImportCandidateRepository
         bool excludeStale,
         int page,
         int pageSize,
+        ImportSource? source = null,
         CancellationToken ct = default);
 
     Task<ImportCandidateStats> GetStatsAsync(CancellationToken ct = default);

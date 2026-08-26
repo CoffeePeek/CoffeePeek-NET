@@ -1,4 +1,5 @@
 using CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
+using CoffeePeek.Moderation.Domain.Import;
 using CoffeeShop.Moderation.Persistence.Configuration;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,12 +36,16 @@ public class ShopImportCandidateRepository(ModerationDbContext dbContext) : ISho
         bool excludeStale,
         int page,
         int pageSize,
+        ImportSource? source = null,
         CancellationToken ct = default)
     {
         var query = dbContext.ShopImportCandidates.AsNoTracking();
 
         if (status.HasValue)
             query = query.Where(c => c.QueueStatus == status.Value);
+
+        if (source.HasValue)
+            query = query.Where(c => c.Source == source.Value);
 
         if (bucket.HasValue)
             query = query.Where(c => c.CollectorBucket == bucket.Value);
@@ -55,11 +60,10 @@ public class ShopImportCandidateRepository(ModerationDbContext dbContext) : ISho
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var term = $"%{search.Trim()}%";
+            var term = ImportCandidateTextSearch.ToILikeContainsPattern(search);
             query = query.Where(c =>
-                (c.Name != null && EF.Functions.ILike(c.Name, term)) ||
-                (c.Address != null && EF.Functions.ILike(c.Address, term)) ||
-                EF.Functions.ILike(c.ExternalId, term));
+                (c.Name != null && EF.Functions.ILike(c.Name, term, "\\")) ||
+                (c.Address != null && EF.Functions.ILike(c.Address, term, "\\")));
         }
 
         var total = await query.CountAsync(ct);
