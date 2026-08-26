@@ -15,6 +15,7 @@ public record ImportCandidatePublishedItem(
     string? Instagram,
     CoffeeShopType Type,
     string[] TagSlugs,
-    bool TemporarilyClosed);
+    bool TemporarilyClosed,
+    bool ImportedFromFile = false);
 
 public record ImportCandidatePublishedEvent(IReadOnlyList<ImportCandidatePublishedItem> Items);

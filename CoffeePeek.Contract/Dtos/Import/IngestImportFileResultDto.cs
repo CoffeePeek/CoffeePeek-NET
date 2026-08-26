@@ -5,4 +5,5 @@ public record IngestImportFileResultDto(
     int Inserted,
     int Enriched,
     int Unchanged,
-    int Invalid);
+    int Invalid,
+    int SuggestedDuplicates);

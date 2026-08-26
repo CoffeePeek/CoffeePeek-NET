@@ -5,5 +5,6 @@ public enum ImportRejectReason
 {
     Closed = 1,
     Invalid = 2,
-    NotCoffee = 3
+    NotCoffee = 3,
+    Duplicate = 4
 }

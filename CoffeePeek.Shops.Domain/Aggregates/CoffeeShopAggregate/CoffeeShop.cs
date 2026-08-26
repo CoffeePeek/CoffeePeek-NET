@@ -17,6 +17,7 @@ public sealed class CoffeeShop : Entity<Guid>
     public Guid CreatorId { get; private set; }
     public Guid? OwnerUserId { get; private set; }
     public Guid? ModerationId {get; private set; }
+    public DateTime? ImportedFromFileAt { get; private set; }
 
     public ShopContact Contact { get; private set; }
     public Location Location { get; private set; }
@@ -106,6 +107,11 @@ public sealed class CoffeeShop : Entity<Guid>
     public void SetCoffeeFocus(CoffeeFocus? focus)
     {
         CoffeeFocus = focus;
+    }
+
+    public void MarkImportedFromFile(DateTime utcNow)
+    {
+        ImportedFromFileAt ??= utcNow;
     }
 
     public void SetHidden(bool hidden)

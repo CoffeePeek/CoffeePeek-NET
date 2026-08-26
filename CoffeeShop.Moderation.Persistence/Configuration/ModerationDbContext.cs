@@ -18,6 +18,7 @@ public class ModerationDbContext(DbContextOptions<ModerationDbContext> options) 
     public DbSet<ModerationShopBrewMethod> ModerationShopBrewMethods { get; set; }
     public DbSet<ModerationAuditLog> ModerationAuditLogs { get; set; }
     public DbSet<ShopImportCandidate> ShopImportCandidates { get; set; }
+    public DbSet<ShopImportDuplicateSuggestion> ShopImportDuplicateSuggestions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

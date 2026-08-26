@@ -37,6 +37,7 @@ public record AdminPublishedShopDto(
     Guid? ModerationId,
     DateTime CreatedAtUtc,
     bool IsHidden,
+    DateTime? ImportedFromFileAt,
     IReadOnlyList<AdminShopPhotoDto> Photos);
 
 public record GetAdminCoffeeShopsResponse(
@@ -50,7 +51,8 @@ public record GetAdminCoffeeShopsQuery(
     int Page = 1,
     int PageSize = 20,
     string? Search = null,
-    DomainCoffeeShopStatus? Status = null);
+    DomainCoffeeShopStatus? Status = null,
+    bool? ImportedFromFile = null);
 
 public static class AdminPublishedShopMapper
 {
@@ -65,6 +67,7 @@ public static class AdminPublishedShopMapper
         shop.ModerationId,
         shop.CreatedAtUtc,
         shop.Status != DomainCoffeeShopStatus.Active,
+        shop.ImportedFromFileAt,
         MapPhotos(shop.ShopPhotos, mediaOptions));
 
     public static IReadOnlyList<AdminShopPhotoDto> MapPhotos(
@@ -99,7 +102,7 @@ public static class GetAdminCoffeeShopsHandler
         var pageSize = Math.Clamp(query.PageSize, 1, 100);
 
         var (items, totalCount) = await repository.GetPagedAsync(
-            page, pageSize, query.Search, query.Status, ct);
+            page, pageSize, query.Search, query.Status, ct, query.ImportedFromFile);
 
         var totalPages = totalCount == 0 ? 0 : (int)Math.Ceiling(totalCount / (double)pageSize);
         var media = mediaOptions.Value;

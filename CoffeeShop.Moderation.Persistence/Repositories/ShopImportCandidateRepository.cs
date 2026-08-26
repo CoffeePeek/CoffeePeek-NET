@@ -9,6 +9,20 @@ public class ShopImportCandidateRepository(ModerationDbContext dbContext) : ISho
     public Task<ShopImportCandidate?> GetByIdAsync(Guid id, CancellationToken ct = default) =>
         dbContext.ShopImportCandidates.FirstOrDefaultAsync(c => c.Id == id, ct);
 
+    public async Task<IReadOnlyDictionary<Guid, ShopImportCandidate>> GetByIdsAsync(
+        IReadOnlyCollection<Guid> ids,
+        CancellationToken ct = default)
+    {
+        if (ids.Count == 0)
+            return new Dictionary<Guid, ShopImportCandidate>();
+
+        var items = await dbContext.ShopImportCandidates
+            .Where(c => ids.Contains(c.Id))
+            .ToListAsync(ct);
+
+        return items.ToDictionary(c => c.Id);
+    }
+
     public async Task<IReadOnlyDictionary<string, ShopImportCandidate>> GetByExternalIdsAsync(
         ImportSource source,
         IReadOnlyCollection<string> externalIds,
@@ -38,12 +52,16 @@ public class ShopImportCandidateRepository(ModerationDbContext dbContext) : ISho
         bool excludeStale,
         int page,
         int pageSize,
-        CancellationToken ct = default)
+        CancellationToken ct = default,
+        ImportSource? source = null)
     {
         var query = dbContext.ShopImportCandidates.AsNoTracking();
 
         if (status.HasValue)
             query = query.Where(c => c.QueueStatus == status.Value);
+
+        if (source.HasValue)
+            query = query.Where(c => c.Source == source.Value);
 
         if (bucket.HasValue)
             query = query.Where(c => c.CollectorBucket == bucket.Value);
@@ -123,6 +141,12 @@ public class ShopImportCandidateRepository(ModerationDbContext dbContext) : ISho
                 rejectedReasons.Where(r => r.Reason == ImportRejectReason.Closed).Sum(r => r.Count),
                 rejectedReasons.Where(r => r.Reason == ImportRejectReason.Invalid).Sum(r => r.Count),
                 rejectedReasons.Where(r => r.Reason == ImportRejectReason.NotCoffee).Sum(r => r.Count),
+                rejectedReasons.Where(r => r.Reason == ImportRejectReason.Duplicate).Sum(r => r.Count),
                 rejectedReasons.Where(r => r.Reason is null).Sum(r => r.Count)));
     }
+
+    public Task<List<ShopImportCandidate>> ListForDuplicateScanAsync(CancellationToken ct = default) =>
+        dbContext.ShopImportCandidates
+            .Where(c => c.QueueStatus != ImportQueueStatus.Rejected)
+            .ToListAsync(ct);
 }

@@ -27,9 +27,10 @@ public class AdminCoffeeShopsController(IMessageBus bus, IUserContext userContex
         [FromQuery] int pageSize = 20,
         [FromQuery] string? search = null,
         [FromQuery] DomainCoffeeShopStatus? status = null,
+        [FromQuery] bool? importedFromFile = null,
         CancellationToken ct = default)
     {
-        var query = new GetAdminCoffeeShopsQuery(page, pageSize, search, status);
+        var query = new GetAdminCoffeeShopsQuery(page, pageSize, search, status, importedFromFile);
         var response = await bus.InvokeAsync<Response<GetAdminCoffeeShopsResponse>>(query, ct);
 
         if (response.IsSuccess && response.Data is not null)

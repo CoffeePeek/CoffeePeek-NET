@@ -86,7 +86,52 @@ public sealed class ShopImportCandidate : Entity<Guid>
             QueueStatus = ImportQueueStatus.Pending
         };
         candidate.ApplyOsmFields(snapshot, now);
+        if (source == ImportSource.File)
+            candidate.AddSignal("import:file");
         return candidate;
+    }
+
+    public bool ImportedFromFile =>
+        Source == ImportSource.File
+        || Signals.Contains("import:file", StringComparer.OrdinalIgnoreCase);
+
+    public void AddSignal(string signal)
+    {
+        if (string.IsNullOrWhiteSpace(signal))
+            return;
+        if (Signals.Contains(signal, StringComparer.OrdinalIgnoreCase))
+            return;
+        Signals.Add(signal.Trim());
+    }
+
+    public OsmCandidateSnapshot ToSnapshot()
+    {
+        var tags = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["amenity"] = "cafe"
+        };
+        if (!string.IsNullOrWhiteSpace(Name))
+            tags["name"] = Name;
+        if (!string.IsNullOrWhiteSpace(Cuisine))
+            tags["cuisine"] = Cuisine;
+        if (!string.IsNullOrWhiteSpace(Brand))
+            tags["brand"] = Brand;
+
+        return new OsmCandidateSnapshot(
+            ExternalId,
+            Name,
+            Address,
+            Latitude,
+            Longitude,
+            Phone,
+            Website,
+            Instagram,
+            OpeningHours,
+            Cuisine,
+            Brand,
+            OsmUpdatedAt,
+            CheckDate,
+            tags);
     }
 
     public bool IsSamePlaceAs(OsmCandidateSnapshot snapshot) =>

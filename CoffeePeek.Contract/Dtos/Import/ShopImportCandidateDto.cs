@@ -31,4 +31,6 @@ public record ShopImportCandidateDto(
     DateTimeOffset? ReviewedAtUtc,
     Guid? ResultingShopId,
     ImportRejectReason? RejectReason,
-    ImportResearchLinksDto Research);
+    ImportResearchLinksDto Research,
+    DateTime CreatedAtUtc,
+    bool ImportedFromFile);

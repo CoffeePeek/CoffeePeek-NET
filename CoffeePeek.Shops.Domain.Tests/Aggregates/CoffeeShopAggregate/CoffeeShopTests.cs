@@ -233,4 +233,17 @@ public class CoffeeShopTests
         shop.Contact.InstagramLink.Should().Be("https://instagram.com/coffejoy");
         shop.Contact.PhoneNumber.Should().Be("+375291112233");
     }
+
+    [Fact]
+    public void MarkImportedFromFile_SetsTimestampOnce()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Surf Coffee", null, PriceRange.Moderate, Guid.NewGuid());
+        var first = new DateTime(2026, 8, 26, 12, 0, 0, DateTimeKind.Utc);
+        var second = first.AddHours(2);
+
+        shop.MarkImportedFromFile(first);
+        shop.MarkImportedFromFile(second);
+
+        shop.ImportedFromFileAt.Should().Be(first);
+    }
 }

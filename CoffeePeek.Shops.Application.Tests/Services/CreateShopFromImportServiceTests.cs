@@ -73,7 +73,41 @@ public class CreateShopFromImportServiceTests
         added.ShopTags.Select(t => t.TagId).Should().Contain(ShopTagIds.Specialty);
         added.ModerationId.Should().Be(candidateId);
         added.OwnerUserId.Should().BeNull();
+        added.ImportedFromFileAt.Should().BeNull();
         _uow.Verify(u => u.SaveChangesAsync(_ct), Times.Once);
+    }
+
+    [Fact]
+    public async Task Create_WhenImportedFromFile_MarksShop()
+    {
+        _shopRepo.Setup(r => r.GetIdByModerationId(It.IsAny<Guid>(), _ct)).ReturnsAsync((Guid?)null);
+        _tagRepo
+            .Setup(r => r.GetActiveBySlugsAsync(It.IsAny<IReadOnlyCollection<string>>(), _ct))
+            .ReturnsAsync([]);
+
+        CoffeeShop? added = null;
+        _shopRepo.Setup(r => r.Add(It.IsAny<CoffeeShop>())).Callback<CoffeeShop>(s => added = s);
+
+        var item = new ImportCandidatePublishedItem(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Surf Coffee",
+            "Немига 5",
+            53.9152m,
+            27.5847m,
+            CitiesConsts.MinskId,
+            null,
+            null,
+            null,
+            Contract.Enums.CoffeeShopType.Cafe,
+            [],
+            TemporarilyClosed: false,
+            ImportedFromFile: true);
+
+        await CreateSut().CreateShopFromImportAsync(item, _ct);
+
+        added.Should().NotBeNull();
+        added!.ImportedFromFileAt.Should().NotBeNull();
     }
 
     [Fact]

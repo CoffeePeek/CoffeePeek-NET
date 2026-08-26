@@ -4,6 +4,10 @@ public interface IShopImportCandidateRepository
 {
     Task<ShopImportCandidate?> GetByIdAsync(Guid id, CancellationToken ct = default);
 
+    Task<IReadOnlyDictionary<Guid, ShopImportCandidate>> GetByIdsAsync(
+        IReadOnlyCollection<Guid> ids,
+        CancellationToken ct = default);
+
     Task<IReadOnlyDictionary<string, ShopImportCandidate>> GetByExternalIdsAsync(
         ImportSource source,
         IReadOnlyCollection<string> externalIds,
@@ -22,9 +26,12 @@ public interface IShopImportCandidateRepository
         bool excludeStale,
         int page,
         int pageSize,
-        CancellationToken ct = default);
+        CancellationToken ct = default,
+        ImportSource? source = null);
 
     Task<ImportCandidateStats> GetStatsAsync(CancellationToken ct = default);
+
+    Task<List<ShopImportCandidate>> ListForDuplicateScanAsync(CancellationToken ct = default);
 }
 
 public sealed record ImportCandidateStats(
@@ -41,4 +48,5 @@ public sealed record ImportRejectedByReasonStats(
     int Closed,
     int Invalid,
     int NotCoffee,
+    int Duplicate,
     int Unspecified);

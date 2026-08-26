@@ -49,6 +49,9 @@ public class CreateShopFromImportService(
         if (item.TemporarilyClosed)
             shop.SetStatus(CoffeeShopStatus.TemporarilyClosed);
 
+        if (item.ImportedFromFile)
+            shop.MarkImportedFromFile(DateTime.UtcNow);
+
         var slugs = item.TagSlugs.ToList();
         if (item.Type == Contract.Enums.CoffeeShopType.Specialty && !slugs.Contains("specialty"))
             slugs.Add("specialty");

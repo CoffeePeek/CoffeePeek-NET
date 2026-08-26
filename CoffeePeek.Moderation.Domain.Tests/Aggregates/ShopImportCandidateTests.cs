@@ -329,6 +329,19 @@ public class ShopImportCandidateTests
         candidate.Source.Should().Be(ImportSource.File);
         candidate.ExternalId.Should().Be("file:abc");
         candidate.QueueStatus.Should().Be(ImportQueueStatus.Pending);
+        candidate.ImportedFromFile.Should().BeTrue();
+        candidate.Signals.Should().Contain("import:file");
+    }
+
+    [Fact]
+    public void ToSnapshot_RoundTripsContactFields()
+    {
+        var candidate = ShopImportCandidate.FromPlace(ImportSource.File, Snapshot("file:abc", "Kitchen"), Now);
+        var snapshot = candidate.ToSnapshot();
+
+        snapshot.Name.Should().Be("Kitchen");
+        snapshot.Address.Should().Be("Немига 5, Минск");
+        snapshot.Latitude.Should().Be(53.9152m);
     }
 
     [Fact]

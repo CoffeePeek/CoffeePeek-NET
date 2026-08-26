@@ -7,6 +7,9 @@ using CoffeePeek.Moderation.Application.Features.Import.GetImportCandidateById;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportCandidates;
 using CoffeePeek.Moderation.Application.Features.Import.GetImportStats;
 using CoffeePeek.Moderation.Application.Features.Import.IngestImportFile;
+using CoffeePeek.Moderation.Application.Features.Import.DecideImportDuplicate;
+using CoffeePeek.Moderation.Application.Features.Import.GetImportDuplicates;
+using CoffeePeek.Moderation.Application.Features.Import.SuggestImportDuplicates;
 using CoffeePeek.Moderation.Application.Features.Import.RefreshGoogleStatus;
 using CoffeePeek.Moderation.Application.Features.Import.RefreshOsmImport;
 using CoffeePeek.Shared.Auth;
@@ -83,10 +86,11 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
         [FromQuery] string? search = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
+        [FromQuery] ImportSource? source = null,
         CancellationToken ct = default)
     {
         var response = await bus.InvokeAsync<Response<GetImportCandidatesResponse>>(
-            new GetImportCandidatesQuery(status, bucket, type, rejectReason, search, page, pageSize), ct);
+            new GetImportCandidatesQuery(status, bucket, type, rejectReason, search, page, pageSize, source), ct);
 
         if (response.IsSuccess && response.Data is not null)
         {
@@ -164,6 +168,57 @@ public class AdminImportController(IMessageBus bus, IUserContext userContext) : 
         var response = await bus.InvokeAsync<Response<ImportStatsDto>>(new GetImportStatsQuery(), ct);
         return Ok(response);
     }
+
+    [HttpPost("duplicates/refresh")]
+    [ProducesResponseType<Response<RefreshImportDuplicatesResultDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> RefreshDuplicates(CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<RefreshImportDuplicatesResultDto>>(
+            new SuggestImportDuplicatesCommand(), ct);
+        return Ok(response);
+    }
+
+    [HttpGet("duplicates")]
+    [ProducesResponseType<Response<GetImportDuplicatesResponse>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetDuplicates(
+        [FromQuery] ImportDuplicateStatus? status = ImportDuplicateStatus.Pending,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken ct = default)
+    {
+        var response = await bus.InvokeAsync<Response<GetImportDuplicatesResponse>>(
+            new GetImportDuplicatesQuery(status, page, pageSize), ct);
+
+        if (response.IsSuccess && response.Data is not null)
+        {
+            Response.Headers.TryAdd("X-Total-Count", response.Data.TotalItems.ToString());
+            Response.Headers.TryAdd("X-Total-Pages", response.Data.TotalPages.ToString());
+            Response.Headers.TryAdd("X-Current-Page", response.Data.CurrentPage.ToString());
+            Response.Headers.TryAdd("X-Page-Size", response.Data.PageSize.ToString());
+        }
+
+        return Ok(response);
+    }
+
+    [HttpPost("duplicates/{id:guid}/decide")]
+    [ProducesResponseType<Response<DecideImportDuplicateResultDto>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> DecideDuplicate(
+        Guid id,
+        [FromBody] DecideImportDuplicateRequest request,
+        CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<DecideImportDuplicateResultDto>>(
+            new DecideImportDuplicateCommand(id, request.Accept, userContext.GetUserIdOrThrow()), ct);
+
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return response.StatusCode switch
+        {
+            StatusCodes.Status404NotFound => NotFound(response),
+            _ => BadRequest(response)
+        };
+    }
 }
 
 public record DecideImportCandidateRequest(
@@ -172,3 +227,5 @@ public record DecideImportCandidateRequest(
     string[]? TagSlugs,
     bool OverrideClosed = false,
     ImportRejectReason? RejectReason = null);
+
+public record DecideImportDuplicateRequest(bool Accept);

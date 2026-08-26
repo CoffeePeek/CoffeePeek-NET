@@ -4,6 +4,7 @@ using CoffeePeek.Contract.Dtos.Import;
 using CoffeePeek.Contract.Events.Moderation;
 using CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
 using CoffeePeek.Moderation.Domain.Import;
+using CoffeePeek.Moderation.Application.Features.Import.SuggestImportDuplicates;
 using CoffeePeek.Shared.Domain.Places;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Response;
@@ -17,6 +18,7 @@ public static class IngestImportFileHandler
     public static async Task<(Response<IngestImportFileResultDto>, object?)> Handle(
         IngestImportFileCommand command,
         IShopImportCandidateRepository repository,
+        IShopImportDuplicateSuggestionRepository suggestions,
         IUnitOfWork unitOfWork,
         CancellationToken ct)
     {
@@ -81,6 +83,7 @@ public static class IngestImportFileHandler
             AddEnrichment(enrichItems, candidate, place);
         }
 
+        var suggested = await ImportDuplicateScan.AddNewAsync(existing, suggestions, ct);
         await unitOfWork.SaveChangesAsync(ct);
 
         object? outbound = enrichItems.Count == 0
@@ -88,7 +91,7 @@ public static class IngestImportFileHandler
             : new ImportShopEnrichmentEvent(enrichItems);
 
         return (Response<IngestImportFileResultDto>.Success(
-            new IngestImportFileResultDto(parsed.Count, inserted, enriched, unchanged, invalid)), outbound);
+            new IngestImportFileResultDto(parsed.Count, inserted, enriched, unchanged, invalid, suggested)), outbound);
     }
 
     private static ShopImportCandidate? FindMatch(
