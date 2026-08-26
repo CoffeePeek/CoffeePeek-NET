@@ -2,6 +2,7 @@ using CoffeePeek.Contract.Dtos.Import;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate;
 using CoffeePeek.Moderation.Domain.Import;
+using DomainSource = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportSource;
 using DomainBucket = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportCollectorBucket;
 using DomainFocus = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportCoffeeFocus;
 using DomainGoogle = CoffeePeek.Moderation.Domain.Aggregates.ShopImportCandidateAggregate.ImportGoogleBusinessStatus;
@@ -118,9 +119,9 @@ public static class ShopImportCandidateMapper
         {
             candidate.Source switch
             {
-                ImportSource.Osm => "Источник: OpenStreetMap",
-                ImportSource.File => "Источник: файл",
-                ImportSource.CoffeeMap => "Источник: CoffeeMap",
+                DomainSource.Osm => "Источник: OpenStreetMap",
+                DomainSource.File => "Источник: файл",
+                DomainSource.CoffeeMap => "Источник: CoffeeMap",
                 _ => $"Источник: {candidate.Source}"
             }
         };
