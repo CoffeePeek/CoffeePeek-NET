@@ -88,7 +88,35 @@ public sealed class ShopImportCandidate : Entity<Guid>
         candidate.ApplyOsmFields(snapshot, now);
         if (source == ImportSource.File)
             candidate.AddSignal("import:file");
+        if (source == ImportSource.CoffeeMap)
+            candidate.AddSignal("coffeemap");
         return candidate;
+    }
+
+    public static ShopImportCandidate FromCoffeeMap(CoffeeMapCandidateSnapshot snapshot, DateTimeOffset now)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        if (string.IsNullOrWhiteSpace(snapshot.ExternalId))
+            throw new DomainException("ExternalId is required.");
+
+        var candidate = new ShopImportCandidate
+        {
+            Id = Guid.NewGuid(),
+            Source = ImportSource.CoffeeMap,
+            ExternalId = Clip(snapshot.ExternalId, 64)!,
+            QueueStatus = ImportQueueStatus.Pending
+        };
+        candidate.ApplyCoffeeMapFields(snapshot, now);
+        return candidate;
+    }
+
+    public void RefreshFromCoffeeMap(CoffeeMapCandidateSnapshot snapshot, DateTimeOffset now)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        if (QueueStatus is ImportQueueStatus.Published or ImportQueueStatus.Skipped)
+            return;
+
+        ApplyCoffeeMapFields(snapshot, now);
     }
 
     public bool ImportedFromFile =>
@@ -298,7 +326,7 @@ public sealed class ShopImportCandidate : Entity<Guid>
         if (status == ImportQueueStatus.Published)
         {
             if (focus is null)
-                throw new DomainException("Coffee focus is required to publish.");
+                throw new DomainException("Coffee shop type is required to publish.");
 
             if (!HasRealName)
                 throw new DomainException("Cannot publish a candidate without a real name.");
@@ -346,16 +374,21 @@ public sealed class ShopImportCandidate : Entity<Guid>
         var lon = Longitude.ToString(CultureInfo.InvariantCulture);
         var mapsQuery = Uri.EscapeDataString($"{display} {lat},{lon}");
         var (osmType, osmId) = ParseExternalId();
+        var osmHistory = Source == ImportSource.Osm
+            ? $"https://www.openstreetmap.org/{osmType}/{osmId}/history"
+            : string.Empty;
+        var googleMaps = GoogleMapsUri
+                         ?? $"https://www.google.com/maps/search/?api=1&query={mapsQuery}";
 
         return new ImportResearchLinks(
             Instagram: Instagram,
             InstagramSearch: Instagram is null
                 ? $"https://www.google.com/search?q={Uri.EscapeDataString($"{display} Минск instagram")}"
                 : null,
-            GoogleMaps: GoogleMapsUri ?? $"https://www.google.com/maps/search/?api=1&query={mapsQuery}",
+            GoogleMaps: googleMaps,
             YandexMaps: $"https://yandex.by/maps/?text={q}&z=17&ll={lon},{lat}",
             YandexImages: $"https://yandex.by/images/search?text={qCoffee}",
-            OsmHistory: $"https://www.openstreetmap.org/{osmType}/{osmId}/history");
+            OsmHistory: osmHistory);
     }
 
     public string PublishAddress()
@@ -389,6 +422,29 @@ public sealed class ShopImportCandidate : Entity<Guid>
         CheckDate = Clip(snapshot.CheckDate, MaxCheckDateLength);
         Signals = signals.ToList();
         CollectorBucket = bucket;
+    }
+
+    private void ApplyCoffeeMapFields(CoffeeMapCandidateSnapshot snapshot, DateTimeOffset now)
+    {
+        var (bucket, signals) = CoffeeMapClassifier.Classify(snapshot);
+        var instagram = snapshot.Instagram
+                        ?? OsmCafeClassifier.InstagramUrl(new Dictionary<string, string>(), snapshot.Website);
+
+        Name = Clip(snapshot.Name, MaxNameLength);
+        Address = Clip(snapshot.Address, MaxAddressLength);
+        Latitude = snapshot.Latitude;
+        Longitude = snapshot.Longitude;
+        Phone = Clip(snapshot.Phone, MaxPhoneLength);
+        Website = Clip(snapshot.Website, MaxWebsiteLength);
+        Instagram = Clip(instagram, MaxInstagramLength);
+        OpeningHours = Clip(snapshot.OpeningHours, MaxOpeningHoursLength);
+        OsmUpdatedAt = null;
+        OsmAgeDays = null;
+        Signals = signals.ToList();
+        CollectorBucket = bucket;
+        GoogleMapsUri = string.IsNullOrWhiteSpace(snapshot.GooglePlaceId)
+            ? GoogleMapsUri
+            : Clip($"https://www.google.com/maps/place/?q=place_id:{snapshot.GooglePlaceId.Trim()}", MaxGoogleMapsUriLength);
     }
 
     private static List<string> NormalizeTagSlugs(IReadOnlyList<string>? tagSlugs, ImportCoffeeFocus? focus)
