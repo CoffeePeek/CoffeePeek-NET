@@ -26,7 +26,8 @@ public class CoffeeShopRepository(ShopsDbContext dbContext) : ICoffeeShopReposit
             .Include(s => s.Equipments)
             .Include(s => s.CoffeeBeans)
             .Include(s => s.Roasters)
-            .Include(s => s.BrewMethods);
+            .Include(s => s.BrewMethods)
+            .AsSplitQuery();
 }
 
 public class AdminCoffeeShopQueryRepository(ShopsDbContext dbContext) : IAdminCoffeeShopQueryRepository

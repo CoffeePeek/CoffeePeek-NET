@@ -28,12 +28,14 @@ public record AdminShopPhotoDto(
     long SizeBytes,
     int SortIndex);
 
+/// <summary>Address and coordinates of a published shop, as returned to admin and owner APIs.</summary>
 public record AdminShopLocationDto(
     Guid CityId,
     string Address,
     decimal? Latitude,
     decimal? Longitude);
 
+/// <summary>Public contact details of a published shop, as returned to admin and owner APIs.</summary>
 public record AdminShopContactsDto(
     string? PhoneNumber,
     string? Email,
@@ -220,12 +222,14 @@ public static class UpdateAdminCoffeeShopHandler
         if (command.Status.HasValue)
             shop.SetStatus(command.Status.Value);
 
-        var profileError = await ShopProfileApplier.ApplyAsync(
+        var applied = await ShopProfileApplier.ApplyAsync(
             shop,
             new ShopProfilePatch(command.Location, command.Contacts, command.Schedules, command.Catalogs),
             cities, equipment, beans, roasters, brewMethods, ct);
-        if (profileError is not null)
-            return profileError;
+        if (applied.IsFailed)
+            return Response<AdminPublishedShopDto>.Error(
+                System.Net.HttpStatusCode.BadRequest,
+                applied.Errors[0].Message);
 
         await unitOfWork.SaveChangesAsync(ct);
         await cacheService.RemoveAsync(CacheKey.Shop.Detail(shop.Id));
