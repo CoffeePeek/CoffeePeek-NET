@@ -34,6 +34,8 @@ public static class DependencyInjection
             var timeout = sp.GetRequiredService<IOptions<GeminiOptions>>().Value.TimeoutSeconds;
             // Resilience pipeline owns the deadline; keep HttpClient.Timeout at or above it.
             client.Timeout = TimeSpan.FromSeconds(Math.Clamp(timeout, 30, 180) + 10);
+            // Cloudflare Worker (GEMINI_BASE_URL) returns 1010 if User-Agent is missing.
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("CoffeePeek.ShopsService/1.0");
         }).ConfigurePrimaryHttpMessageHandler(sp =>
         {
             var settings = sp.GetRequiredService<IOptions<GeminiOptions>>().Value;
