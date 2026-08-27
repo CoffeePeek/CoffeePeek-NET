@@ -5,6 +5,7 @@ using CoffeePeek.Shops.Application.Features.Admin.Menu;
 using CoffeePeek.Shops.Application.Features.Admin.Shops;
 using CoffeePeek.Shops.Application.Features.Admin.Shops.ReorderPhotos;
 using CoffeePeek.Shops.Application.Features.Admin.Shops.SetShopTags;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.ShopProfile;
 using CoffeePeek.ShopsService.Controllers.Admin;
 using CoffeePeek.Contract.Dtos.Menu;
 using Microsoft.AspNetCore.Authorization;
@@ -65,9 +66,35 @@ public class AdminCoffeeShopsController(IMessageBus bus, IUserContext userContex
         CancellationToken ct)
     {
         var command = new UpdateAdminCoffeeShopCommand(
-            id, request.Name, request.Description, request.PriceRange, request.Status);
+            id,
+            request.Name,
+            request.Description,
+            request.PriceRange,
+            request.Status,
+            request.Location is null
+                ? null
+                : new ShopLocationPatch(
+                    request.Location.CityId,
+                    request.Location.Address,
+                    request.Location.Latitude,
+                    request.Location.Longitude),
+            request.Contacts is null
+                ? null
+                : new ShopContactsPatch(
+                    request.Contacts.PhoneNumber,
+                    request.Contacts.Email,
+                    request.Contacts.SiteLink,
+                    request.Contacts.InstagramLink),
+            request.Schedules,
+            request.Catalogs is null
+                ? null
+                : new ShopCatalogsPatch(
+                    request.Catalogs.EquipmentIds,
+                    request.Catalogs.BeanIds,
+                    request.Catalogs.RoasterIds,
+                    request.Catalogs.BrewMethodIds));
         var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(command, ct);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+        return ShopMutationResult(response);
     }
 
     [HttpPatch("{id:guid}/visibility")]
@@ -109,14 +136,37 @@ public class AdminCoffeeShopsController(IMessageBus bus, IUserContext userContex
         var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
             new ReorderAdminCoffeeShopPhotosCommand(id, request.PhotoIds), ct);
 
-        if (response.IsSuccess)
-            return Ok(response);
+        return ShopMutationResult(response);
+    }
 
-        return response.StatusCode switch
-        {
-            StatusCodes.Status404NotFound => NotFound(response),
-            _ => BadRequest(response)
-        };
+    /// <summary>Attach already-uploaded gallery photos (presign via Media, then send storage keys here).</summary>
+    [HttpPost("{id:guid}/photos")]
+    [ProducesResponseType<Response<AdminPublishedShopDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddPhotos(
+        Guid id,
+        [FromBody] AddCoffeeShopPhotosRequest request,
+        CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
+            new AddPublishedShopPhotosCommand(id, userContext.GetUserIdOrThrow(), null, request.Photos), ct);
+        return ShopMutationResult(response);
+    }
+
+    /// <summary>Remove gallery photos by id. Remaining photos are reindexed.</summary>
+    [HttpDelete("{id:guid}/photos")]
+    [ProducesResponseType<Response<AdminPublishedShopDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemovePhotos(
+        Guid id,
+        [FromBody] RemoveCoffeeShopPhotosRequest request,
+        CancellationToken ct)
+    {
+        var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
+            new RemovePublishedShopPhotosCommand(id, null, request.PhotoIds), ct);
+        return ShopMutationResult(response);
     }
 
     [HttpPatch("{id:guid}/focus")]
@@ -200,6 +250,19 @@ public class AdminCoffeeShopsController(IMessageBus bus, IUserContext userContex
                 id, request.Items, request.ApplySuggestedPriceRange, userContext.GetUserIdOrThrow()),
             ct);
         return MenuActionResult(response);
+    }
+
+    private IActionResult ShopMutationResult(Response<AdminPublishedShopDto> response)
+    {
+        if (response.IsSuccess)
+            return Ok(response);
+
+        return response.StatusCode switch
+        {
+            StatusCodes.Status404NotFound => NotFound(response),
+            StatusCodes.Status400BadRequest => BadRequest(response),
+            _ => StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response)
+        };
     }
 
     private IActionResult MenuActionResult(Response<AdminShopMenuDto> response)

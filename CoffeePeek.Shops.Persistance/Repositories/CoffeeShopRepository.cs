@@ -9,18 +9,24 @@ public class CoffeeShopRepository(ShopsDbContext dbContext) : ICoffeeShopReposit
 {
     public Task<CoffeeShop?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
-        return dbContext.Shops
-            .Include(s => s.ShopPhotos)
-            .Include(s => s.ShopTags)
+        return QueryWithProfile(dbContext.Shops)
             .FirstOrDefaultAsync(s => s.Id == id, ct);
     }
 
     public Task<CoffeeShop?> GetByIdForOwnerAsync(Guid id, Guid ownerUserId, CancellationToken ct = default)
     {
-        return dbContext.Shops
-            .Include(s => s.ShopPhotos)
+        return QueryWithProfile(dbContext.Shops)
             .FirstOrDefaultAsync(s => s.Id == id && s.OwnerUserId == ownerUserId, ct);
     }
+
+    private static IQueryable<CoffeeShop> QueryWithProfile(IQueryable<CoffeeShop> shops) =>
+        shops
+            .Include(s => s.ShopPhotos)
+            .Include(s => s.ShopTags)
+            .Include(s => s.Equipments)
+            .Include(s => s.CoffeeBeans)
+            .Include(s => s.Roasters)
+            .Include(s => s.BrewMethods);
 }
 
 public class AdminCoffeeShopQueryRepository(ShopsDbContext dbContext) : IAdminCoffeeShopQueryRepository

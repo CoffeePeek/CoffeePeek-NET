@@ -165,3 +165,116 @@ async function reorderShopPhotos(
 - Reorder by `fullUrl` / `storageKey` — only by `id`.
 - Send a partial list of moved items.
 - Rely on client-only order for public pages — persist via the API so search/details APIs return the new order.
+
+---
+
+## Admin / owner profile fields
+
+Admin and the assigned owner can update location, contacts, weekly schedule, catalogs (equipment / beans / roasters / brew methods), and add or delete gallery photos.
+
+`GET` by id returns the extra fields when collections are loaded (`location`, `contacts`, `schedules`, `equipmentIds`, `beanIds`, `roasterIds`, `brewMethodIds`, `description`, `priceRange`). List endpoints may omit catalogs.
+
+### Update shop
+
+Optional nested objects are applied only when present. Omit a field to leave it unchanged. Send `catalogs.equipmentIds: []` (or beans / roasters / brew methods) to clear that catalog. Send `schedules: []` to remove stored hours (active shops then count as always open).
+
+#### Admin
+
+```http
+PUT /api/admin/shops/{shopId}
+Authorization: Bearer {adminJwt}
+Content-Type: application/json
+
+{
+  "name": "Coffee Joy",
+  "description": "Specialty on Немига",
+  "priceRange": 2,
+  "status": 0,
+  "location": {
+    "cityId": "11111111-1111-1111-1111-111111111111",
+    "address": "Немига 5, Минск",
+    "latitude": 53.9045,
+    "longitude": 27.5615
+  },
+  "contacts": {
+    "phoneNumber": "+375291112233",
+    "email": "hello@shop.by",
+    "siteLink": "https://shop.by",
+    "instagramLink": "https://instagram.com/shop"
+  },
+  "schedules": [
+    {
+      "dayOfWeek": 1,
+      "isClosed": false,
+      "intervals": [{ "openTime": "08:00:00", "closeTime": "18:00:00" }]
+    }
+  ],
+  "catalogs": {
+    "equipmentIds": ["22222222-2222-2222-2222-222222222222"],
+    "beanIds": [],
+    "roasterIds": ["33333333-3333-3333-3333-333333333333"],
+    "brewMethodIds": []
+  }
+}
+```
+
+Admin `contacts` is optional (owner already sends phone/email/site/instagram at the top level).
+
+#### Owner
+
+```http
+PUT /api/owner/coffee-shops/{shopId}
+Authorization: Bearer {ownerJwt}
+Content-Type: application/json
+
+{
+  "name": "Coffee Joy",
+  "description": "Specialty on Немига",
+  "phoneNumber": "+375291112233",
+  "email": "hello@shop.by",
+  "siteLink": "https://shop.by",
+  "instagramLink": "https://instagram.com/shop",
+  "location": { "cityId": "...", "address": "Немига 5, Минск", "latitude": 53.9045, "longitude": 27.5615 },
+  "schedules": [ /* same ScheduleDto as admin */ ],
+  "catalogs": { "equipmentIds": [], "beanIds": [], "roasterIds": [], "brewMethodIds": [] }
+}
+```
+
+Catalog IDs must exist in `/api/Catalogs/*`. `cityId` must exist. Duplicate weekdays in `schedules` → **400**.
+
+**200** — `ApiResponse<AdminPublishedShop>` with the updated shop. **400** validation. **404** shop missing (or not owned).
+
+### Add gallery photos
+
+Upload files through Media (`POST /api/Photos/shop`), then attach metadata:
+
+```http
+POST /api/admin/shops/{shopId}/photos
+POST /api/owner/coffee-shops/{shopId}/photos
+Content-Type: application/json
+
+{
+  "photos": [
+    {
+      "fileName": "front.jpg",
+      "contentType": "image/jpeg",
+      "storageKey": "shops/.../front.jpg",
+      "size": 12345
+    }
+  ]
+}
+```
+
+New photos are appended (`sortIndex` continues). Reorder afterwards if needed.
+
+### Delete gallery photos
+
+```http
+DELETE /api/admin/shops/{shopId}/photos
+DELETE /api/owner/coffee-shops/{shopId}/photos
+Content-Type: application/json
+
+{ "photoIds": ["11111111-1111-1111-1111-111111111111"] }
+```
+
+Unknown IDs → **400**. Remaining photos are reindexed from 0.
