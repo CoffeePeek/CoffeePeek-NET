@@ -12,7 +12,7 @@ public class GeminiOptions
     public string BaseUrl { get; set; } = "https://generativelanguage.googleapis.com/v1beta";
 
     [Range(5, 180)]
-    public int TimeoutSeconds { get; set; } = 60;
+    public int TimeoutSeconds { get; set; } = 90;
 
     /// <summary>
     /// Optional outbound HTTP/HTTPS/SOCKS proxy for Gemini calls.

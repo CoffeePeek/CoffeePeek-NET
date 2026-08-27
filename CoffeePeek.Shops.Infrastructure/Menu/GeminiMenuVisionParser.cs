@@ -116,6 +116,18 @@ public sealed class GeminiMenuVisionParser(
         {
             throw;
         }
+        catch (Polly.Timeout.TimeoutRejectedException ex)
+        {
+            logger.LogWarning(
+                ex,
+                "Gemini menu parse timed out for model {Model} after {TimeoutSeconds}s",
+                settings.Model,
+                settings.TimeoutSeconds);
+            return new MenuVisionParseResult(
+                false,
+                $"Gemini request timed out after {settings.TimeoutSeconds}s.",
+                []);
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Gemini menu parse threw for model {Model}", settings.Model);
