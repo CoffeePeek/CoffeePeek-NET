@@ -75,7 +75,9 @@ public static class DependencyInjection
         var attempt = TimeSpan.FromSeconds(Math.Clamp(timeoutSeconds, 30, 180));
         options.AttemptTimeout.Timeout = attempt;
         options.TotalRequestTimeout.Timeout = attempt + TimeSpan.FromSeconds(5);
-        options.Retry.MaxRetryAttempts = 0;
+        // StandardResilienceHandler rejects MaxRetryAttempts = 0 (shops failed to boot).
+        // Keep a single retry for fast 5xx; the long AttemptTimeout still covers vision.
+        options.Retry.MaxRetryAttempts = 1;
         options.CircuitBreaker.SamplingDuration = TimeSpan.FromTicks(attempt.Ticks * 2) + TimeSpan.FromSeconds(1);
         options.CircuitBreaker.MinimumThroughput = 20;
     }
