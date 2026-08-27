@@ -77,7 +77,7 @@ public sealed class GeminiMenuVisionParser(
                     (int)response.StatusCode,
                     settings.Model,
                     Trim(body));
-                return new MenuVisionParseResult(false, $"Gemini HTTP {(int)response.StatusCode}: {Trim(body)}", []);
+                return new MenuVisionParseResult(false, FormatHttpError((int)response.StatusCode, body), []);
             }
 
             var gemini = await response.Content.ReadFromJsonAsync<GeminiResponse>(JsonOptions, ct);
@@ -119,8 +119,18 @@ public sealed class GeminiMenuVisionParser(
         catch (Exception ex)
         {
             logger.LogError(ex, "Gemini menu parse threw for model {Model}", settings.Model);
-            throw;
+            return new MenuVisionParseResult(false, $"Gemini request failed: {ex.Message}", []);
         }
+    }
+
+    private static string FormatHttpError(int statusCode, string body)
+    {
+        if (body.Contains("User location is not supported", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Gemini is blocked for this server IP. Set GeminiOptions:ProxyUrl to an HTTP or SOCKS proxy whose egress is in a supported region.";
+        }
+
+        return $"Gemini HTTP {statusCode}: {Trim(body)}";
     }
 
     private static string Trim(string value) =>
