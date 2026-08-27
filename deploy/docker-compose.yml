@@ -185,6 +185,7 @@ services:
     environment:
       <<: [*dotnet-common, *rabbitmq-env, *redis-env, *media-public-env]
       PostgresCpOptions__ConnectionString: Host=postgres;Port=5432;Database=cpshopsdb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};SslMode=Disable;GSS Encryption Mode=Disable
+      GeminiOptions__ApiKey: ${GEMINI_API_KEY:-}
       Sentry__Dsn: ${SENTRY_DSN_SHOPS:-}
     mem_limit: 1024m
     memswap_limit: 1024m
