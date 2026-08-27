@@ -5,6 +5,7 @@ using CoffeePeek.Shops.Infrastructure.Account;
 using CoffeePeek.Shops.Infrastructure.Consumers;
 using CoffeePeek.Shops.Infrastructure.Menu;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace CoffeePeek.Shops.Infrastructure;
@@ -23,6 +24,23 @@ public static class DependencyInjection
         {
             var timeout = sp.GetRequiredService<IOptions<GeminiOptions>>().Value.TimeoutSeconds;
             client.Timeout = TimeSpan.FromSeconds(Math.Clamp(timeout, 5, 180));
+        }).ConfigurePrimaryHttpMessageHandler(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<GeminiOptions>>().Value;
+            var handler = new SocketsHttpHandler();
+            var proxy = GeminiProxy.Create(settings.ProxyUrl);
+            if (proxy is not null)
+            {
+                handler.UseProxy = true;
+                handler.Proxy = proxy;
+                sp.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("CoffeePeek.Shops.Infrastructure.Menu.GeminiProxy")
+                    .LogInformation(
+                        "Gemini HTTP client using proxy {Proxy}",
+                        GeminiProxy.DisplayHost(settings.ProxyUrl));
+            }
+
+            return handler;
         });
 
         services.AddHttpClient("menu-photos", client =>
