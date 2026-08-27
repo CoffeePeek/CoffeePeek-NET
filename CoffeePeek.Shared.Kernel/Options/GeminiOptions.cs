@@ -13,6 +13,14 @@ public class GeminiOptions
 
     [Range(5, 180)]
     public int TimeoutSeconds { get; set; } = 60;
+
+    /// <summary>
+    /// Optional outbound HTTP/HTTPS/SOCKS proxy for Gemini calls.
+    /// Google blocks the Generative Language API from some regions (including RU);
+    /// set this to a proxy whose egress IP is in a supported country.
+    /// Example: <c>socks5://user:pass@proxy.example:1080</c>.
+    /// </summary>
+    public string ProxyUrl { get; set; } = string.Empty;
 }
 
 public class MenuPriceRangeOptions
