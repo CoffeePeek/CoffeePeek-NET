@@ -4,7 +4,9 @@ using CoffeePeek.Shops.Application.Abstractions;
 using CoffeePeek.Shops.Infrastructure.Account;
 using CoffeePeek.Shops.Infrastructure.Consumers;
 using CoffeePeek.Shops.Infrastructure.Menu;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -12,7 +14,9 @@ namespace CoffeePeek.Shops.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.AddHttpClient("account-user-lookup", client =>
         {
@@ -20,10 +24,16 @@ public static class DependencyInjection
             client.Timeout = TimeSpan.FromSeconds(5);
         });
 
+        var timeoutRaw = configuration.GetSection(nameof(GeminiOptions))["TimeoutSeconds"];
+        var geminiTimeoutSeconds = int.TryParse(timeoutRaw, out var parsedTimeout)
+            ? parsedTimeout
+            : 90;
+
         services.AddHttpClient("gemini", (sp, client) =>
         {
             var timeout = sp.GetRequiredService<IOptions<GeminiOptions>>().Value.TimeoutSeconds;
-            client.Timeout = TimeSpan.FromSeconds(Math.Clamp(timeout, 5, 180));
+            // Resilience pipeline owns the deadline; keep HttpClient.Timeout at or above it.
+            client.Timeout = TimeSpan.FromSeconds(Math.Clamp(timeout, 30, 180) + 10);
         }).ConfigurePrimaryHttpMessageHandler(sp =>
         {
             var settings = sp.GetRequiredService<IOptions<GeminiOptions>>().Value;
@@ -41,7 +51,11 @@ public static class DependencyInjection
             }
 
             return handler;
-        });
+        })
+        // Aspire AddStandardResilienceHandler() defaults to 10s/attempt and 30s total,
+        // which aborts Gemini vision (menu photos) long before GeminiOptions.TimeoutSeconds.
+        .RemoveAllResilienceHandlers()
+        .AddStandardResilienceHandler(options => ApplyGeminiResilience(options, geminiTimeoutSeconds));
 
         services.AddHttpClient("menu-photos", client =>
         {
@@ -54,5 +68,15 @@ public static class DependencyInjection
         services.AddScoped<ModerationShopApproveHandler>();
 
         return services;
+    }
+
+    internal static void ApplyGeminiResilience(HttpStandardResilienceOptions options, int timeoutSeconds)
+    {
+        var attempt = TimeSpan.FromSeconds(Math.Clamp(timeoutSeconds, 30, 180));
+        options.AttemptTimeout.Timeout = attempt;
+        options.TotalRequestTimeout.Timeout = attempt + TimeSpan.FromSeconds(5);
+        options.Retry.MaxRetryAttempts = 0;
+        options.CircuitBreaker.SamplingDuration = TimeSpan.FromTicks(attempt.Ticks * 2) + TimeSpan.FromSeconds(1);
+        options.CircuitBreaker.MinimumThroughput = 20;
     }
 }
