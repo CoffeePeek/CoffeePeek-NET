@@ -258,7 +258,7 @@ services:
       - moderation
       - media
     ports:
-      - "${GATEWAY_PORT:-8080}:80"
+      - "127.0.0.1:${GATEWAY_PORT:-8080}:80"
     environment:
       <<: [*dotnet-common, *jwt-env]
       ReverseProxy__Clusters__account-cluster__Destinations__destination1__Address: http://account
