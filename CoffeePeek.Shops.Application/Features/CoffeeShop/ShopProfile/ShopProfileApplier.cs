@@ -1,17 +1,19 @@
-using System.Net;
 using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Shared.Kernel.Exceptions;
-using CoffeePeek.Shared.Kernel.Response;
-using CoffeePeek.Shops.Application.Features.Admin.Shops;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Repositories;
+using FluentResults;
 using DomainCoffeeShop = CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeShop;
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.ShopProfile;
 
+/// <summary>
+/// Applies optional profile patches to a published shop. Failed <see cref="Result"/> messages
+/// are validation errors for the caller to map to HTTP 400.
+/// </summary>
 public static class ShopProfileApplier
 {
-    public static async Task<Response<AdminPublishedShopDto>?> ApplyAsync(
+    public static async Task<Result> ApplyAsync(
         DomainCoffeeShop shop,
         ShopProfilePatch patch,
         IQueryCityRepository cities,
@@ -24,7 +26,7 @@ public static class ShopProfileApplier
         if (patch.Location is not null)
         {
             if (!await cities.Exists(patch.Location.CityId, ct))
-                return Response<AdminPublishedShopDto>.Error(HttpStatusCode.BadRequest, "City was not found.");
+                return Result.Fail("City was not found.");
 
             try
             {
@@ -36,7 +38,7 @@ public static class ShopProfileApplier
             }
             catch (DomainException ex)
             {
-                return Response<AdminPublishedShopDto>.Error(HttpStatusCode.BadRequest, ex.Message);
+                return Result.Fail(ex.Message);
             }
         }
 
@@ -52,7 +54,7 @@ public static class ShopProfileApplier
             }
             catch (DomainException ex)
             {
-                return Response<AdminPublishedShopDto>.Error(HttpStatusCode.BadRequest, ex.Message);
+                return Result.Fail(ex.Message);
             }
         }
 
@@ -69,21 +71,17 @@ public static class ShopProfileApplier
 
             var replaced = shop.ReplaceSchedules(schedules);
             if (replaced.IsFailed)
-                return Response<AdminPublishedShopDto>.Error(HttpStatusCode.BadRequest, replaced.Errors[0].Message);
+                return replaced;
         }
 
         if (patch.Catalogs is not null)
-        {
-            var catalogError = await ApplyCatalogsAsync(
+            return await ApplyCatalogsAsync(
                 shop, patch.Catalogs, equipment, beans, roasters, brewMethods, ct);
-            if (catalogError is not null)
-                return catalogError;
-        }
 
-        return null;
+        return Result.Ok();
     }
 
-    private static async Task<Response<AdminPublishedShopDto>?> ApplyCatalogsAsync(
+    private static async Task<Result> ApplyCatalogsAsync(
         DomainCoffeeShop shop,
         ShopCatalogsPatch catalogs,
         IQueryEquipmentRepository equipment,
@@ -98,9 +96,9 @@ public static class ShopProfileApplier
                 catalogs.EquipmentIds,
                 ids => equipment.GetByIds(ids, ct),
                 "equipment");
-            if (loaded.Error is not null)
-                return loaded.Error;
-            shop.SetEquipment(loaded.Items);
+            if (loaded.IsFailed)
+                return loaded.ToResult();
+            shop.SetEquipment(loaded.Value);
         }
 
         if (catalogs.BeanIds is not null)
@@ -109,9 +107,9 @@ public static class ShopProfileApplier
                 catalogs.BeanIds,
                 ids => beans.GetByIds(ids, ct),
                 "coffee beans");
-            if (loaded.Error is not null)
-                return loaded.Error;
-            shop.SetBeans(loaded.Items);
+            if (loaded.IsFailed)
+                return loaded.ToResult();
+            shop.SetBeans(loaded.Value);
         }
 
         if (catalogs.RoasterIds is not null)
@@ -120,9 +118,9 @@ public static class ShopProfileApplier
                 catalogs.RoasterIds,
                 ids => roasters.GetByIds(ids, ct),
                 "roasters");
-            if (loaded.Error is not null)
-                return loaded.Error;
-            shop.SetRoasters(loaded.Items);
+            if (loaded.IsFailed)
+                return loaded.ToResult();
+            shop.SetRoasters(loaded.Value);
         }
 
         if (catalogs.BrewMethodIds is not null)
@@ -131,15 +129,15 @@ public static class ShopProfileApplier
                 catalogs.BrewMethodIds,
                 ids => brewMethods.GetByIds(ids, ct),
                 "brew methods");
-            if (loaded.Error is not null)
-                return loaded.Error;
-            shop.SetBrewMethods(loaded.Items);
+            if (loaded.IsFailed)
+                return loaded.ToResult();
+            shop.SetBrewMethods(loaded.Value);
         }
 
-        return null;
+        return Result.Ok();
     }
 
-    private static async Task<(IReadOnlyList<T> Items, Response<AdminPublishedShopDto>? Error)> LoadDistinctAsync<T>(
+    private static async Task<Result<IReadOnlyList<T>>> LoadDistinctAsync<T>(
         IReadOnlyList<Guid> ids,
         Func<List<Guid>, Task<IEnumerable<T>>> load,
         string catalogName)
@@ -147,16 +145,12 @@ public static class ShopProfileApplier
     {
         var distinct = ids.Distinct().ToList();
         if (distinct.Count == 0)
-            return ([], null);
+            return Result.Ok<IReadOnlyList<T>>([]);
 
         var items = (await load(distinct)).ToList();
         if (items.Count != distinct.Count)
-        {
-            return ([], Response<AdminPublishedShopDto>.Error(
-                HttpStatusCode.BadRequest,
-                $"One or more {catalogName} IDs were not found."));
-        }
+            return Result.Fail($"One or more {catalogName} IDs were not found.");
 
-        return (items, null);
+        return Result.Ok<IReadOnlyList<T>>(items);
     }
 }

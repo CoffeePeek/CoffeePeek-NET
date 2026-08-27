@@ -309,6 +309,10 @@ public sealed class CoffeeShop : Entity<Guid>
         }
     }
 
+    /// <summary>
+    /// Replaces the shop's equipment set. Duplicate brand+model entries are skipped by
+    /// <see cref="AddEquipment"/>. An empty sequence clears the collection.
+    /// </summary>
     public void SetEquipment(IEnumerable<Equipment> equipment)
     {
         _equipments.Clear();

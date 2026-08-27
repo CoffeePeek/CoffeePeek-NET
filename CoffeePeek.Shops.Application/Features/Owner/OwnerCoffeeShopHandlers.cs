@@ -81,7 +81,7 @@ public static class UpdateOwnerCoffeeShopHandler
 
         shop.UpdateDetails(command.Name, command.Description, shop.PriceRange);
 
-        var profileError = await ShopProfileApplier.ApplyAsync(
+        var applied = await ShopProfileApplier.ApplyAsync(
             shop,
             new ShopProfilePatch(
                 command.Location,
@@ -89,8 +89,10 @@ public static class UpdateOwnerCoffeeShopHandler
                 command.Schedules,
                 command.Catalogs),
             cities, equipment, beans, roasters, brewMethods, ct);
-        if (profileError is not null)
-            return profileError;
+        if (applied.IsFailed)
+            return Response<AdminPublishedShopDto>.Error(
+                System.Net.HttpStatusCode.BadRequest,
+                applied.Errors[0].Message);
 
         await unitOfWork.SaveChangesAsync(ct);
         await cacheService.RemoveAsync(CacheKey.Shop.Detail(shop.Id));

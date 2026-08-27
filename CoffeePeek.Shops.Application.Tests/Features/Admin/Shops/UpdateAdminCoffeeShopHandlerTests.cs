@@ -24,14 +24,14 @@ namespace CoffeePeek.Shops.Application.Tests.Features.Admin.Shops;
 
 public class UpdateAdminCoffeeShopHandlerTests
 {
-    private readonly Mock<ICoffeeShopRepository> _shops = new();
-    private readonly Mock<IQueryCityRepository> _cities = new();
-    private readonly Mock<IQueryEquipmentRepository> _equipment = new();
-    private readonly Mock<IQueryCoffeeBeanRepository> _beans = new();
-    private readonly Mock<IQueryRoasterRepository> _roasters = new();
-    private readonly Mock<IQueryBrewMethodRepository> _brew = new();
-    private readonly Mock<IUnitOfWork> _uow = new();
-    private readonly Mock<ICacheService> _cache = new();
+    private readonly Mock<ICoffeeShopRepository> _shops = new Mock<ICoffeeShopRepository>();
+    private readonly Mock<IQueryCityRepository> _cities = new Mock<IQueryCityRepository>();
+    private readonly Mock<IQueryEquipmentRepository> _equipment = new Mock<IQueryEquipmentRepository>();
+    private readonly Mock<IQueryCoffeeBeanRepository> _beans = new Mock<IQueryCoffeeBeanRepository>();
+    private readonly Mock<IQueryRoasterRepository> _roasters = new Mock<IQueryRoasterRepository>();
+    private readonly Mock<IQueryBrewMethodRepository> _brew = new Mock<IQueryBrewMethodRepository>();
+    private readonly Mock<IUnitOfWork> _uow = new Mock<IUnitOfWork>();
+    private readonly Mock<ICacheService> _cache = new Mock<ICacheService>();
     private readonly CancellationToken _ct = CancellationToken.None;
     private readonly IOptions<MediaPublicUrlOptions> _media = Options.Create(new MediaPublicUrlOptions
     {
@@ -132,9 +132,9 @@ public class UpdateAdminCoffeeShopHandlerTests
 
 public class PublishedShopPhotosHandlerTests
 {
-    private readonly Mock<ICoffeeShopRepository> _shops = new();
-    private readonly Mock<IUnitOfWork> _uow = new();
-    private readonly Mock<ICacheService> _cache = new();
+    private readonly Mock<ICoffeeShopRepository> _shops = new Mock<ICoffeeShopRepository>();
+    private readonly Mock<IUnitOfWork> _uow = new Mock<IUnitOfWork>();
+    private readonly Mock<ICacheService> _cache = new Mock<ICacheService>();
     private readonly CancellationToken _ct = CancellationToken.None;
     private readonly IOptions<MediaPublicUrlOptions> _media = Options.Create(new MediaPublicUrlOptions
     {

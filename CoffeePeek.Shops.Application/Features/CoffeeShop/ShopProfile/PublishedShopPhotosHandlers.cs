@@ -11,12 +11,17 @@ using DomainCoffeeShop = CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.
 
 namespace CoffeePeek.Shops.Application.Features.CoffeeShop.ShopProfile;
 
+/// <summary>
+/// Attaches already-uploaded gallery photos. <see cref="OwnerUserId"/> is null for admin
+/// and the owning user id for owner routes.
+/// </summary>
 public record AddPublishedShopPhotosCommand(
     Guid ShopId,
     Guid ActorUserId,
     Guid? OwnerUserId,
     IReadOnlyList<UploadedPhotoDto> Photos);
 
+/// <summary>Adds photos to a published shop gallery and returns the updated shop.</summary>
 public static class AddPublishedShopPhotosHandler
 {
     public static async Task<Response<AdminPublishedShopDto>> Handle(
@@ -60,11 +65,13 @@ public static class AddPublishedShopPhotosHandler
             : repository.GetByIdForOwnerAsync(shopId, ownerUserId.Value, ct);
 }
 
+/// <summary>Removes gallery photos by id. Remaining photos are reindexed from 0.</summary>
 public record RemovePublishedShopPhotosCommand(
     Guid ShopId,
     Guid? OwnerUserId,
     IReadOnlyList<Guid> PhotoIds);
 
+/// <summary>Deletes gallery photos on a published shop and returns the updated shop.</summary>
 public static class RemovePublishedShopPhotosHandler
 {
     public static async Task<Response<AdminPublishedShopDto>> Handle(

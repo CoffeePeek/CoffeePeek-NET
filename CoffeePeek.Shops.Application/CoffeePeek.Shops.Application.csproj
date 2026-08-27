@@ -17,6 +17,7 @@
         <PackageReference Include="Mapster.DependencyInjection" />
         <PackageReference Include="WolverineFx"  />
         <PackageReference Include="Mapster"  />
+        <PackageReference Include="FluentResults" />
     </ItemGroup>
 
 </Project>
