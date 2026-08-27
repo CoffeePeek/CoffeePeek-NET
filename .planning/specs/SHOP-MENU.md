@@ -133,7 +133,7 @@ Future (колонки сразу, публично не маппить):
 7. Считаем suggested `priceRange`. Модератор видит и может перезаписать.
 8. `Failed`: статус + `parseError`, черновик не затираем.
 
-**Gemini:** `GeminiOptions: ApiKey, Model=gemini-2.5-flash, TimeoutSeconds=60`. HTTP `generativelanguage.googleapis.com` + `IHttpClientFactory`. Ключ — env/user-secrets, не в git.
+**Gemini:** `GeminiOptions: ApiKey, Model=gemini-3.6-flash, TimeoutSeconds=60`. HTTP `generativelanguage.googleapis.com` + `IHttpClientFactory`. Ключ — env/user-secrets, не в git.
 
 ---
 
