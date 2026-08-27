@@ -2,6 +2,7 @@ using CoffeePeek.Shared.Auth;
 using CoffeePeek.Shared.Auth.Constants;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.Admin.Shops;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.ShopProfile;
 using CoffeePeek.Shops.Application.Features.Owner;
 using CoffeePeek.Shops.Application.Features.Owner.ReorderPhotos;
 using CoffeePeek.ShopsService.Controllers.Admin;
@@ -58,10 +59,25 @@ public class OwnerCoffeeShopsController(IMessageBus bus, IUserContext userContex
             request.PhoneNumber,
             request.Email,
             request.SiteLink,
-            request.InstagramLink);
+            request.InstagramLink,
+            request.Location is null
+                ? null
+                : new ShopLocationPatch(
+                    request.Location.CityId,
+                    request.Location.Address,
+                    request.Location.Latitude,
+                    request.Location.Longitude),
+            request.Schedules,
+            request.Catalogs is null
+                ? null
+                : new ShopCatalogsPatch(
+                    request.Catalogs.EquipmentIds,
+                    request.Catalogs.BeanIds,
+                    request.Catalogs.RoasterIds,
+                    request.Catalogs.BrewMethodIds));
 
         var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(command, ct);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+        return ShopMutationResult(response);
     }
 
     /// <summary>Reorder gallery photos. Body must list every shop photo ID in the new display order (first = cover).</summary>
@@ -78,13 +94,51 @@ public class OwnerCoffeeShopsController(IMessageBus bus, IUserContext userContex
         var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
             new ReorderOwnerCoffeeShopPhotosCommand(id, ownerId, request.PhotoIds), ct);
 
+        return ShopMutationResult(response);
+    }
+
+    /// <summary>Attach already-uploaded gallery photos (presign via Media, then send storage keys here).</summary>
+    [HttpPost("{id:guid}/photos")]
+    [ProducesResponseType<Response<AdminPublishedShopDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddPhotos(
+        Guid id,
+        [FromBody] AddCoffeeShopPhotosRequest request,
+        CancellationToken ct)
+    {
+        var ownerId = userContext.GetUserIdOrThrow();
+        var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
+            new AddPublishedShopPhotosCommand(id, ownerId, ownerId, request.Photos), ct);
+        return ShopMutationResult(response);
+    }
+
+    /// <summary>Remove gallery photos by id. Remaining photos are reindexed.</summary>
+    [HttpDelete("{id:guid}/photos")]
+    [ProducesResponseType<Response<AdminPublishedShopDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemovePhotos(
+        Guid id,
+        [FromBody] RemoveCoffeeShopPhotosRequest request,
+        CancellationToken ct)
+    {
+        var ownerId = userContext.GetUserIdOrThrow();
+        var response = await bus.InvokeAsync<Response<AdminPublishedShopDto>>(
+            new RemovePublishedShopPhotosCommand(id, ownerId, request.PhotoIds), ct);
+        return ShopMutationResult(response);
+    }
+
+    private IActionResult ShopMutationResult(Response<AdminPublishedShopDto> response)
+    {
         if (response.IsSuccess)
             return Ok(response);
 
         return response.StatusCode switch
         {
             StatusCodes.Status404NotFound => NotFound(response),
-            _ => BadRequest(response)
+            StatusCodes.Status400BadRequest => BadRequest(response),
+            _ => StatusCode(response.StatusCode ?? StatusCodes.Status400BadRequest, response)
         };
     }
 }

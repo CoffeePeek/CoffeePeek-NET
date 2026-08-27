@@ -1,9 +1,12 @@
+using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Options;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.ShopProfile;
 using CoffeePeek.Shops.Application.Features.Public.Stats;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Repositories;
 using CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate;
 using CoffeePeek.Shops.Domain.Entities;
@@ -25,6 +28,18 @@ public record AdminShopPhotoDto(
     long SizeBytes,
     int SortIndex);
 
+public record AdminShopLocationDto(
+    Guid CityId,
+    string Address,
+    decimal? Latitude,
+    decimal? Longitude);
+
+public record AdminShopContactsDto(
+    string? PhoneNumber,
+    string? Email,
+    string? SiteLink,
+    string? InstagramLink);
+
 /// <summary>Published coffee shop summary for admin and owner portals.</summary>
 public record AdminPublishedShopDto(
     Guid Id,
@@ -38,7 +53,16 @@ public record AdminPublishedShopDto(
     DateTime CreatedAtUtc,
     bool IsHidden,
     DateTime? ImportedFromFileAt,
-    IReadOnlyList<AdminShopPhotoDto> Photos);
+    IReadOnlyList<AdminShopPhotoDto> Photos,
+    string? Description = null,
+    ContractPriceRange? PriceRange = null,
+    AdminShopLocationDto? Location = null,
+    AdminShopContactsDto? Contacts = null,
+    IReadOnlyList<ScheduleDto>? Schedules = null,
+    IReadOnlyList<Guid>? EquipmentIds = null,
+    IReadOnlyList<Guid>? BeanIds = null,
+    IReadOnlyList<Guid>? RoasterIds = null,
+    IReadOnlyList<Guid>? BrewMethodIds = null);
 
 public record GetAdminCoffeeShopsResponse(
     IReadOnlyList<AdminPublishedShopDto> Items,
@@ -59,7 +83,7 @@ public static class AdminPublishedShopMapper
     public static AdminPublishedShopDto Map(DomainCoffeeShop shop, MediaPublicUrlOptions mediaOptions) => new(
         shop.Id,
         shop.Name,
-        shop.Location.CityId,
+        shop.Location?.CityId ?? Guid.Empty,
         shop.Status,
         shop.CoffeeFocus is null ? null : (CoffeeShopType)(int)shop.CoffeeFocus.Value,
         shop.CreatorId,
@@ -68,7 +92,39 @@ public static class AdminPublishedShopMapper
         shop.CreatedAtUtc,
         shop.Status != DomainCoffeeShopStatus.Active,
         shop.ImportedFromFileAt,
-        MapPhotos(shop.ShopPhotos, mediaOptions));
+        MapPhotos(shop.ShopPhotos, mediaOptions),
+        shop.Description,
+        (ContractPriceRange)shop.PriceRange,
+        shop.Location is null
+            ? null
+            : new AdminShopLocationDto(
+                shop.Location.CityId,
+                shop.Location.Address,
+                shop.Location.Latitude,
+                shop.Location.Longitude),
+        shop.Contact is null
+            ? null
+            : new AdminShopContactsDto(
+                shop.Contact.PhoneNumber,
+                shop.Contact.Email,
+                shop.Contact.SiteLink,
+                shop.Contact.InstagramLink),
+        shop.Schedules
+            .Select(s => new ScheduleDto(
+                s.DayOfWeek,
+                s.IsClosed,
+                s.Intervals?
+                    .Select(i => new ShopScheduleIntervalDto
+                    {
+                        OpenTime = i.OpenTime,
+                        CloseTime = i.CloseTime
+                    })
+                    .ToList() ?? []))
+            .ToList(),
+        shop.Equipments.Select(e => e.Id).ToList(),
+        shop.CoffeeBeans.Select(b => b.Id).ToList(),
+        shop.Roasters.Select(r => r.Id).ToList(),
+        shop.BrewMethods.Select(m => m.Id).ToList());
 
     public static IReadOnlyList<AdminShopPhotoDto> MapPhotos(
         IReadOnlyCollection<ShopPhoto> photos,
@@ -135,13 +191,22 @@ public record UpdateAdminCoffeeShopCommand(
     string Name,
     string? Description,
     ContractPriceRange PriceRange,
-    DomainCoffeeShopStatus? Status);
+    DomainCoffeeShopStatus? Status,
+    ShopLocationPatch? Location,
+    ShopContactsPatch? Contacts,
+    IReadOnlyList<ScheduleDto>? Schedules,
+    ShopCatalogsPatch? Catalogs);
 
 public static class UpdateAdminCoffeeShopHandler
 {
     public static async Task<Response<AdminPublishedShopDto>> Handle(
         UpdateAdminCoffeeShopCommand command,
         ICoffeeShopRepository repository,
+        IQueryCityRepository cities,
+        IQueryEquipmentRepository equipment,
+        IQueryCoffeeBeanRepository beans,
+        IQueryRoasterRepository roasters,
+        IQueryBrewMethodRepository brewMethods,
         IUnitOfWork unitOfWork,
         ICacheService cacheService,
         IOptions<MediaPublicUrlOptions> mediaOptions,
@@ -155,8 +220,17 @@ public static class UpdateAdminCoffeeShopHandler
         if (command.Status.HasValue)
             shop.SetStatus(command.Status.Value);
 
+        var profileError = await ShopProfileApplier.ApplyAsync(
+            shop,
+            new ShopProfilePatch(command.Location, command.Contacts, command.Schedules, command.Catalogs),
+            cities, equipment, beans, roasters, brewMethods, ct);
+        if (profileError is not null)
+            return profileError;
+
         await unitOfWork.SaveChangesAsync(ct);
         await cacheService.RemoveAsync(CacheKey.Shop.Detail(shop.Id));
+        await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), ct);
+        await cacheService.RemoveByPattern(CacheKey.Shop.ListPattern(), ct);
 
         return Response<AdminPublishedShopDto>.Success(AdminPublishedShopMapper.Map(shop, mediaOptions.Value));
     }

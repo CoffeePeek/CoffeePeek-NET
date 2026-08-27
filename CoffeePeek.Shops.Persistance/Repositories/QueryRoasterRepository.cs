@@ -15,7 +15,7 @@ public class QueryRoasterRepository(ShopsDbContext dbContext) : IQueryRoasterRep
 
     public async Task<IEnumerable<Roaster>> GetByIds(List<Guid> ids, CancellationToken ct)
     {
-        return await _repository.AsNoTracking()
+        return await _repository
             .Where(x => ids.Contains(x.Id))
             .ToListAsync(ct);
     }

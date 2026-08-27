@@ -1,8 +1,11 @@
+using CoffeePeek.Contract.Dtos.Schedule;
 using CoffeePeek.Shared.Domain.Interfaces.Infrastructure;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Options;
 using CoffeePeek.Shared.Kernel.Response;
 using CoffeePeek.Shops.Application.Features.Admin.Shops;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.ShopProfile;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.Repositories;
 using Microsoft.Extensions.Options;
 
@@ -52,13 +55,21 @@ public record UpdateOwnerCoffeeShopCommand(
     string? PhoneNumber,
     string? Email,
     string? SiteLink,
-    string? InstagramLink);
+    string? InstagramLink,
+    ShopLocationPatch? Location,
+    IReadOnlyList<ScheduleDto>? Schedules,
+    ShopCatalogsPatch? Catalogs);
 
 public static class UpdateOwnerCoffeeShopHandler
 {
     public static async Task<Response<AdminPublishedShopDto>> Handle(
         UpdateOwnerCoffeeShopCommand command,
         ICoffeeShopRepository repository,
+        IQueryCityRepository cities,
+        IQueryEquipmentRepository equipment,
+        IQueryCoffeeBeanRepository beans,
+        IQueryRoasterRepository roasters,
+        IQueryBrewMethodRepository brewMethods,
         IUnitOfWork unitOfWork,
         ICacheService cacheService,
         IOptions<MediaPublicUrlOptions> mediaOptions,
@@ -69,10 +80,22 @@ public static class UpdateOwnerCoffeeShopHandler
             return Response<AdminPublishedShopDto>.Error(System.Net.HttpStatusCode.NotFound, "Shop not found.");
 
         shop.UpdateDetails(command.Name, command.Description, shop.PriceRange);
-        shop.SetContact(command.InstagramLink, command.Email, command.SiteLink, command.PhoneNumber);
+
+        var profileError = await ShopProfileApplier.ApplyAsync(
+            shop,
+            new ShopProfilePatch(
+                command.Location,
+                new ShopContactsPatch(command.PhoneNumber, command.Email, command.SiteLink, command.InstagramLink),
+                command.Schedules,
+                command.Catalogs),
+            cities, equipment, beans, roasters, brewMethods, ct);
+        if (profileError is not null)
+            return profileError;
 
         await unitOfWork.SaveChangesAsync(ct);
         await cacheService.RemoveAsync(CacheKey.Shop.Detail(shop.Id));
+        await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), ct);
+        await cacheService.RemoveByPattern(CacheKey.Shop.ListPattern(), ct);
 
         return Response<AdminPublishedShopDto>.Success(AdminPublishedShopMapper.Map(shop, mediaOptions.Value));
     }

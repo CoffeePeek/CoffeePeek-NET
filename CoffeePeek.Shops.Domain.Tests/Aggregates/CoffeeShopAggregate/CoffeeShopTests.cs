@@ -129,6 +129,79 @@ public class CoffeeShopTests
     }
 
     [Fact]
+    public void RemovePhotos_DeletesAndReindexesRemaining()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
+        var ownerId = Guid.NewGuid();
+        var first = new ShopPhoto("a.jpg", "image/jpeg", "a", 1, ownerId);
+        var second = new ShopPhoto("b.jpg", "image/jpeg", "b", 1, ownerId);
+        var third = new ShopPhoto("c.jpg", "image/jpeg", "c", 1, ownerId);
+        shop.AddPhotos([first, second, third]);
+
+        var result = shop.RemovePhotos([first.Id, third.Id]);
+
+        result.IsSuccess.Should().BeTrue();
+        shop.ShopPhotos.Should().ContainSingle(p => p.Id == second.Id);
+        shop.ShopPhotos.Single().SortIndex.Should().Be(0);
+    }
+
+    [Fact]
+    public void RemovePhotos_WithUnknownId_Fails()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
+        shop.AddPhotos([new ShopPhoto("a.jpg", "image/jpeg", "a", 1, Guid.NewGuid())]);
+
+        var result = shop.RemovePhotos([Guid.NewGuid()]);
+
+        result.IsFailed.Should().BeTrue();
+        shop.ShopPhotos.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public void ReplaceSchedules_ReplacesWeeklyHours()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
+        shop.AddSchedule([
+            ShopSchedule.Create(DayOfWeek.Monday, false, [ShopScheduleInterval.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(18))])
+        ]);
+
+        var result = shop.ReplaceSchedules([
+            ShopSchedule.Create(DayOfWeek.Tuesday, true, []),
+            ShopSchedule.Create(DayOfWeek.Wednesday, false, [ShopScheduleInterval.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(16))])
+        ]);
+
+        result.IsSuccess.Should().BeTrue();
+        shop.Schedules.Select(s => s.DayOfWeek).Should().Equal(DayOfWeek.Tuesday, DayOfWeek.Wednesday);
+    }
+
+    [Fact]
+    public void ReplaceSchedules_WithDuplicateDays_Fails()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
+
+        var result = shop.ReplaceSchedules([
+            ShopSchedule.Create(DayOfWeek.Monday, true, []),
+            ShopSchedule.Create(DayOfWeek.Monday, false, [])
+        ]);
+
+        result.IsFailed.Should().BeTrue();
+        shop.Schedules.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void SetEquipment_ReplacesCollection()
+    {
+        var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Cheap, Guid.NewGuid());
+        var category = new EquipmentCategory();
+        shop.AddEquipment(new Equipment("La Marzocco", "Linea", category));
+
+        shop.SetEquipment([new Equipment("Victoria Arduino", "Black Eagle", category)]);
+
+        shop.Equipments.Should().ContainSingle();
+        shop.Equipments.Single().Brand.Should().Be("Victoria Arduino");
+    }
+
+    [Fact]
     public void ShopPhoto_Constructor_RejectsNegativeSortIndex()
     {
         var act = () => new ShopPhoto("a.jpg", "image/jpeg", "a", 1, Guid.NewGuid(), -1);

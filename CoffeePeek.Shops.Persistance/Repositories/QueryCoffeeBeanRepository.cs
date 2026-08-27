@@ -15,7 +15,7 @@ public class QueryCoffeeBeanRepository(ShopsDbContext dbContext) : IQueryCoffeeB
 
     public async Task<IEnumerable<CoffeeBean>> GetByIds(List<Guid> ids, CancellationToken ct)
     {
-        return await _repository.AsNoTracking()
+        return await _repository
             .Where(x => ids.Contains(x.Id))
             .ToListAsync(ct);
     }

@@ -229,6 +229,34 @@ public sealed class CoffeeShop : Entity<Guid>
     }
 
     /// <summary>
+    /// Removes gallery photos by id and reindexes remaining <see cref="ShopPhoto.SortIndex"/> values.
+    /// </summary>
+    public Result RemovePhotos(IReadOnlyList<Guid> photoIds)
+    {
+        if (photoIds is null || photoIds.Count == 0)
+            return Result.Ok();
+
+        if (photoIds.Distinct().Count() != photoIds.Count)
+            return Result.Fail("Photo list contains duplicate photo IDs.");
+
+        var byId = _shopPhotos.ToDictionary(p => p.Id);
+        foreach (var id in photoIds)
+        {
+            if (!byId.ContainsKey(id))
+                return Result.Fail($"Photo '{id}' does not belong to this shop.");
+        }
+
+        foreach (var id in photoIds)
+            _shopPhotos.Remove(byId[id]);
+
+        var remaining = _shopPhotos.OrderBy(p => p.SortIndex).ToList();
+        for (var i = 0; i < remaining.Count; i++)
+            remaining[i].SetSortIndex(i);
+
+        return Result.Ok();
+    }
+
+    /// <summary>
     /// Reorders gallery photos. <paramref name="orderedPhotoIds"/> must be a full permutation
     /// of the shop's current photo IDs; first ID becomes SortIndex 0 (cover).
     /// </summary>
@@ -280,6 +308,13 @@ public sealed class CoffeeShop : Entity<Guid>
             _equipments.Remove(equipment);
         }
     }
+
+    public void SetEquipment(IEnumerable<Equipment> equipment)
+    {
+        _equipments.Clear();
+        foreach (var item in equipment)
+            AddEquipment(item);
+    }
     
     public void SetBrewMethods(IEnumerable<BrewMethod> methods)
     {
@@ -302,6 +337,24 @@ public sealed class CoffeeShop : Entity<Guid>
     public void AddSchedule(List<ShopSchedule> schedule)
     {
         _schedules.AddRange(schedule);
+    }
+
+    /// <summary>
+    /// Replaces the weekly schedule. Duplicate days are rejected. Empty list means no hours stored
+    /// (treated as always open when the shop is <see cref="CoffeeShopStatus.Active"/>).
+    /// </summary>
+    public Result ReplaceSchedules(IReadOnlyList<ShopSchedule> schedules)
+    {
+        if (schedules is null)
+            return Result.Fail("Schedule is required.");
+
+        var days = schedules.Select(s => s.DayOfWeek).ToList();
+        if (days.Distinct().Count() != days.Count)
+            return Result.Fail("Schedule contains duplicate days of week.");
+
+        _schedules.Clear();
+        _schedules.AddRange(schedules);
+        return Result.Ok();
     }
 
     /// <summary>
