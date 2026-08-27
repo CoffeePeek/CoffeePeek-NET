@@ -52,11 +52,11 @@ cat <<EOF
 
 Deploy finished.
 
-API (no HTTPS): http://$(hostname -I | awk '{print $1}'):${GATEWAY_PORT:-8080}
-Health:         http://localhost:${GATEWAY_PORT:-8080}/health
-Scalar docs:    http://localhost:${GATEWAY_PORT:-8080}/scalar
+API (HTTPS):    https://${DOMAIN:-api.example.com}
+Health (local): http://127.0.0.1:${GATEWAY_PORT:-8080}/health
+Scalar (local): http://127.0.0.1:${GATEWAY_PORT:-8080}/scalar
 
-HTTPS: set USE_HTTPS=1 DOMAIN and ACME_EMAIL in .env, then re-run deploy.sh
+Gateway is bound to loopback only. Public traffic goes through Caddy on :443.
 
 Logs: docker compose -f ${DEPLOY_DIR}/docker-compose.yml logs -f gateway
 
