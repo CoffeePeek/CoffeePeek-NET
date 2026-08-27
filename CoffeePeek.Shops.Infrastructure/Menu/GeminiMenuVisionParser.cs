@@ -67,6 +67,13 @@ public sealed class GeminiMenuVisionParser(
 
         try
         {
+            logger.LogInformation(
+                "Gemini menu parse POST {BaseUrl} model {Model} photos={PhotoCount} proxy={HasProxy}",
+                settings.BaseUrl.TrimEnd('/'),
+                settings.Model,
+                photos.Count,
+                !string.IsNullOrWhiteSpace(settings.ProxyUrl));
+
             using var client = httpClientFactory.CreateClient("gemini");
             using var response = await client.PostAsJsonAsync(url, payload, ct);
             if (!response.IsSuccessStatusCode)
@@ -127,7 +134,7 @@ public sealed class GeminiMenuVisionParser(
     {
         if (body.Contains("User location is not supported", StringComparison.OrdinalIgnoreCase))
         {
-            return "Gemini is blocked for this server IP. Set GeminiOptions:ProxyUrl to an HTTP or SOCKS proxy whose egress is in a supported region.";
+            return "Gemini is blocked for this server IP. Point GeminiOptions:BaseUrl at a Cloudflare Worker (or similar) in a supported region, or set GeminiOptions:ProxyUrl to an HTTP/SOCKS proxy whose egress is allowed.";
         }
 
         return $"Gemini HTTP {statusCode}: {Trim(body)}";

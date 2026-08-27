@@ -187,6 +187,7 @@ services:
       PostgresCpOptions__ConnectionString: Host=postgres;Port=5432;Database=cpshopsdb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};SslMode=Disable;GSS Encryption Mode=Disable
       GeminiOptions__ApiKey: ${GEMINI_API_KEY:-}
       GeminiOptions__Model: ${GEMINI_MODEL:-gemini-3.6-flash}
+      GeminiOptions__BaseUrl: ${GEMINI_BASE_URL:-https://generativelanguage.googleapis.com/v1beta}
       GeminiOptions__ProxyUrl: ${GEMINI_PROXY_URL:-}
       Sentry__Dsn: ${SENTRY_DSN_SHOPS:-}
     mem_limit: 1024m
