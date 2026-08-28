@@ -53,7 +53,7 @@ public class UpdateAdminCoffeeShopHandlerTests
         var cityId = Guid.NewGuid();
         var equipment = new Equipment("La Marzocco", "Linea", new EquipmentCategory());
 
-        _shops.Setup(r => r.GetByIdAsync(shop.Id, _ct)).ReturnsAsync(shop);
+        _shops.Setup(r => r.GetByIdWithCatalogsAsync(shop.Id, _ct)).ReturnsAsync(shop);
         _cities.Setup(r => r.Exists(cityId, _ct)).ReturnsAsync(true);
         _equipment.Setup(r => r.GetByIds(It.IsAny<List<Guid>>(), _ct)).ReturnsAsync([equipment]);
 
@@ -93,7 +93,7 @@ public class UpdateAdminCoffeeShopHandlerTests
     {
         var shop = new DomainCoffeeShop(Guid.NewGuid(), "Shop", null, DomainPriceRange.Cheap, Guid.NewGuid());
         var cityId = Guid.NewGuid();
-        _shops.Setup(r => r.GetByIdAsync(shop.Id, _ct)).ReturnsAsync(shop);
+        _shops.Setup(r => r.GetByIdWithCatalogsAsync(shop.Id, _ct)).ReturnsAsync(shop);
         _cities.Setup(r => r.Exists(cityId, _ct)).ReturnsAsync(false);
 
         var result = await UpdateAdminCoffeeShopHandler.Handle(
@@ -113,7 +113,7 @@ public class UpdateAdminCoffeeShopHandlerTests
     public async Task Handle_UnknownEquipment_ReturnsBadRequest()
     {
         var shop = new DomainCoffeeShop(Guid.NewGuid(), "Shop", null, DomainPriceRange.Cheap, Guid.NewGuid());
-        _shops.Setup(r => r.GetByIdAsync(shop.Id, _ct)).ReturnsAsync(shop);
+        _shops.Setup(r => r.GetByIdWithCatalogsAsync(shop.Id, _ct)).ReturnsAsync(shop);
         _equipment.Setup(r => r.GetByIds(It.IsAny<List<Guid>>(), _ct)).ReturnsAsync([]);
 
         var result = await UpdateAdminCoffeeShopHandler.Handle(
