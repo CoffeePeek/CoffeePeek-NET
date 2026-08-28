@@ -40,7 +40,7 @@ public static class GetOwnerCoffeeShopByIdHandler
         IOptions<MediaPublicUrlOptions> mediaOptions,
         CancellationToken ct)
     {
-        var shop = await repository.GetByIdForOwnerAsync(query.ShopId, query.OwnerUserId, ct);
+        var shop = await repository.GetByIdWithCatalogsForOwnerAsync(query.ShopId, query.OwnerUserId, ct);
         return shop is null
             ? Response<AdminPublishedShopDto>.Error(System.Net.HttpStatusCode.NotFound, "Shop not found.")
             : Response<AdminPublishedShopDto>.Success(AdminPublishedShopMapper.Map(shop, mediaOptions.Value));
@@ -75,7 +75,7 @@ public static class UpdateOwnerCoffeeShopHandler
         IOptions<MediaPublicUrlOptions> mediaOptions,
         CancellationToken ct)
     {
-        var shop = await repository.GetByIdForOwnerAsync(command.ShopId, command.OwnerUserId, ct);
+        var shop = await repository.GetByIdWithCatalogsForOwnerAsync(command.ShopId, command.OwnerUserId, ct);
         if (shop is null)
             return Response<AdminPublishedShopDto>.Error(System.Net.HttpStatusCode.NotFound, "Shop not found.");
 

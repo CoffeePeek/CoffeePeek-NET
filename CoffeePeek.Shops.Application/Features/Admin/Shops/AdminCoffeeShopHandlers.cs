@@ -181,7 +181,7 @@ public static class GetAdminCoffeeShopByIdHandler
         IOptions<MediaPublicUrlOptions> mediaOptions,
         CancellationToken ct)
     {
-        var shop = await repository.GetByIdAsync(query.ShopId, ct);
+        var shop = await repository.GetByIdWithCatalogsAsync(query.ShopId, ct);
         return shop is null
             ? Response<AdminPublishedShopDto>.Error(System.Net.HttpStatusCode.NotFound, "Shop not found.")
             : Response<AdminPublishedShopDto>.Success(AdminPublishedShopMapper.Map(shop, mediaOptions.Value));
@@ -214,7 +214,7 @@ public static class UpdateAdminCoffeeShopHandler
         IOptions<MediaPublicUrlOptions> mediaOptions,
         CancellationToken ct)
     {
-        var shop = await repository.GetByIdAsync(command.ShopId, ct);
+        var shop = await repository.GetByIdWithCatalogsAsync(command.ShopId, ct);
         if (shop is null)
             return Response<AdminPublishedShopDto>.Error(System.Net.HttpStatusCode.NotFound, "Shop not found.");
 

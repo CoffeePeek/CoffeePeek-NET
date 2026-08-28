@@ -6,6 +6,8 @@ public interface ICoffeeShopRepository
 {
     Task<CoffeeShop?> GetByIdAsync(Guid id, CancellationToken ct = default);
     Task<CoffeeShop?> GetByIdForOwnerAsync(Guid id, Guid ownerUserId, CancellationToken ct = default);
+    Task<CoffeeShop?> GetByIdWithCatalogsAsync(Guid id, CancellationToken ct = default);
+    Task<CoffeeShop?> GetByIdWithCatalogsForOwnerAsync(Guid id, Guid ownerUserId, CancellationToken ct = default);
 }
 
 public interface IAdminCoffeeShopQueryRepository
