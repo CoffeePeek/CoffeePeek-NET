@@ -1,6 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
-ENV ASPNETCORE_URLS=http://[::]:80
+# Listen on IPv4 and IPv6. IPv6-only ([::]:80) is unreachable from Docker IPv4 DNS.
+ENV ASPNETCORE_URLS=http://+:80
+ENV ASPNETCORE_HTTP_PORTS=80
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 EXPOSE 80
 
