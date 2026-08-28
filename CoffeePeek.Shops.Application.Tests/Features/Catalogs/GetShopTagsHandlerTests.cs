@@ -58,7 +58,7 @@ public class GetShopTagsHandlerTests
                 It.IsAny<Func<CancellationToken, Task<ShopTagDto[]>>>(),
                 It.IsAny<TimeSpan?>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((ShopTagDto[]?)null);
+            .ReturnsAsync((ShopTagDto[])null);
 
         var result = await GetShopTagsHandler.Handle(
             new GetShopTagsCommand(),
