@@ -12,6 +12,8 @@ x-logging: &default-logging
 x-dotnet-common: &dotnet-common
   ASPNETCORE_ENVIRONMENT: Production
   ASPNETCORE_URLS: http://+:80
+  # Override the aspnet image default (8080) so compose destinations on :80 match.
+  ASPNETCORE_HTTP_PORTS: "80"
   DOTNET_RUNNING_IN_CONTAINER: "true"
 
 x-rabbitmq-env: &rabbitmq-env
@@ -162,8 +164,8 @@ services:
       OAuthGoogleOptions__ClientSecret: ${GOOGLE_CLIENT_SECRET:-}
       ResendClientOptions__ApiToken: ${RESEND_API_TOKEN}
       WebClientUrl: ${WEB_CLIENT_URL}
-      AdminStatsOptions__ShopsServiceUrl: http://shops
-      AdminStatsOptions__ModerationServiceUrl: http://moderation
+      AdminStatsOptions__ShopsServiceUrl: http://shops:80
+      AdminStatsOptions__ModerationServiceUrl: http://moderation:80
       Sentry__Dsn: ${SENTRY_DSN_ACCOUNT:-}
     mem_limit: 1024m
     memswap_limit: 1024m
@@ -263,10 +265,10 @@ services:
       - "127.0.0.1:${GATEWAY_PORT:-8080}:80"
     environment:
       <<: [*dotnet-common, *jwt-env]
-      ReverseProxy__Clusters__account-cluster__Destinations__destination1__Address: http://account
-      ReverseProxy__Clusters__shops-cluster__Destinations__destination1__Address: http://shops
-      ReverseProxy__Clusters__moderation-cluster__Destinations__destination1__Address: http://moderation
-      ReverseProxy__Clusters__media-cluster__Destinations__destination1__Address: http://media
+      ReverseProxy__Clusters__account-cluster__Destinations__destination1__Address: http://account:80
+      ReverseProxy__Clusters__shops-cluster__Destinations__destination1__Address: http://shops:80
+      ReverseProxy__Clusters__moderation-cluster__Destinations__destination1__Address: http://moderation:80
+      ReverseProxy__Clusters__media-cluster__Destinations__destination1__Address: http://media:80
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
       Sentry__Dsn: ${SENTRY_DSN_GATEWAY:-}
     mem_limit: 1024m
