@@ -1,4 +1,5 @@
 using CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate;
+using CoffeePeek.Moderation.Domain.Common.Enums;
 using CoffeePeek.Moderation.Domain.Entities;
 using CoffeePeek.Shared.Kernel.Exceptions;
 using FluentAssertions;
@@ -72,6 +73,36 @@ public class ModerationReviewTests
         var act = () => CreateReview(ValidShopId, ValidModerationShopId, comment: "Short");
 
         act.Should().Throw<DomainException>().WithMessage("*comment*");
+    }
+
+    [Fact]
+    public void Approve_WhenPending_ReturnsTrueAndSetsApproved()
+    {
+        var review = CreateReview(ValidShopId, ValidModerationShopId);
+        var moderatorId = Guid.NewGuid();
+
+        var changed = review.Approve(moderatorId);
+
+        changed.Should().BeTrue();
+        review.ModerationStatus.Should().Be(ModerationStatus.Approved);
+        review.ModeratedBy.Should().Be(moderatorId);
+    }
+
+    [Fact]
+    public void Approve_WhenAlreadyApproved_ReturnsFalseWithoutThrowing()
+    {
+        var review = CreateReview(ValidShopId, ValidModerationShopId);
+        var moderatorId = Guid.NewGuid();
+        review.Approve(moderatorId);
+        var moderatedAtAfterFirstApprove = review.ModeratedAt;
+
+        var changed = false;
+        var act = () => changed = review.Approve(moderatorId);
+
+        act.Should().NotThrow();
+        changed.Should().BeFalse();
+        review.ModerationStatus.Should().Be(ModerationStatus.Approved);
+        review.ModeratedAt.Should().Be(moderatedAtAfterFirstApprove);
     }
 
     private static ModerationReview CreateReview(

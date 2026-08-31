@@ -34,17 +34,18 @@ public partial class ModerationReview
         return new Aggregates.ModerationReviewAggregate.ModerationReview(userId, shopId, moderationShopId, userName, header, comment, rating, photos);
     }
 
-    public void Approve(Guid moderatorId)
+    public bool Approve(Guid moderatorId)
     {
         if (moderatorId == Guid.Empty)
             throw new DomainException($"{nameof(moderatorId)} cannot be empty.");
 
         if (ModerationStatus == ModerationStatus.Approved)
-            throw new DomainException("Review is already approved.");
+            return false;
 
         ModeratedAt = DateTime.UtcNow;
         ModeratedBy = moderatorId;
         ModerationStatus = ModerationStatus.Approved;
+        return true;
     }
     
     public void Reject(string reason, Guid moderatorId)

@@ -35,18 +35,21 @@ public static class ChangeStatusModerationReviewHandler
         switch (command.ModerationStatus)
         {
             case ModerationStatus.Approved:
-                review.Approve(command.UserId);
-                var dto = mapper.Map<ModerationReviewDto>(review);
-                approvedEvent = new ModerationReviewApprovedEvent(dto);
-                await ModerationAuditWriter.WriteAsync(
-                    auditLogRepository,
-                    ModerationAuditEntityType.Review,
-                    review.Id,
-                    review.Header,
-                    ModerationAuditAction.Approved,
-                    command.UserId,
-                    null,
-                    ct);
+                // Re-approve is a no-op: skip event + audit so consumers stay idempotent.
+                if (review.Approve(command.UserId))
+                {
+                    var dto = mapper.Map<ModerationReviewDto>(review);
+                    approvedEvent = new ModerationReviewApprovedEvent(dto);
+                    await ModerationAuditWriter.WriteAsync(
+                        auditLogRepository,
+                        ModerationAuditEntityType.Review,
+                        review.Id,
+                        review.Header,
+                        ModerationAuditAction.Approved,
+                        command.UserId,
+                        null,
+                        ct);
+                }
                 break;
 
             case ModerationStatus.Rejected:
