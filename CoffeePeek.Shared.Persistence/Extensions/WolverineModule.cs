@@ -1,11 +1,12 @@
 using System.Reflection;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Extentions;
 using JasperFx.CodeGeneration;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
+using Wolverine.ErrorHandling;
 using Wolverine.Postgresql;
 using Wolverine.RabbitMQ;
 using Wolverine.Transports;
@@ -50,6 +51,10 @@ public static class WolverineModule
                 }
 
                 opts.Policies.AutoApplyTransactions();
+
+                opts.Policies
+                    .OnException<ConflictException>(ex => ex.InnerException is DbUpdateConcurrencyException)
+                    .RetryWithCooldown(TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(150), TimeSpan.FromMilliseconds(400));
             });
         }
     }
