@@ -795,11 +795,9 @@ namespace CoffeeShop.Moderation.Persistence.Migrations
                             b1.Navigation("Intervals");
                         });
 
-                    b.Navigation("Contact")
-                        .IsRequired();
+                    b.Navigation("Contact");
 
-                    b.Navigation("Location")
-                        .IsRequired();
+                    b.Navigation("Location");
 
                     b.Navigation("Menu");
 
