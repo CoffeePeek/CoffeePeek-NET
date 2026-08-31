@@ -48,7 +48,14 @@ public static class UpdateModerationCoffeeShopHandler
             var geo = await geocodingService.GeocodeAsync(moderationShopDto.Address, ct);
             if (geo != null)
             {
-                shop.Location!.SetLocation(geo.Latitude, geo.Longitude, moderationShopDto.Address);
+                if (shop.Location is null)
+                {
+                    shop.SetLocation(new ModerationLocation(moderationShopDto.Address, geo.Latitude, geo.Longitude));
+                }
+                else
+                {
+                    shop.Location.SetLocation(geo.Latitude, geo.Longitude, moderationShopDto.Address);
+                }
             }
             else
             {

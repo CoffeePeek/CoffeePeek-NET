@@ -18,8 +18,8 @@ public partial class ModerationShop : Entity<Guid>
     public Guid CityId { get; private set; }
     public Guid ShopId { get; private set; }
     
-    public ModerationShopContact Contact { get; private set; }
-    public ModerationLocation Location { get; private set; }
+    public ModerationShopContact? Contact { get; private set; }
+    public ModerationLocation? Location { get; private set; }
 
     private readonly List<PhotoMetadata> _shopPhotos = [];
     public IReadOnlyCollection<PhotoMetadata> ShopPhotos => _shopPhotos.AsReadOnly();
