@@ -182,6 +182,7 @@ public class CoffeeShopQueries(
 
         var state = await context.Shops
             .AsNoTracking()
+            .AsSplitQuery()
             .Where(s => s.Id == id)
             .Select(s => new { s.CreatedAtUtc, s.Schedules, s.CoffeeFocus })
             .FirstOrDefaultAsync(ct);
@@ -235,8 +236,11 @@ public class CoffeeShopQueries(
         var now = DateTime.UtcNow;
         var newCutoff = now.AddDays(-BusinessConstants.ItNewEntityInDays);
 
+        // Schedules and their owned Intervals are two nested collections — split to avoid the
+        // cartesian-product warning/cost of loading them via a single joined query.
         var states = await context.Shops
             .AsNoTracking()
+            .AsSplitQuery()
             .Where(s => ids.Contains(s.Id))
             .Select(s => new { s.Id, s.CreatedAtUtc, s.Schedules, s.CoffeeFocus })
             .ToListAsync(ct);
