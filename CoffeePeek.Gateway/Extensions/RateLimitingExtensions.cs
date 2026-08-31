@@ -9,6 +9,7 @@ public static class RateLimitingExtensions
     public const string GlobalPolicy = "global";
     public const string AuthEndpointsPolicy = "auth-endpoints";
     public const string MediaUploadPolicy = "media-upload";
+    public const string ModerationSubmissionPolicy = "moderation-submission";
 
     public static IServiceCollection AddGatewayRateLimiting(this IServiceCollection services)
     {
@@ -42,6 +43,17 @@ public static class RateLimitingExtensions
                 limiterOptions.Window = TimeSpan.FromMinutes(1);
                 limiterOptions.SegmentsPerWindow = 6;
                 limiterOptions.PermitLimit = 10;
+                limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                limiterOptions.QueueLimit = 0;
+            });
+
+            // Strict policy for moderation suggestion submissions (shop/review suggestions):
+            // 15 requests per minute per IP — abuse-prone endpoint open to any authenticated user
+            options.AddSlidingWindowLimiter(ModerationSubmissionPolicy, limiterOptions =>
+            {
+                limiterOptions.Window = TimeSpan.FromMinutes(1);
+                limiterOptions.SegmentsPerWindow = 6;
+                limiterOptions.PermitLimit = 15;
                 limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                 limiterOptions.QueueLimit = 0;
             });
