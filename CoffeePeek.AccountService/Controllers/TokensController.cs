@@ -94,7 +94,7 @@ public class TokensController(
         {
             var response = await bus.InvokeAsync<Response<RefreshTokenResponse>>(command);
 
-            if (response.IsSuccess && response.Data is not null)
+            if (response is { IsSuccess: true, Data: not null })
                 Response.Cookies.Append("refreshToken", response.Data.RefreshToken, CreateRefreshTokenCookieOptions());
 
             return Ok(response);
