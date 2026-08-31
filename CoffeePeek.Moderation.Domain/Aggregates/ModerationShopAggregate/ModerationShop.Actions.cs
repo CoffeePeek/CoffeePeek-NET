@@ -162,6 +162,13 @@ public sealed partial class ModerationShop
 
     public void Reject(string reason)
     {
+        if (string.IsNullOrWhiteSpace(reason))
+            throw new DomainException("Reject reason is required.");
+
+        if (reason.Length is < BusinessConstants.MinRejectReasonCommentLength or > BusinessConstants.MaxRejectReasonCommentLength)
+            throw new DomainException(
+                $"{nameof(reason)} must be between {BusinessConstants.MinRejectReasonCommentLength} and {BusinessConstants.MaxRejectReasonCommentLength} characters.");
+
         ModerationStatus = ModerationStatus.Rejected;
         RejectedReason = reason;
     }

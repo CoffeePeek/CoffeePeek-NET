@@ -87,4 +87,43 @@ public class ModerationShopApproveTests
 
         shop.CoffeeFocus.Should().Be(CoffeePeek.Moderation.Domain.Aggregates.Enums.CoffeeFocus.CoffeeBar);
     }
+
+    [Fact]
+    public void Reject_WithValidReason_SetsRejectedStatusAndReason()
+    {
+        var shop = CreatePendingShop();
+
+        shop.Reject("Duplicate submission");
+
+        shop.ModerationStatus.Should().Be(ModerationStatus.Rejected);
+        shop.RejectedReason.Should().Be("Duplicate submission");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Reject_WithNullOrWhitespaceReason_ThrowsDomainException(string? reason)
+    {
+        var shop = CreatePendingShop();
+
+        var act = () => shop.Reject(reason!);
+
+        act.Should().Throw<DomainException>()
+            .WithMessage("Reject reason is required.");
+        shop.ModerationStatus.Should().Be(ModerationStatus.Pending);
+    }
+
+    [Fact]
+    public void Reject_WithReasonExceedingMaxLength_ThrowsDomainException()
+    {
+        var shop = CreatePendingShop();
+        var tooLongReason = new string('a', BusinessConstants.MaxRejectReasonCommentLength + 1);
+
+        var act = () => shop.Reject(tooLongReason);
+
+        act.Should().Throw<DomainException>()
+            .WithMessage($"reason must be between {BusinessConstants.MinRejectReasonCommentLength} and {BusinessConstants.MaxRejectReasonCommentLength} characters.");
+        shop.ModerationStatus.Should().Be(ModerationStatus.Pending);
+    }
 }
