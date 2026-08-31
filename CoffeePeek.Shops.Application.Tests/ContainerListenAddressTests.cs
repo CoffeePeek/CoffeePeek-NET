@@ -27,13 +27,13 @@ public class ContainerListenAddressTests
     }
 
     [Fact]
-    public void GatewayAppSettings_DoesNotEscalateTransientHealthProbeFailuresToError()
+    public void SharedSerilogConfig_DoesNotEscalateTransientHealthProbeFailuresToError()
     {
-        // Active health check failures are expected and self-healing on every backend restart.
-        // Logging them at Warning turned every deploy into an "unresolved" Sentry issue.
-        var appSettings = File.ReadAllText(Path.Combine(FindRepoRoot(), "CoffeePeek.Gateway", "appsettings.json"));
+        var serilogSetup = File.ReadAllText(Path.Combine(
+            FindRepoRoot(), "CoffeePeek.Shared.Web", "Logging", "SerilogExtensions.cs"));
 
-        appSettings.Should().Contain("\"Yarp.ReverseProxy.Health\": \"Error\"");
+        serilogSetup.Should().Contain("\"Yarp.ReverseProxy.Health\", LogEventLevel.Error");
+        serilogSetup.Should().NotContain("\"Yarp.ReverseProxy.Health\", LogEventLevel.Warning");
     }
 
     private static string FindRepoRoot()
