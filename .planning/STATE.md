@@ -7,6 +7,7 @@
 | 260801-erp | remove-community-social-layer-feed-posts | complete | 2026-08-01 |
 | 260815-fast | widen-import-candidate-phone | complete | 2026-08-15 |
 | 260815-fast | admin-overview-always-returns | complete | 2026-08-15 |
+| 260831-krk | add-full-crud-create-update-delete-for-c | complete | 2026-08-31 |
 
 ## Milestone Progress
 
