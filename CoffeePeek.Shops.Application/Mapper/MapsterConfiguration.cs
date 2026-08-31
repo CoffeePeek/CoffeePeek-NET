@@ -4,6 +4,7 @@ using CoffeePeek.Contract.Dtos.Shop;
 using CoffeePeek.Contract.Enums;
 using CoffeePeek.Shared.Kernel;
 using CoffeePeek.Shared.Kernel.Options;
+using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Entities;
 using Mapster;
@@ -81,6 +82,9 @@ public static class MapsterConfiguration
         config.NewConfig<Equipment, EquipmentDto>()
             .Map(dest => dest.Model, src => src.ModelName)
             .Map(dest => dest.Category, src => (EquipmentCategoryEnum)src.CategoryId);
+
+        config.NewConfig<BrewMethod, BrewMethodDto>()
+            .Map(dest => dest.Category, src => (BrewMethodCategoryEnum)(int)src.Category);
 
         return config;
     }
