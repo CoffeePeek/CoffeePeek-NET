@@ -23,7 +23,7 @@ builder.AddServiceDefaults();
 builder.Services.AddServiceDiscovery();
 builder.AddSerilogLogging();
 builder.ConfigureEnvironment();
-builder.WebHost.UseCoffeePeekSentry();
+builder.WebHost.UseCoffeePeekSentry(options => options.SetBeforeSend(SentryExtensions.FilterExpectedProxyDisconnects));
 
 // ── API Documentation ─────────────────────────────────────────────────────────
 builder.Services.AddGatewayOpenApi();
