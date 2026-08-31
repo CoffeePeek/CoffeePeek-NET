@@ -1,10 +1,9 @@
 ﻿using CoffeePeek.Moderation.Domain;
-using CoffeePeek.Moderation.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ModerationShop = CoffeePeek.Moderation.Domain.Aggregates.ModerationShop;
 
-namespace CoffeePeek.Moderation.Infrastructure.Configuration;
+namespace CoffeeShop.Moderation.Persistence.Configuration;
 
 public class ModerationShopConfiguration : IEntityTypeConfiguration<ModerationShop>
 {

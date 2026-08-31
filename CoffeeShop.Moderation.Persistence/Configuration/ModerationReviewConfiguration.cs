@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ModerationReview = CoffeePeek.Moderation.Domain.Aggregates.ModerationReviewAggregate.ModerationReview;
 
-namespace CoffeePeek.Moderation.Infrastructure.Configuration;
+namespace CoffeeShop.Moderation.Persistence.Configuration;
 
 public class ModerationReviewConfiguration : IEntityTypeConfiguration<ModerationReview>
 {

@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace CoffeePeek.Moderation.Infrastructure.Migrations
+namespace CoffeeShop.Moderation.Persistence.Migrations
 {
     [DbContext(typeof(ModerationDbContext))]
     partial class ModerationDbContextModelSnapshot : ModelSnapshot
