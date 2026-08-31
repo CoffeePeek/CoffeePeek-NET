@@ -76,7 +76,7 @@ public class ModerationShopsController(IMessageBus bus, IUserContext userContext
     [HttpPut]
     [Authorize(Policy = RoleConsts.Moderator)]
     public async Task<IActionResult> UpdateModerationCoffeeShop(
-        [FromForm] ModerationShopDto dto, CancellationToken ct)
+        [FromBody] ModerationShopDto dto, CancellationToken ct)
     {
         var userId = userContext.GetUserIdOrThrow();
         var isPrivilegedModerator = userContext.HasAnyRole(RoleConsts.Moderator, RoleConsts.Admin);
