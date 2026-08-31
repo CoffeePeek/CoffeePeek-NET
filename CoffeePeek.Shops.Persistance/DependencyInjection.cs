@@ -65,6 +65,11 @@ public static class DependencyInjection
         services.AddScoped<IQueryRoasterRepository, QueryRoasterRepository>();
         services.AddScoped<IQueryCoffeeBeanRepository, QueryCoffeeBeanRepository>();
         services.AddScoped<IQueryBrewMethodRepository, QueryBrewMethodRepository>();
+        services.AddScoped<ICityRepository, CityRepository>();
+        services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+        services.AddScoped<IRoasterRepository, RoasterRepository>();
+        services.AddScoped<ICoffeeBeanRepository, CoffeeBeanRepository>();
+        services.AddScoped<IBrewMethodRepository, BrewMethodRepository>();
         services.AddScoped<IAdminStatsQueryRepository, AdminStatsQueryRepository>();
         services.AddScoped<IPublicStatsQueryRepository, PublicStatsQueryRepository>();
         services.AddScoped<IShopTagRepository, ShopTagRepository>();

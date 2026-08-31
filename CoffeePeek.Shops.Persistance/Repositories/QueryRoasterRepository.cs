@@ -20,3 +20,16 @@ public class QueryRoasterRepository(ShopsDbContext dbContext) : IQueryRoasterRep
             .ToListAsync(ct);
     }
 }
+
+public class RoasterRepository(ShopsDbContext dbContext) : IRoasterRepository
+{
+    public Task<Roaster?> GetByIdAsync(Guid id, CancellationToken ct = default) =>
+        dbContext.Roasters.FirstOrDefaultAsync(r => r.Id == id, ct);
+
+    public Task<Roaster?> GetByNameAsync(string name, CancellationToken ct = default) =>
+        dbContext.Roasters.FirstOrDefaultAsync(r => EF.Functions.ILike(r.Name, name), ct);
+
+    public void Add(Roaster roaster) => dbContext.Roasters.Add(roaster);
+
+    public void Remove(Roaster roaster) => dbContext.Roasters.Remove(roaster);
+}
