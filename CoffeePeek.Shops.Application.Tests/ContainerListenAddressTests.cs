@@ -26,6 +26,16 @@ public class ContainerListenAddressTests
         compose.Should().Contain("http://shops:80");
     }
 
+    [Fact]
+    public void GatewayAppSettings_DoesNotEscalateTransientHealthProbeFailuresToError()
+    {
+        // Active health check failures are expected and self-healing on every backend restart.
+        // Logging them at Warning turned every deploy into an "unresolved" Sentry issue.
+        var appSettings = File.ReadAllText(Path.Combine(FindRepoRoot(), "CoffeePeek.Gateway", "appsettings.json"));
+
+        appSettings.Should().Contain("\"Yarp.ReverseProxy.Health\": \"Error\"");
+    }
+
     private static string FindRepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
