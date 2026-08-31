@@ -17,12 +17,11 @@ public static class DependencyInjection
             client.Timeout = TimeSpan.FromSeconds(yandexOptions.TimeoutSeconds);
         });
 
-        services.AddOptions<GooglePlaces>().BindConfiguration(nameof(GooglePlaces));
-        services.AddHttpClient<IGooglePlacesLookup, GooglePlacesLookup>((sp, client) =>
+        var googlePlacesOptions = services.AddValidateOptions<GooglePlaces>();
+        services.AddHttpClient<IGooglePlacesLookup, GooglePlacesLookup>(client =>
         {
-            var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<GooglePlaces>>().Value;
-            client.BaseAddress = new Uri(options.BaseUrl);
-            client.Timeout = TimeSpan.FromSeconds(Math.Clamp(options.TimeoutSeconds, 5, 60));
+            client.BaseAddress = new Uri(googlePlacesOptions.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(Math.Clamp(googlePlacesOptions.TimeoutSeconds, 5, 60));
         });
 
         // Aspire AddStandardResilienceHandler() defaults to 30s total timeout and overrides HttpClient.Timeout.
