@@ -166,17 +166,6 @@ public sealed partial class ModerationShop
         RejectedReason = reason;
     }
 
-    public void SetShopId(Guid shopId)
-    {
-        if (shopId == Guid.Empty)
-            throw new DomainException($"{nameof(shopId)} cannot be empty.");
-
-        if (ShopId == shopId)
-            return;
-
-        ShopId = shopId;
-    }
-    
     private static void UpdateCollection<TJoinEntity>(
         List<TJoinEntity> currentCollection,
         IEnumerable<Guid>? newIds,
