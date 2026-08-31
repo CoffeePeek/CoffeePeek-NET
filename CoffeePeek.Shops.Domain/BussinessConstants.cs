@@ -50,6 +50,15 @@ public static class BusinessConstants
 
     #endregion
 
+    #region Catalogs
+
+    public const int MaxCityNameLength = 50;
+    public const int MaxCoffeeBeanNameLength = 100;
+    public const int MaxRoasterNameLength = 100;
+    public const int MaxBrewMethodNameLength = 100;
+
+    #endregion
+
     #region Visits
 
     public const int MaxVisitNoteLength = 500;
