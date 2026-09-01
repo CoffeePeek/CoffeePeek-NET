@@ -1,12 +1,14 @@
 using CoffeePeek.Contract.Dtos.Menu;
 using CoffeePeek.Contract.Events.Menu;
 using CoffeePeek.Shared.Kernel;
+using CoffeePeek.Shared.Kernel.Exceptions;
 using CoffeePeek.Shared.Kernel.Options;
 using CoffeePeek.Shops.Application.Abstractions;
 using CoffeePeek.Shops.Application.Features.Menu.ParseMenuPhotos;
 using CoffeePeek.Shops.Application.Services;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.MenuAggregate;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -23,6 +25,8 @@ public class ParseMenuRequestedEventHandler(
     IOptions<MenuPriceRangeOptions> priceOptions,
     ILogger<ParseMenuRequestedEventHandler> logger)
 {
+    private const int MaxApplyAndSaveAttempts = 3;
+
     public async Task<MenuParsedEvent> Handle(ParseMenuRequestedEvent message, CancellationToken ct)
     {
         logger.LogInformation(
@@ -58,25 +62,45 @@ public class ParseMenuRequestedEventHandler(
 
             if (shopId.HasValue)
             {
-                if (data.Success)
-                {
-                    await applyMenu.ApplyParseResultAsync(
-                        shopId.Value,
-                        data.Items,
-                        data.Unmatched,
-                        data.SuggestedPriceRange,
-                        message.Photos.Select(p => new ShopMenuPhotoSnapshot(
-                            p.FileName, p.ContentType, p.StorageKey, p.SizeBytes, p.MediaPhotoId)).ToArray(),
-                        capturedAt,
-                        message.RequestedByUserId,
-                        ct);
-                }
-                else
-                {
-                    await applyMenu.MarkParseFailedAsync(shopId.Value, data.Error ?? "Parse failed.", ct);
-                }
+                var photoSnapshots = message.Photos.Select(p => new ShopMenuPhotoSnapshot(
+                    p.FileName, p.ContentType, p.StorageKey, p.SizeBytes, p.MediaPhotoId)).ToArray();
 
-                await unitOfWork.SaveChangesAsync(ct);
+                for (var attempt = 1; attempt <= MaxApplyAndSaveAttempts; attempt++)
+                {
+                    try
+                    {
+                        if (data.Success)
+                        {
+                            await applyMenu.ApplyParseResultAsync(
+                                shopId.Value,
+                                data.Items,
+                                data.Unmatched,
+                                data.SuggestedPriceRange,
+                                photoSnapshots,
+                                capturedAt,
+                                message.RequestedByUserId,
+                                ct);
+                        }
+                        else
+                        {
+                            await applyMenu.MarkParseFailedAsync(shopId.Value, data.Error ?? "Parse failed.", ct);
+                        }
+
+                        await unitOfWork.SaveChangesAsync(ct);
+                        break;
+                    }
+                    catch (ConflictException ex) when (ex.InnerException is DbUpdateConcurrencyException &&
+                                                        attempt < MaxApplyAndSaveAttempts)
+                    {
+                        logger.LogWarning(
+                            ex,
+                            "Concurrency conflict applying menu parse result for shop {ShopId}, attempt {Attempt}/{MaxAttempts}",
+                            shopId,
+                            attempt,
+                            MaxApplyAndSaveAttempts);
+                        unitOfWork.ClearTracking();
+                    }
+                }
             }
 
             if (data.Success)
