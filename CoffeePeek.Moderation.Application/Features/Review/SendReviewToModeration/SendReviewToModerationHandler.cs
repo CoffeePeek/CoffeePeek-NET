@@ -47,7 +47,7 @@ public static class SendReviewToModerationHandler
             command.UserName,
             command.Header,
             command.Comment,
-            command.Rating.Place, command.Rating.Service, command.Rating.Coffee,
+            command.EffectiveRating.Place, command.EffectiveRating.Service, command.EffectiveRating.Coffee,
             photos);
 
         repository.Add(review);
