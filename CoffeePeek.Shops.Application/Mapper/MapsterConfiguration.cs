@@ -74,7 +74,8 @@ public static class MapsterConfiguration
 
         config.NewConfig<CheckIn, CheckInDto>()
             // ShopName is set manually in handlers via repository
-            .Ignore(dest => dest.ShopName);
+            .Ignore(dest => dest.ShopName)
+            .Map(dest => dest.CreatedAt, src => src.CreatedAtUtc);
 
         config.NewConfig<EquipmentCategory, EquipmentCategoryEnum>()
             .MapWith(category => (EquipmentCategoryEnum)category.Id);
