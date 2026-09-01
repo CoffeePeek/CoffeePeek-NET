@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CoffeePeek.Contract.Dtos;
@@ -59,7 +61,41 @@ public class CreateCheckInHandlerTests
 
         result.IsSuccess.Should().BeTrue();
         _busMock.Verify(b => b.PublishAsync(It.IsAny<object>()), Times.Never);
+        _checkInRepoMock.Verify(r => r.Add(It.IsAny<DomainCheckIn>()), Times.Once);
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(_ct), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WithPhotos_AttachesPhotosRegardlessOfVisibility()
+    {
+        var photos = new List<UploadedPhotoDto>
+        {
+            new("first.jpg", "image/jpeg", "checkins/first.jpg", 1024),
+            new("second.jpg", "image/jpeg", "checkins/second.jpg", 2048)
+        };
+        var command = BuildCommand(isPublic: false) with { Photos = photos };
+        _validationMock.Setup(v => v.ValidateAsync(command, _ct))
+            .ReturnsAsync(ValidationResult.Valid);
+
+        DomainCheckIn? saved = null;
+        _checkInRepoMock.Setup(r => r.Add(It.IsAny<DomainCheckIn>()))
+            .Callback<DomainCheckIn>(c => saved = c);
+
+        var result = await CreateCheckInHandler.Handle(
+            command,
+            _checkInRepoMock.Object,
+            _unitOfWorkMock.Object,
+            _busMock.Object,
+            _validationMock.Object,
+            _mapperMock.Object,
+            _cacheMock.Object,
+            _ct);
+
+        result.IsSuccess.Should().BeTrue();
+        saved.Should().NotBeNull();
+        saved!.ShopPhotos.Should().HaveCount(2);
+        saved.ShopPhotos.Select(p => p.StorageKey).Should()
+            .BeEquivalentTo("checkins/first.jpg", "checkins/second.jpg");
     }
 
     [Fact]
