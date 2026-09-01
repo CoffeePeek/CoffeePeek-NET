@@ -8,6 +8,7 @@
 | 260815-fast | widen-import-candidate-phone | complete | 2026-08-15 |
 | 260815-fast | admin-overview-always-returns | complete | 2026-08-15 |
 | 260831-krk | add-full-crud-create-update-delete-for-c | complete | 2026-08-31 |
+| 260901-e0n | fix-400-validation-failed-on-post-api-mo | complete | 2026-09-01 |
 
 ## Milestone Progress
 
