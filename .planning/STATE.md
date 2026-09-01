@@ -11,6 +11,7 @@
 | 260901-e0n | fix-400-validation-failed-on-post-api-mo | complete | 2026-09-01 |
 | 260901-el2 | fix-checkins-createdat-returning-default | complete | 2026-09-01 |
 | 260901-faa | fix-checkin-photos-on-create-persist-pri | complete | 2026-09-01 |
+| 260901-m4f | fix-sentry-cp-shops-service-34-conflicte | complete | 2026-09-01 |
 
 ## Milestone Progress
 
