@@ -44,6 +44,17 @@ public static class WolverineModule
                     .UseConventionalRouting(NamingSource.FromHandlerType);
 
                 opts.PersistMessagesWithPostgresql(postgresCpOptions.ConnectionString);
+
+                // Every CoffeePeek service is deployed as a single instance (no replicas in
+                // deploy/docker-compose.yml or CoffePeek.AppHost). Wolverine's default
+                // DurabilityMode.Balanced runs leader election and cross-node agent
+                // coordination (AssignAgent/StartAgent) that assumes a multi-node cluster;
+                // with only one node that handshake occasionally exceeds its ack timeout on
+                // restart and throws a handled TimeoutException for no functional benefit.
+                // Solo mode disables that cross-node coordination while still recovering the
+                // transactional inbox/outbox on startup.
+                opts.Durability.Mode = DurabilityMode.Solo;
+
                 opts.UseEntityFrameworkCoreTransactions();
                 foreach (var assembly in handlerAssembly)
                 {
