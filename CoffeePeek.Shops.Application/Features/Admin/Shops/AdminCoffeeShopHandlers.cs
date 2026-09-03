@@ -87,7 +87,7 @@ public static class AdminPublishedShopMapper
         shop.Name,
         shop.Location?.CityId ?? Guid.Empty,
         shop.Status,
-        shop.CoffeeFocus is null ? null : (CoffeeShopType)(int)shop.CoffeeFocus.Value,
+        shop.Type is null ? null : (CoffeeShopType)(int)shop.Type.Value,
         shop.CreatorId,
         shop.OwnerUserId,
         shop.ModerationId,
@@ -305,7 +305,7 @@ public static class SetAdminCoffeeShopFocusHandler
         if (shop is null)
             return Response<AdminPublishedShopDto>.Error(System.Net.HttpStatusCode.NotFound, "Shop not found.");
 
-        shop.SetCoffeeFocus((Domain.Aggregates.CoffeeShopAggregate.CoffeeFocus)(int)command.Type);
+        shop.SetCoffeeFocus((Domain.Aggregates.CoffeeShopAggregate.CoffeeFocusType)(int)command.Type);
 
         var tagIds = shop.ShopTags.Select(t => t.TagId).ToList();
         if (command.Type == CoffeeShopType.Specialty)

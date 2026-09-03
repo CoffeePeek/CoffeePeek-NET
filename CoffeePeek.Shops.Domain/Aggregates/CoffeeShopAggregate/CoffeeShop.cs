@@ -11,7 +11,7 @@ public sealed class CoffeeShop : Entity<Guid>
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
     public PriceRange PriceRange { get; private set; }
-    public CoffeeFocus? CoffeeFocus { get; private set; }
+    public CoffeeFocusType? Type { get; private set; }
     public CoffeeShopStatus Status { get; private set; } = CoffeeShopStatus.Active;
 
     public Guid CreatorId { get; private set; }
@@ -106,9 +106,9 @@ public sealed class CoffeeShop : Entity<Guid>
         Status = status;
     }
 
-    public void SetCoffeeFocus(CoffeeFocus? focus)
+    public void SetCoffeeFocus(CoffeeFocusType? focus)
     {
-        CoffeeFocus = focus;
+        Type = focus;
     }
 
     public void MarkImportedFromFile(DateTime utcNow)

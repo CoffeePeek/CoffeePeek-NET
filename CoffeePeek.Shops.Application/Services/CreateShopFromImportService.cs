@@ -49,7 +49,7 @@ public class CreateShopFromImportService(
 
         shop.SetLocation(cityId, item.Address, item.Latitude, item.Longitude);
         shop.SetContact(item.Instagram, email: null, item.Website, FirstPhone(item.Phone));
-        shop.SetCoffeeFocus((CoffeeFocus)(int)item.Type);
+        shop.SetCoffeeFocus((CoffeeFocusType)(int)item.Type);
 
         if (item.TemporarilyClosed)
             shop.SetStatus(CoffeeShopStatus.TemporarilyClosed);

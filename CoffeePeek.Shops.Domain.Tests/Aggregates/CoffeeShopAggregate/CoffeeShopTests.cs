@@ -268,9 +268,9 @@ public class CoffeeShopTests
     {
         var shop = new CoffeeShop(Guid.NewGuid(), "Test Shop", null, PriceRange.Moderate, Guid.NewGuid());
 
-        shop.SetCoffeeFocus(CoffeeFocus.Specialty);
+        shop.SetCoffeeFocus(CoffeeFocusType.Specialty);
 
-        shop.CoffeeFocus.Should().Be(CoffeeFocus.Specialty);
+        shop.Type.Should().Be(CoffeeFocusType.Specialty);
     }
 
     [Fact]

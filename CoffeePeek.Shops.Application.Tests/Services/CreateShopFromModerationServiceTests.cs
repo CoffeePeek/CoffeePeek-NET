@@ -127,7 +127,7 @@ public class CreateShopFromModerationServiceTests
 
         result.Should().NotBe(Guid.Empty);
         added.Should().NotBeNull();
-        added!.CoffeeFocus.Should().Be(CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeFocus.Specialty);
+        added!.Type.Should().Be(CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeFocusType.Specialty);
         added.ShopTags.Should().ContainSingle(t =>
             t.TagId == CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate.ShopTagIds.Specialty);
     }

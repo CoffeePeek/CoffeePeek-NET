@@ -70,8 +70,8 @@ public class CoffeeShopQueries(
 
         if (request.Type.HasValue)
         {
-            var typeValue = (CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeFocus)(int)request.Type.Value;
-            query = query.Where(s => s.CoffeeFocus == typeValue);
+            var typeValue = (CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate.CoffeeFocusType)(int)request.Type.Value;
+            query = query.Where(s => s.Type == typeValue);
         }
         
         if (request.MinRating.HasValue)
@@ -184,7 +184,7 @@ public class CoffeeShopQueries(
             .AsNoTracking()
             .AsSplitQuery()
             .Where(s => s.Id == id)
-            .Select(s => new { s.CreatedAtUtc, s.Schedules, s.CoffeeFocus })
+            .Select(s => new { s.CreatedAtUtc, s.Schedules, CoffeeFocus = s.Type })
             .FirstOrDefaultAsync(ct);
 
         var now = DateTime.UtcNow;
@@ -221,7 +221,7 @@ public class CoffeeShopQueries(
                 Latitude = s.Location!.Latitude!.Value,
                 Longitude = s.Location!.Longitude!.Value,
                 Title = s.Name,
-                Type = (CoffeeShopType?)(int?)s.CoffeeFocus
+                Type = (CoffeeShopType?)(int?)s.Type
             })
             .Take(500)
             .ToArrayAsync(ct);
@@ -242,7 +242,7 @@ public class CoffeeShopQueries(
             .AsNoTracking()
             .AsSplitQuery()
             .Where(s => ids.Contains(s.Id))
-            .Select(s => new { s.Id, s.CreatedAtUtc, s.Schedules, s.CoffeeFocus })
+            .Select(s => new { s.Id, s.CreatedAtUtc, s.Schedules, CoffeeFocus = s.Type })
             .ToListAsync(ct);
 
         var byId = states.ToDictionary(s => s.Id);

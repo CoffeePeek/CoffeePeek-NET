@@ -1,6 +1,6 @@
 namespace CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
 
-public enum CoffeeFocus
+public enum CoffeeFocusType
 {
     Specialty = 1,
     CoffeeBar = 2,

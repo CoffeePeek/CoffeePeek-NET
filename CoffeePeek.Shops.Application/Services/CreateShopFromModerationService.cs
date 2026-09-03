@@ -45,7 +45,7 @@ public class CreateShopFromModerationService(
 
         if (shopDto.Type.HasValue)
         {
-            shop.SetCoffeeFocus((CoffeeFocus)(int)shopDto.Type.Value);
+            shop.SetCoffeeFocus((CoffeeFocusType)(int)shopDto.Type.Value);
             if (shopDto.Type.Value == CoffeePeek.Contract.Enums.CoffeeShopType.Specialty)
                 shop.SetTags([ShopTagIds.Specialty], creatorId);
         }
