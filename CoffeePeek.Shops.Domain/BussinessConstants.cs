@@ -52,6 +52,15 @@ public static class BusinessConstants
 
     #endregion
 
+    #region CoffeeZone
+
+    public const int MaxCoffeeZoneNameLength = 100;
+    public const int MaxCoffeeZoneDescriptionLength = 500;
+    public const int MinCoffeeZoneRadiusMeters = 100;
+    public const int MaxCoffeeZoneRadiusMeters = 2000;
+
+    #endregion
+
     #region Catalogs
 
     public const int MaxCityNameLength = 50;

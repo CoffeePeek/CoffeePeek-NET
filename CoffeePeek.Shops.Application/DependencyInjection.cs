@@ -1,6 +1,7 @@
 using CoffeePeek.Shops.Application.Extensions;
 using CoffeePeek.Shops.Application.Mapper;
 using CoffeePeek.Shops.Application.Services;
+using CoffeePeek.Shops.Application.Features.CoffeeShop.GetShopsInBounds;
 using CoffeePeek.Shared.Kernel.Options;
 using Mapster;
 using MapsterMapper;
@@ -23,6 +24,13 @@ public static class DependencyInjection
 
         services.AddOptions<MenuPriceRangeOptions>()
             .BindConfiguration(nameof(MenuPriceRangeOptions));
+
+        services.AddOptions<MapClusteringOptions>()
+            .BindConfiguration(MapClusteringOptions.SectionName)
+            .Validate(o => o.ClusterMaxZoom >= 0 && o.ZoneMaxZoom > o.ClusterMaxZoom && o.ZoneMaxZoom <= 22)
+            .Validate(o => o.ClusterCellPixels is >= 20 and <= 256)
+            .Validate(o => o.MaxResponseItems is >= 1 and <= 5000)
+            .ValidateOnStart();
 
         services.AddSingleton<TypeAdapterConfig>(sp =>
             MapsterConfiguration.CreateConfig(sp.GetRequiredService<IOptions<MediaPublicUrlOptions>>().Value));

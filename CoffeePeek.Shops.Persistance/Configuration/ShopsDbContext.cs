@@ -2,6 +2,7 @@ using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shops.Domain.Aggregates.BrewMethods;
 using CoffeePeek.Shops.Domain.Aggregates.AppDistributionAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.CoffeeShopAggregate;
+using CoffeePeek.Shops.Domain.Aggregates.CoffeeZoneAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.MenuAggregate;
 using CoffeePeek.Shops.Domain.Aggregates.ShopTagAggregate;
 using CoffeePeek.Shops.Domain.Entities;
@@ -30,6 +31,8 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     public virtual DbSet<RoasterPhoto> RoasterPhotos { get; set; }
     
     public virtual DbSet<City> Cities { get; set; }
+    public virtual DbSet<CoffeeZone> CoffeeZones { get; set; }
+    public virtual DbSet<CoffeeZoneMembershipOverride> CoffeeZoneMembershipOverrides { get; set; }
 
     public virtual DbSet<EquipmentCategory> EquipmentCategories { get; set; }
     public virtual DbSet<Equipment> Equipments { get; set; }
@@ -48,6 +51,8 @@ public class ShopsDbContext(DbContextOptions<ShopsDbContext> options) : DbContex
     {
         modelBuilder.HasPostgresExtension("pg_trgm");
         modelBuilder.ApplyConfiguration(new CoffeeShopConfiguration());
+        modelBuilder.ApplyConfiguration(new CoffeeZoneConfiguration());
+        modelBuilder.ApplyConfiguration(new CoffeeZoneMembershipOverrideConfiguration());
         modelBuilder.ApplyConfiguration(new ShopPhotoConfiguration());
         modelBuilder.ApplyConfiguration(new RoasterConfiguration());
         modelBuilder.ApplyConfiguration(new RoasterPhotoConfiguration());
