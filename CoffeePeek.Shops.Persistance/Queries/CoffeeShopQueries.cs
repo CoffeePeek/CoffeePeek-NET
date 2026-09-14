@@ -228,29 +228,15 @@ public class CoffeeShopQueries(
         MapClusteringOptions options,
         CancellationToken ct = default)
     {
-        var baseQuery = context.Shops.AsNoTracking()
-            .Where(s => s.Status == CoffeeShopStatus.Active &&
-                        s.Location.Latitude.HasValue &&
-                        s.Location.Longitude.HasValue &&
-                        s.Location.Latitude >= query.MinLat &&
-                        s.Location.Latitude <= query.MaxLat &&
-                        s.Location.Longitude >= query.MinLon &&
-                        s.Location.Longitude <= query.MaxLon)
-            .Select(s => new MapPoint(
-                s.Id,
-                s.Location.CityId,
-                s.Location.Latitude!.Value,
-                s.Location.Longitude!.Value,
-                s.Name,
-                (CoffeeShopType?)(int?)s.Type));
+        var baseQuery = BuildMapPointsQuery(context, query);
 
         if (!query.Zoom.HasValue)
         {
-            var legacyPoints = await baseQuery.OrderBy(s => s.Id).Take(options.MaxResponseItems).ToArrayAsync(ct);
+            var legacyPoints = await baseQuery.Take(options.MaxResponseItems).ToArrayAsync(ct);
             return new GetShopsInBoundsResponse(legacyPoints.Select(ToMapShop));
         }
 
-        var points = await baseQuery.OrderBy(s => s.Id).ToArrayAsync(ct);
+        var points = await baseQuery.ToArrayAsync(ct);
         var zoom = query.Zoom.Value;
         if (zoom <= options.ClusterMaxZoom)
         {
@@ -282,10 +268,10 @@ public class CoffeeShopQueries(
                             && cityIds.Contains(s.Location.CityId)
                             && s.Location.Latitude.HasValue
                             && s.Location.Longitude.HasValue)
+                .OrderBy(s => s.Id)
                 .Select(s => new MapPoint(
                     s.Id, s.Location.CityId, s.Location.Latitude!.Value, s.Location.Longitude!.Value,
                     s.Name, (CoffeeShopType?)(int?)s.Type))
-                .OrderBy(s => s.Id)
                 .ToArrayAsync(ct);
         var zoneIds = visibleZones.Select(z => z.Id).ToArray();
         var overrides = zoneIds.Length == 0
@@ -355,6 +341,28 @@ public class CoffeeShopQueries(
         };
     }
 
+    internal static IQueryable<MapPoint> BuildMapPointsQuery(
+        ShopsDbContext context,
+        GetShopsInBoundsQuery query) =>
+        context.Shops.AsNoTracking()
+            .Where(s => s.Status == CoffeeShopStatus.Active &&
+                        s.Location.Latitude.HasValue &&
+                        s.Location.Longitude.HasValue &&
+                        s.Location.Latitude >= query.MinLat &&
+                        s.Location.Latitude <= query.MaxLat &&
+                        s.Location.Longitude >= query.MinLon &&
+                        s.Location.Longitude <= query.MaxLon)
+            // Sort entities before projecting into MapPoint. Npgsql cannot translate
+            // OrderBy(new MapPoint(...).Id) when ordering is applied after Select.
+            .OrderBy(s => s.Id)
+            .Select(s => new MapPoint(
+                s.Id,
+                s.Location.CityId,
+                s.Location.Latitude!.Value,
+                s.Location.Longitude!.Value,
+                s.Name,
+                (CoffeeShopType?)(int?)s.Type));
+
     private static MapShopDto ToMapShop(MapPoint point) => new()
     {
         Id = point.Id,
@@ -384,7 +392,7 @@ public class CoffeeShopQueries(
             zone.CenterLatitude, zone.CenterLongitude, nearestLatitude, nearestLongitude) <= zone.RadiusMeters;
     }
 
-    private sealed record MapPoint(
+    internal sealed record MapPoint(
         Guid Id,
         Guid CityId,
         decimal Latitude,
