@@ -1,13 +1,19 @@
 using System.ComponentModel.DataAnnotations;
+using CoffeePeek.Shops.Domain;
 using CoffeePeek.Shared.Domain.Entities;
 
 namespace CoffeePeek.Shops.Domain.Entities;
 
 public sealed class RoasterPhoto : Entity<Guid>
 {
-    [MaxLength(50)] public string FileName { get; private set; }
-    [MaxLength(30)] public string ContentType { get; private set; }
-    [MaxLength(200)] public string StorageKey { get; private set; }
+    [MaxLength(BusinessConstants.MaxRoasterPhotoFileNameLength)]
+    public string FileName { get; private set; }
+
+    [MaxLength(BusinessConstants.MaxRoasterPhotoContentTypeLength)]
+    public string ContentType { get; private set; }
+
+    [MaxLength(BusinessConstants.MaxRoasterPhotoStorageKeyLength)]
+    public string StorageKey { get; private set; }
 
     public long SizeBytes { get; private set; }
     public Guid OwnerId { get; private set; }

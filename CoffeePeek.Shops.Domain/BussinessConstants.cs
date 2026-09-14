@@ -66,6 +66,9 @@ public static class BusinessConstants
     public const int MaxRoasterAboutLength = 2000;
     public const int MaxRoasterContactInstagramLinkLength = MaxShopContactInstagramLinkLength;
     public const int MaxRoasterContactSiteLinkLength = MaxShopContactSiteLinkLength;
+    public const int MaxRoasterPhotoFileNameLength = 255;
+    public const int MaxRoasterPhotoContentTypeLength = 100;
+    public const int MaxRoasterPhotoStorageKeyLength = 255;
 
     #endregion
 

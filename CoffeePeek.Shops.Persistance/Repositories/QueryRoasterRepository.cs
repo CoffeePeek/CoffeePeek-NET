@@ -38,7 +38,9 @@ public class QueryRoasterRepository(ShopsDbContext dbContext) : IQueryRoasterRep
 public class RoasterRepository(ShopsDbContext dbContext) : IRoasterRepository
 {
     public Task<Roaster?> GetByIdAsync(Guid id, CancellationToken ct = default) =>
-        dbContext.Roasters.FirstOrDefaultAsync(r => r.Id == id, ct);
+        dbContext.Roasters
+            .Include(r => r.Photos)
+            .FirstOrDefaultAsync(r => r.Id == id, ct);
 
     public Task<Roaster?> GetByNameAsync(string name, CancellationToken ct = default) =>
         dbContext.Roasters.FirstOrDefaultAsync(r => EF.Functions.ILike(r.Name, name), ct);
