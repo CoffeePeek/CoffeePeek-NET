@@ -18,6 +18,7 @@ public class ShortShopDto
     public bool IsVisited { get; set; }
     public bool IsNew { get; set; }
     public bool IsOpen { get; set; }
+    public int DataCompletenessScore { get; init; }
     
     public PriceRange PriceRange { get; init; }
     public CoffeeShopType? Type { get; set; }

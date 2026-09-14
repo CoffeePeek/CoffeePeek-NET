@@ -67,6 +67,7 @@ public static class AttachAdminShopMenuPhotosHandler
         IQueryShopMenuRepository queryMenu,
         IQueryCoffeeDrinkRepository drinks,
         IUnitOfWork unitOfWork,
+        ICacheService cacheService,
         IOptions<MediaPublicUrlOptions> mediaOptions,
         CancellationToken ct)
     {
@@ -81,6 +82,7 @@ public static class AttachAdminShopMenuPhotosHandler
             ShopMenuPhoto.Create(p.FileName, p.ContentType, p.StorageKey, p.Size)));
 
         await unitOfWork.SaveChangesAsync(ct);
+        await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), ct);
 
         var catalog = await drinks.GetActiveAsync(ct);
         var dto = ShopMenuDtoFactory.FromShopMenu(
@@ -179,6 +181,7 @@ public static class UpdateAdminShopMenuHandler
 
         await unitOfWork.SaveChangesAsync(ct);
         await cacheService.RemoveAsync(CacheKey.Shop.Detail(shop.Id));
+        await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), ct);
 
         var dto = ShopMenuDtoFactory.FromShopMenu(
             await queryMenu.GetByShopIdAsync(command.ShopId, ct), catalog, mediaOptions.Value)!;

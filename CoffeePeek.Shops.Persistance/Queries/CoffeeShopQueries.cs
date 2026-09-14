@@ -159,7 +159,8 @@ public class CoffeeShopQueries(
         
         var items = await query
             .AsSplitQuery()
-            .OrderBy(x => x.Name)
+            .OrderByDescending(x => x.DataCompletenessScore)
+            .ThenBy(x => x.Name)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .ProjectToType<ShortShopDto>(mapper.Config)

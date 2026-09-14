@@ -49,11 +49,16 @@ public class ApplyShopMenuService(
 {
     private static readonly JsonSerializerOptions JsonOpts = new(JsonSerializerDefaults.Web);
 
-    public Task<ShopMenu> ApplyManualItemsAsync(
+    public async Task<ShopMenu> ApplyManualItemsAsync(
         Guid shopId,
         IReadOnlyList<ManualShopMenuItemUpdate> items,
         Guid? userId,
-        CancellationToken ct) => menuRepository.ApplyManualItemsAsync(shopId, items, userId, ct);
+        CancellationToken ct)
+    {
+        var menu = await menuRepository.ApplyManualItemsAsync(shopId, items, userId, ct);
+        await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), ct);
+        return menu;
+    }
 
     public async Task ApplySnapshotAsync(
         Guid shopId,
@@ -101,6 +106,7 @@ public class ApplyShopMenuService(
             await ApplyPriceRangeAsync(shopId, suggested.Value, ct);
 
         await cacheService.RemoveAsync(CacheKey.Shop.Detail(shopId));
+        await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), ct);
     }
 
     public async Task ApplyParseResultAsync(
@@ -141,6 +147,7 @@ public class ApplyShopMenuService(
                 p.FileName, p.ContentType, p.StorageKey, p.SizeBytes, p.MediaPhotoId)));
 
         await cacheService.RemoveAsync(CacheKey.Shop.Detail(shopId));
+        await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), ct);
     }
 
     public async Task MarkParseFailedAsync(Guid shopId, string error, CancellationToken ct)

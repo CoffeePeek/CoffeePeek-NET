@@ -77,6 +77,7 @@ public static class CreateCheckInHandler
 
         await unitOfWork.SaveChangesAsync(ct);
         await PublicStatsCacheInvalidator.InvalidateAsync(cacheService, ct);
+        await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), ct);
 
         return Response<CreateCheckInResponse>.Success(new CreateCheckInResponse(checkIn.Id));
     }

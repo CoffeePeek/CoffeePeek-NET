@@ -28,6 +28,7 @@ public record CoffeeShopDetailsDto
     public Guid? ExistingReviewId { get; init; }
     public bool IsOpen { get; init; }
     public bool IsNew { get; init; }
+    public int DataCompletenessScore { get; init; }
     public PriceRange PriceRange { get; init; }
     public CoffeeShopType? Type { get; init; }
 

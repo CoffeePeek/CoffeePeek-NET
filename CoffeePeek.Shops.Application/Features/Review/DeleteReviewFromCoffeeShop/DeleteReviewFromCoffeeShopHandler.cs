@@ -28,6 +28,7 @@ public class DeleteReviewFromCoffeeShopHandler
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         await PublicStatsCacheInvalidator.InvalidateAsync(cacheService, cancellationToken);
+        await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), cancellationToken);
         return Response.Success();
     }
 }

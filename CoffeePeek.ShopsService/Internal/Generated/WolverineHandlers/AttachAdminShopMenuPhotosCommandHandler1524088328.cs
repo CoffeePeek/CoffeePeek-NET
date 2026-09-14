@@ -57,7 +57,7 @@ namespace Internal.Generated.WolverineHandlers
                 System.Diagnostics.Activity.Current?.SetTag("handler.type", "CoffeePeek.Shops.Application.Features.Admin.Menu.AttachAdminShopMenuPhotosHandler");
                 
                 // The actual message execution
-                (var outgoing1, var outgoing2) = await CoffeePeek.Shops.Application.Features.Admin.Menu.AttachAdminShopMenuPhotosHandler.Handle(attachAdminShopMenuPhotosCommand, coffeeShopRepository, applyShopMenuService, queryShopMenuRepository, queryCoffeeDrinkRepository, unitOfWorkOfShopsDbContext, _optionsOfMediaPublicUrlOptions, cancellation).ConfigureAwait(false);
+                (var outgoing1, var outgoing2) = await CoffeePeek.Shops.Application.Features.Admin.Menu.AttachAdminShopMenuPhotosHandler.Handle(attachAdminShopMenuPhotosCommand, coffeeShopRepository, applyShopMenuService, queryShopMenuRepository, queryCoffeeDrinkRepository, unitOfWorkOfShopsDbContext, _cacheService, _optionsOfMediaPublicUrlOptions, cancellation).ConfigureAwait(false);
 
                 
                 // Outgoing, cascaded message

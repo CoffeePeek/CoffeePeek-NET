@@ -13,6 +13,7 @@
 | 260901-faa | fix-checkin-photos-on-create-persist-pri | complete | 2026-09-01 |
 | 260901-m4f | fix-sentry-cp-shops-service-34-conflicte | complete | 2026-09-01 |
 | 260909 | roaster-contribution | complete | 2026-09-09 |
+| 260914 | coffee-shop-data-completeness | complete | 2026-09-14 |
 
 ## Milestone Progress
 

@@ -14,8 +14,16 @@ public class CoffeeShopConfiguration : IEntityTypeConfiguration<CoffeeShop>
         builder.Property(x => x.Name).HasMaxLength(BusinessConstants.MaxCoffeeShopNameLength);
         builder.Property(x => x.Description).HasMaxLength(BusinessConstants.MaxCoffeeShopDescriptionLength);
         builder.Property(x => x.Type);
+        builder.Property(x => x.DataCompletenessScore)
+            .HasDefaultValue((short)0);
+        builder.ToTable(table => table.HasCheckConstraint(
+            "CK_Shops_DataCompletenessScore_Range",
+            "\"DataCompletenessScore\" BETWEEN 0 AND 100"));
         builder.HasIndex(s => s.OwnerUserId);
         builder.HasIndex(s => s.ImportedFromFileAt);
+        builder.HasIndex(s => new { s.Status, s.DataCompletenessScore, s.Name })
+            .IsDescending(false, true, false)
+            .HasDatabaseName("IX_Shops_Status_DataCompletenessScore_Name");
 
         builder.HasIndex(s => s.Name)
             .HasMethod("gin")

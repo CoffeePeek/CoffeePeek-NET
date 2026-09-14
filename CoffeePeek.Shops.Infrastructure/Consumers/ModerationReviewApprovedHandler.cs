@@ -37,6 +37,7 @@ public static class ModerationReviewApprovedHandler
 
         await unitOfWork.SaveChangesAsync(ct);
         await PublicStatsCacheInvalidator.InvalidateAsync(cacheService, ct);
+        await cacheService.RemoveByPattern(CacheKey.Shop.SearchPattern(), ct);
         
         return new ReviewAddedEvent(reviewDto.UserId, reviewDto.ShopId, review.Id);
     }

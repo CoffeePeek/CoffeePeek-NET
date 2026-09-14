@@ -13,6 +13,7 @@ public sealed class CoffeeShop : Entity<Guid>
     public PriceRange PriceRange { get; private set; }
     public CoffeeFocusType? Type { get; private set; }
     public CoffeeShopStatus Status { get; private set; } = CoffeeShopStatus.Active;
+    public short DataCompletenessScore { get; private set; }
 
     public Guid CreatorId { get; private set; }
     public Guid? OwnerUserId { get; private set; }

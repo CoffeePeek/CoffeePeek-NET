@@ -27,6 +27,7 @@ public static class MapsterConfiguration
 
         config.NewConfig<CoffeeShop, ShortShopDto>()
             .Map(dest => dest.CityId, src => src.Location.CityId)
+            .Map(dest => dest.DataCompletenessScore, src => (int)src.DataCompletenessScore)
             .Map(dest => dest.Photos, src => src.ShopPhotos.OrderBy(p => p.SortIndex).ThenBy(p => p.CreatedAtUtc))
             .Map(dest => dest.ShopContact, src => src.Contact)
             .Map(dest => dest.Beans, src => src.CoffeeBeans)
@@ -65,6 +66,7 @@ public static class MapsterConfiguration
 
         config.NewConfig<CoffeeShop, ShopDto>()
             .Map(d => d.Photos, s => s.ShopPhotos.OrderBy(p => p.SortIndex).ThenBy(p => p.CreatedAtUtc))
+            .Map(dest => dest.DataCompletenessScore, src => (int)src.DataCompletenessScore)
             .Map(dest => dest.IsOpen, src => true)
             .Map(dest => dest.Type, src => (Contract.Enums.CoffeeShopType?)(int?)src.Type)
             .Map(dest => dest.CoffeeBeans, src => src.CoffeeBeans)
@@ -75,6 +77,7 @@ public static class MapsterConfiguration
 
         config.NewConfig<CoffeeShop, CoffeeShopDetailsDto>()
             .Map(d => d.CityId, s => s.Location.CityId)
+            .Map(dest => dest.DataCompletenessScore, src => (int)src.DataCompletenessScore)
             .Map(d => d.Photos, s => s.ShopPhotos.OrderBy(p => p.SortIndex).ThenBy(p => p.CreatedAtUtc))
             .Map(d => d.ShopContact, s => s.Contact)
             .Map(d => d.Schedules, s => s.Schedules)
