@@ -28,6 +28,7 @@ public class ReverseProxyRouteConfigurationTests
     [InlineData("shops-admin-beans-route", "/api/admin/beans/{**remainder}")]
     [InlineData("shops-admin-roasters-route", "/api/admin/roasters/{**remainder}")]
     [InlineData("shops-admin-brew-methods-route", "/api/admin/brew-methods/{**remainder}")]
+    [InlineData("shops-admin-coffee-zones-route", "/api/admin/coffee-zones/{**remainder}")]
     public void AdminCatalogCrudRoutes_TargetShopsService(string routeId, string path)
     {
         using var document = LoadGatewayAppsettings();
@@ -59,7 +60,8 @@ public class ReverseProxyRouteConfigurationTests
             "shops-admin-equipments-route",
             "shops-admin-beans-route",
             "shops-admin-roasters-route",
-            "shops-admin-brew-methods-route"
+            "shops-admin-brew-methods-route",
+            "shops-admin-coffee-zones-route"
         })
         {
             routeIds.IndexOf(shopsCatalogRoute).Should().BeLessThan(accountAdminIndex);
