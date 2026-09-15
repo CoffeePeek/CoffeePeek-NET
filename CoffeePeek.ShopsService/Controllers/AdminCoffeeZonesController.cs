@@ -110,13 +110,13 @@ public sealed record UpdateCoffeeZoneRequest(
     Guid CityId,
     string Name,
     string? Description,
-    [property: Range(-90, 90)] decimal CenterLatitude,
-    [property: Range(-180, 180)] decimal CenterLongitude,
-    [property: Range(BusinessConstants.MinCoffeeZoneRadiusMeters, BusinessConstants.MaxCoffeeZoneRadiusMeters)] int RadiusMeters);
+    [Range(-90, 90)] decimal CenterLatitude,
+    [Range(-180, 180)] decimal CenterLongitude,
+    [Range(BusinessConstants.MinCoffeeZoneRadiusMeters, BusinessConstants.MaxCoffeeZoneRadiusMeters)] int RadiusMeters);
 
 public sealed record SetCoffeeZoneStatusRequest(CoffeeZoneStatus Status);
 public sealed record SetCoffeeZoneMembershipOverrideRequest(CoffeeZoneMembershipOverrideKind Kind);
 public sealed record GenerateCoffeeZoneCandidatesRequest(
     Guid CityId,
-    [property: Range(BusinessConstants.MinCoffeeZoneRadiusMeters, BusinessConstants.MaxCoffeeZoneRadiusMeters)] int RadiusMeters = 400,
-    [property: Range(3, 50)] int MinShops = 4);
+    [Range(BusinessConstants.MinCoffeeZoneRadiusMeters, BusinessConstants.MaxCoffeeZoneRadiusMeters)] int RadiusMeters = 400,
+    [Range(3, 50)] int MinShops = 4);
